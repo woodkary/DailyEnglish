@@ -1,21 +1,20 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-func sayHello(w http.ResponseWriter, r *http.Request) {
-	b, _ := ioutil.ReadFile("./stup.txt")
-	_, _ = fmt.Fprintln(w, string(b))
-}
-
 func main() {
-	http.HandleFunc("/hahaha", sayHello)
-	err := http.ListenAndServe(":9090", nil) //端口前加冒号，否则listen tcp: address 9090: missing port in address
-	if err != nil {
-		fmt.Printf("http serve failed, err: %v", err)
-		return
-	}
+	// 1.创建路由
+	r := gin.Default()
+	// 2.绑定路由规则，执行的函数
+	// gin.Context，封装了request和response
+	r.GET("/", func(c *gin.Context) {
+		c.String(http.StatusOK, "homepage")
+	})
+	// 3.监听端口，默认在8080
+	// Run("里面不指定端口号默认为8080")
+	r.Run(":9090")
 }
