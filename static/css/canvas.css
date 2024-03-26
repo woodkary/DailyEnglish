@@ -1,0 +1,37 @@
+/*饼图*/
+.pie-chart-container {
+    width: 200px; /* 容器宽度 */
+    height: 200px; /* 容器高度 */
+    border-radius: 50%; /* 将容器变成圆形 */
+    position: relative; /* 相对定位，用于定位饼图的中心 */
+}
+
+#pie-chart {
+    /* 这里可以设置 canvas 的样式 */
+    width: 200;
+    height: 200;/* 饼图宽高 */
+}
+
+/* 图例样式 */
+.legend-item {
+    margin-bottom: 5px;
+    font-size:12px;/*图例字体大小*/
+}
+
+.legend-item span {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 2px;
+    border-radius: 50%;/*圆形图例*/
+}
+
+/* 未完成任务图例的背景颜色 */
+.unfinished-color {
+    background-color: #FFE76F;
+}
+
+/* 已完成任务图例的背景颜色 */
+.finished-color {
+    background-color: #002EA6;
+}

@@ -1,0 +1,15 @@
+.container {
+    display: flex;
+    height: 100vh; /* 设置容器高度占满整个视口 */
+  }
+  
+  .left-side {
+    flex: 1; /* 让左半部分占据 1/2 的空间 */
+    background-color: blue; /* 设置左半部分的背景色为蓝色 */
+  }
+  
+  .right-side {
+    flex: 1; /* 让右半部分占据 1/2 的空间 */
+    background-color: white; /* 设置右半部分的背景色为白色 */
+  }
+  

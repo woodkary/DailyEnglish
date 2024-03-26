@@ -1,0 +1,118 @@
+<!--
+ * @Author: ccyfifi
+ * @Date: 2024-03-26 10:46:51
+ * @LastEditors: cyf 
+ * @LastEditTime: 2024-03-26 11:08:24
+ * @Description: 保佑代码不出bug
+ * 
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 0px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .login-container .formDiv {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .login-container form input[type="text"]{
+            display: block; /* 将输入框显示为块级元素 */
+            width: auto; /* 设置输入框宽度为父元素宽度 */
+            border: none; /* 移除边框 */
+            border-bottom: 1px solid #ccc; /* 添加底部边框 */
+            margin-bottom: 10px;
+            padding: 0 0 8px 0; /* 设置上右下左的内边距 */
+            outline: none;/* 移除输入框的默认外观 */
+            background-image: url('static/user.svg');
+            background-size:auto;
+            background-position:left;
+            background-repeat:no-repeat;
+            padding-left: 30px;
+            padding-bottom: auto;
+        }
+
+        .login-container form input[type="password"]{
+            display: block; /* 将输入框显示为块级元素 */
+            width: auto; /* 设置输入框宽度为父元素宽度 */
+            border: none; /* 移除边框 */
+            border-bottom: 1px solid #ccc; /* 添加底部边框 */
+            margin-bottom: 10px;
+            padding: 0 0 8px 0; /* 设置上右下左的内边距 */
+            outline: none;/* 移除输入框的默认外观 */
+            background-image: url('static/user.svg');
+            background-size:auto;
+            background-position:left;
+            background-repeat:no-repeat;
+            padding-left: 30px;
+            padding-bottom: auto;
+        }
+        
+        .login-container form input[type="submit"] {
+            margin-bottom: 10px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 0px;
+            outline: none;
+        }
+
+        .login-container .formDiv input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* 悬停按钮 */
+        .login-container form input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-container">
+            <h2>Login</h2>
+            <div class="formDiv">
+                <input type="text" name="username" id="username" placeholder="Username" required>
+                <input type="password" name="password" id="password" placeholder="Password" required>
+                <input type="submit" onclick="login()" value="Login">
+            </div>
+            <p onclick=goToReg()>忘记密码？</p>
+        </div>
+    </div>
+</body>
+<script src="./js/login.js"></script>
+<script>
+    function goToReg(){
+        window.location.href = "register.html";
+    }
+</script>
+</html>

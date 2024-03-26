@@ -1,0 +1,75 @@
+/* Card 容器样式 */
+.card {
+    border: 1px solid #ddd;/*边框*/
+    border-radius: 0px;/*圆角设置*/
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),/*下边阴影*/
+                4px 0 4px rgba(0, 0, 0, 0.1); /* 右边阴影 */
+    padding: 20px;/*内边距*/
+    background-color: #fff;
+    display: flex;
+    transition: all 0.5s ease; /* 添加过渡效果 */
+    width:300px;/*卡片宽度,记得改动！！！！！！！！！！！！！！！*/
+    /* 使用 Flexbox 布局 */
+}
+
+/* 头像容器样式 */
+.avatar {
+    margin-right: 20px;
+    /* 头像与内容之间的间距 */
+}
+
+/* 头像样式 */
+.avatar img {
+    width: 50px;
+    /* 头像宽度 */
+    height: 50px;
+    /* 头像高度 */
+    border-radius: 50%;
+    /* 圆形头像 */
+}
+
+/* Card 内容样式 */
+.card-content {
+    font-size: 16px;
+    color: #333;
+}
+
+/* 标题样式 */
+.card-content .card-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    /* 调整标题下边距 */
+    display: block;
+    /* 设置为块级元素 */
+}
+
+/* 正文样式 */
+.card-content .card-text {
+    font-size: 16px;
+    color: #333;
+    margin-top: 5px;
+    /* 调整正文上边距 */
+    display: block;
+    /* 设置为块级元素 */
+}
+
+/* 副标题样式 */
+.card-content .card-subtitle{
+    font-size: 14px;
+    color: #666;
+    margin-left: 5px;
+    /* 调整副标题上边距 */
+    display: none;/*默认隐藏副标题*/
+}
+
+/* 边框阴影样式,暂时没做好，因为实在没有思路
+.card-shadow {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+} */
+
+.card:hover {
+    transform: scale(1.005); /* 略微放大 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 悬停时阴影加深 */
+}
+
