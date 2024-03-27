@@ -49,7 +49,7 @@ function validateForm() {
     }
 }
 //注册
-function register(){
+function register() {
     var email = document.getElementById("email").value;
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
@@ -59,7 +59,7 @@ function register(){
     var errorDiv = document.getElementById("errorReg");
     var data = {
         email: email,
-        username:username,
+        username: username,
         password: password
     };
     fetch('http://localhost:8080/api/users/register', {
@@ -74,7 +74,7 @@ function register(){
     }).then(data => {
         console.log(data);
         errorDiv.style.display = "block";
-        if (data.code === 200) {
+        if (data.code == 200) {
             errorDiv.style.color = "green";
             errorDiv.textContent = "注册成功";
             errorDiv.classList.remove("error-border");

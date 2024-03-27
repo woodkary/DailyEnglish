@@ -7,14 +7,14 @@ const innerRadius = radius * 0.6; // 内部半径
 // 后端提供的数据：未完成和已完成的数量
 let unfinishedTasks = 20;
 let finishedTasks = 80;
-let totalTasks=0;//总任务数
-let unfinishedAngle =0;//未完成任务的角度
-let finishedAngle =0;//已完成任务的角度
+let totalTasks = 0;//总任务数
+let unfinishedAngle = 0;//未完成任务的角度
+let finishedAngle = 0;//已完成任务的角度
 //加载时执行，获取未完成和已完成的数量
 window.onload = function () {
     //获取token
     let token = sessionStorage.getItem("token");
-    fetch("http://localhost:8080/api/team_manage/index", {
+    fetch("http://localhost:8080/api/team_manager/index/data", {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -88,7 +88,7 @@ legend.innerHTML = `
 function handleMouseMove(event) {
     const mouseX = event.clientX - canvas.getBoundingClientRect().left;
     const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-    const angle = Math.atan2(mouseY - centerY, mouseX - centerX)+Math.PI/2;
+    const angle = Math.atan2(mouseY - centerY, mouseX - centerX) + Math.PI / 2;
     let degree = (angle * 180) / Math.PI;
     if (degree < 0) {
         degree = 360 + degree; // Convert negative degree to positive

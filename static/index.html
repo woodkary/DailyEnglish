@@ -1,121 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="./css/index.css">
     <link rel="stylesheet" type="text/css" href="./css/myNavbar.css">
     <title>团队管理员首页</title>
 
 </head>
+
 <body>
     <div class="navbar">
-    
+
         <a href="#" class="logo">每日英语</a>
         <a href="index.html">首页</a>
         <a href="#">关于</a>
         <a href="#">联系我们</a>
-    
-    <div class="dropdown">
-        <button class="dropbtn">发布任务</button>
-        <div class="dropdown-content">
-            <a href="#">考试</a>
-            <a href="#">作业</a>
-            <a href="#">每日单词</a>
+
+        <div class="dropdown">
+            <button class="dropbtn">发布任务</button>
+            <div class="dropdown-content">
+                <a href="#">考试</a>
+                <a href="#">作业</a>
+                <a href="#">每日单词</a>
+            </div>
+        </div>
+        <div class="search-container">
+            <form action="#">
+                <input type="text" placeholder="Search.." name="search">
+                <button type="submit">搜索</button>
+            </form>
         </div>
     </div>
-    <div class="search-container">
-        <form action="#">
-            <input type="text" placeholder="Search.." name="search">
-            <button type="submit">搜索</button>
-        </form>
-    </div>
-</div>
     <div class="background">
-    <h1>今日日程</h1> 
-    <div class="card" id="card1">
-       <div class="avatar">
+        <h1>今日日程</h1>
+        <div class="card" id="card1">
+            <div class="avatar">
 
             </div>
-        <div class="card-content">
-            <span class="card-title">成员管理</span>
-            <!-- <p class="card-text">Card Text Here</p>
+            <div class="card-content">
+                <span class="card-title">成员管理</span>
+                <!-- <p class="card-text">Card Text Here</p>
             <span class="card-subtitle">Card Subtitle</span> -->
+            </div>
         </div>
-    </div>
-    <div class="card" id="card2">
-        <div class="avatar">
- 
-             </div>
-         <div class="card-content">
-             <span class="card-title">任务发布</span>
-             <!-- <p class="card-text">Card Text Here</p>
-             <span class="card-subtitle">Card Subtitle</span> -->
-         </div>
-     </div>
-     <div class="card" id="card3">
-        <div class="avatar">
+        <div class="card" id="card2">
+            <div class="avatar">
 
-             </div>
-         <div class="card-content">
-             <span class="card-title">学习情况</span>
-             <!-- <p class="card-text">Card Text Here</p>
+            </div>
+            <div class="card-content">
+                <span class="card-title">任务发布</span>
+                <!-- <p class="card-text">Card Text Here</p>
              <span class="card-subtitle">Card Subtitle</span> -->
-         </div>
-     </div>
-     <div class="card" id="card4">
-        <div class="avatar">
- 
-             </div>
-         <div class="card-content">
-             <span class="card-title">发布历史</span>
-             <!-- <p class="card-text">Card Text Here</p>
-             <span class="card-subtitle">Card Subtitle</span> -->
-         </div>
-     </div>
-     <div class="card" id="card5">
-         <div class="card-content">
-             <span class="card-title">今日任务完成情况</span>
-             <!-- <p class="card-text">Card Text Here</p>
-             <span class="card-subtitle">Card Subtitle</span> -->
-             <div id="legend"></div>
-             <div id="tooltip" style="display: none;"></div>
-             <div class="card">
-                 <div class="pie-chart-container">
-                     <canvas id="pie-chart"></canvas>
-                     <div id="legend"></div>
-                 </div>
-                 </div>    
-         </div>
-     </div>
-     <div class="card" id="card6">
-        <div class="avatar">
+            </div>
+        </div>
+        <div class="card" id="card3">
+            <div class="avatar">
 
-             </div>
-         <div class="card-content">
-             <span class="card-title">最新考试</span>
-             <!-- <p class="card-text">Card Text Here</p>
+            </div>
+            <div class="card-content">
+                <span class="card-title">学习情况</span>
+                <!-- <p class="card-text">Card Text Here</p>
              <span class="card-subtitle">Card Subtitle</span> -->
-         </div>
-     </div>
-     <div class="card" id="card7">
-        <div class="avatar">
+            </div>
+        </div>
+        <div class="card" id="card4">
+            <div class="avatar">
 
-             </div>
-         <div class="card-content">
-             <span class="card-title">今日任务</span>
-             <!-- <p class="card-text">Card Text Here</p>
+            </div>
+            <div class="card-content">
+                <span class="card-title">发布历史</span>
+                <!-- <p class="card-text">Card Text Here</p>
              <span class="card-subtitle">Card Subtitle</span> -->
-         </div>
-     </div>
+            </div>
+        </div>
+        <div class="card" id="card5">
+            <div class="card-content">
+                <span class="card-title">今日任务完成情况</span>
+                <!-- <p class="card-text">Card Text Here</p>
+             <span class="card-subtitle">Card Subtitle</span> -->
+                <div id="legend"></div>
+                <div id="tooltip" style="display: none;"></div>
+                <div class="card">
+                    <div class="pie-chart-container">
+                        <canvas id="pie-chart"></canvas>
+                        <div id="legend"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card" id="card6">
+            <div class="avatar">
+
+            </div>
+            <div class="card-content">
+                <span class="card-title">最新考试</span>
+                <!-- <p class="card-text">Card Text Here</p>
+             <span class="card-subtitle">Card Subtitle</span> -->
+            </div>
+        </div>
+        <div class="card" id="card7">
+            <div class="avatar">
+
+            </div>
+            <div class="card-content">
+                <span class="card-title">今日任务</span>
+                <!-- <p class="card-text">Card Text Here</p>
+             <span class="card-subtitle">Card Subtitle</span> -->
+            </div>
+        </div>
     </div>
 
     <script>
-        document.getElementById('card1').addEventListener('click', function() {  
+        document.getElementById('card1').addEventListener('click', function () {
             window.location.href = 'manage.html'; // 替换为你想要跳转的URL  
         });
     </script>
 
-        <script src="js/pieChart.js"></script>
+    <script src="js/pieChart.js"></script>
 </body>
+
 </html>
