@@ -1,20 +1,29 @@
-body{
-    background-color: rgba(0,0,0,0.03);
+body {
+    background-color: rgba(0, 0, 0, 0.03);
 }
-h1{
+
+h1 {
     text-align: center;
 }
+
 /* Card 容器样式 */
 .card {
-    border: 1px solid #ddd;/*边框*/
-    border-radius: 0px;/*圆角设置*/
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),/*下边阴影*/
-                4px 0 4px rgba(0, 0, 0, 0.1); /* 右边阴影 */
-    padding: 20px;/*内边距*/
+    border: 1px solid #ddd;
+    /*边框*/
+    border-radius: 0px;
+    /*圆角设置*/
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),
+        /*下边阴影*/
+        4px 0 4px rgba(0, 0, 0, 0.1);
+    /* 右边阴影 */
+    padding: 20px;
+    /*内边距*/
     background-color: #fff;
 
-    transition: all 0.5s ease; /* 添加过渡效果 */
-    width:300px;/*卡片宽度,记得改动！！！！！！！！！！！！！！！*/
+    transition: all 0.5s ease;
+    /* 添加过渡效果 */
+    width: 300px;
+    /*卡片宽度,记得改动！！！！！！！！！！！！！！！*/
     /* 使用 Flexbox 布局 */
 }
 
@@ -61,12 +70,13 @@ h1{
 }
 
 /* 副标题样式 */
-.card-content .card-subtitle{
+.card-content .card-subtitle {
     font-size: 14px;
     color: #666;
     margin-left: 5px;
     /* 调整副标题上边距 */
-    display: none;/*默认隐藏副标题*/
+    display: none;
+    /*默认隐藏副标题*/
 }
 
 /* 边框阴影样式,暂时没做好，因为实在没有思路
@@ -75,11 +85,13 @@ h1{
 } */
 
 .card:hover {
-    transform: scale(1.005); /* 略微放大 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 悬停时阴影加深 */
+    transform: scale(1.005);
+    /* 略微放大 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* 悬停时阴影加深 */
 }
 
-#card1{
+#card1 {
     position: absolute;
     height: 10%;
     width: 15%;
@@ -87,7 +99,7 @@ h1{
     top: 15%;
 }
 
-#card2{
+#card2 {
     position: absolute;
     height: 10%;
     width: 15%;
@@ -95,7 +107,7 @@ h1{
     top: 15%;
 }
 
-#card3{
+#card3 {
     position: absolute;
     height: 10%;
     width: 15%;
@@ -103,7 +115,7 @@ h1{
     top: 15%;
 }
 
-#card4{
+#card4 {
     position: absolute;
     height: 10%;
     width: 15%;
@@ -111,7 +123,7 @@ h1{
     top: 15%;
 }
 
-#card5{
+#card5 {
     position: absolute;
     height: 15%;
     width: 35%;
@@ -121,25 +133,31 @@ h1{
 
 /*饼图*/
 .pie-chart-container {
-    width: 100%; /* 容器宽度 */
-    height: 100%; /* 容器高度 */
-    border-radius: 50%; /* 将容器变成圆形 */
+    width: 100%;
+    /* 容器宽度 */
+    height: 100%;
+    /* 容器高度 */
+    border-radius: 50%;
+    /* 将容器变成圆形 */
     left: 50%;
     top: 10%;
-    position: absolute; /* 相对定位，用于定位饼图的中心 */
+    position: absolute;
+    /* 相对定位，用于定位饼图的中心 */
 }
 
 #pie-chart {
     /* 这里可以设置 canvas 的样式 */
     width: 200;
-    height: 200;/* 饼图宽高 */
+    height: 200;
+    /* 饼图宽高 */
 }
 
 /* 图例样式 */
 .legend-item {
 
     margin-bottom: 5px;
-    font-size:20px;/*图例字体大小*/
+    font-size: 20px;
+    /*图例字体大小*/
 }
 
 .legend-item span {
@@ -147,7 +165,8 @@ h1{
     width: 30px;
     height: 30px;
     margin-right: 2px;
-    border-radius: 50%;/*圆形图例*/
+    border-radius: 50%;
+    /*圆形图例*/
 }
 
 /* 未完成任务图例的背景颜色 */
@@ -160,7 +179,7 @@ h1{
     background-color: #002EA6;
 }
 
-#card6{
+#card6 {
     position: absolute;
     height: 15%;
     width: 35%;
@@ -168,7 +187,7 @@ h1{
     top: 35%;
 }
 
-#card7{
+#card7 {
     position: absolute;
     height: 20%;
     width: 75%;

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>记录表</title>
+
+</head>
+<link rel="stylesheet" href="./css/history.css">
+<body>
+
+<!-- Navigation bar -->
+<div class="navbar">
+    
+    <a href="#" class="logo">每日英语</a>
+    <a href="#">首页</a>
+    <a href="#">关于</a>
+    <a href="#">成员管理</a>
+
+<div class="dropdown">
+    <button class="dropbtn">发布任务</button>
+    <div class="dropdown-content">
+        <a href="#">考试</a>
+        <a href="signInPlan.html">打卡</a>
+        <a href="#">每日单词</a>
+    </div>
+</div>
+<div class="user-container">
+    <p class="username">用户名</p>
+    <img src="image/pikachu.jpg" alt="User Avatar" class="user-avatar">
+    <button type="button" class="logout-button"></button>
+</div>
+</div>
+
+<div class="container">
+    <div class="page-title">发布历史</div>
+    <div class="left-section">
+        <!--全部历史页面的url-->
+        <!--<a href="allHistory.html" class="all-history-link">全部历史</a>-->
+      <div class="notepad">
+        <div class="notepad-header">打卡记录</div>
+        <table>
+          <!-- 各种打卡记录内容... -->
+            <thead>
+            <tr>
+                <th >打卡词汇</th>
+                <th >打卡日期</th>
+                <th >打卡单词</th>
+                <th >完成人数</th>
+            </tr>
+            </thead>
+            <tbody id="cardData">
+            <!-- 这里放入表格的内容 -->
+            </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="right-section">
+      <div class="notepad">
+        <div class="notepad-header">作答记录</div>
+        <table>
+          <!-- 各种作答记录内容... -->
+            <thead>
+            <tr>
+                <th>考试日期</th>
+                <th>考试范围</th>
+                <th>平均分数</th>
+                <th>考试人数</th>
+            </tr>
+            </thead>
+            <tbody id="examData">
+            <!-- 这里放入表格的内容 -->
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</body>
+<script src="./js/history.js"></script>
+</html>
