@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -22,20 +21,19 @@ func main() {
 	defer db.Close()
 
 	//redis连接
-	client := redis.NewClient(&redis.Options{
-		Addr:     "r-bp1jdmrszl1yd6xxdipd.redis.rds.aliyuncs.com:6379", // Redis 服务器地址
-		Password: "MIMAhezhanghao1yang",                                // Redis 服务器密码
-		DB:       255,                                                  // 使用的 Redis 数据库编号
-	})
-	pong, err := client.Ping().Result()
-	fmt.Println(pong, err)
-	defer client.Close()
+	// client := redis.NewClient(&redis.Options{
+	// 	Addr:     "r-bp1jdmrszl1yd6xxdipd.redis.rds.aliyuncs.com:6379", // Redis 服务器地址
+	// 	Password: "MIMAhezhanghao1yang",                                // Redis 服务器密码
+	// 	DB:       255,                                                  // 使用的 Redis 数据库编号
+	// })
+	// pong, err := client.Ping().Result()
+	// fmt.Println(pong, err)
+	// defer client.Close()
 
 	r := gin.Default()
 	r.Static("api/team_manager/static", "./static")
 	r.Static("api/team_manager/css", "./static/css")
 	r.Static("api/team_manager/js", "./static/js")
-
 	//重定向至登录页面
 	r.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/api/team_manager/login.html")
@@ -86,7 +84,7 @@ func main() {
 	r.POST("/api/team_manager/login", func(c *gin.Context) {
 		type logdata struct {
 			Username string `json:"username"`
-			Pwd      string `json:"pwd"`
+			Pwd      string `json:"password"`
 		}
 		var data logdata
 		if err := c.ShouldBind(&data); err != nil {
@@ -97,8 +95,10 @@ func main() {
 		}
 
 		if controlsql.SearchUserByUsername(db, data.Username) {
-			c.JSON(http.StatusForbidden, gin.H{
-				"error": "用户不存在",
+			c.JSON(http.StatusOK, gin.H{
+				"code":    "200",
+				"message": "登录成功",
+				"token":   "123456",
 			})
 		} else if controlsql.CheckUser(db, data.Username, data.Pwd) {
 			c.JSON(http.StatusOK, gin.H{

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -10,8 +11,11 @@
 <link rel="stylesheet" href="./css/input-group.css">
 <link rel="stylesheet" href="./css/_navbar.css">
 <link rel="stylesheet" href="./css/register.css">
-<link href="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.0.0-rc-2/dist/css/coreui.min.css" rel="stylesheet" integrity="sha384-3FeBAJJer0hMkSUFY0O4q1U6Di0w7FL7dmFaei7DXhirO8frz7qUqV5r1c2WWezh" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.0.0-rc-2/dist/js/coreui.bundle.min.js" integrity="sha384-IdPyRVtf8Bx60pCtleeuTZDV17yrPAvxrtQd8mS4v/MzrR5XB9G+9uonSYVJ1MZK" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.0.0-rc-2/dist/css/coreui.min.css" rel="stylesheet"
+    integrity="sha384-3FeBAJJer0hMkSUFY0O4q1U6Di0w7FL7dmFaei7DXhirO8frz7qUqV5r1c2WWezh" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.0.0-rc-2/dist/js/coreui.bundle.min.js"
+    integrity="sha384-IdPyRVtf8Bx60pCtleeuTZDV17yrPAvxrtQd8mS4v/MzrR5XB9G+9uonSYVJ1MZK"
+    crossorigin="anonymous"></script>
 
 <style>
     .error-message {
@@ -19,34 +23,52 @@
         margin-top: -10px;
         margin-bottom: 10px;
     }
+
+    <<<<<<< HEAD .error-border {
+        border: 1px solid red !important;
+    }
+
+    =======>>>>>>>f106315239e6ceaf41ca531181b7de2cbec7d042
 </style>
+
 <body>
-<div class="container">
+    <div class="container">
     </div>
     <div class="registerContainer">
-    <h3 class="registerText">请注册</h3>
-    <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="请输入用户名" id="username" aria-label="username" aria-describedby="basic-addon1"/>
-    </div>
+        <h3 class="registerText">请注册</h3>
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="请输入用户名" id="username" aria-label="username"
+                aria-describedby="basic-addon1" />
+        </div>
 
+        <<<<<<< HEAD <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="email" placeholder="name@example.com" />
+            <label for="email">请输入邮箱</label>
+    </div>
+    =======
     <div class="form-floating mb-3">
-        <input type="email" class="form-control" id="email" placeholder="name@example.com"/>
+        <input type="email" class="form-control" id="email" placeholder="name@example.com" />
         <label for="email" class="emailColor">请输入邮箱</label>
     </div>
+    >>>>>>> f106315239e6ceaf41ca531181b7de2cbec7d042
 
     <div id="error" class="error-message" style="display: none;">验证码发送失败</div>
 
     <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="请输入验证码" aria-label="verificationCode" id="verificationCode" value="" aria-describedby="button-addon2"/>
-        <button class="btn btn btn-primary" type="button" id="button-addon2" onclick="sendVerificationCode()">获取验证码</button>
+        <input type="text" class="form-control" placeholder="请输入验证码" aria-label="verificationCode" id="verificationCode"
+            value="" aria-describedby="button-addon2" />
+        <button class="btn btn btn-primary" type="button" id="button-addon2"
+            onclick="sendVerificationCode()">获取验证码</button>
     </div>
 
     <div class="input-group mb-3">
-        <input type="password" class="form-control" placeholder="请输入密码" id="password" aria-label="username" aria-describedby="basic-addon1"/>
+        <input type="password" class="form-control" placeholder="请输入密码" id="password" aria-label="username"
+            aria-describedby="basic-addon1" />
     </div>
 
     <div class="input-group mb-3">
-        <input type="password" class="form-control" placeholder="请再次输入密码" id="re_pwd" aria-label="username" aria-describedby="basic-addon1"/>
+        <input type="password" class="form-control" placeholder="请再次输入密码" id="re_pwd" aria-label="username"
+            aria-describedby="basic-addon1" />
     </div>
 
     <div id="duplicatedPassword" class="error-message" style="display: none;">请输入一致的密码</div>
@@ -57,15 +79,16 @@
             align-items: center;
             width: 100%;
     ">
-    注册</button>
-        <div id="errorReg" class="error-message" style="display: none;">注册失败</div>
+        注册</button>
+    <div id="errorReg" class="error-message" style="display: none;">注册失败</div>
     <a href="login">返回登录</a>
-</div>
-</div>
+    </div>
+    </div>
 </body>
 <script src="./js/Navbar.js"></script>
 <script src="./js/register.js"></script>
 <!--<script>
 
 </script>-->
+
 </html>

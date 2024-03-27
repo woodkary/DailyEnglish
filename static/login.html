@@ -8,6 +8,7 @@
 -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -44,38 +45,50 @@
             flex-direction: column;
         }
 
-        .login-container form input[type="text"]{
-            display: block; /* 将输入框显示为块级元素 */
-            width: auto; /* 设置输入框宽度为父元素宽度 */
-            border: none; /* 移除边框 */
-            border-bottom: 1px solid #ccc; /* 添加底部边框 */
+        .login-container form input[type="text"] {
+            display: block;
+            /* 将输入框显示为块级元素 */
+            width: auto;
+            /* 设置输入框宽度为父元素宽度 */
+            border: none;
+            /* 移除边框 */
+            border-bottom: 1px solid #ccc;
+            /* 添加底部边框 */
             margin-bottom: 10px;
-            padding: 0 0 8px 0; /* 设置上右下左的内边距 */
-            outline: none;/* 移除输入框的默认外观 */
+            padding: 0 0 8px 0;
+            /* 设置上右下左的内边距 */
+            outline: none;
+            /* 移除输入框的默认外观 */
             background-image: url('static/user.svg');
-            background-size:auto;
-            background-position:left;
-            background-repeat:no-repeat;
+            background-size: auto;
+            background-position: left;
+            background-repeat: no-repeat;
             padding-left: 30px;
             padding-bottom: auto;
         }
 
-        .login-container form input[type="password"]{
-            display: block; /* 将输入框显示为块级元素 */
-            width: auto; /* 设置输入框宽度为父元素宽度 */
-            border: none; /* 移除边框 */
-            border-bottom: 1px solid #ccc; /* 添加底部边框 */
+        .login-container form input[type="password"] {
+            display: block;
+            /* 将输入框显示为块级元素 */
+            width: auto;
+            /* 设置输入框宽度为父元素宽度 */
+            border: none;
+            /* 移除边框 */
+            border-bottom: 1px solid #ccc;
+            /* 添加底部边框 */
             margin-bottom: 10px;
-            padding: 0 0 8px 0; /* 设置上右下左的内边距 */
-            outline: none;/* 移除输入框的默认外观 */
+            padding: 0 0 8px 0;
+            /* 设置上右下左的内边距 */
+            outline: none;
+            /* 移除输入框的默认外观 */
             background-image: url('static/user.svg');
-            background-size:auto;
-            background-position:left;
-            background-repeat:no-repeat;
+            background-size: auto;
+            background-position: left;
+            background-repeat: no-repeat;
             padding-left: 30px;
             padding-bottom: auto;
         }
-        
+
         .login-container form input[type="submit"] {
             margin-bottom: 10px;
             padding: 8px;
@@ -96,6 +109,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="login-container">
@@ -111,8 +125,9 @@
 </body>
 <script src="./js/login.js"></script>
 <script>
-    function goToReg(){
+    function goToReg() {
         window.location.href = "register";
     }
 </script>
+
 </html>
