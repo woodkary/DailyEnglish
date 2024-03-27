@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>打卡页面</title>
+
+</head>
+<body>
+
+<link rel="stylesheet" href="./css/myNavbar.css">
+<link rel="stylesheet" href="./css/signInPlan.css">
+
+<!-- Navigation bar -->
+<div class="navbar">
+
+    <a href="#" class="logo">每日英语</a>
+    <a href="#">首页</a>
+    <a href="#">关于</a>
+    <a href="#">成员管理</a>
+
+    <div class="dropdown">
+        <button class="dropbtn">发布任务</button>
+        <div class="dropdown-content">
+            <a href="#">考试</a>
+            <a href="signInPlan.html">打卡</a>
+            <a href="#">每日单词</a>
+        </div>
+    </div>
+    <div class="user-container">
+        <p class="username">用户名</p>
+        <img src="image/pikachu.jpg" alt="User Avatar" class="user-avatar">
+        <button type="button" class="logout-button"></button>
+    </div>
+</div>
+
+<h1>打卡计划</h1>
+
+<div class="container">
+    <label for="word-select">单词打卡选择：</label>
+    <select id="word-select">
+        <!-- Options go here -->
+    </select>
+
+    <label for="daily-words">每日打卡单词数：</label>
+    <div class="input-range-container">
+        <input type="number" id="daily-words">
+        <input type="range" id="daily-words-range">
+    </div>
+
+    <label for="review-words">每日复习单词数：</label>
+    <div class="input-range-container">
+        <input type="number" id="review-words">
+        <input type="range" id="review-words-range">
+    </div>
+
+    <label for="completed-days">打卡完成天数：</label>
+    <div class="input-range-container">
+        <input type="number" id="completed-days">
+        <input type="range" id="completed-days-range">
+    </div>
+
+    <label for="reminder-time">每日提醒打卡时间：</label>
+    <input type="time" id="reminder-time">
+
+    <label for="completion-date">完成日期：</label>
+    <input type="date" id="completion-date">
+
+    <button class="transparent-button">保存计划</button>
+</div>
+
+</body>
+<script src="./js/signInPlain.js"></script>
+</html>

@@ -1,0 +1,122 @@
+/* Style for the title */
+h1 {
+    font-size: 2em;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center; /* Center the title */
+}
+
+/* Style for the container */
+.container {
+    width: 80%; /* Specify a width */
+    margin: auto; /* Center the container */
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Style for the labels */
+.container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/* Style for the input fields and select boxes */
+.container input[type=number],
+    /* Style for the input-range-container */
+.input-range-container {
+    display: flex; /* Make the input and range on the same line */
+    align-items: center; /* Align the items vertically */
+    gap: 10px; /* Add some gap between the input and range */
+}
+
+/* Style for the range input field */
+.container input[type=range] {
+    flex-grow: 1; /* Let the range take the remaining space */
+    -webkit-appearance: none; /* Remove the default appearance */
+}
+
+/* Style for the track of the range */
+/* Style for the track of the range */
+.container input[type=range]::-webkit-slider-runnable-track {
+    height: 6px;
+    background: #ddd; /* The track color */
+    border-radius: 3px;
+}
+
+/* Style for the thumb of the range */
+.container input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Remove the default appearance */
+    width: 16px;
+    height: 16px;
+    background: #007bff; /* The thumb color */
+    border-radius: 50%;
+    margin-top: -5px; /* Align the thumb with the track */
+}
+
+/* Style for the filled part of the range */
+.container input[type=range]::-webkit-slider-runnable-track {
+    background: linear-gradient(to right, #007bff 0%, #007bff var(--value), #ddd var(--value), #ddd 100%);
+}
+
+.container input[type=range]::-moz-range-track {
+    background: linear-gradient(to right, #007bff 0%, #007bff var(--value), #ddd var(--value), #ddd 100%);
+}
+
+.container input[type=range]::-moz-range-progress {
+    background: #007bff; /* The filled color */
+}
+.container input[type=time],
+.container input[type=date],
+.container select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Style for the range input field */
+.container input[type=range] {
+    width: auto;
+}
+.transparent-button {
+    border: 1px solid white;
+    background-color: transparent;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.transparent-button:hover {
+    background-color: white;
+    color: black;
+}
+
+.transparent-button:active {
+    background-color: white;
+    color: black;
+}
+.transparent-button {
+      border: 1px solid white;
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 25%; /* 拉长按钮 */
+      display: block; /* 让按钮占据整行 */
+      margin: auto; /* 将按钮置于行中部 */
+      border-radius: 50px; /* 让按钮边框变为圆形 */
+  }
+
+.transparent-button:hover {
+    background-color: #030CC0;
+    color: white;
+}
+
+.transparent-button:active {
+    background-color: #1f009d;
+    color: white;
+}

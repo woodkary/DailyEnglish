@@ -1,0 +1,40 @@
+.transparent-button {
+    border: 1px solid white;
+    background-color: transparent;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.transparent-button:hover {
+    background-color: white;
+    color: black;
+}
+
+.transparent-button:active {
+    background-color: white;
+    color: black;
+}
+.transparent-button {
+    border: 1px solid white;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 25%; /* 拉长按钮 */
+    display: block; /* 让按钮占据整行 */
+    margin: auto; /* 将按钮置于行中部 */
+    border-radius: 50px; /* 让按钮边框变为圆形 */
+}
+
+.transparent-button:hover {
+    background-color: #030CC0;
+    color: white;
+}
+
+.transparent-button:active {
+    background-color: #1f009d;
+    color: white;
+}
