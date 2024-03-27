@@ -36,7 +36,7 @@ func main() {
 	r.Static("api/team_manager/js", "./static/js")
 	//重定向至登录页面
 	r.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "/api/team_manager/login")
+		c.Redirect(http.StatusMovedPermanently, "/api/team_manager/login.html")
 		//c.String(http.StatusOK, "Welcome to Daily English!")
 	})
 
@@ -84,7 +84,7 @@ func main() {
 	r.POST("/api/team_manager/login", func(c *gin.Context) {
 		type logdata struct {
 			Username string `json:"username"`
-			Pwd      string `json:"pwd"`
+			Pwd      string `json:"password"`
 		}
 		var data logdata
 		if err := c.ShouldBind(&data); err != nil {
@@ -97,7 +97,9 @@ func main() {
 		if controlsql.SearchUserByUsername(db, data.Username) {
 			if controlsql.CheckUser(db, data.Username, data.Pwd) {
 				c.JSON(http.StatusOK, gin.H{
+					"code":    "200",
 					"message": "登录成功",
+					"token":   "123456",
 				})
 
 			} else {
@@ -114,7 +116,7 @@ func main() {
 		c.File("./static/forgot_password.html")
 	})
 
-	r.Run(":9090")
+	r.Run(":8080")
 
 	users, err := controlsql.QueryUserInfo(db)
 	if err != nil {

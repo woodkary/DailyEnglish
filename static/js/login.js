@@ -1,4 +1,4 @@
-function login(){
+function login() {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
     const data = {
@@ -14,10 +14,10 @@ function login(){
     }).then(response => {
         return response.json();
     }).then(data => {
-        if (data.code === 200) {
+        if (data.code == 200) {
             console.log(data);
             sessionStorage.setItem("token", data.token);
-            window.location.href = "card.html";
+            window.location.href = "index";
         } else {
             var message = document.getElementById("verification-message");
             message.textContent = data.message;
