@@ -97,18 +97,18 @@ func main() {
 		}
 
 		if controlsql.SearchUserByUsername(db, data.Username) {
-			if controlsql.CheckUser(db, data.Username, data.Pwd) {
-				c.JSON(http.StatusOK, gin.H{
-					"message": "登录成功",
-				})
-
-			} else {
-				c.JSON(http.StatusUnauthorized, gin.H{
-					"error": "用户名或密码有误",
-				})
-			}
+			c.JSON(http.StatusForbidden, gin.H{
+				"error": "用户不存在",
+			})
+		} else if controlsql.CheckUser(db, data.Username, data.Pwd) {
+			c.JSON(http.StatusOK, gin.H{
+				"message": "登录成功",
+			})
+		} else {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "用户名或密码有误",
+			})
 		}
-
 	})
 
 	//忘记密码页面
