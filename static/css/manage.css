@@ -54,9 +54,14 @@ h1{
     color: #fff;
 }
 
-#button2{
+#button1{
     position: absolute;
     left: 3%;
+    top: 3%;
+}
+#button2{
+    position: absolute;
+    left: 13%;
     top: 3%;
 }
 
