@@ -9,6 +9,24 @@ import (
 	_ "github.com/go-sql-driver/mysql" // 导入 MySQL 驱动
 )
 
+// TODO
+// 按用户名查找用户是否存在，存在则返回true，不存在则返回false
+func SearchUserByUsername(db *sql.DB, username string) bool {
+	return true
+}
+
+// TODO
+// 向用户基础信息表插入用户信息
+func InsertUser(db *sql.DB, username string, pwd string, email string) error {
+	return nil
+}
+
+// TODO
+// 检查用户名和密码是否匹配，匹配则返回true，不匹配则返回false
+func CheckUser(db *sql.DB, username string, pwd string) bool {
+	return true
+}
+
 // InsertRandomData 向所有表中插入随机数据
 func InsertRandomData(db *sql.DB) error {
 	// 设置随机数种子
