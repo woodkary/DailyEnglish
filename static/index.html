@@ -79,10 +79,13 @@
              <!-- <p class="card-text">Card Text Here</p>
              <span class="card-subtitle">Card Subtitle</span> -->
              <div id="legend"></div>
-             <div class="pie-chart-container">
-                <canvas id="pie-chart"></canvas>
-            </div>
-    
+             <div id="tooltip" style="display: none;"></div>
+             <div class="card">
+                 <div class="pie-chart-container">
+                     <canvas id="pie-chart"></canvas>
+                     <div id="legend"></div>
+                 </div>
+                 </div>    
          </div>
      </div>
      <div class="card" id="card6">
@@ -111,92 +114,8 @@
         document.getElementById('card1').addEventListener('click', function() {  
             window.location.href = 'manage.html'; // 替换为你想要跳转的URL  
         });
-
-        const canvas = document.getElementById('pie-chart');
-        const ctx = canvas.getContext('2d');
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        const radius = Math.min(centerX, centerY);
-        const innerRadius = radius * 0.6; // 内部半径
-
-
-        // 后端提供的数据：未完成和已完成的数量
-        const unfinishedTasks = 20;
-        const finishedTasks = 80;
-
-        // 计算角度
-        const totalTasks = unfinishedTasks + finishedTasks;//总任务数
-        const unfinishedAngle = (Math.PI * 2 * unfinishedTasks) / totalTasks;//未完成任务的角度
-        const finishedAngle = (Math.PI * 2 * finishedTasks) / totalTasks;//已完成任务的角度
-
-        // 绘制饼图
-        function drawPieChart() {
-            // 绘制未完成部分
-            ctx.beginPath();
-            ctx.moveTo(centerX + innerRadius * Math.cos(-Math.PI / 2), centerY + innerRadius * Math.sin(-Math.PI / 2));
-            ctx.arc(centerX, centerY, innerRadius, -Math.PI / 2, -Math.PI / 2 + unfinishedAngle);
-            ctx.lineTo(centerX + radius * Math.cos(-Math.PI / 2 + unfinishedAngle), centerY + radius * Math.sin(-Math.PI / 2 + unfinishedAngle));
-            ctx.arc(centerX, centerY, radius, -Math.PI / 2 + unfinishedAngle, -Math.PI / 2, true);
-            ctx.closePath();
-            ctx.lineWidth = 3; // 设置边框宽度
-            ctx.strokeStyle = '#FFFFFF'; // 设置边框颜色
-            ctx.stroke(); // 绘制边框
-            ctx.fillStyle = '#FFE76F'; // 未完成部分的颜色，灰蓝色
-            ctx.fill();
-
-
-            // 绘制已完成部分
-            ctx.beginPath();
-            ctx.moveTo(centerX + innerRadius * Math.cos(-Math.PI / 2 + unfinishedAngle), centerY + innerRadius * Math.sin(-Math.PI / 2 + unfinishedAngle));
-            ctx.arc(centerX, centerY, innerRadius, -Math.PI / 2 + unfinishedAngle, -Math.PI / 2 + unfinishedAngle + finishedAngle);
-            ctx.lineTo(centerX + radius * Math.cos(-Math.PI / 2 + unfinishedAngle + finishedAngle), centerY + radius * Math.sin(-Math.PI / 2 + unfinishedAngle + finishedAngle));
-            ctx.arc(centerX, centerY, radius, -Math.PI / 2 + unfinishedAngle + finishedAngle, -Math.PI / 2 + unfinishedAngle, true);
-            ctx.closePath();
-            ctx.lineWidth = 3; // 设置边框宽度
-            ctx.strokeStyle = '#FFFFFF'; // 设置边框颜色
-            ctx.stroke(); // 绘制边框
-            ctx.fillStyle = '#002EA6'; // 已完成部分的颜色，蓝色
-            ctx.fill();
-
-            // 添加事件监听器来检测鼠标悬停
-            canvas.addEventListener('mousemove', handleMouseMove);
-            canvas.addEventListener('mouseout', handleMouseOut);
-        }
-
-        // 绘制图例
-        const legend = document.getElementById('legend');
-        legend.innerHTML = `
-        <div class="legend-item">
-        <span class="unfinished-color"></span>未完成今日任务
-        </div>
-        <div class="legend-item">
-            <span class="finished-color"></span>已完成今日任务
-        </div>
-        `;
-
-        // 处理鼠标悬停事件
-        function handleMouseMove(event) {
-
-        }
-
-
-
-        // 处理鼠标移出事件
-        function handleMouseOut() {
-            hideTooltip();
-        }
-
-        // 显示提示框
-        function showTooltip(label, percentage, x, y) {
-
-        }
-
-        // 隐藏提示框
-        function hideTooltip() {
-
-        }
-
-        drawPieChart();
     </script>
+
+        <script src="js/pieChart.js"></script>
 </body>
 </html>
