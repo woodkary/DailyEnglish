@@ -116,7 +116,7 @@ func main() {
 		c.File("./static/forgot_password.html")
 	})
 
-	r.Run(":9090")
+	r.Run(":8080")
 
 	users, err := controlsql.QueryUserInfo(db)
 	if err != nil {
