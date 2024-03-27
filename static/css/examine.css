@@ -91,3 +91,7 @@ th, td {
 .list4{
     width: 15%;
 }
+
+.button-spacing {
+    margin-right: 10px; /* 使用适当的间距值 */
+  }

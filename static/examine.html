@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/examine.css">
     <link rel="stylesheet" type="text/css" href="./css/myNavbar.css">
-    <title>成员管理</title>
+    <title>成员审核</title>
 
 </head>
 <body>
@@ -45,7 +45,7 @@
             <tr>
                 <th class="list1">成员名称</th>
                 <th class="list2">加入时间</th>
-                <th class="list3">累计打卡</th>
+                <th class="list3">邮箱</th>
                 <th class="list4">操作</th>
             </tr>
             </thead>
@@ -56,71 +56,119 @@
     </div>
 
     <script>  
-     
-
         // 假设这是从后台获取的数据，初始为空数组  
         var data = [];  
-          
+        var token='sdadasdsa';
         // 这是自己填的数据，不知道实际能不能用  
         var defaultData = [  
-            { "username": "abc", "RegisterDate": "2024.1.2", "attendance": "121", "operation": "详情" },  
-            { "username": "123", "RegisterDate": "2024.1.2", "attendance": "101", "operation": "详情" },  
-            { "username": "556", "RegisterDate": "2024.1.2", "attendance": "212", "operation": "详情" },  
-            { "username": "bce", "RegisterDate": "2024.1.2", "attendance": "111", "operation": "详情" },  
-            { "username": "jds", "RegisterDate": "2024.1.2", "attendance": "123", "operation": "详情" }
+            { "username": "abc", "RegisterDate": "2024.1.2", "email": "12345678@qq.com", "operation": "通过" },  
+            { "username": "123", "RegisterDate": "2024.1.2", "email": "12345678@qq.com", "operation": "通过" },  
+            { "username": "556", "RegisterDate": "2024.1.2", "email": "12345678@qq.com", "operation": "通过" },  
+            { "username": "bce", "RegisterDate": "2024.1.2", "email": "12345678@qq.com", "operation": "通过" },  
+            { "username": "jds", "RegisterDate": "2024.1.2", "email": "12345678@qq.com", "operation": "通过" }
         ];  
-          
+        
+        fetch('http://localhost:8080/api/team_manage/all_managements', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'token':token
+        },
+    }).then(response => {
+        return response.json();
+    }).then(responsedata => {
+        if (responsedata.code === 200) {
+            console.log(responsedata);
+            var members=responsedata.members;
+            members.forEach(member =>{
+                let username=member.username;
+                let join_time=member.join_time;
+                let sign_in=member.sign_in;
+                let email=member.email;
+                let phone_number=member.phone_number;
+            }
+            )
+            sessionStorage.setItem("token", responsedata.token);
+            fillTable(members, tbody);
+        } else {
+            var message = document.getElementById("verification-message");
+            message.textContent = responsedata.message;
+            message.style.color = "red";
+            fillTable(defaultData, tbody);
+        }
+    }).catch(error => {  
+        console.error('There has been a problem with your fetch operation:', error);   
+        fillTable(defaultData, tbody);
+    });  
+  
         // 获取tbody元素  
         var tbody = document.getElementById('userList');  
           
-        // 如果没有从后台获取到数据，则使用默认数据  
-        if (data.length === 0) {  
-            data = defaultData;  
-        }  
-          
+        function fillTable(data, tbody) {
+        tbody.innerHTML = "";
+
         // 遍历数据并创建表格行    
-        data.forEach(function(item) {    
+        data.forEach(member => {    
         var tr = document.createElement('tr');    
-        var tdName = document.createElement('td');    
-        var tdJoinTime = document.createElement('td');    
-        var tdAttendance = document.createElement('td');    
+        var tdusername = document.createElement('td');    
+        var tdRegisterDate = document.createElement('td');    
+        var tdemail = document.createElement('td');    
         var tdOperation = document.createElement('td');    
         
-        tdName.className = 'list1';    
-        tdJoinTime.className = 'list1';    
-        tdAttendance.className = 'list1';    
+        tdusername.className = 'list1';    
+        tdRegisterDate.className = 'list1';    
+        tdemail.className = 'list1';    
         tdOperation.className = 'list1';    
   
-        tdName.textContent = item.username;    
-        tdJoinTime.textContent = item.RegisterDate;    
-        tdAttendance.textContent = item.attendance;  // 确保数据项中有attendance属性  
+        tdusername.textContent = member.username;    
+        tdRegisterDate.textContent = member.RegisterDate;    
+        tdemail.textContent = member.email;  // 确保数据项中有attendance属性  
         
-        // 创建按钮元素并设置文本内容  
-        var operationButton = document.createElement('button');  
-        operationButton.textContent = item.operation; // 假设item.operation是按钮上应该显示的文本  
-        operationButton.addEventListener('click', function() {  
-            // 这里是按钮点击时应该执行的代码  
-            // 例如，可以调用一个处理函数并传递当前行的数据或执行其他逻辑  
-            handleButtonClick(item);  
-        });  
+        // 创建通过按钮
+        var approveButton = document.createElement('button');  
+        approveButton.textContent = '同意';
+        approveButton.className = 'button-spacing'; 
+        approveButton.addEventListener('click', function() {  
+           // 处理通过按钮点击事件
+            handleApproveClick(member);
+        });
+
+        // 创建拒绝按钮
+        var rejectButton = document.createElement('button');  
+        rejectButton.textContent = '拒绝';
+        rejectButton.className = 'button-spacing'; 
+        rejectButton.addEventListener('click', function() {  
+           // 处理拒绝按钮点击事件
+           handleRejectClick(member);
+        });
+
+        // 创建操作单元格并将按钮添加到其中
+        var tdOperation = document.createElement('td');
+        tdOperation.className = 'list1';
+        tdOperation.appendChild(approveButton);
+        tdOperation.appendChild(rejectButton);
+    
         
-        // 将按钮添加到操作单元格中  
-        tdOperation.appendChild(operationButton);    
-        
-        tr.appendChild(tdName);    
-        tr.appendChild(tdJoinTime);    
-        tr.appendChild(tdAttendance);    
+        tr.appendChild(tdusername);    
+        tr.appendChild(tdRegisterDate);    
+        tr.appendChild(tdemail);    
         tr.appendChild(tdOperation);    
         
         tbody.appendChild(tr);    
 });    
-  
+}
 // 按钮点击事件处理函数  
-function handleButtonClick(item) {  
+function handleApproveClick(member) {  
     // 在这里处理按钮点击事件，比如弹出一个对话框显示用户详情  
-    alert('用户详情: ' + item.username);  
+    alert(member.username+'审核通过');  
     // 还可以根据需要进行其他操作，比如发送请求到服务器获取更多信息
 }
+function handleRejectClick(member) {  
+    // 在这里处理按钮点击事件，比如弹出一个对话框显示用户详情  
+    alert('拒绝'+member.username+'通过审核');  
+    // 还可以根据需要进行其他操作，比如发送请求到服务器获取更多信息
+}
+
         </script>  
 </body>
 </html>
