@@ -48,21 +48,29 @@ func main() {
 
 	//注册接口
 	r.POST("/api/team_manager/register", func(c *gin.Context) {
-		var user controlsql.UserInfo
-		if err := c.ShouldBind(&user); err != nil {
+		type regdata struct {
+			Username   string `json:"username"`
+			Pwd        string `json:"pwd"`
+			Email      string `json:"email"`
+			VerifyCode string `json:"verify_code"`
+		}
+		var data regdata
+		if err := c.ShouldBind(&data); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),
 			})
 			return
 		}
-		if controlsql.QueryUserInfo(db) == nil {
-			if controlsql.InsertUser(db, user) {
+		if controlsql.SearchUserByUsername(db, data.Username) {
+			//TODO
+			//验证码还妹搞
+			if controlsql.InsertUser(db, data.Username, data.Pwd, data.Email) != nil {
 				c.JSON(http.StatusOK, gin.H{
-					"message": "Register success",
+					"message": "注册成功",
 				})
 			} else {
 				c.JSON(http.StatusConflict, gin.H{
-					"error": "Username already exists",
+					"error": "用户已注册",
 				})
 			}
 		}
@@ -75,23 +83,27 @@ func main() {
 
 	//登录接口
 	r.POST("/api/team_manager/login", func(c *gin.Context) {
-		var user controlsql.UserInfo
-		if err := c.ShouldBind(&user); err != nil {
+		type logdata struct {
+			Username string `json:"username"`
+			Pwd      string `json:"pwd"`
+		}
+		var data logdata
+		if err := c.ShouldBind(&data); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),
 			})
 			return
 		}
 
-		if controlsql.QueryUserInfo(db) == nil {
-			if controlsql.CheckUser(db, user.Username, user.Pwd) {
+		if controlsql.SearchUserByUsername(db, data.Username) {
+			if controlsql.CheckUser(db, data.Username, data.Pwd) {
 				c.JSON(http.StatusOK, gin.H{
-					"message": "Login success",
+					"message": "登录成功",
 				})
 
 			} else {
 				c.JSON(http.StatusUnauthorized, gin.H{
-					"error": "Username or password error",
+					"error": "用户名或密码有误",
 				})
 			}
 		}
