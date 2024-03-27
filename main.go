@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -21,15 +22,14 @@ func main() {
 	defer db.Close()
 
 	//redis连接
-	// client := redis.NewClient(&redis.Options{
-	// 	Addr:     "r-bp1jdmrszl1yd6xxdipd.redis.rds.aliyuncs.com:6379", // Redis 服务器地址
-	// 	Password: "MIMAhezhanghao1yang",                                // Redis 服务器密码
-	// 	DB:       255,                                                  // 使用的 Redis 数据库编号
-	// })
-	// pong, err := client.Ping().Result()
-	// fmt.Println(pong, err)
-	// defer client.Close()
+	client := redis.NewClient(&redis.Options{
+		Addr:     "r-bp1jdmrszl1yd6xxdipd.redis.rds.aliyuncs.com:6379", // Redis 服务器地址
+		Password: "MIMAhezhanghao1yang",                                // Redis 服务器密码
+		DB:       255,                                                  // 使用的 Redis 数据库编号
+	})
 
+	defer client.Close()
+	controlsql.StoreTeamInfoRedis(client, "游戏大佬", "1", []string{"123456"}, "2024/3/28")
 	r := gin.Default()
 	r.Static("api/team_manager/static", "./static")
 	r.Static("api/team_manager/css", "./static/css")
@@ -119,6 +119,16 @@ func main() {
 	//忘记密码页面
 	r.GET("/api/team_manager/forgot_password", func(c *gin.Context) {
 		c.File("./static/forgot_password.html")
+	})
+	r.GET("/api/team_manager/index", func(c *gin.Context) {
+		//@TODO
+		//添加token验证机制
+		c.File("./static/index.html")
+	})
+	r.GET("/api/team_manager/index/data", func(c *gin.Context) {
+		//@TODO
+		//添加发送前端需要的json数据
+		c.JSON(200, gin.H{"code": "200", "msg": "成功", "completed": 80, "uncompleted": 20, "exam": "exam"})
 	})
 	r.Run(":8080")
 
