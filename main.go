@@ -115,7 +115,6 @@ func main() {
 	r.GET("/api/team_manager/forgot_password", func(c *gin.Context) {
 		c.File("./static/forgot_password.html")
 	})
-
 	r.Run(":8080")
 
 	users, err := controlsql.QueryUserInfo(db)
