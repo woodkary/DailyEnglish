@@ -98,3 +98,33 @@
     border: none;
     cursor: pointer;
 }
+/* Style for user container */
+.user-container {
+    float: right;
+    display: flex;
+    align-items: center;
+}
+
+/* Style for username */
+.user-container .username {
+    font-family: "FZHanZhenGB-GB", serif; /* 设置字体为方正汉真广标 */
+    color: white;
+    margin-right: 10px;
+}
+
+/* Style for user avatar */
+.user-container .user-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+/* Style for logout button */
+.user-container .logout-button {
+    padding: 10px;
+    background: url('../image/logoutButton.png') no-repeat center center; /* 设置背景图片 */
+    background-size: cover; /* 让背景图片完全覆盖按钮 */
+    border: none;
+    cursor: pointer;
+}
