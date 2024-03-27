@@ -9,21 +9,29 @@ import (
 	_ "github.com/go-sql-driver/mysql" // 导入 MySQL 驱动
 )
 
-// TODO
-// 按用户名查找用户是否存在，存在则返回true，不存在则返回false
+// SearchUserByUsername 按用户名查找用户是否存在，存在则返回true，不存在则返回false
 func SearchUserByUsername(db *sql.DB, username string) bool {
-	return true
+	var exists bool
+	err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM user_info WHERE username = ?)", username).Scan(&exists)
+	if err != nil {
+		return false // 查询过程中出现错误，假定用户不存在
+	}
+	return exists
 }
 
-// TODO
-// 向用户基础信息表插入用户信息
+// InsertUser 向用户基础信息表插入用户信息
 func InsertUser(db *sql.DB, username string, pwd string, email string) error {
-	return nil
+	_, err := db.Exec("INSERT INTO user_info (username, pwd, email) VALUES (?, ?, ?)", username, pwd, email)
+	return err
 }
 
-// TODO
-// 检查用户名和密码是否匹配，匹配则返回true，不匹配则返回false
+// CheckUser 检查用户名和密码是否匹配，匹配则返回true，不匹配则返回false
 func CheckUser(db *sql.DB, username string, pwd string) bool {
+	var count int
+	err := db.QueryRow("SELECT COUNT(*) FROM user_info WHERE username = ? AND pwd = ?", username, pwd).Scan(&count)
+	if err != nil || count != 1 {
+		return false
+	}
 	return true
 }
 

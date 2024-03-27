@@ -38,7 +38,7 @@ func main() {
 
 	//重定向至登录页面
 	r.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "/api/team_manager/login")
+		c.Redirect(http.StatusMovedPermanently, "/api/team_manager/login.html")
 		//c.String(http.StatusOK, "Welcome to Daily English!")
 	})
 
@@ -79,7 +79,7 @@ func main() {
 
 	//登录页面
 	r.GET("/api/team_manager/login", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "./static/login.html", nil)
+		c.File("./static/login.html")
 	})
 
 	//登录接口
