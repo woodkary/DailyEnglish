@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -22,14 +21,14 @@ func main() {
 	defer db.Close()
 
 	//redis连接
-	client := redis.NewClient(&redis.Options{
-		Addr:     "r-bp1jdmrszl1yd6xxdipd.redis.rds.aliyuncs.com:6379", // Redis 服务器地址
-		Password: "MIMAhezhanghao1yang",                                // Redis 服务器密码
-		DB:       255,                                                  // 使用的 Redis 数据库编号
-	})
-	pong, err := client.Ping().Result()
-	fmt.Println(pong, err)
-	defer client.Close()
+	// client := redis.NewClient(&redis.Options{
+	// 	Addr:     "r-bp1jdmrszl1yd6xxdipd.redis.rds.aliyuncs.com:6379", // Redis 服务器地址
+	// 	Password: "MIMAhezhanghao1yang",                                // Redis 服务器密码
+	// 	DB:       255,                                                  // 使用的 Redis 数据库编号
+	// })
+	// pong, err := client.Ping().Result()
+	// fmt.Println(pong, err)
+	// defer client.Close()
 
 	r := gin.Default()
 	r.Static("api/team_manager/static", "./static")
@@ -78,7 +77,7 @@ func main() {
 
 	//登录页面
 	r.GET("/api/team_manager/login", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "./static/login.html", nil)
+		c.File("./static/login.html")
 	})
 
 	//登录接口

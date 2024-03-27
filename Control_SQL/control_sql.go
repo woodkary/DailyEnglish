@@ -10,13 +10,22 @@ import (
 )
 
 // TODO
-func SearchUserByUsername(db *sql.DB, username string) bool {} //按用户名查找用户是否存在，存在则返回true，不存在则返回false
+// 按用户名查找用户是否存在，存在则返回true，不存在则返回false
+func SearchUserByUsername(db *sql.DB, username string) bool {
+	return true
+}
 
 // TODO
-func InsertUser(db *sql.DB, username string, pwd string, email string) error {} //向用户基础信息表插入用户信息
+// 向用户基础信息表插入用户信息
+func InsertUser(db *sql.DB, username string, pwd string, email string) error {
+	return nil
+}
 
 // TODO
-func CheckUser(db *sql.DB, username string, pwd string) bool {} //检查用户名和密码是否匹配，匹配则返回true，不匹配则返回false
+// 检查用户名和密码是否匹配，匹配则返回true，不匹配则返回false
+func CheckUser(db *sql.DB, username string, pwd string) bool {
+	return true
+}
 
 // InsertRandomData 向所有表中插入随机数据
 func InsertRandomData(db *sql.DB) error {
