@@ -1,13 +1,6 @@
-<!--
- * @Author: ccyfifi
- * @Date: 2024-03-26 10:46:51
- * @LastEditors: cyf 
- * @LastEditTime: 2024-03-26 11:08:24
- * @Description: 保佑代码不出bug
- * 
--->
 <!DOCTYPE html>
 <html lang="en">
+
 
 <head>
     <meta charset="UTF-8">
@@ -15,119 +8,69 @@
     <title>Login</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-
-        .container {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
+            background-image: url("./image/multi_pikachu.jpg");
+            background-size: cover;
+            
         }
 
-        .login-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 0px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        #big-card {
+            width: 500px;
         }
 
-        .login-container h2 {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .login-container .formDiv {
+        #login-form {
             display: flex;
             flex-direction: column;
+            align-items: center;
+            margin-top: 0px;
         }
 
-        .login-container form input[type="text"] {
-            display: block;
-            /* 将输入框显示为块级元素 */
-            width: auto;
-            /* 设置输入框宽度为父元素宽度 */
-            border: none;
-            /* 移除边框 */
-            border-bottom: 1px solid #ccc;
-            /* 添加底部边框 */
-            margin-bottom: 10px;
-            padding: 0 0 8px 0;
-            /* 设置上右下左的内边距 */
-            outline: none;
-            /* 移除输入框的默认外观 */
-            background-image: url('static/user.svg');
-            background-size: auto;
-            background-position: left;
-            background-repeat: no-repeat;
-            padding-left: 30px;
-            padding-bottom: auto;
+        .card {
+            transition:none;
+            padding:0px;
         }
 
-        .login-container form input[type="password"] {
-            display: block;
-            /* 将输入框显示为块级元素 */
-            width: auto;
-            /* 设置输入框宽度为父元素宽度 */
-            border: none;
-            /* 移除边框 */
-            border-bottom: 1px solid #ccc;
-            /* 添加底部边框 */
-            margin-bottom: 10px;
-            padding: 0 0 8px 0;
-            /* 设置上右下左的内边距 */
-            outline: none;
-            /* 移除输入框的默认外观 */
-            background-image: url('static/user.svg');
-            background-size: auto;
-            background-position: left;
-            background-repeat: no-repeat;
-            padding-left: 30px;
-            padding-bottom: auto;
-        }
-
-        .login-container form input[type="submit"] {
-            margin-bottom: 10px;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 0px;
-            outline: none;
-        }
-
-        .login-container .formDiv input[type="submit"] {
-            background-color: #007bff;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        /* 悬停按钮 */
-        .login-container form input[type="submit"]:hover {
-            background-color: #0056b3;
+        .card:hover {
+            transform: none !important;
+            box-shadow: none !important;
         }
     </style>
+    <link rel="stylesheet" href="./css/myButton.css">
+    <link rel="stylesheet" href="./css/card.css">
+
 </head>
 
+
 <body>
-    <div class="container">
-        <div class="login-container">
-            <h2>Login</h2>
-            <div class="formDiv">
-                <input type="text" name="username" id="username" placeholder="Username" required>
-                <input type="password" name="password" id="password" placeholder="Password" required>
-                <input type="submit" onclick="login()" value="Login">
-            </div>
-            <p onclick=goToReg()>忘记密码？</p>
+    <div class="card" id="big-card" style="border: 0px solid;background: transparent;">
+        <div class="card" id="pic" style="width:200px;height:200px;">
+            <img src="./image/pikachu.jpg" alt="皮神保佑" style="width: 200px; height: 200px;">
         </div>
+        <div class="card" id="login-form" style="width: 200px;height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <div class="title" style="text-align: center; font-weight: bold; text-decoration: underline; font-size: larger;">欢迎登录</div>
+            <form id="login-form-fields" style="display: flex; flex-direction: column; align-items: center;">
+                <input type="text" id="username" name="username" placeholder="请输入账号" required style="border: none; border-bottom: 1px solid #ccc; margin-bottom: 20px;margin-top:20px;">
+                <input type="password" id="password" name="password" placeholder="请输入密码" required style="border: none; border-bottom: 1px solid #ccc; margin-bottom: 0px;">
+        
+                <div class="remember-me" style="margin-right:auto; font-size: x-small;margin-bottom: 14px;">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">记住密码</label>
+                </div>
+        
+                <button type="submit" style="width:160px;" onclick="login()">登录</button>
+            </form>
+            <div class="forgot-password" style="align-self: flex-end;">
+                <a href="#" style="font-size: smaller;">忘记密码？</a>
+            </div>
+        </div>
+        
+        
     </div>
 </body>
 <script src="./js/login.js"></script>
-<script>
-    function goToReg() {
-        window.location.href = "register";
-    }
-</script>
 
 </html>
