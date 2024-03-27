@@ -1,88 +1,93 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/examine.css">
-    <link rel="stylesheet" type="text/css" href="./css/myNavbar.css">
-    <title>成员管理</title>
+body{
+    background-color: rgba(0,0,0,0.03);
+}
+h1{
+    text-align: center;
+}
+.search-container2 {
+    position: relative;
+    width: 250px;
+    margin: 20px auto; /* 居中显示 */
+}
+.search-input {
+    width: 100%;
+    padding: 5px 10px;
+    border: 1px solid #030cc0;
+    border-radius: 5px;
+    box-sizing: border-box; /* 确保padding不会增加元素的总宽度 */
+}
+.search-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 50px; /* 调整按钮宽度 */
+    background-color: #030cc0; /* 设置按钮背景颜色 */
+    color: white;
+    border: none;
+    border-radius: 0 5px 5px 0; /* 圆角与搜索框保持一致 */
+    cursor: pointer;
+}
+.search-button:hover {
+    background-color: #5d64e6; /* 鼠标悬停时的背景颜色 */
+}
 
-</head>
-<body>
-    <div class="navbar">
-    
-        <a href="#" class="logo">每日英语</a>
-        <a href="index.html">首页</a>
-        <a href="#">关于</a>
-        <a href="#">联系我们</a>
-    
-    <div class="dropdown">
-        <button class="dropbtn">发布任务</button>
-        <div class="dropdown-content">
-            <a href="#">考试</a>
-            <a href="#">作业</a>
-            <a href="#">每日单词</a>
-        </div>
-    </div>
-    <div class="search-container">
-        <form action="#">
-            <input type="text" placeholder="Search.." name="search">
-            <button type="submit">搜索</button>
-        </form>
-    </div>
-</div>
-    <div class="background">
-    <h1>成员审核</h1> 
-    <div class="search-container2">  
-        <input type="text" class="search-input" placeholder="申请用户查询">  
-        <button class="search-button" onclick="searchFunction()">搜索</button>  
-    </div> 
+.box{
+    position:absolute;
+    width: 80%;
+    height: 60%;
+    top: 30%;
+    left: 10%;
+    border: 1px solid #ddd;/*边框*/
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),/*下边阴影*/
+    4px 0 4px rgba(0, 0, 0, 0.1); /* 右边阴影 */
+    padding: 20px;/*内边距*/
+    border-radius: 15px;/*圆角设置*/
+    background-color: #fff;
+}
 
-    <div class="box">
-        <button class="button" id="button2">团队扩容申请</button>
-        <table>
-            <thead>
-            <tr>
-                <th class="list1">成员名称</th>
-                <th class="list2">加入时间</th>
-                <th class="list3">累计打卡</th>
-                <th class="list4">操作</th>
-            </tr>
-            </thead>
-            <tbody id="userList">
-            
-            </tbody>
-        </table>
-    </div>
+.button{
+    width: 8%;
+    height: 7%;
+    background-color: #030cc0;
+    border-radius: 10px;/*圆角设置*/
+    color: #fff;
+}
 
-    <script>  
-     
+#button2{
+    position: absolute;
+    left: 3%;
+    top: 3%;
+}
 
-     window.addEventListener('load', fetchUsers);
-    function fetchUsers() {
-        // 发起请求获取数据
-        fetch('/data')
-            .then(response => response.json()) // 解析响应为JSON
-            .then(users => {
-                const userList = document.getElementById('userList'); // 获取用户列表元素
-                userList.innerHTML = ""//清理列表
-                users.forEach(user => {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                    <td>${user.userID}</td>
-                    <td>${user.username}</td>
-                    <td>${user.status}</td>
-                    <td>
-                        <button class="enable" onclick="updateStatus(${user.userID},true)">同意</button>
-                        <button class="disable" onclick="updateStatus(${user.userID},false)">拒绝</button>
-                    </td>
+.button:hover {
+    background-color: #5d64e6; /* 鼠标悬停时的背景颜色 */
+}
 
-                `;
-                    userList.appendChild(row);
-                });
-            })
-            .catch(error => console.error('Error:', error)); // 处理任何错误
-    }
-        </script>  
-</body>
-</html>
+table {
+    position: absolute;
+    top: 15%;
+    left: 2%;
+    width: 90%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+th, td {
+    border: 1px solid #e6e6e6;
+    height: 40px;
+    padding: 8px;
+    text-align: left;
+    background-color: white;
+}
+.list1{
+    width: 30%;
+}
+.list2{
+    width: 30%;
+}
+.list3{
+    width: 25%;
+}
+.list4{
+    width: 15%;
+}
