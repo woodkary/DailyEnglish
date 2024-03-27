@@ -8,7 +8,8 @@ import (
 
 	_ "github.com/go-sql-driver/mysql" // 导入 MySQL 驱动
 )
-
+//TODO
+SearchUserByUsername(db *sql.DB,username string)bool;//根据用户名查用户是否存在，不存在返回false，存在返回true
 // InsertRandomData 向所有表中插入随机数据
 func InsertRandomData(db *sql.DB) error {
 	// 设置随机数种子
