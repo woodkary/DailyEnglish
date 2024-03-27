@@ -65,10 +65,12 @@ func main() {
 			//验证码还妹搞
 			if controlsql.InsertUser(db, data.Username, data.Pwd, data.Email) != nil {
 				c.JSON(http.StatusOK, gin.H{
+					"code":    "200",
 					"message": "注册成功",
 				})
 			} else {
 				c.JSON(http.StatusConflict, gin.H{
+					"code":  "409",
 					"error": "用户已注册",
 				})
 			}
@@ -89,6 +91,7 @@ func main() {
 		var data logdata
 		if err := c.ShouldBind(&data); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
+				"code":  "400",
 				"error": err.Error(),
 			})
 			return
@@ -102,10 +105,12 @@ func main() {
 			})
 		} else if controlsql.CheckUser(db, data.Username, data.Pwd) {
 			c.JSON(http.StatusOK, gin.H{
+				"code":    "200",
 				"message": "登录成功",
 			})
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{
+				"code":  "401",
 				"error": "用户名或密码有误",
 			})
 		}
