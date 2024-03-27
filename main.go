@@ -3,6 +3,7 @@ package main
 import (
 	controlsql "DailyEnglish/Control_SQL"
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -18,7 +19,6 @@ func main() {
 		log.Fatal(er)
 	}
 	defer db.Close()
-	controlsql.QueryTables(db)
 
 	r := gin.Default()
 	r.Static("api/team_manager/static", "./static")
@@ -43,22 +43,27 @@ func main() {
 
 	//登录接口
 	r.POST("/api/team_manager/login", func(c *gin.Context) {
-		var user controlsql.User
+		var user controlsql.UserInfo
 		if err := c.ShouldBind(&user); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),
 			})
 			return
 		}
-		if controlsql.Login(user.Username, user.Password) {
-			c.JSON(http.StatusOK, gin.H{
-				"message": "Login success",
-			})
-		} else {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Username or password error",
-			})
-		}
+		/*
+			if controlsql.QueryUserInfo(db) == nil {
+				if controlsql.CheckUser(db, user.Username, user.Password) {
+					c.JSON(http.StatusOK, gin.H{
+						"message": "Login success",
+					})
+
+				} else {
+					c.JSON(http.StatusUnauthorized, gin.H{
+						"error": "Username or password error",
+					})
+				}
+			}
+		*/
 	})
 
 	//忘记密码页面
@@ -67,4 +72,12 @@ func main() {
 	})
 
 	r.Run(":9090")
+
+	users, err := controlsql.QueryUserInfo(db)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for i := 0; i < len(users); i++ {
+		fmt.Println(users[i])
+	}
 }
