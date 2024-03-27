@@ -3,6 +3,7 @@ package main
 import (
 	controlsql "DailyEnglish/Control_SQL"
 	"database/sql"
+	"fmt"
 	"log"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -14,6 +15,11 @@ func main() {
 		log.Fatal(er)
 	}
 	defer db.Close()
-	controlsql.QueryTables(db)
-
+	users, err := controlsql.QueryUserInfo(db)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for i := 0; i < len(users); i++ {
+		fmt.Println(users[i])
+	}
 }
