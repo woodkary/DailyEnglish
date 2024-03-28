@@ -2,6 +2,8 @@ package main
 
 import (
 	controlsql "DailyEnglish/Control_SQL"
+
+	service "DailyEnglish/service"
 	"database/sql"
 	"fmt"
 	"log"
@@ -34,6 +36,9 @@ func main() {
 	r.Static("api/team_manager/static", "./static")
 	r.Static("api/team_manager/css", "./static/css")
 	r.Static("api/team_manager/js", "./static/js")
+
+	service.TestAES()
+
 	//重定向至登录页面
 	r.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/static/login")
