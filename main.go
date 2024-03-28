@@ -39,7 +39,7 @@ func main() {
 	r.Static("api/team_manager/static", "./static")
 	r.Static("api/team_manager/css", "./static/css")
 	r.Static("api/team_manager/js", "./static/js")
-	r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html")
+	r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html", "./static/404.html")
 
 	service.TestAES()
 
@@ -81,9 +81,9 @@ func main() {
 	})
 
 	//404页面
-	//r.NoRoute(func(c *gin.Context) {
-	//	c.File("./static/login.html")
-	//})
+	r.NoRoute(func(c *gin.Context) {
+		c.File("./static/404.html")
+	})
 
 	//重定向至登录页面
 	r.GET("/", func(c *gin.Context) {
