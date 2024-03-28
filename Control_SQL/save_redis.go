@@ -6,10 +6,8 @@ import (
 	"github.com/go-redis/redis" // 导入 redis 驱动
 )
 
-// //////////////////////////////////////////////////////////////
-// nosql
 // StoreTeamInfoRedis 存储团队信息到 Redis，包括团队名（主键）、团队ID、团队成员的用户名和临近的考试ID
-func StoreTeamInfoRedis(client *redis.Client, teamName, teamID string, members []string, upcomingExamID string) error {
+func SaveTeam(client *redis.Client, teamName, teamID string, members []string, upcomingExamID string) error {
 
 	// 存储团队名（主键）
 	err := client.Set(fmt.Sprintf("Team:%s:Name", teamID), teamName, 0).Err()
@@ -64,7 +62,6 @@ func SaveScores(client *redis.Client, examID, examName string, teams map[string]
 	return nil
 }
 
-// SaveExam 保存考试信息到 Redis
 // SaveExam 保存考试信息到 Redis
 func SaveExam(client *redis.Client, examID, examName, examDate string, numOfQuestions int) error {
 
