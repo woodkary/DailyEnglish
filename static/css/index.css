@@ -8,9 +8,10 @@ h1 {
 
 /* Card 容器样式 */
 .card {
+    margin: 1%;
     border: 1px solid #ddd;
     /*边框*/
-    border-radius: 0px;
+    border-radius: 0;
     /*圆角设置*/
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),
         /*下边阴影*/
@@ -140,7 +141,7 @@ h1 {
     border-radius: 50%;
     /* 将容器变成圆形 */
     left: 50%;
-    top: 10%;
+    top: 0;
     position: absolute;
     /* 相对定位，用于定位饼图的中心 */
 }
@@ -156,14 +157,14 @@ h1 {
 .legend-item {
 
     margin-bottom: 5px;
-    font-size: 20px;
+    font-size: 10px;
     /*图例字体大小*/
 }
 
 .legend-item span {
     display: inline-block;
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     margin-right: 2px;
     border-radius: 50%;
     /*圆形图例*/
