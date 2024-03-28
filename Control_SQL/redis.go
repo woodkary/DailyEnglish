@@ -2,7 +2,6 @@ package controlsql
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/go-redis/redis" // 导入 redis 驱动
 )
@@ -66,15 +65,8 @@ func SaveScores(client *redis.Client, examID, examName string, teams map[string]
 }
 
 // SaveExam 保存考试信息到 Redis
-
-type Question struct {
-	Description string // 题目描述
-	Answer      string // 答案
-}
-
 // SaveExam 保存考试信息到 Redis
-// SaveExam 保存考试信息到 Redis
-func SaveExam(client *redis.Client, examID, examName string, examDate time.Time, questions map[int]Question) error {
+func SaveExam(client *redis.Client, examID, examName, examDate string, numOfQuestions int) error {
 
 	// 保存考试名称
 	err := client.Set(fmt.Sprintf("Exam:%s:Name", examID), examName, 0).Err()
@@ -83,30 +75,15 @@ func SaveExam(client *redis.Client, examID, examName string, examDate time.Time,
 	}
 
 	// 保存考试日期
-	err = client.Set(fmt.Sprintf("Exam:%s:Date", examID), examDate.Format("2006-01-02"), 0).Err()
+	err = client.Set(fmt.Sprintf("Exam:%s:Date", examID), examDate, 0).Err()
 	if err != nil {
 		return err
 	}
 
 	// 保存题目数量
-	err = client.Set(fmt.Sprintf("Exam:%s:QuestionCount", examID), len(questions), 0).Err()
+	err = client.Set(fmt.Sprintf("Exam:%s:NumOfQuestions", examID), numOfQuestions, 0).Err()
 	if err != nil {
 		return err
-	}
-
-	// 保存每个题目的描述和答案
-	for number, question := range questions {
-		descriptionKey := fmt.Sprintf("Exam:%s:Question:%d:Description", examID, number)
-		err := client.Set(descriptionKey, question.Description, 0).Err()
-		if err != nil {
-			return err
-		}
-
-		answerKey := fmt.Sprintf("Exam:%s:Question:%d:Answer", examID, number)
-		err = client.Set(answerKey, question.Answer, 0).Err()
-		if err != nil {
-			return err
-		}
 	}
 
 	return nil
