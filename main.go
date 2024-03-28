@@ -29,14 +29,17 @@ func main() {
 	})
 
 	defer client.Close()
-	controlsql.StoreTeamInfoRedis(client, "游戏大佬", "1", []string{"123456"}, "2024/3/28")
+
+	//controlsql.StoreTeamInfoRedis(client, "游戏大佬", "1", []string{"123456"}, "2024/3/28")
+	controlsql.SaveExam(client, "000001", "四级考试", "2024-03-28", 50)
+
 	r := gin.Default()
 	r.Static("api/team_manager/static", "./static")
 	r.Static("api/team_manager/css", "./static/css")
 	r.Static("api/team_manager/js", "./static/js")
 	//重定向至登录页面
 	r.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "/api/team_manager/login.html")
+		c.Redirect(http.StatusMovedPermanently, "/static/login")
 		//c.String(http.StatusOK, "Welcome to Daily English!")
 	})
 
