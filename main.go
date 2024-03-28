@@ -2,6 +2,8 @@ package main
 
 import (
 	controlsql "DailyEnglish/Control_SQL"
+
+	service "DailyEnglish/service"
 	"database/sql"
 	"fmt"
 	"log"
@@ -37,11 +39,9 @@ func main() {
 	r.Static("api/team_manager/static", "./static")
 	r.Static("api/team_manager/css", "./static/css")
 	r.Static("api/team_manager/js", "./static/js")
-	//重定向至登录页面
-	r.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "/static/login")
-		//c.String(http.StatusOK, "Welcome to Daily English!")
-	})
+	r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html")
+
+	service.TestAES()
 
 	//注册页面
 	r.GET("/api/team_manager/register", func(c *gin.Context) {
@@ -80,6 +80,17 @@ func main() {
 		}
 	})
 
+	//404页面
+	//r.NoRoute(func(c *gin.Context) {
+	//	c.File("./static/login.html")
+	//})
+
+	//重定向至登录页面
+	r.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusTemporaryRedirect, "/api/team_manager/login")
+		//c.String(http.StatusOK, "Welcome to Daily English!")
+	})
+
 	//登录页面
 	r.GET("/api/team_manager/login", func(c *gin.Context) {
 		c.File("./static/login.html")
@@ -100,16 +111,16 @@ func main() {
 			return
 		}
 
-		if controlsql.SearchUserByUsername(db, data.Username) {
-			c.JSON(http.StatusOK, gin.H{
-				"code":    "200",
-				"message": "登录成功",
-				"token":   "123456",
+		if !controlsql.SearchUserByUsername(db, data.Username) {
+			c.JSON(http.StatusForbidden, gin.H{
+				"code":    "403",
+				"message": "用户不存在",
 			})
 		} else if controlsql.CheckUser(db, data.Username, data.Pwd) {
 			c.JSON(http.StatusOK, gin.H{
 				"code":    "200",
 				"message": "登录成功",
+				"token":   "123456",
 			})
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{
