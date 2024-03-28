@@ -36,7 +36,7 @@ func main() {
 	r.Static("api/team_manager/js", "./static/js")
 	//重定向至登录页面
 	r.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "/api/team_manager/login.html")
+		c.Redirect(http.StatusMovedPermanently, "/static/login")
 		//c.String(http.StatusOK, "Welcome to Daily English!")
 	})
 
