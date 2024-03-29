@@ -17,7 +17,7 @@ function login() {
         if (data.code == 200) {
             console.log(data);
             sessionStorage.setItem("token", data.token);
-            window.location.href = 'http://localhost:8080/api/team_manager/index';
+            window.location.href = 'http://localhost:8080/api/team_manager/static/index.html';
         } else {
             var message = document.getElementById("verification-message");
             message.textContent = data.message;
