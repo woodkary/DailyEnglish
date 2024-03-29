@@ -2,6 +2,8 @@ package main
 
 import (
 	controlsql "DailyEnglish/Control_SQL"
+
+	service "DailyEnglish/service"
 	"database/sql"
 	"fmt"
 	"log"
@@ -29,21 +31,17 @@ func main() {
 	})
 
 	defer client.Close()
-	controlsql.StoreTeamInfoRedis(client, "游戏大佬", "1", []string{"123456"}, "2024/3/28")
-	r := gin.Default()
-	r.Static("api/team_manager/static", "./static")
-	r.Static("api/team_manager/css", "./static/css")
-	r.Static("api/team_manager/js", "./static/js")
-	//重定向至登录页面
-	r.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "/api/team_manager/login.html")
-		//c.String(http.StatusOK, "Welcome to Daily English!")
-	})
 
-	//注册页面
-	r.GET("/api/team_manager/register", func(c *gin.Context) {
-		c.File("./static/register.html")
-	})
+	//controlsql.StoreTeamInfoRedis(client, "游戏大佬", "1", []string{"123456"}, "2024/3/28")
+	controlsql.SaveExam(client, "000001", "四级考试", "2024-03-28", 50)
+
+	r := gin.Default()
+	r.Static("static/team_manager", "./static")
+	// r.Static("static/team_manager/css", "./static/css")
+	// r.Static("static/team_manager/js", "./static/js")
+	//r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html", "./static/404.html")
+
+	service.TestAES()
 
 	//注册接口
 	r.POST("/api/team_manager/register", func(c *gin.Context) {
@@ -77,9 +75,10 @@ func main() {
 		}
 	})
 
-	//登录页面
-	r.GET("/api/team_manager/login", func(c *gin.Context) {
-		c.File("./static/login.html")
+	//重定向至登录页面
+	r.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login.html")
+		//c.String(http.StatusOK, "Welcome to Daily English!")
 	})
 
 	//登录接口
@@ -97,16 +96,16 @@ func main() {
 			return
 		}
 
-		if controlsql.SearchUserByUsername(db, data.Username) {
-			c.JSON(http.StatusOK, gin.H{
-				"code":    "200",
-				"message": "登录成功",
-				"token":   "123456",
+		if !controlsql.SearchUserByUsername(db, data.Username) {
+			c.JSON(http.StatusForbidden, gin.H{
+				"code":    "403",
+				"message": "用户不存在",
 			})
 		} else if controlsql.CheckUser(db, data.Username, data.Pwd) {
 			c.JSON(http.StatusOK, gin.H{
 				"code":    "200",
 				"message": "登录成功",
+				"token":   "123456",
 			})
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{
@@ -116,16 +115,7 @@ func main() {
 		}
 	})
 
-	//忘记密码页面
-	r.GET("/api/team_manager/forgot_password", func(c *gin.Context) {
-		c.File("./static/forgot_password.html")
-	})
 	r.GET("/api/team_manager/index", func(c *gin.Context) {
-		//@TODO
-		//添加token验证机制
-		c.File("./static/index.html")
-	})
-	r.GET("/api/team_manager/index/data", func(c *gin.Context) {
 		//@TODO
 		//添加发送前端需要的json数据
 		c.JSON(200, gin.H{"code": "200", "msg": "成功", "completed": 80, "uncompleted": 20, "exam": "exam"})

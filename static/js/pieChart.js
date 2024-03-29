@@ -14,7 +14,7 @@ let finishedAngle = 0;//已完成任务的角度
 window.onload = function () {
     //获取token
     let token = sessionStorage.getItem("token");
-    fetch("http://localhost:8080/api/team_manager/index/data", {
+    fetch("http://localhost:8080/api/team_manager/index", {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -34,7 +34,6 @@ window.onload = function () {
         drawPieChart();
     })
 }
-
 // 显示信息的HTML元素
 const tooltip = document.getElementById('tooltip');
 

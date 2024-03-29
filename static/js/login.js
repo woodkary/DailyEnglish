@@ -1,4 +1,5 @@
-function login() {
+function login(event) {
+    event.preventDefault();
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
     const data = {
@@ -12,16 +13,20 @@ function login() {
         },
         body: JSON.stringify(data)
     }).then(response => {
+        console.log(response);
         return response.json();
     }).then(data => {
+        console.log(data);
         if (data.code == 200) {
-            console.log(data);
             sessionStorage.setItem("token", data.token);
-            window.location.href = 'http://localhost:8080/api/team_manager/static/index.html';
+            /*window.location.href = 'http://localhost:8080/api/team_manager/index';*/
+            window.location.href = 'index.html';//跳转到主页,为了能展示，先暂存
         } else {
             var message = document.getElementById("verification-message");
             message.textContent = data.message;
             message.style.color = "red";
         }
+    }).then(error => {
+        console.log(error);
     })
 }
