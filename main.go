@@ -119,12 +119,14 @@ func main() {
 		str := c.Param("userName")
 		fmt.Println(str)
 		str1, err := service.GenerateToken(str)
+		str2, err := service.ParseToken(str1)
 		c.JSON(200, gin.H{
-			"code":     "200",
-			"msg":      "123456",
-			"userName": str,
-			"token":    str1,
-			"error":    err,
+			"code":        "200",
+			"msg":         "123456",
+			"userName":    str,
+			"token":       str1,
+			"error":       err,
+			"tokenParsed": str2,
 		})
 	})
 
