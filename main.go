@@ -2,8 +2,8 @@ package main
 
 import (
 	controlsql "DailyEnglish/Control_SQL"
+	service "DailyEnglish/Service"
 
-	service "DailyEnglish/service"
 	"database/sql"
 	"fmt"
 	"log"
@@ -113,6 +113,19 @@ func main() {
 				"error": "用户名或密码有误",
 			})
 		}
+	})
+
+	r.GET("/getToken/:userName", func(c *gin.Context) {
+		str := c.Param("userName")
+		fmt.Println(str)
+		str1, err := service.GenerateToken(str)
+		c.JSON(200, gin.H{
+			"code":     "200",
+			"msg":      "123456",
+			"userName": str,
+			"token":    str1,
+			"error":    err,
+		})
 	})
 
 	r.GET("/api/team_manager/index", func(c *gin.Context) {
