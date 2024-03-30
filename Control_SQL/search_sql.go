@@ -45,7 +45,19 @@ type User_Study struct {
 	WordsNum   int
 	WordsIndex int
 }
+type Punch struct {
+	Punched   string     //今日已打卡人数
+	PunchNum  []string   //近七天打卡人数
+	PunchRate []string   //近七天打卡率
+	PunchLB   []struct { //打卡排行榜
+		Name      string //名字
+		PunchRate string //打卡率
+		PunchDay  string //打卡天数
+	}
+}
 
+// @TODO
+func QueryTEAM_Punch(db *sql.DB, team string) (Punch, error) //查询团队打卡情况，传入团队名team（团队表的主键）
 // QueryUserInfo 查询用户信息
 func QueryUser_Info(db *sql.DB) ([]UserInfo, error) {
 	rows, err := db.Query("SELECT * FROM user_info")
