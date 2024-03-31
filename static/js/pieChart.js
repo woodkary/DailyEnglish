@@ -14,7 +14,7 @@ let finishedAngle = 0;//已完成任务的角度
 window.onload = function () {
     //获取token
     let token = sessionStorage.getItem("token");
-    fetch("http://localhost:8080/api/team_manage/index", {
+    fetch("http://localhost:8080/api/team_manager/index", {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -34,7 +34,6 @@ window.onload = function () {
         drawPieChart();
     })
 }
-
 // 显示信息的HTML元素
 const tooltip = document.getElementById('tooltip');
 
@@ -88,7 +87,7 @@ legend.innerHTML = `
 function handleMouseMove(event) {
     const mouseX = event.clientX - canvas.getBoundingClientRect().left;
     const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-    const angle = Math.atan2(mouseY - centerY, mouseX - centerX)+Math.PI/2;
+    const angle = Math.atan2(mouseY - centerY, mouseX - centerX) + Math.PI / 2;
     let degree = (angle * 180) / Math.PI;
     if (degree < 0) {
         degree = 360 + degree; // Convert negative degree to positive
