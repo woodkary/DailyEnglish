@@ -33,7 +33,7 @@ func main() {
 	defer client.Close()
 
 	//controlsql.StoreTeamInfoRedis(client, "游戏大佬", "1", []string{"123456"}, "2024/3/28")
-	controlsql.SaveExam(client, "000001", "四级考试", "2024-03-28", 50)
+	//controlsql.SaveExam(client, "000001", "四级考试", "2024-03-28", 50)
 
 	r := gin.Default()
 	r.Static("static/team_manager", "./static")
