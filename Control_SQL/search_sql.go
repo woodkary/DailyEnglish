@@ -57,7 +57,7 @@ type Punch struct {
 }
 
 // @TODO
-func QueryTEAM_Punch(db *sql.DB, team string) (Punch, error) //查询团队打卡情况，传入团队名team（团队表的主键）
+// func QueryTEAM_Punch(db *sql.DB, team string) (Punch, error) //查询团队打卡情况，传入团队名team（团队表的主键）
 // QueryUserInfo 查询用户信息
 func QueryUser_Info(db *sql.DB) ([]UserInfo, error) {
 	rows, err := db.Query("SELECT * FROM user_info")
