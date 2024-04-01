@@ -1,7 +1,8 @@
 ﻿package teamrouter
 
 import (
-	"DailyEnglish/service"
+	service "DailyEnglish/Service"
+	_ "DailyEnglish/service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

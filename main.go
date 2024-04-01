@@ -2,6 +2,7 @@ package main
 
 import (
 	controlsql "DailyEnglish/Control_SQL"
+
 	service "DailyEnglish/Service"
 
 	"database/sql"
@@ -15,6 +16,51 @@ import (
 )
 
 func main() {
+
+	//redis连接
+	client := redis.NewClient(&redis.Options{
+		Addr:     "r-bp1jdmrszl1yd6xxdipd.redis.rds.aliyuncs.com:6379", // Redis 服务器地址
+		Password: "MIMAhezhanghao1yang",                                // Redis 服务器密码
+		DB:       255,                                                  // 使用的 Redis 数据库编号
+	})
+
+	defer client.Close()
+	// 定义和初始化 team 变量
+	team := controlsql.Team{
+		Name:           "TeamA",
+		ID:             34,
+		TotalMembers:   9,
+		AdminCount:     3,
+		RecentExamDate: "2024-04-01",
+		Last7DaysAttendance: struct {
+			Count int
+			Rate  float64
+		}{Count: 9, Rate: 1.00},
+		Members: []controlsql.Member{
+			{Username: "张三", JoinDate: "2024-01-01", AttendanceDays: 90, IsAdmin: true},
+			{Username: "李四", JoinDate: "2024-01-15", AttendanceDays: 88, IsAdmin: false},
+			{Username: "Charlie", JoinDate: "2024-02-01", AttendanceDays: 87, IsAdmin: false},
+			{Username: "Alice", JoinDate: "2024-02-15", AttendanceDays: 89, IsAdmin: false},
+			{Username: "Bob", JoinDate: "2024-03-01", AttendanceDays: 86, IsAdmin: false},
+			{Username: "小明", JoinDate: "2024-03-15", AttendanceDays: 91, IsAdmin: false},
+			{Username: "李白", JoinDate: "2024-04-01", AttendanceDays: 92, IsAdmin: false},
+			{Username: "龙王", JoinDate: "2024-04-15", AttendanceDays: 93, IsAdmin: false},
+			{Username: "牢大", JoinDate: "2024-05-01", AttendanceDays: 94, IsAdmin: false},
+		},
+	}
+
+	// 保存团队信息到数据库
+	err := controlsql.SaveTeam(client, team)
+	if err != nil {
+		fmt.Println("保存团队信息失败:", err)
+		return
+	}
+
+	// 成功保存团队信息后输出成功提示
+	fmt.Println("团队信息保存成功！")
+}
+
+func main1() {
 
 	//mysql连接
 	db, er := sql.Open("mysql", "root:123456@tcp(47.107.81.75:3306)/daily_english")
@@ -32,9 +78,10 @@ func main() {
 
 	defer client.Close()
 
-	//controlsql.StoreTeamInfoRedis(client, "游戏大佬", "1", []string{"123456"}, "2024/3/28")
-	controlsql.SaveExam(client, "000001", "四级考试", "2024-03-28", 50)
+	//数据库测试
 
+	//controlsql.SaveTeam(client, team)
+	//数据库测试
 	r := gin.Default()
 	r.Static("static/team_manager", "./static")
 	// r.Static("static/team_manager/css", "./static/css")
