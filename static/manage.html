@@ -2,166 +2,292 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/manage.css">
-    <link rel="stylesheet" type="text/css" href="./css/myNavbar.css">
     <title>成员管理</title>
-
 </head>
+<style>
+
+</style>
+<link rel="stylesheet" href="./css/sidebar.css">
+<link rel="stylesheet" href="./css/myNavbar.css">
+<link rel="stylesheet" href="./css/manage.css">
 <body>
-<!-- Navigation bar -->
 <div class="navbar">
-
-    <a href="#" class="logo">每日英语</a>
-    <a href="#">首页</a>
-    <a href="#">关于</a>
-    <a href="manage.html">成员管理</a>
-
-    <div class="dropdown">
-        <button class="dropbtn">发布任务</button>
-        <div class="dropdown-content">
-            <a href="#">考试</a>
-            <a href="signInPlan.html">打卡</a>
-            <a href="#">每日单词</a>
-            <a href="history.html">发布历史</a>
+    <div class="navbar-left">
+        <img src="./image/pikachu.jpg" alt="品牌商标" class="brand-logo">
+        <img src="image/英语每日练.png" alt="品牌名称" class="brand-name">
+        <div class="dropdown">
+            <img src="image/下拉菜单.png" class="dropbtn" onclick="myFunction()">
+            <div class="dropdown-content" id="myDropdown">
+                <a href="#">链接 1</a>
+                <a href="#">链接 2</a>
+                <a href="#">链接 3</a>
+            </div>
         </div>
     </div>
-    <div class="user-container">
-        <p class="username">用户名</p>
-        <img src="image/pikachu.jpg" alt="User Avatar" class="user-avatar">
-        <button type="button" class="logout-button" onclick="logout()"></button>
+    <div class="navbar-right">
+        <img src="image/通知.png" style="
+            max-width: 20px; /* 设置最大宽度 */
+            max-height: 25px; /* 设置最大高度 */
+            margin-right: 10px;
+        ">
+        <button class="notifications">通知</button>
+        <img src="image/全屏.png" style="
+            max-width: 20px; /* 设置最大宽度 */
+            max-height: 25px; /* 设置最大高度 */
+            margin-right: 10px;
+        ">
+        <button class="fullScreen">全屏</button>
+        <div class="user-info">
+            <div>姓名</div>
+            <div>组织名称</div>
+        </div>
+        <img src="./image/pikachu.jpg" alt="头像" class="user-avatar">
+        <img src="image/logoutButton.png" class="logout">
     </div>
 </div>
 
-    <div class="background">
-    <h1>成员管理</h1> 
-    <div class="search-container2">  
-        <input type="text" class="search-input" placeholder="成员查询">  
-        <button class="search-button" onclick="searchFunction()">搜索</button>  
-    </div> 
+<div class="sidebar">
+    <div>
+        <a href="#home">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 viewBox="64 64 896 896">
 
-    <div class="box">
-        <button class="button" id="button1">成员审核</button>
-        <button class="button" id="button2">团队扩容申请</button>
-        <table>
-            <thead>
-            <tr>
-                <th class="list1">成员名称</th>
-                <th class="list2">加入时间</th>
-                <th class="list3">累计打卡</th>
-                <th class="list4">操作</th>
-            </tr>
-            </thead>
-            <tbody id="userList">
-            
-            </tbody>
-        </table>
+                <path d="M946.5 505L560.1 118.8l-25.9-25.9a31.5 31.5 0 0 0-44.4 0L77.5 505a63.9 63.9 0 0 0-18.8 46c.4 35.2 29.7 63.3 64.9 63.3h42.5V940h691.8V614.3h43.4c17.1 0 33.2-6.7 45.3-18.8a63.6 63.6 0 0 0 18.7-45.3c0-17-6.7-33.1-18.8-45.2zM568 868H456V664h112v204zm217.9-325.7V868H632V640c0-22.1-17.9-40-40-40H432c-22.1 0-40 17.9-40 40v228H238.1V542.3h-96l370-369.7 23.1 23.1L882 542.3h-96.1z">
+                </path>
+            </svg>
+            主页
+        </a>
+    </div>
+    <button class="dropdown-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">
+            <path d="M928 160H96c-17.7 0-32 14.3-32 32v640c0 17.7 14.3 32 32 32h832c17.7 0 32-14.3 32-32V192c0-17.7-14.3-32-32-32zm-40 110.8V792H136V270.8l-27.6-21.5 39.3-50.5 42.8 33.3h643.1l42.8-33.3 39.3 50.5-27.7 21.5zM833.6 232L512 482 190.4 232l-42.8-33.3-39.3 50.5 27.6 21.5 341.6 265.6a55.99 55.99 0 0 0 68.7 0L888 270.8l27.6-21.5-39.3-50.5-42.7 33.2z"></path>
+        </svg>
+        任务发布
+        <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="dropdown-container">
+        <a href="#link1">打卡发布</a>
+        <a href="#link2">考试发布</a>
+    </div>
+    <button class="dropdown-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">
+            <path d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z"></path>
+        </svg>
+        学习情况
+        <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="dropdown-container">
+        <a href="#link1">考试情况</a>
+    </div>
+    <button class="dropdown-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">
+            <path d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z"></path>
+        </svg>
+        团队管理
+        <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="dropdown-container">
+        <a href="#link1">成员管理</a>
+        <a href="#link2">申请审核</a>
+    </div>
+    <a href="#contact">
+        <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">
+            <path d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z"></path>
+        </svg>
+        个人中心
+    </a>
+</div>
+
+<div style="margin-left:350px">
+    <!--<h2>这是页面模板</h2>
+    <p>这部分是页面的主要内容。</p>-->
+    <h2 style="margin-bottom: 40px">团队管理    >   成员管理</h2>
+    <div class="organization-info">
+
+        <div style="display: flex; justify-content: space-between;">
+            <div class="left-col">
+                <div style="font-size: 20px;margin-top: 5%;">组织名称: XYZ</div>
+                <div>
+                    <button class="RedButton MainButton" style="margin-right: 40px">删除成员</button>
+                    <button class="BlueButton MainButton">扩容组织</button>
+                </div>
+            </div>
+            <div class="right-col">
+                <div style="width: 100%; max-height: 20%">
+                    <div class="search-container">
+                        <input type="text" class="search-input" placeholder="搜索成员...">
+                        <img src="./image/搜索图标.png" alt="Search" class="search-icon">
+                    </div>
+
+                </div>
+                <div class="members-admin">
+                    <div>成员: 50</div>
+                    <div>管理员: 5</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <img src="./image/线条%201.png" alt="线条" style="margin-top: 2%; width: 100%">
+    <!--<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <line x1="0" y1="10" x2="60" y2="10" style="stroke:rgb(0,0,0);stroke-width:2;width"></line>
+    </svg>-->
+    <div style="margin-top: 2%">
+    <table>
+        <thead>
+        <tr>
+            <th>昵称</th>
+            <th>团队权限</th>
+            <th>加入组织时间</th>
+            <th>累计打卡天数</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- 成员数据行 -->
+        <tr>
+            <td>龙王</td>
+            <td>团队管理员</td>
+            <td>2020-12-12</td>
+            <td>100</td>
+            <td>
+                <button class="BlueButton">
+                    <span class="UnderlinedBlue">详情</span>
+                </button>
+                <button class="RedButton">
+                    <span class="UnderlinedRed">删除</span>
+                </button>
+            </td>
+        </tr>
+        <tr>
+            <td>龙王</td>
+            <td>团队管理员</td>
+            <td>2020-12-12</td>
+            <td>100</td>
+            <td>
+                <button class="BlueButton">
+                    <span class="UnderlinedBlue">详情</span>
+                </button>
+                <button class="RedButton">
+                    <span class="UnderlinedRed">删除</span>
+                </button>
+            </td>
+        </tr>
+        <tr>
+            <td>龙王</td>
+            <td>团队管理员</td>
+            <td>2020-12-12</td>
+            <td>100</td>
+            <td>
+                <button class="BlueButton">
+                    <span class="UnderlinedBlue">详情</span>
+                </button>
+                <button class="RedButton">
+                    <span class="UnderlinedRed">删除</span>
+                </button>
+            </td>
+        </tr>
+        <tr>
+            <td>龙王</td>
+            <td>团队管理员</td>
+            <td>2020-12-12</td>
+            <td>100</td>
+            <td>
+                <button class="BlueButton">
+                    <span class="UnderlinedBlue">详情</span>
+                </button>
+                <button class="RedButton">
+                    <span class="UnderlinedRed">删除</span>
+                </button>
+            </td>
+        </tr>
+        <tr>
+            <td>龙王</td>
+            <td>团队管理员</td>
+            <td>2020-12-12</td>
+            <td>100</td>
+            <td>
+                <button class="BlueButton">
+                    <span class="UnderlinedBlue">详情</span>
+                </button>
+                <button class="RedButton">
+                    <span class="UnderlinedRed">删除</span>
+                </button>
+            </td>
+        </tr>
+        <tr>
+            <td>龙王</td>
+            <td>团队管理员</td>
+            <td>2020-12-12</td>
+            <td>100</td>
+            <td>
+                <button class="BlueButton">
+                    <span class="UnderlinedBlue">详情</span>
+                </button>
+                <button class="RedButton">
+                    <span class="UnderlinedRed">删除</span>
+                </button>
+            </td>
+        </tr>
+        <tr>
+            <td>龙王</td>
+            <td>团队管理员</td>
+            <td>2020-12-12</td>
+            <td>100</td>
+            <td>
+                <button class="BlueButton">
+                    <span class="UnderlinedBlue">详情</span>
+                </button>
+                <button class="RedButton">
+                    <span class="UnderlinedRed">删除</span>
+                </button>
+            </td>
+        </tr>
+        <tr>
+            <td>龙王</td>
+            <td>团队管理员</td>
+            <td>2020-12-12</td>
+            <td>100</td>
+            <td>
+                <button class="BlueButton">
+                    <span class="UnderlinedBlue">详情</span>
+                </button>
+                <button class="RedButton">
+                    <span class="UnderlinedRed">删除</span>
+                </button>
+            </td>
+        </tr>
+        <tr>
+            <td>龙王</td>
+            <td>团队管理员</td>
+            <td>2020-12-12</td>
+            <td>100</td>
+            <td>
+                <button class="BlueButton">
+                    <span class="UnderlinedBlue">详情</span>
+                </button>
+                <button class="RedButton">
+                    <span class="UnderlinedRed">删除</span>
+                </button>
+            </td>
+        </tr>
+        
+        </tbody>
+    </table>
     </div>
 
-    <script>  
-      // 获取按钮元素
-    var button = document.getElementById("button1");
+    <div class="pagination">
+        <!-- 分页按钮 -->
+        <button>&lt;</button>
+        <button>1</button>
+        <button>2</button>
+        <button>3</button>
+        <button>4</button>
+        <button>5</button>
+        <button>&gt;</button>
+    </div>
+</div>
 
-    // 添加点击事件侦听器
-    button.addEventListener("click", function() {
-    // 在此处执行页面跳转操作
-    window.location.href = "examine.html";
-    });
-   // 假设这是从后台获取的数据，初始为空数组  
-        var data = [];  
-        var token='sdadasdsa';
-        // 这是自己填的数据，不知道实际能不能用  
-        var defaultData = [  
-            { "username": "abc", "RegisterDate": "2024.1.2", "sign_in": "121", "operation": "详情" },  
-            { "username": "123", "RegisterDate": "2024.1.2", "sign_in": "101", "operation": "详情" },  
-            { "username": "556", "RegisterDate": "2024.1.2", "sign_in": "212", "operation": "详情" },  
-            { "username": "bce", "RegisterDate": "2024.1.2", "sign_in": "111", "operation": "详情" },  
-            { "username": "jds", "RegisterDate": "2024.1.2", "sign_in": "123", "operation": "详情" }
-        ];  
-        
-        fetch('http://localhost:8080/api/team_manage/all_managements', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'token':token
-        },
-    }).then(response => {
-        return response.json();
-    }).then(responsedata => {
-        if (responsedata.code === 200) {
-            console.log(responsedata);
-            var members=responsedata.members;
-            members.forEach(member =>{
-                let username=member.username;
-                let join_time=member.join_time;
-                let sign_in=member.sign_in;
-                let email=member.email;
-                let phone_number=member.phone_number;
-            }
-            )
-            sessionStorage.setItem("token", responsedata.token);
-            fillTable(members, tbody);
-        } else {
-            var message = document.getElementById("verification-message");
-            message.textContent = responsedata.message;
-            message.style.color = "red";
-            fillTable(defaultData, tbody);
-        }
-    }).catch(error => {  
-        console.error('There has been a problem with your fetch operation:', error);   
-        fillTable(defaultData, tbody);
-    });  
-  
-        // 获取tbody元素  
-        var tbody = document.getElementById('userList');  
-          
-        function fillTable(data, tbody) {
-        tbody.innerHTML = "";
-
-        // 遍历数据并创建表格行    
-        data.forEach(member => {    
-        var tr = document.createElement('tr');    
-        var tdusername = document.createElement('td');    
-        var tdRegisterDate = document.createElement('td');    
-        var tdsign_in = document.createElement('td');    
-        var tdOperation = document.createElement('td');    
-        
-        tdusername.className = 'list1';    
-        tdRegisterDate.className = 'list1';    
-        tdsign_in.className = 'list1';    
-        tdOperation.className = 'list1';    
-  
-        tdusername.textContent = member.username;    
-        tdRegisterDate.textContent = member.RegisterDate;    
-        tdsign_in.textContent = member.sign_in;  // 确保数据项中有attendance属性  
-        
-        // 创建按钮元素并设置文本内容  
-        var operationButton = document.createElement('button');  
-        operationButton.textContent = member.operation; // 假设item.operation是按钮上应该显示的文本  
-        operationButton.addEventListener('click', function() {  
-            // 这里是按钮点击时应该执行的代码  
-            // 例如，可以调用一个处理函数并传递当前行的数据或执行其他逻辑  
-            handleButtonClick(member);  
-        });  
-        
-        // 将按钮添加到操作单元格中  
-        tdOperation.appendChild(operationButton);    
-        
-        tr.appendChild(tdusername);    
-        tr.appendChild(tdRegisterDate);    
-        tr.appendChild(tdsign_in);    
-        tr.appendChild(tdOperation);    
-        
-        tbody.appendChild(tr);    
-});    
-}
-// 按钮点击事件处理函数  
-function handleButtonClick(member) {  
-    // 在这里处理按钮点击事件，比如弹出一个对话框显示用户详情  
-    alert('用户详情: ' + member.username);  
-    // 还可以根据需要进行其他操作，比如发送请求到服务器获取更多信息
-}
-
-        </script>  
 </body>
+<script src="./js/Navbar.js"></script>
+<script src="./js/sidebar.js"></script>
 </html>

@@ -1,6 +1,3 @@
-body {
-    margin: 0;
-}
 
 .sidebar {
     height: 50%;
@@ -46,6 +43,9 @@ body {
 
 .active {
     color: #818181;
+}
+.onThisPage{
+    color: #6200EE;
 }
 
 .dropdown-container {

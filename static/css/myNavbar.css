@@ -1,4 +1,4 @@
-body { margin: 0; font-family: Arial, sans-serif; }
+
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -26,18 +26,33 @@ body { margin: 0; font-family: Arial, sans-serif; }
 }
 .notifications {
     margin-right: 40px;
-    font-family: '用户名字体', serif; /* 使用自定义字体 */
+    background-color: transparent;
+    border-radius: 15%;
+    font-family: '黑体', serif; /* 使用自定义字体 */
     font-style: italic; /* 斜体 */
+    color: white;
+    font-size: 16px;
+    border: transparent;
+}
+.notifications:hover{
+    background-color: #5303c4;
 }
 .fullScreen {
     margin-right: 100px;
-    font-family: '用户名字体', serif; /* 使用自定义字体 */
+    background-color: transparent;
+    font-family: '黑体', serif; /* 使用自定义字体 */
     font-style: italic; /* 斜体 */
+    color: white;
+    font-size: 16px;
+    border: transparent;
+}
+.fullScreen:hover{
+    background-color: #5303c4;
 }
 .user-info {
     margin-right: 10px;
     text-align: right;
-    font-family: '用户名字体', serif; /* 使用自定义字体 */
+    font-family: '黑体', serif; /* 使用自定义字体 */
     font-style: italic; /* 斜体 */
 }
 .user-info div { margin: 2px 0; }
@@ -77,7 +92,7 @@ body { margin: 0; font-family: Arial, sans-serif; }
     border: none; /* 移除边框 */
 }
 .dropdown:hover{
-    background-color: #ffffff;
+    background-color: #5303c4;
 }
 @font-face {
     font-family: '用户名字体';
