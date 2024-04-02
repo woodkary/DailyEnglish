@@ -1,0 +1,100 @@
+body{
+    background-color: #F7F7F7;
+}
+
+
+/* 第一个框 */
+.detail-selection{
+    
+    display: flex;
+    background-color: #ffffff; /* 将背景颜色改为白色 */
+    color: #000000; /* 文本颜色为黑色 */
+    text-decoration: none;
+    padding: 10px;
+    flex-direction: column;
+    border: 1px solid #000000; /* 添加边框，颜色为黑色 */
+    box-shadow: 0 0 5px rgba(73, 73, 73, 0.5); /* 添加阴影 */
+    margin-bottom: 20px;
+}
+.detail-selection ol{
+    list-style-type: none;
+}
+.horizontal-list {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+}
+.horizontal-list li {
+    margin-right: 30px; /* 为了给列表项之间添加间距 */
+}  
+
+.horizontal-list ul{
+    list-style-type: none;
+}
+
+.inline-block {
+    display: flex; /* 使用 Flexbox */
+    align-items: center; /* 垂直居中对齐 */
+    margin-top: 10px; /* 添加顶部间距 */
+}
+
+.gray{
+    color: #877979;
+}
+.inline-block p{
+    color: #456DE7;
+    margin-right: 10px; 
+}
+
+
+
+
+
+/* 第二个框 */
+
+.search-container {
+    
+    display: flex;
+    background-color: #ffffff; /* 将背景颜色改为白色 */
+    color: #000000; /* 文本颜色为黑色 */
+    text-decoration: none;
+    padding: 10px;
+    border: 1px solid #000000; /* 添加边框，颜色为黑色 */
+    box-shadow: 0 0 5px rgba(73, 73, 73, 0.5); /* 添加阴影 */
+}
+
+.search-container img {
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+}
+.search-container img[src="./image/搜索图标.png"] {
+    
+    border: 1px solid black;
+}
+.search-container span{
+    margin-left: 50px;
+}
+.blank{
+    margin-right: 450px;
+}
+.blue-text {
+    color: #456DE7; /* 设置文本颜色为蓝色 */
+}
+
+.separator {
+    margin-right: 50px; /* 图标之间的间距 */
+}
+
+
+/* 第三个框 */
+.search-container {
+    
+    display: flex;
+    background-color: #ffffff; /* 将背景颜色改为白色 */
+    color: #000000; /* 文本颜色为黑色 */
+    text-decoration: none;
+    padding: 10px;
+    border: 1px solid #000000; /* 添加边框，颜色为黑色 */
+    box-shadow: 0 0 5px rgba(73, 73, 73, 0.5); /* 添加阴影 */
+}
