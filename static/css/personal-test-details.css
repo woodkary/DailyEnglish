@@ -89,10 +89,19 @@ h1{
 }
 
 .organization-name{
+    white-space: nowrap; /* 防止文本换行 */ 
     font-size: 25px;
+    margin-top: 10%;
+    margin-left: 10%;
+}
+
+.test-name{
+    white-space: nowrap; /* 防止文本换行 */ 
+    font-size: 20px;
     margin-top: 5%;
     margin-left: 10%;
 }
+
 
 .RedButton{
     background-color: #EE4141;
@@ -109,7 +118,12 @@ h1{
     border-radius: 5px;
     padding: 5px 10px;
 }
-
+button:hover{
+    cursor: pointer;
+}
+.search-icon{
+    cursor: pointer;
+}
 .search-container {  
     position: relative; /* 使子元素可以相对于此容器定位 */  
     margin-top: 20px;
@@ -151,7 +165,7 @@ h1{
 }
 table {
     position: absolute;
-    top: 20%;
+    top: 18%;
     left: 5%;
     width: 90%;
     border-collapse: collapse;
@@ -165,6 +179,11 @@ th, td {
     text-align: left;
     background-color: white;
 }
+
+.rate{
+    color: #456DE7;
+}
+
 .list1{
     width: 30%;
 }
@@ -182,10 +201,4 @@ th, td {
     position: absolute;
     right: 3%;
     bottom: 5%;
-}
-button:hover{
-    cursor: pointer;
-}
-.search-icon{
-    cursor: pointer;
 }

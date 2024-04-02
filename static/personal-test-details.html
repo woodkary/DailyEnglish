@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>成员管理</title>
-</head>
-<style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/personal-test-details.css">
+    <link rel="stylesheet" href="./css/sidebar.css">
+    <link rel="stylesheet" href="./css/myNavbar.css">
+    <title>个人考试详情</title>
 
-</style>
-<link rel="stylesheet" href="./css/sidebar.css">
-<link rel="stylesheet" href="./css/myNavbar.css">
-<link rel="stylesheet" href="./css/manage.css">
+</head>
 <body>
+<!-- Navigation bar -->
 <div class="navbar">
     <div class="navbar-left">
         <img src="./image/pikachu.jpg" alt="品牌商标" class="brand-logo">
@@ -45,7 +45,6 @@
         <img src="image/logoutButton.png" class="logout">
     </div>
 </div>
-
 <div class="sidebar">
     <div>
         <a href="#home">
@@ -97,7 +96,7 @@
         个人中心
     </a>
 </div>
-<h2 style="margin-left: 300px">团队管理    >   成员管理</h2>
+<h2 style="margin-left: 300px">学习情况    >   考试情况    >   考试详情    >   个人考试详情</h2>
 <div class="membership">
     <!-- <h2>这是页面模板</h2>
     <p>这部分是页面的主要内容。</p> -->
@@ -106,10 +105,7 @@
         <div style="display: flex; justify-content: space-between;">
             <div class="left-col">
                 <div class="organization-name">组织名称: XYZ</div>
-                <div>
-                    <button class="BlueButton MainButton""RedButton MainButton" style="margin-right: 30px;margin-left: 20px; margin-top: 30px; font-size: 16px;">组织扩容</button>
-                    <button class="RedButton MainButton" style="font-size: 16px;">删除成员</button>
-                </div>
+                <div class="test-name">第一次小测</div>
             </div>
             <div class="right-col">
                 <div style="width: 100%; max-height: 20%">
@@ -118,10 +114,6 @@
                         <img src="./image/搜索图标.png" alt="Search" class="search-icon">
                     </div>
 
-                </div>
-                <div class="members-admin">
-                    <div>当前成员：<span class="member-number">50</span>人</div>
-                    <div>当前管理员：<span class="manager-number">5</span>人</div>
                 </div>
             </div>
         </div>
@@ -133,128 +125,59 @@
     <table>
         <thead>
         <tr>
-            <th>昵称</th>
-            <th>团队权限</th>
-            <th>加入组织时间</th>
-            <th>累计打卡天数</th>
-            <th>操作</th>
+            <th>题号</th>
+            <th>得分</th>
+            <th>正确答案</th>
+            <th>考生答案</th>
+            <th>题目</th>
         </tr>
         </thead>
         <tbody>
         <!-- 成员数据行 -->
         <tr>
-            <td>龙王</td>
-            <td>团队管理员</td>
-            <td>2020-12-12</td>
-            <td>100</td>
+            <td>1</td>
+            <td>0</td>
+            <td>enable</td>
+            <td>inable</td>
             <td>
                 <button class="BlueButton">
                     <span class="UnderlinedBlue">详情</span>
-                </button>
-                <button class="RedButton">
-                    <span class="UnderlinedRed">删除</span>
                 </button>
             </td>
         </tr>
         <tr>
-            <td>龙王</td>
-            <td>团队管理员</td>
-            <td>2020-12-12</td>
-            <td>100</td>
+            <td>2</td>
+            <td>5</td>
+            <td>abandon</td>
+            <td>abandon</td>
             <td>
                 <button class="BlueButton">
                     <span class="UnderlinedBlue">详情</span>
-                </button>
-                <button class="RedButton">
-                    <span class="UnderlinedRed">删除</span>
                 </button>
             </td>
         </tr>
         <tr>
-            <td>龙王</td>
-            <td>团队管理员</td>
-            <td>2020-12-12</td>
-            <td>100</td>
+            <td>3</td>
+            <td>0</td>
+            <td>enable</td>
+            <td>inable</td>
             <td>
                 <button class="BlueButton">
                     <span class="UnderlinedBlue">详情</span>
-                </button>
-                <button class="RedButton">
-                    <span class="UnderlinedRed">删除</span>
                 </button>
             </td>
         </tr>
         <tr>
-            <td>龙王</td>
-            <td>团队管理员</td>
-            <td>2020-12-12</td>
-            <td>100</td>
+            <td>4</td>
+            <td>5</td>
+            <td>abandon</td>
+            <td>abandon</td>
             <td>
                 <button class="BlueButton">
                     <span class="UnderlinedBlue">详情</span>
                 </button>
-                <button class="RedButton">
-                    <span class="UnderlinedRed">删除</span>
-                </button>
             </td>
         </tr>
-        <tr>
-            <td>龙王</td>
-            <td>团队管理员</td>
-            <td>2020-12-12</td>
-            <td>100</td>
-            <td>
-                <button class="BlueButton">
-                    <span class="UnderlinedBlue">详情</span>
-                </button>
-                <button class="RedButton">
-                    <span class="UnderlinedRed">删除</span>
-                </button>
-            </td>
-        </tr>
-        <tr>
-            <td>龙王</td>
-            <td>团队管理员</td>
-            <td>2020-12-12</td>
-            <td>100</td>
-            <td>
-                <button class="BlueButton">
-                    <span class="UnderlinedBlue">详情</span>
-                </button>
-                <button class="RedButton">
-                    <span class="UnderlinedRed">删除</span>
-                </button>
-            </td>
-        </tr>
-        <tr>
-            <td>龙王</td>
-            <td>团队管理员</td>
-            <td>2020-12-12</td>
-            <td>100</td>
-            <td>
-                <button class="BlueButton">
-                    <span class="UnderlinedBlue">详情</span>
-                </button>
-                <button class="RedButton">
-                    <span class="UnderlinedRed">删除</span>
-                </button>
-            </td>
-        </tr>
-        <tr>
-            <td>龙王</td>
-            <td>团队管理员</td>
-            <td>2020-12-12</td>
-            <td>100</td>
-            <td>
-                <button class="BlueButton">
-                    <span class="UnderlinedBlue">详情</span>
-                </button>
-                <button class="RedButton">
-                    <span class="UnderlinedRed">删除</span>
-                </button>
-            </td>
-        </tr>
-        
         </tbody>
     </table>
 
@@ -269,7 +192,6 @@
         <button>&gt;</button>
     </div>
 </div>
-
 </body>
 <script src="./js/Navbar.js"></script>
 <script src="./js/sidebar.js"></script>

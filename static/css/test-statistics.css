@@ -89,8 +89,9 @@ h1{
 }
 
 .organization-name{
+    white-space: nowrap; /* 防止文本换行 */ 
     font-size: 25px;
-    margin-top: 5%;
+    margin-top: 10%;
     margin-left: 10%;
 }
 
@@ -151,7 +152,7 @@ h1{
 }
 table {
     position: absolute;
-    top: 20%;
+    top: 15%;
     left: 5%;
     width: 90%;
     border-collapse: collapse;
@@ -165,6 +166,11 @@ th, td {
     text-align: left;
     background-color: white;
 }
+
+.rate{
+    color: #456DE7;
+}
+
 .list1{
     width: 30%;
 }
@@ -177,15 +183,14 @@ th, td {
 .list4{
     width: 15%;
 }
-
-.pagination{
-    position: absolute;
-    right: 3%;
-    bottom: 5%;
-}
 button:hover{
     cursor: pointer;
 }
 .search-icon{
     cursor: pointer;
+}
+.pagination{
+    position: absolute;
+    right: 3%;
+    bottom: 5%;
 }
