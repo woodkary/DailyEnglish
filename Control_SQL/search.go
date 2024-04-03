@@ -182,6 +182,49 @@ func GetTeamExamResult(client *redis.Client, teamName string, examName string) (
 	return examResult, nil
 }
 
+// 根据团队名查询该团队所有考试的考试名称、考试日期、平均分、通过率
+func QueryTeamExams(client *redis.Client, teamName string) ([]map[string]string, error) {
+	// 获取所有考试的键名
+	keys, err := client.Keys("exam_info:*").Result()
+	if err != nil {
+		return nil, err
+	}
+
+	// 保存结果的切片
+	var examInfos []map[string]string
+
+	// 遍历所有考试键名，提取考试信息
+	for _, key := range keys {
+		examInfo, err := client.HGetAll(key).Result()
+		if err != nil {
+			return nil, err
+		}
+
+		// 检查考试是否属于指定团队
+		if examInfo["team_name"] == teamName {
+			// 转换通过率为百分比形式
+			passRate, err := strconv.ParseFloat(examInfo["pass_rate"], 64)
+			if err != nil {
+				return nil, err
+			}
+			passRateStr := strconv.FormatFloat(passRate*100, 'f', 2, 64) + "%"
+
+			// 构建考试信息的映射
+			exam := map[string]string{
+				"Name":         examInfo["name"],
+				"Date":         examInfo["date"],
+				"AverageScore": examInfo["average_score"],
+				"PassRate":     passRateStr,
+			}
+
+			// 将考试信息添加到结果切片中
+			examInfos = append(examInfos, exam)
+		}
+	}
+
+	return examInfos, nil
+}
+
 // 7. 通过团队名查询该团队的通知信息
 // 根据团队名查询flag为0的通知，并按时间排序
 func QueryUnprocessedNotifications(client *redis.Client, teamName string) ([]Notification, error) {
