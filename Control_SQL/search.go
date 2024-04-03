@@ -1,6 +1,7 @@
 package controlsql
 
 import (
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -346,4 +347,115 @@ func GetTeamAdminRequests(client *redis.Client, teamName string) ([]AdminRequest
 	}
 
 	return adminRequests, nil
+}
+
+// 根据团队名和日期查询最近7天的打卡情况
+func QueryAttendance(client *redis.Client, teamName string, date time.Time) (map[string]string, error) {
+	attendanceData := make(map[string]string)
+	for i := 0; i < 7; i++ {
+		// 计算查询日期
+		queryDate := date.AddDate(0, 0, -i)
+		attendanceKey := "attendance:" + queryDate.Format("2006-01-02") + ":team:" + teamName
+		result, err := client.HGetAll(attendanceKey).Result()
+		if err != nil {
+			return nil, err
+		}
+		// 将打卡率从字符串转换为百分比形式，例如 "0.71" 转换成 "71%"
+		attendanceRateStr := result["attendance_rate"]
+		attendanceRate, err := strconv.ParseFloat(attendanceRateStr, 64)
+		if err != nil {
+			return nil, err
+		}
+		attendanceRatePercent := strconv.FormatFloat(attendanceRate*100, 'f', 2, 64) + "%"
+		attendanceData[queryDate.Format("2006-01-02")] = result["attendance_count"] + "|" + attendanceRatePercent
+	}
+	return attendanceData, nil
+}
+
+// 根据团队名，查询该团队所有成员中，打卡天数前6名的成员名，以及他们各自的打卡天数和打卡率，其中需要把 float64 的打卡率数据转化成 string
+func GetTopSixAttendanceMembers(client *redis.Client, teamName string) (map[string]int, map[string]string, error) {
+	// 查询团队成员列表
+	members, err := client.Keys("team:" + teamName + ":member:*").Result()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// 初始化前6名成员信息
+	topSixMembers := make(map[string]int)
+	topSixAttendanceRate := make(map[string]string)
+
+	// 遍历所有成员，统计打卡天数并记录前6名信息
+	for _, memberKey := range members {
+		// 获取成员打卡天数
+		attendanceDaysStr, err := client.HGet(memberKey, "attendance_days").Result()
+		if err != nil {
+			return nil, nil, err
+		}
+
+		attendanceDays, _ := strconv.Atoi(attendanceDaysStr)
+		username := memberKey[len("team:"+teamName+":member:"):]
+		topSixMembers[username] = attendanceDays
+	}
+
+	// 对打卡天数进行排序，获取前6名成员
+	type member struct {
+		Username       string
+		AttendanceDays int
+	}
+
+	var sortedMembers []member
+	for username, attendanceDays := range topSixMembers {
+		sortedMembers = append(sortedMembers, member{username, attendanceDays})
+	}
+	sort.Slice(sortedMembers, func(i, j int) bool {
+		return sortedMembers[i].AttendanceDays > sortedMembers[j].AttendanceDays
+	})
+
+	// 取前6名成员的打卡率并转化为字符串
+	for i := 0; i < len(sortedMembers) && i < 6; i++ {
+		username := sortedMembers[i].Username
+		attendanceDays := sortedMembers[i].AttendanceDays
+		attendanceRate := float64(attendanceDays) / 7.0
+		attendanceRateStr := strconv.FormatFloat(attendanceRate, 'f', 2, 64)
+		topSixAttendanceRate[username] = attendanceRateStr
+	}
+
+	return topSixMembers, topSixAttendanceRate, nil
+}
+
+// 查询考试 id 最大的考试 ExamInfo 前六名信息 TopSix
+func GetTopSixExamScores(client *redis.Client) (map[string]int, error) {
+	// 查询考试信息列表
+	examInfos, err := client.Keys("exam_info:*").Result()
+	if err != nil {
+		return nil, err
+	}
+
+	// 初始化前六名信息
+	topSixScores := make(map[string]int)
+
+	// 遍历所有考试，获取每场考试的前六名成绩
+	for _, examKey := range examInfos {
+		// 获取考试名称
+		examName, err := client.HGet(examKey, "name").Result()
+		if err != nil {
+			return nil, err
+		}
+
+		// 获取考试成绩列表
+		examScores, err := client.HGetAll("exam:" + examName).Result()
+		if err != nil {
+			return nil, err
+		}
+
+		// 遍历成绩列表，记录前六名成绩
+		for username, scoreStr := range examScores {
+			score, _ := strconv.Atoi(scoreStr)
+			if len(topSixScores) < 6 || score > topSixScores[username] {
+				topSixScores[username] = score
+			}
+		}
+	}
+
+	return topSixScores, nil
 }
