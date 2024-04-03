@@ -1,131 +1,316 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/index.css">
-    <link rel="stylesheet" type="text/css" href="./css/myNavbar.css">
-    <title>团队管理员首页</title>
-
+    <title>成员详情</title>
 </head>
-
+<style>
+    .main_label{
+        position: static;
+        z-index: 1;
+        background-color: #ffffff;
+        overflow-x: hidden;
+        height: 40px;
+        border: 2px solid #ccc; /* 添加2px厚度的边框 */
+        box-shadow: 5px 0px 5px rgba(0, 0, 0, 0.1); /* 添加左侧阴影效果 */
+    }
+</style>
+<link rel="stylesheet" href="./css/sidebar.css">
+<link rel="stylesheet" href="./css/myNavbar.css">
+<link rel="stylesheet" href="./css/icon.css">
+<link rel="stylesheet" href="./css/card.css">
 <body>
-<!-- Navigation bar -->
 <div class="navbar">
-
-    <a href="#" class="logo">每日英语</a>
-    <a href="#">首页</a>
-    <a href="#">关于</a>
-    <a href="manage.html">成员管理</a>
-
-    <div class="dropdown">
-        <button class="dropbtn">发布任务</button>
-        <div class="dropdown-content">
-            <a href="#">考试</a>
-            <a href="signInPlan.html">打卡</a>
-            <a href="#">每日单词</a>
-            <a href="history.html">发布历史</a>
+    <div class="navbar-left">
+        <img src="./image/pikachu.jpg" alt="品牌商标" class="brand-logo">
+        <img src="image/英语每日练.png" alt="品牌名称" class="brand-name">
+        <div class="dropdown">
+            <img src="image/下拉菜单.png" class="dropbtn" onclick="myFunction()">
+            <div class="dropdown-content" id="myDropdown">
+                <a href="#">链接 1</a>
+                <a href="#">链接 2</a>
+                <a href="#">链接 3</a>
+            </div>
         </div>
     </div>
-    <div class="user-container">
-        <p class="username">用户名</p>
-        <img src="image/pikachu.jpg" alt="User Avatar" class="user-avatar">
-        <button type="button" class="logout-button" onclick="logout()"></button>
+    <div class="navbar-right">
+        <img src="image/通知.png" style="
+            max-width: 20px; /* 设置最大宽度 */
+            max-height: 25px; /* 设置最大高度 */
+            margin-right: 10px;
+        ">
+        <button class="notifications">通知</button>
+        <img src="image/全屏.png" style="
+            max-width: 20px; /* 设置最大宽度 */
+            max-height: 25px; /* 设置最大高度 */
+            margin-right: 10px;
+        ">
+        <button class="fullScreen">全屏</button>
+        <div class="user-info">
+            <div>姓名</div>
+            <div>组织名称</div>
+        </div>
+        <img src="./image/pikachu.jpg" alt="头像" class="user-avatar">
+        <img src="image/logoutButton.png" class="logout">
     </div>
 </div>
 
-    <div class="background">
-        <h1>今日日程</h1>
-        <div class="card" id="card1">
-            <div class="avatar">
+<div class="sidebar">
+    <div>
+        <a href="#home">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 viewBox="64 64 896 896">
 
-            </div>
-            <div class="card-content">
-                <span class="card-title">成员管理</span>
-                <!-- <p class="card-text">Card Text Here</p>
-            <span class="card-subtitle">Card Subtitle</span> -->
-            </div>
-        </div>
-        <div class="card" id="card2">
-            <div class="avatar">
-
-            </div>
-            <div class="card-content">
-                <span class="card-title">任务发布</span>
-                <!-- <p class="card-text">Card Text Here</p>
-             <span class="card-subtitle">Card Subtitle</span> -->
-            </div>
-        </div>
-        <div class="card" id="card3">
-            <div class="avatar">
-
-            </div>
-            <div class="card-content">
-                <span class="card-title">学习情况</span>
-                <!-- <p class="card-text">Card Text Here</p>
-             <span class="card-subtitle">Card Subtitle</span> -->
-            </div>
-        </div>
-        <div class="card" id="card4">
-            <div class="avatar">
-
-            </div>
-            <div class="card-content">
-                <span class="card-title">发布历史</span>
-                <!-- <p class="card-text">Card Text Here</p>
-             <span class="card-subtitle">Card Subtitle</span> -->
-            </div>
-        </div>
-        <div class="card" id="card5">
-            <div class="card-content">
-
-                <!--<span class="card-title">今日任务完成情况</span>
-                &lt;!&ndash; <p class="card-text">Card Text Here</p>
-             <span class="card-subtitle">Card Subtitle</span> &ndash;&gt;-->
-
-
-                <!--<div class="card">-->
-                    <span class="card-title">今日任务完成情况</span>
-                    <div id="tooltip" style="display: none;"></div>
-                    <div class="pie-chart-container">
-                        <canvas id="pie-chart"></canvas>
-                        <div id="legend"></div>
-                    </div>
-                <!--</div>-->
-
-            </div>
-        </div>
-        <div class="card" id="card6">
-            <div class="avatar">
-
-            </div>
-            <div class="card-content">
-                <span class="card-title">最新考试</span>
-                <!-- <p class="card-text">Card Text Here</p>
-             <span class="card-subtitle">Card Subtitle</span> -->
-            </div>
-        </div>
-        <div class="card" id="card7">
-            <div class="avatar">
-
-            </div>
-            <div class="card-content">
-                <span class="card-title">今日任务</span>
-                <!-- <p class="card-text">Card Text Here</p>
-             <span class="card-subtitle">Card Subtitle</span> -->
-         </div>
-     </div>
+                <path d="M946.5 505L560.1 118.8l-25.9-25.9a31.5 31.5 0 0 0-44.4 0L77.5 505a63.9 63.9 0 0 0-18.8 46c.4 35.2 29.7 63.3 64.9 63.3h42.5V940h691.8V614.3h43.4c17.1 0 33.2-6.7 45.3-18.8a63.6 63.6 0 0 0 18.7-45.3c0-17-6.7-33.1-18.8-45.2zM568 868H456V664h112v204zm217.9-325.7V868H632V640c0-22.1-17.9-40-40-40H432c-22.1 0-40 17.9-40 40v228H238.1V542.3h-96l370-369.7 23.1 23.1L882 542.3h-96.1z">
+                </path>
+            </svg>
+            主页
+        </a>
     </div>
+    <button class="dropdown-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">
+            <path d="M928 160H96c-17.7 0-32 14.3-32 32v640c0 17.7 14.3 32 32 32h832c17.7 0 32-14.3 32-32V192c0-17.7-14.3-32-32-32zm-40 110.8V792H136V270.8l-27.6-21.5 39.3-50.5 42.8 33.3h643.1l42.8-33.3 39.3 50.5-27.7 21.5zM833.6 232L512 482 190.4 232l-42.8-33.3-39.3 50.5 27.6 21.5 341.6 265.6a55.99 55.99 0 0 0 68.7 0L888 270.8l27.6-21.5-39.3-50.5-42.7 33.2z"></path>
+        </svg>
+        任务发布
+        <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="dropdown-container">
+        <a href="#link1">打卡发布</a>
+        <a href="#link2">考试发布</a>
+    </div>
+    <button class="dropdown-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">
+            <path d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z"></path>
+        </svg>
+        学习情况
+        <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="dropdown-container">
+        <a href="#link1">考试情况</a>
+    </div>
+    <button class="dropdown-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">
+            <path d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z"></path>
+        </svg>
+        团队管理
+        <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="dropdown-container">
+        <a href="#link1">成员管理</a>
+        <a href="#link2">申请审核</a>
+    </div>
+    <a href="#contact">
+        <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">
+            <path d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z"></path>
+        </svg>
+        个人中心
+    </a>
+</div>
 
-    <script>
-        document.getElementById('card1').addEventListener('click', function () {
-            window.location.href = 'manage.html'; // 替换为你想要跳转的URL  
-        });
-    </script>
+<div style="margin-left:350px">
+    <h2 style="margin-bottom: 40px">首页</h2>
+    <div class="main_label">
+        <div style="font-size: 12px;margin-top: 10px;margin-left: 3%;text-align: left;">
+        <label >欢迎来到英语每日练团队管理端</label>
+        </div>
+    </div>
+    <div style="display: flex; justify-content: space-between">
+        <div class="icon" style="background: linear-gradient(45deg, #ffffff, #3598dc);/*background-size: 60% 10%;*/">
+            <div class="upper">
+                <div class="left">
+                    <img src="image/书架.png" alt="书架">
+                </div>
+                <div class="right">
+                    <p class="text">今日打卡</p>
+                    <p class="text2">80人</p>
+                </div>
+            </div>
+            <div class="lower" style="background-color: #72b2df;">
+                <div style="margin-left: 6%; margin-top: 3%;">
+                    <p style="
+                font-size: 70%;
+                font-family: '黑体', serif;
+                align-self: flex-end;
+
+                color: white;">查看详情</p>
+                </div>
+                <div class="right">
+                    <div style="max-width: 100px; margin-left: 250%; margin-top: 10%;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"   >
+                            <g transform="scale(0.15)">
+                                <circle cx="50" cy="50" r="40" fill="transparent" stroke="white" stroke-width="10" />
+                                <path d="M 30 50 L 75 50" stroke="white" stroke-width="10" />
+                                <path d="M 50 10 L 90 50 L 50 90 L 45 85 L 80 50 L 45 15 Z" fill="white" stroke-width="20" transform="scale(0.6) translate(45, 35)"/>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="icon" style="background: linear-gradient(45deg, #ffffff, #EE0000);">
+            <div class="upper">
+                <div class="left">
+                    <img src="image/沙漏.png" alt="书架">
+                </div>
+                <div class="right">
+                    <p class="text">打卡率</p>
+                    <p class="text2">80%</p>
+                </div>
+            </div>
+            <div class="lower" style="background-color: #E38282;">
+                <div style="margin-left: 6%; margin-top: 3%;">
+                    <p style="
+                font-size: 70%;
+                font-family: '黑体', serif;
+                align-self: flex-end;
+
+                color: white;">查看详情</p>
+                </div>
+                <div class="right">
+                    <div style="max-width: 100px; margin-left: 250%; margin-top: 10%;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"   >
+                            <g transform="scale(0.15)">
+                                <circle cx="50" cy="50" r="40" fill="transparent" stroke="white" stroke-width="10" />
+                                <path d="M 30 50 L 75 50" stroke="white" stroke-width="10" />
+                                <path d="M 50 10 L 90 50 L 50 90 L 45 85 L 80 50 L 45 15 Z" fill="white" stroke-width="20" transform="scale(0.6) translate(45, 35)"/>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="icon" style="background: linear-gradient(45deg, #8952f5, #5302f5);">
+            <div class="upper">
+                <div class="left">
+                    <img src="image/笔记本2.png" alt="书架">
+                </div>
+                <div class="right">
+                    <p class="text">最近考试</p>
+                    <p class="text2" style="font-size: 20px;">6月12日</p>
+                </div>
+            </div>
+            <div class="lower" style="background-color: #8837FC;">
+                <div style="margin-left: 6%; margin-top: 3%;">
+                    <p style="
+                font-size: 70%;
+                font-family: '黑体', serif;
+                align-self: flex-end;
+
+                color: white;">查看详情</p>
+                </div>
+                <div class="right">
+                    <div style="max-width: 100px; margin-left: 250%; margin-top: 10%;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"   >
+                            <g transform="scale(0.15)">
+                                <circle cx="50" cy="50" r="40" fill="transparent" stroke="white" stroke-width="10" />
+                                <path d="M 30 50 L 75 50" stroke="white" stroke-width="10" />
+                                <path d="M 50 10 L 90 50 L 50 90 L 45 85 L 80 50 L 45 15 Z" fill="white" stroke-width="20" transform="scale(0.6) translate(45, 35)"/>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="icon" style="background: linear-gradient(45deg, #ffffff, #00ffcc);">
+            <div class="upper">
+                <div class="left">
+                    <img src="image/笔记本.png" alt="书架">
+                </div>
+                <div class="right">
+                    <p class="text">加入申请</p>
+                    <p class="text2">5人</p>
+                </div>
+            </div>
+            <div class="lower" style="background-color: #63dbdf;">
+                <div style="margin-left: 6%; margin-top: 3%;">
+                    <p style="
+                font-size: 70%;
+                font-family: '黑体', serif;
+                align-self: flex-end;
+
+                color: white;">查看详情</p>
+                </div>
+                <div class="right">
+                    <div style="max-width: 100px; margin-left: 250%; margin-top: 10%;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"   >
+                            <g transform="scale(0.15)">
+                                <circle cx="50" cy="50" r="40" fill="transparent" stroke="white" stroke-width="10" />
+                                <path d="M 30 50 L 75 50" stroke="white" stroke-width="10" />
+                                <path d="M 50 10 L 90 50 L 50 90 L 45 85 L 80 50 L 45 15 Z" fill="white" stroke-width="20" transform="scale(0.6) translate(45, 35)"/>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card" style="max-height: 300px;margin-top: 3%">
+        <div id="chart" style="width: 600px; height: 300px;"></div>
+    </div>
+</div>
 
 
 </body>
-<script src="js/pieChart.js"></script>
 <script src="./js/Navbar.js"></script>
+<script src="./js/sidebar.js"></script>
+<script src="https://cdn.staticfile.net/echarts/4.3.0/echarts.min.js"></script>
+<script>
+    var chart = echarts.init(document.getElementById('chart'));// 初始化图表
+
+    // 数据
+    var data = {
+        date: ['1月1日', '1月2日', '1月3日', '1月4日', '1月5日', '1月6日', '1月7日'],
+        barData: [49, 48, 37, 42, 48, 22, 48], // 柱状图数据
+        lineData: [40, 45, 32, 37, 43, 20, 45]  // 折线图数据
+    };
+
+    // 创建图表
+    chart.setOption({
+        tooltip: {
+            trigger: 'axis'// 鼠标悬浮提示
+        },
+        legend: {
+            data: ['打卡人数', '打卡率']
+        },
+        xAxis: {
+            type: 'category',
+            data: data.date
+        },
+        yAxis: [
+            {
+                type: 'value',
+                name: '打卡人数',
+                position: 'left',
+                axisLine: {
+                    lineStyle: {
+                        color: '#409EFF'
+                    }
+                }
+            },
+            {
+                type: 'value',
+                name: '打卡率',
+                position: 'right',
+                axisLine: {
+                    lineStyle: {
+                        color: 'red'
+                    }
+                }
+            }],
+        series: [{
+            name: '打卡人数',
+            type: 'bar',
+            data: data.barData,
+            yAxisIndex: 0,
+            color: '#409EFF'
+        }, {
+            name: '打卡率',
+            type: 'line',
+            data: data.lineData,
+            yAxisIndex: 1,// 使用右边的坐标轴
+            color: 'red'
+        }]
+    });
+</script>
 </html>
