@@ -1,6 +1,7 @@
 ﻿package teamrouter
 
 import (
+	controlsql "DailyEnglish/Control_SQL"
 	service "DailyEnglish/Service"
 	"database/sql"
 	"net/http"
@@ -108,10 +109,38 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		if token == "" {
 			c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login.html")
 		}
-		_, err := service.ParseToken(token)
+		user, err := service.ParseToken(token)
 		if err != nil {
 			c.JSON(400, "登录信息无效或过期")
 		}
+		// ExamInfo 结构体表示单个考试的信息
+		type ExamInfo struct {
+			Name         string `json:"name"`          // 考试名称
+			Time         string `json:"time"`          // 考试时间
+			FullScore    string `json:"full_score"`    // 满分
+			AverageScore string `json:"average_score"` // 平均分
+			PassRate     string `json:"pass_rate"`     // 通过率
+		}
 
+		// ExamsResponse 结构体表示包含多个考试的响应
+		type response struct {
+			Code  string     `json:"code"`  // 响应代码
+			Msg   string     `json:"msg"`   // 响应消息
+			Exams []ExamInfo `json:"exams"` // 考试列表
+		}
+		var Response response
+		Item, _ := controlsql.QueryTeamExams(client, user.TeamName)
+		var examinfo ExamInfo
+		for _, item := range Item {
+			examinfo.Name = item["Name"]
+			examinfo.FullScore = "100"
+			examinfo.AverageScore = item["AverageScore"]
+			examinfo.PassRate = item["PassRate"]
+			examinfo.Time = item["Date"]
+			Response.Exams = append(Response.Exams, examinfo)
+		}
+		Response.Code = "200"
+		Response.Msg = "成功"
+		c.JSON(200, Response)
 	})
 }
