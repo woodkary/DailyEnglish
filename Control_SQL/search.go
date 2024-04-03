@@ -182,7 +182,7 @@ func GetTeamExamResult(client *redis.Client, teamName string, examName string) (
 	return examResult, nil
 }
 
-// 根据团队名查询该团队所有考试的考试名称、考试日期、平均分、通过率
+// 根据团队名查询该团队所有考试的考试名称、考试日期、平均分、通过率，并按照考试日期排序
 func QueryTeamExams(client *redis.Client, teamName string) ([]map[string]string, error) {
 	// 获取所有考试的键名
 	keys, err := client.Keys("exam_info:*").Result()
@@ -221,6 +221,13 @@ func QueryTeamExams(client *redis.Client, teamName string) ([]map[string]string,
 			examInfos = append(examInfos, exam)
 		}
 	}
+
+	// 按照考试日期排序
+	sort.Slice(examInfos, func(i, j int) bool {
+		dateI, _ := time.Parse("2006-01-02", examInfos[i]["Date"])
+		dateJ, _ := time.Parse("2006-01-02", examInfos[j]["Date"])
+		return dateI.Before(dateJ)
+	})
 
 	return examInfos, nil
 }
