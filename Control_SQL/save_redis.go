@@ -46,6 +46,7 @@ type AdminRequest struct {
 
 type Notification struct {
 	ID       string // 通知ID
+	flag     string //已处理标志，0未处理1已经处理
 	Title    string // 通知标题
 	Content  string // 通知内容
 	Time     string // 通知时间
@@ -65,7 +66,7 @@ type ExamInfo struct {
 	Questions     []string       // 试题内容
 	AverageScore  float64        // 考试平均分
 	PassRate      float64        // 及格率
-	TopTen        map[string]int // 前十名成员用户名及分数，键为用户名，值为分数
+	TopSix        map[string]int // 前十名成员用户名及分数，键为用户名，值为分数
 }
 
 // 保存团队信息
@@ -120,9 +121,9 @@ func SaveAttendanceRecord(client *redis.Client, record AttendanceRecord) error {
 	return nil
 }
 
-// 保存团队管理员申请信息
+// 保存团队申请信息
 func SaveAdminRequest(client *redis.Client, request AdminRequest) error {
-	// 使用哈希数据结构保存管理员申请信息
+	// 使用哈希数据结构保存申请信息
 	_, err := client.HMSet("admin_request:"+request.TeamName+":user:"+request.Username, map[string]interface{}{
 		"time":    request.Time,
 		"message": request.Message,
@@ -142,7 +143,7 @@ func SaveNotification(client *redis.Client, notification Notification) error {
 	// 使用有序集合保存通知信息，以通知ID作为分数，保证通知按时间顺序存储和检索
 	_, err := client.ZAdd("notifications:"+notification.TeamName, redis.Z{
 		Score:  now,
-		Member: fmt.Sprintf("%s|%s|%s|%s", notification.ID, notification.Title, notification.Content, notification.Time),
+		Member: fmt.Sprintf("%s|%s|%s|%s|%s", notification.ID, notification.flag, notification.Title, notification.Content, notification.Time),
 	}).Result()
 	if err != nil {
 		return err
@@ -178,7 +179,7 @@ func SaveExamInfo(client *redis.Client, examInfo ExamInfo) error {
 	}
 
 	// 保存前十名成员信息
-	for username, score := range examInfo.TopTen {
+	for username, score := range examInfo.TopSix {
 		_, err := client.HSet("exam_info:"+strconv.Itoa(examInfo.ID)+":top_ten", username, score).Result()
 		if err != nil {
 			return err

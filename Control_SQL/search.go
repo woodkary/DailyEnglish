@@ -183,28 +183,37 @@ func GetTeamExamResult(client *redis.Client, teamName string, examName string) (
 }
 
 // 7. 通过团队名查询该团队的通知信息
-func GetTeamNotifications(client *redis.Client, teamName string) ([]Notification, error) {
-	// 查询该团队的通知信息
-	// 使用 Key 格式为 "notifications:{teamName}" 进行查询
-	notifications, err := client.ZRange("notifications:"+teamName, 0, -1).Result()
+// 根据团队名查询flag为0的通知，并按时间排序
+func QueryUnprocessedNotifications(client *redis.Client, teamName string) ([]Notification, error) {
+	// 查询有序集合中的通知信息，按时间从小到大排序
+	notifications, err := client.ZRangeByScore("notifications:"+teamName, redis.ZRangeBy{
+		Min:    "-inf",
+		Max:    "+inf",
+		Offset: 0,
+		Count:  -1,
+	}).Result()
 	if err != nil {
 		return nil, err
 	}
 
-	// 解析通知信息并返回
-	var teamNotifications []Notification
-	for _, notification := range notifications {
-		parts := strings.Split(notification, "|")
-		teamNotifications = append(teamNotifications, Notification{
-			ID:       parts[0],
-			Title:    parts[1],
-			Content:  parts[2],
-			Time:     parts[3],
-			TeamName: teamName,
-		})
+	// 将通知信息解析为结构体
+	var unprocessedNotifications []Notification
+	for _, notificationStr := range notifications {
+		notificationParts := strings.Split(notificationStr, "|")
+		// 检查通知是否已处理，如果 flag 为 "0" 则未处理
+		if len(notificationParts) >= 5 && notificationParts[1] == "0" {
+			notification := Notification{
+				ID:       notificationParts[0],
+				flag:     notificationParts[1],
+				Title:    notificationParts[2],
+				Content:  notificationParts[3],
+				Time:     notificationParts[4],
+				TeamName: teamName,
+			}
+			unprocessedNotifications = append(unprocessedNotifications, notification)
+		}
 	}
-
-	return teamNotifications, nil
+	return unprocessedNotifications, nil
 }
 
 // 8. 通过考试名获取考试id，然后再通过id获取该场考试信息
@@ -247,21 +256,21 @@ func GetExamInfoByExamName(client *redis.Client, examName string) (ExamInfo, err
 		QuestionCount: questionCount,
 		AverageScore:  averageScore,
 		PassRate:      passRate,
-		TopTen:        make(map[string]int),
+		TopSix:        make(map[string]int),
 		Questions:     []string{},
 	}
 
 	// 查询前十名成员信息
-	topTenMembers, err := client.HGetAll("exam_info:" + strconv.Itoa(examID) + ":top_ten").Result()
+	topSixMembers, err := client.HGetAll("exam_info:" + strconv.Itoa(examID) + ":top_six").Result()
 	if err != nil {
 		return ExamInfo{}, err
 	}
-	for username, score := range topTenMembers {
+	for username, score := range topSixMembers {
 		scoreInt, err := strconv.Atoi(score)
 		if err != nil {
 			return ExamInfo{}, err
 		}
-		exam.TopTen[username] = scoreInt
+		exam.TopSix[username] = scoreInt
 	}
 
 	// 查询试题内容
