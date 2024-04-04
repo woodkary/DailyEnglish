@@ -6,20 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="40a60d59-6e65-465a-89ab-7764c8f00a1d" name="更改" comment="复原index.html">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/history.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/history.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/issuePunch.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/issuePunch.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/Navbar.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/Navbar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/manage.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/manage.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/memberDetails.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/memberDetails.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/navbar.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/navbar.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/personal-test-details.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/personal-test-details.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/review.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/review.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/signInPlan.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/signInPlan.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/template.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/template.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/test-details.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/test-details.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/test-statistics.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/test-statistics.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/word-statistics.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/word-statistics.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -114,7 +100,15 @@
       <option name="project" value="LOCAL" />
       <updated>1712221080009</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="复原index.html">
+      <option name="closed" value="true" />
+      <created>1712221903325</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1712221903325</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

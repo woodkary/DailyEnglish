@@ -65,3 +65,9 @@ svg {
     margin-top: 0;
     margin-right: 10px;
 }
+.sidebar-container {
+    position: relative; /* 作为sidebar的相对定位父元素 */
+    height: 100%; /* 占满整个视口高度 */
+    /*距离视窗左边的距离*/
+
+}
