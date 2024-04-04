@@ -19,6 +19,10 @@ body{
 .detail-selection ol{
     list-style-type: none;
 }
+.detail-selection .horizontal-list {
+    display: flex; /* 使列表横向排布 */
+    flex-wrap: wrap; /* 如果横向空间不足，允许列表项换行 */
+}
 .horizontal-list {
     display: flex;
     list-style-type: none;
@@ -26,7 +30,9 @@ body{
 }
 .horizontal-list li {
     margin-right: 30px; /* 为了给列表项之间添加间距 */
-}  
+    margin-top: 10px;
+}
+
 
 .horizontal-list ul{
     list-style-type: none;
@@ -61,6 +67,7 @@ body{
     padding: 10px;
     border: 1px solid #000000; /* 添加边框，颜色为黑色 */
     box-shadow: 0 0 5px rgba(73, 73, 73, 0.5); /* 添加阴影 */
+    margin-bottom: 20px;
 }
 
 .search-container img {
@@ -86,10 +93,9 @@ body{
     margin-right: 50px; /* 图标之间的间距 */
 }
 
+/* 书籍框 */
 
-/* 第三个框 */
-.search-container {
-    
+.book-container { 
     display: flex;
     background-color: #ffffff; /* 将背景颜色改为白色 */
     color: #000000; /* 文本颜色为黑色 */
@@ -97,4 +103,82 @@ body{
     padding: 10px;
     border: 1px solid #000000; /* 添加边框，颜色为黑色 */
     box-shadow: 0 0 5px rgba(73, 73, 73, 0.5); /* 添加阴影 */
+    align-items: center; /* 垂直居中子元素 */
+    margin-bottom: 10px;
+     order: 0; /* 默认顺序 */
+}
+
+.book-container img {
+    width: 80px;
+    height: 80px;
+    margin-left: 50px;
+}
+.book-name{
+    margin-left: 50px;
+}
+
+.book-static{
+    margin-left: 50px;
+    color: blue;
+}
+.book-info{
+    display: flex;
+    flex-direction: column;
+    margin-left: 50px;
+}
+.book-info > div {
+    display: flex; /* 每个包含p元素的div水平排列 */
+    align-items: center; /* 垂直居中子元素 */
+    margin-bottom: 10px; /* 设置div元素之间的间距 */
+}
+.num span{
+    border: 1px solid #BBBBBB;
+    border-radius: 15%;
+    padding: 2px; /* 增加内边距，调整文字与边框的距离 */
+    background-color: #BBBBBB; 
+}
+.operation{
+    display: flex; /* 使用Flexbox布局 */
+    align-items: center; /* 垂直居中子元素 */
+    margin-left: 30%;
+}
+.operation img,
+.operation span{
+    width: 24px; /* 设置img和span的宽度 */
+    height: 24px; /* 设置img和span的高度 */
+    margin-right: 10px; /* 设置img和span之间的间距 */
+    display: flex; /* 使span元素也使用Flexbox布局 */
+    align-items: center; /* 垂直居中span内部的文本 */
+    justify-content: center; /* 水平居中span内部的文本 */
+}
+
+
+
+/* 同心圆按钮 */
+.circle-btn {
+    margin-left: 100px;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #000;
+    border-radius: 50%;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-right: 10px;
+}
+.circle-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%;
+    height: 50%;
+    border-radius: 50%;
+    background-color: #000;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.circle-btn.active::before {
+    opacity: 1;
 }

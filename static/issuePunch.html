@@ -110,7 +110,7 @@
         <div class="detail-selection">
             <ol>
                 <li>
-                    <scan class="gray">年级：</scan>
+                    <span class="gray">年级：</span>
                     <ul class="horizontal-list">
                         <li onclick="changeColor(this)">一年级</li>
                         <li onclick="changeColor(this)">二年级</li>
@@ -118,15 +118,21 @@
                         <li onclick="changeColor(this)">四年级</li>
                         <li onclick="changeColor(this)">五年级</li>
                         <li onclick="changeColor(this)">六年级</li>
+                        <li onclick="changeColor(this)">初一</li>
+                        <li onclick="changeColor(this)">初二</li>
+                        <li onclick="changeColor(this)">初三</li>
+                        <li onclick="changeColor(this)">高一</li>
+                        <li onclick="changeColor(this)">高二</li>
+                        <li onclick="changeColor(this)">高三</li>
                         <li onclick="changeColor(this)">大一</li>
                         <li onclick="changeColor(this)">大二</li>
                         <li onclick="changeColor(this)">大三</li>
                         <li onclick="changeColor(this)">大四</li>
                     </ul>
                 </li>
-                <scan><br></scan>
+                <span><br></span>
                 <li>
-                    <scan class="gray">难度：</scan>
+                    <span class="gray">难度：</span>
                     <ul class="horizontal-list">
                         <li onclick="changeColor(this)">简单</li>
                         <li onclick="changeColor(this)">中档</li>
@@ -155,8 +161,75 @@
             <span class="blank"></span>
             <input type="text" class="search-input" placeholder="智能查找">
             <img src="./image/搜索图标.png" alt="Search" class="search-icon">
-
         </div>
+
+
+        <div class="book-container" id="book1">
+            <img src="./image/cet4.png">
+            <h3 class="book-name">四级词汇</h3>
+            <div class="book-info">
+                <div class="num">
+                    <span>选取次数:</span>
+                    <span class="book-static">114</span>
+                </div>
+                <div class="num">
+                    <span>单词数目:</span>
+                    <span class="book-static">3500</span>
+                </div>
+
+            </div>
+            <div class="operation">
+                <img src="./image/download.png">
+                <span>下载</span>
+                <div class="circle-btn" id="btn1" onclick="toggleActive(this)"></div>
+                <span>选择</span>
+            </div>
+        </div>
+        <div class="book-container" id="book2">
+            <img src="./image/cet6.jpg">
+            <h3 class="book-name">六级词汇</h3>
+            <div class="book-info">
+                <div class="num">
+                    <span>选取次数:</span>
+                    <span class="book-static">114</span>
+                </div>
+                <div class="num">
+                    <span>单词数目:</span>
+                    <span class="book-static">6000</span>
+                </div>
+
+            </div>
+            <div class="operation">
+                <img src="./image/download.png">
+                <span>下载</span>
+                <div class="circle-btn" id="btn2" onclick="toggleActive(this)"></div>
+                <span>选择</span>
+            </div>
+        </div>
+
+        <div class="book-container" id="book3">
+            <img src="./image/postgraduate.webp">
+            <h3 class="book-name">考研词汇</h3>
+            <div class="book-info">
+                <div class="num">
+                    <span>选取次数:</span>
+                    <span class="book-static">114</span>
+                </div>
+                <div class="num">
+                    <span>单词数目:</span>
+                    <span class="book-static">9000</span>
+                </div>
+
+            </div>
+            <div class="operation">
+                <img src="./image/download.png">
+                <span>下载</span>
+                <div class="circle-btn" id="btn3" onclick="toggleActive(this)"></div>
+                <span>选择</span>
+            </div>
+        </div>
+
+
     </div>
 
 
@@ -168,6 +241,23 @@
             }
             element.style.color = "blue";
         }
+
+        // /同心圆按钮/ 
+        function toggleActive(button) {
+            button.classList.toggle('active');
+        }
+        document.querySelectorAll('.circle-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                // 移除所有按钮的激活状态
+                document.querySelectorAll('.circle-btn').forEach(function (btn) {
+                    btn.classList.remove('active');
+                });
+                // 添加激活状态到当前点击的按钮
+                this.classList.add('active');
+            });
+        });
+
+
     </script>
 </body>
 <script src="./js/Navbar.js"></script>
