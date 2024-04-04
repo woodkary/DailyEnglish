@@ -11,28 +11,24 @@
 <link rel="stylesheet" href="./css/signInPlan.css">
 
 <!-- Navigation bar -->
-<div class="navbar">
+    <div class="navbar">
+        <div class="navbar-left">
+            <img src="./image/little-edellweiss.regular.webp"  class="brand-logo">
+        </div>
+        <div class="navbar-right">
+            <img src="./image/moon.svg" alt="夜间模式" id="moon" onclick="toggleMoon()" class="night-mode">
+            <button class="notifications">
+                <img src="./image/通知.svg" >
+            </button>
 
-    <a href="#" class="logo">每日英语</a>
-    <a href="#">首页</a>
-    <a href="#">关于</a>
-    <a href="manage.html">成员管理</a>
-
-    <div class="dropdown">
-        <button class="dropbtn">发布任务</button>
-        <div class="dropdown-content">
-            <a href="#">考试</a>
-            <a href="signInPlan.html">打卡</a>
-            <a href="#">每日单词</a>
-            <a href="history.html">发布历史</a>
+            <div class="user-info">
+                <div>姓名</div>
+                <div>组织名称</div>
+            </div>
+            <img src="./image/pikachu.jpg" alt="头像" class="user-avatar">
+            <img src="./image/logout.svg" class="logout">
         </div>
     </div>
-    <div class="user-container">
-        <p class="username">用户名</p>
-        <img src="image/pikachu.jpg" alt="User Avatar" class="user-avatar">
-        <button type="button" class="logout-button" onclick="logout()"></button>
-    </div>
-</div>
 
 <h1>打卡计划</h1>
 

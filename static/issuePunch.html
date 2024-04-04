@@ -12,36 +12,20 @@
 <body>
     <div class="navbar">
         <div class="navbar-left">
-            <img src="./image/pikachu.jpg" alt="品牌商标" class="brand-logo">
-            <img src="image/英语每日练.png" alt="品牌名称" class="brand-name">
-            <div class="dropdown">
-                <img src="image/下拉菜单.png" class="dropbtn" onclick="myFunction()">
-                <div class="dropdown-content" id="myDropdown">
-                    <a href="#">链接 1</a>
-                    <a href="#">链接 2</a>
-                    <a href="#">链接 3</a>
-                </div>
-            </div>
+            <img src="./image/little-edellweiss.regular.webp"  class="brand-logo">
         </div>
         <div class="navbar-right">
-            <img src="image/通知.png" style="
-            max-width: 20px; /* 设置最大宽度 */
-            max-height: 25px; /* 设置最大高度 */
-            margin-right: 10px;
-        ">
-            <button class="notifications">通知</button>
-            <img src="image/全屏.png" style="
-            max-width: 20px; /* 设置最大宽度 */
-            max-height: 25px; /* 设置最大高度 */
-            margin-right: 10px;
-        ">
-            <button class="fullScreen">全屏</button>
+            <img src="./image/moon.svg" alt="夜间模式" id="moon" onclick="toggleMoon()" class="night-mode">
+            <button class="notifications">
+                <img src="./image/通知.svg" >
+            </button>
+
             <div class="user-info">
                 <div>姓名</div>
                 <div>组织名称</div>
             </div>
             <img src="./image/pikachu.jpg" alt="头像" class="user-avatar">
-            <img src="image/logoutButton.png" class="logout">
+            <img src="./image/logout.svg" class="logout">
         </div>
     </div>
 
