@@ -4,10 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="40a60d59-6e65-465a-89ab-7764c8f00a1d" name="更改" comment="1">
+    <list default="true" id="40a60d59-6e65-465a-89ab-7764c8f00a1d" name="更改" comment="考试数据获取">
+      <change afterPath="$PROJECT_DIR$/static/css/icon.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/js/manage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/DailyEnglish.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/DailyEnglish.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/manage.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/manage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/js/test-statistics.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/test-statistics.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/test-statistics.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/test-statistics.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/manage.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/manage.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,6 +22,14 @@
   </component>
   <component name="ComposerSettings">
     <execution />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="CSS File" />
+        <option value="JavaScript File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -57,6 +71,7 @@
     "go.import.settings.migrated": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/clk/Desktop/陈立凯_2021150219_实验一",
+    "list.type.of.created.stylesheet": "CSS",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -74,8 +89,17 @@
       <option name="presentableId" value="Default" />
       <updated>1712017984936</updated>
       <workItem from="1712017986691" duration="26000" />
-      <workItem from="1712212132818" duration="660000" />
+      <workItem from="1712212132818" duration="3365000" />
     </task>
+    <task id="LOCAL-00001" summary="考试数据获取">
+      <option name="closed" value="true" />
+      <created>1712212869134</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1712212869134</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -94,7 +118,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="1" />
-    <option name="LAST_COMMIT_MESSAGE" value="1" />
+    <MESSAGE value="考试数据获取" />
+    <option name="LAST_COMMIT_MESSAGE" value="考试数据获取" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

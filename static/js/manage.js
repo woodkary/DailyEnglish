@@ -19,56 +19,43 @@ function allTestStatistics() {
             'token': token
         }
     })
-       .then(response => response.json())
-       .then(data => {
+        .then(response => response.json())
+        .then(data => {
             console.log(data);
             const tableBody=document.getElementById("table-body");
-            let exams=data.exams;
-            totalPage=Math.ceil(exams.length/PAGE_SIZE);
+            let members=data.members;
+            totalPage=Math.ceil(members.length/PAGE_SIZE);
             //在获取数据后再创建分页按钮
             pagination.innerHTML='';
             createPaginationButtons();
-           //分页
+            //分页
             const startIndex=(page-1)*PAGE_SIZE;
             const endIndex=startIndex+PAGE_SIZE;
-            exams=exams.slice(startIndex,endIndex);
-            exams.forEach(exam => {
+            members=members.slice(startIndex,endIndex);
+            members.forEach(member => {
                 const row=document.createElement("tr");
-                //获取考试名称
-                const name=document.createElement("td");
-                name.innerText=exam.name;
-                //获取考试时间
-                const time=document.createElement("td");
-                time.innerText=exam.time;
-                //获取考试地点
-                const full_score=document.createElement("td");
-                full_score.innerText=exam.full_score;
-                //获取考试平均分
-                const average_score=document.createElement("td");
-                average_score.innerText=exam.average_score;
-                //获取考试通过率
-                const pass_rate=document.createElement("td");
-                pass_rate.innerText=exam.pass_rate;
+                //todo: 获取到后端数据后，显示对应的内容
 
-                //创建按钮
+                //创建按钮1
                 const buttonCell=document.createElement("td");
                 const button=document.createElement("button");
                 button.classList.add("BlueButton");//按钮样式
                 const span=document.createElement("span");//按钮文字
-                span.innerText="查看详情";
+                span.innerText="详情";
                 span.classList.add("UnderlinedBlue");//按钮文字样式
                 button.appendChild(span);
-                //按钮点击事件
-                button.addEventListener("click",()=>{
-                    window.location.href="/test-detail.html?name="+exam.name;
-                });
+                //创建按钮2
+                const button2=document.createElement("button");
+                button2.classList.add("RedButton");//按钮样式
+                const span2=document.createElement("span");//按钮文字
+                span2.innerText="删除";
+                span2.classList.add("UnderlinedRed");//按钮文字样式
+                button2.appendChild(span2);
+                //将按钮1添加到单元格中
                 buttonCell.appendChild(button);//将按钮添加到单元格中
-                //将单元格添加到行中
-                row.appendChild(name);
-                row.appendChild(time);
-                row.appendChild(full_score);
-                row.appendChild(average_score);
-                row.appendChild(pass_rate);
+                //将按钮2添加到单元格中
+                buttonCell.appendChild(button2);//将按钮添加到单元格中
+                //将单元格1添加到行中
                 row.appendChild(buttonCell);
                 //将行添加到表格中
                 tableBody.appendChild(row);
