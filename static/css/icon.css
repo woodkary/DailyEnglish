@@ -37,9 +37,10 @@
 .icon .left img{
     position: relative;
     bottom: 10px;
-    max-width: 100%;
+    max-width: 70%;
     margin-left: 20%;
     margin-top: 35%;
+    max-height: 80px;
 }
 .right{
     max-width: 100%;
