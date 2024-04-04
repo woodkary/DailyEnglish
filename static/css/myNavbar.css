@@ -1,53 +1,41 @@
-
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #6200EE;
-    color: white;
-    padding: 10px;
+    background-color: white;
+    color: #1f2328;
+    width: 100%;
+    height: 60px;
+    border-bottom: 1px solid #d8d8d8;
 }
 .navbar-left { display: flex; align-items: center; }
 .navbar-left .brand-logo {
-    margin-left: 10px;
-    margin-right: 5px;
-    max-width: 30px; /* 设置最大宽度 */
-    max-height: 35px; /* 设置最大高度 */
-    border-radius: 50%;
+    width: 120px;
+    background-color: transparent;
+    margin-left: 20px;
+    
 }
-.navbar-left .brand-name{
-    margin-right: 20px;
-    max-width: 175px; /* 设置最大宽度 */
-    max-height: 175px; /* 设置最大高度 */
-}
-.dropdown-menu { margin-right: 10px; }
+
 .navbar-right {
     display: flex; align-items: center;
 }
 .notifications {
-    margin-right: 40px;
     background-color: transparent;
-    border-radius: 15%;
-    font-family: '黑体', serif; /* 使用自定义字体 */
-    font-style: italic; /* 斜体 */
-    color: white;
-    font-size: 16px;
     border: transparent;
+    margin-right: 20px;
+    margin-top:3px;
 }
-.notifications:hover{
-    background-color: #5303c4;
+.notifications img {
+    width: 22px;
 }
-.fullScreen {
-    margin-right: 100px;
+/* .notifications:hover{
+    background-color: #d8d8d8;
+} */
+.night-mode {
+    margin-right: 10px;
     background-color: transparent;
-    font-family: '黑体', serif; /* 使用自定义字体 */
-    font-style: italic; /* 斜体 */
-    color: white;
-    font-size: 16px;
     border: transparent;
-}
-.fullScreen:hover{
-    background-color: #5303c4;
+    width:20px;
 }
 .user-info {
     margin-right: 10px;
@@ -58,41 +46,14 @@
 .user-info div { margin: 2px 0; }
 .user-avatar{
     margin-right: 10px;
-    max-width: 30px; /* 设置最大宽度 */
-    max-height: 35px; /* 设置最大高度 */
-    border-radius: 50%;
+    width: 40px; /* 设置最大宽度 */
+    height: 40px; /* 设置最大高度 */
 }
 .logout {
     margin-left: 10px;
     max-width: 25px; /* 设置最大宽度 */
     max-height: 30px; /* 设置最大高度 */
-}
-/* 下拉菜单样式 */
-.dropdown {
-    position: relative;
-    display: inline-block;
-    max-width: 30px; /* 设置最大宽度 */
-    max-height: 35px; /* 设置最大高度 */
-}
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px
-    rgba(0,0,0,0.2);
-    z-index: 1;
-}
-.dropdown-content a { color: black; padding: 12px 16px; text-decoration: none; display: block; }
-.dropdown-content a:hover { background-color: #f1f1f1; }
-.dropdown:hover .dropdown-content { display: block; }
-.dropdown .dropbtn {
-    background: none; /* 移除按钮背景 */
-    cursor: pointer; /* 鼠标悬停时显示指针 */
-    border: none; /* 移除边框 */
-}
-.dropdown:hover{
-    background-color: #5303c4;
+    background-color: aliceblue;
 }
 @font-face {
     font-family: '用户名字体';

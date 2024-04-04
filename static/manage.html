@@ -107,7 +107,7 @@
             <div class="left-col">
                 <div class="organization-name">组织名称: XYZ</div>
                 <div>
-                    <button class="BlueButton MainButton""RedButton MainButton" style="margin-right: 30px;margin-left: 20px; margin-top: 30px; font-size: 16px;">组织扩容</button>
+                    <button class="BlueButton MainButton" style="margin-right: 30px;margin-left: 20px; margin-top: 30px; font-size: 16px;">组织扩容</button>
                     <button class="RedButton MainButton" style="font-size: 16px;">删除成员</button>
                 </div>
             </div>
@@ -126,7 +126,7 @@
             </div>
         </div>
     </div>
-    <img src="./image/线条%201.png" alt="线条" style="margin-top: 2%; width: 100%">
+    <!--<img src="./image/线条%201.png" alt="线条" style="margin-top: 2%; width: 100%">-->
     <!--<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <line x1="0" y1="10" x2="60" y2="10" style="stroke:rgb(0,0,0);stroke-width:2;width"></line>
     </svg>-->
@@ -140,7 +140,7 @@
             <th>操作</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody id="table-body">
         <!-- 成员数据行 -->
         <tr>
             <td>龙王</td>
@@ -254,11 +254,11 @@
                 </button>
             </td>
         </tr>
-        
+
         </tbody>
     </table>
 
-    <div class="pagination">
+    <div class="pagination" id="pagination">
         <!-- 分页按钮 -->
         <button>&lt;</button>
         <button>1</button>

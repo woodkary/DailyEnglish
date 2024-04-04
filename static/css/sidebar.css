@@ -2,9 +2,10 @@
 .sidebar {
     height: 50%;
     width: 250px;
-    position: fixed;
+    position: sticky; /* 使用 sticky 定位 */
+    top: 20px; /* 当达到顶部时，侧边栏将固定 */
+    margin-top: 20px;
     z-index: 1;
-    top: 100px;
     left: 10px;
     background-color: #ffffff;
     overflow-x: hidden;
