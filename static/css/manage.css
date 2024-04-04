@@ -74,7 +74,7 @@ h1{
     margin-left:300px;
     width: 75%;
     height: 80%;
-    top: 15%;
+    margin-top: 0.2%;
 
     background-color: white;
     border: 1px solid #ddd;
@@ -110,13 +110,7 @@ h1{
     padding: 5px 10px;
 }
 
-.search-container {  
-    position: relative; /* 使子元素可以相对于此容器定位 */  
-    margin-top: 20px;
-    right: 20px;
-    width: 100%; /* 宽度为100% */  
-    max-height: 20%; /* 最大高度为20% */  
-}  
+
   
 .search-input {  
     padding-right: 30px; /* 右侧内边距，为图标预留空间 */  
@@ -163,7 +157,7 @@ th, td {
     height: 40px;
     padding: 8px;
     text-align: left;
-    background-color: white;
+    /*background-color: white;*/
 }
 .list1{
     width: 30%;
@@ -176,6 +170,148 @@ th, td {
 }
 .list4{
     width: 15%;
+}
+body { font-family: Arial, sans-serif; }
+.header { text-align: left; }
+.left-col {
+    flex: 1;
+    margin-right: 20px;
+    margin-left: 40px;
+    height: 100%;
+    flex-direction: column;
+}
+
+.right-col {
+    display: flex;
+    align-items: center;
+    padding-left: 550px;
+    height: 100%;
+
+    flex-direction: column;
+}
+
+.MainButton {
+    margin-right: 0;
+    padding: 6px 12px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-top: 15%;
+}
+.left-col .RedButton {
+    background-color: #dc3545;
+}
+.left-col .BlueButton {
+    background-color: #007bff;
+}
+
+.left-col  .RedButton:hover {
+    background-color: #c82333;
+}
+.left-col .BlueButton:hover {
+    background-color: #0056b3;
+}
+
+.organization-info {
+    display: flex;
+    justify-content: space-between;
+    background-color: #f1f1f1;
+    height: 20%;
+}
+.organization-info div {
+    margin-right: 10px;
+}
+.pagination {
+    margin-top: 30px;
+    margin-left: 80%;
+}
+.members-admin {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20%;
+    margin-left: auto;
+}
+.search-container {
+    position: relative;
+    width: 100%; /* 调整搜索框的宽度 */
+    margin: 10% auto; /* 水平居中 */
+}
+.search-input {
+    width: 100%;
+    padding: 10px 40px 10px 10px; /* 调整内边距以适应图标 */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box; /* 让内边距和边框宽度包含在元素的宽度和高度之内 */
+}
+.search-icon {
+    position: absolute;
+    right: 10px;
+    /*top: 80%;*/
+    bottom: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+table{
+    width: 95%;
+    border-collapse: collapse;/* 移除表格边框 */
+}
+table .RedButton{
+    background-color: transparent;
+    color: #dc3545;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+table .RedButton:hover{
+    color: #c82333;
+}
+table .BlueButton{
+    background-color: transparent;
+    color: #007bff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+table .BlueButton:hover{
+    color: #0056b3;
+}
+td, th{
+    border: none;
+    padding: 4px;
+    text-align: left;
+    font-size: 15px;
+}
+th{
+    background-color: #f2f2f2;
+    height: 10px;
+}
+tr {
+    border: none; /* 移除单元格边框 */
+    width: 90%;
+    /*background-color: #f8f8f8; /* 添加斑马纹 */
+}
+/* 设置奇数行的背景颜色 */
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* 设置偶数行的背景颜色 */
+tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+.UnderlinedRed {
+    text-decoration: underline;
+    text-decoration-color: red; /* 下划线颜色 */
+    text-decoration-style: solid; /* 下划线样式：可以是 solid（实线）、dotted（点线）、dashed（虚线）等 */
+    text-decoration-thickness: 0; /* 下划线粗细 */
+}
+.UnderlinedBlue{
+    text-decoration: underline;
+    text-decoration-color: blue; /* 下划线颜色 */
+    text-decoration-style: solid; /* 下划线样式：可以是 solid（实线）、dotted（点线）、dashed（虚线）等 */
+    text-decoration-thickness: 0; /* 下划线粗细 */
+
 }
 
 .pagination{
