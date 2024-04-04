@@ -2,14 +2,14 @@ let page = 1;
 const PAGE_SIZE = 6;
 const BUTTON_NUM=5;
 let totalPage=0;
+const pagination = document.getElementById("pagination");
 window.onload = function () {
-    const pagination = document.getElementById("pagination");
     page=new URLSearchParams(window.location.search).get("page")||1;
     const tableBody = document.getElementById('table-body');
     tableBody.innerHTML = '';
     allTestStatistics();
-    pagination.innerHTML='';
-    createPaginationButtons();
+    /*pagination.innerHTML='';
+    createPaginationButtons();*/
 }
 function allTestStatistics() {
     let token = localStorage.getItem('token');
@@ -27,7 +27,9 @@ function allTestStatistics() {
             const tableBody=document.getElementById("table-body");
             let exams=data.exams;
             totalPage=Math.ceil(exams.length/PAGE_SIZE);
-            /*createPaginationButtons();*/
+            //在获取数据后再创建分页按钮
+            pagination.innerHTML='';
+            createPaginationButtons();
            //分页
             const startIndex=(page-1)*PAGE_SIZE;
             const endIndex=startIndex+PAGE_SIZE;
@@ -88,9 +90,10 @@ function createPaginationButtons() {
         const tableBody = document.getElementById('table-body');
         tableBody.innerHTML = '';
         allTestStatistics();
-        pagination.innerHTML='';
-        createPaginationButtons();
+        /*pagination.innerHTML='';
+        createPaginationButtons();*/
     });
+    //TODO: 同步机制；前一页按钮需要在页数按钮之前加入。
     pagination.appendChild(prevButton);
     updatePagination(BUTTON_NUM);
     const nextButton = document.createElement("button");
@@ -100,8 +103,8 @@ function createPaginationButtons() {
         const tableBody = document.getElementById('table-body');
         tableBody.innerHTML = '';
         allTestStatistics();
-        pagination.innerHTML='';
-        createPaginationButtons();
+        /*pagination.innerHTML='';
+        createPaginationButtons();*/
     });
     pagination.appendChild(nextButton);
 }
@@ -124,8 +127,8 @@ function updatePagination(pageSize) {
             const tableBody = document.getElementById('table-body');
             tableBody.innerHTML = '';
             allTestStatistics();
-            pagination.innerHTML='';
-            createPaginationButtons();
+            /*pagination.innerHTML='';
+            createPaginationButtons();*/
         });
 
         if (i === page) {
