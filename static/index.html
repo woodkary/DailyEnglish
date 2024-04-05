@@ -6,6 +6,91 @@
     <title>成员详情</title>
 </head>
 <style>
+    /*html[theme='dark-mode'] {
+        filter: invert(1) hue-rotate(180deg);
+    }*//*:root {
+        color-scheme: dark;
+    }*/
+    /* Card 容器样式 */
+    .card2 {
+        border: 1px solid #ddd;/*边框*/
+        border-radius: 0px;/*圆角设置*/
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),/*下边阴影*/
+        4px 0 4px rgba(0, 0, 0, 0.1); /* 右边阴影 */
+        padding: 20px;/*内边距*/
+        background-color: #fff;
+        display: flex;
+        transition: all 0.5s ease; /* 添加过渡效果 */
+        width:400px;/*卡片宽度,记得改动！！！！！！！！！！！！！！！*/
+        height:300px;/*卡片高度,记得改动！*!*/
+        /* 使用 Flexbox 布局 */
+    }
+    .card2:hover {
+        transform: scale(1.005); /* 略微放大 */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 悬停时阴影加深 */
+    }
+    .avatar2 {
+        display: flex;/* 弹性布局 */
+        flex-direction: row;/* 子项排列方向*/
+        align-items: center;/* 子项垂直对齐方式*/
+        gap: 15%;/* 子项之间的间距 */
+    }
+
+    /* 头像样式 */
+    .avatar2 img {
+        width: 25%;
+        /* 头像宽度 */
+        height: 25%;
+        /* 头像高度 */
+        border-radius: 50%;
+        /* 圆形头像 */
+    }
+    .cardContainer {
+        display: flex;   /* 弹性布局 */
+        flex-direction: row; /* 水平排列子项 */
+        flex-wrap: wrap; /* 允许子项换行 */
+        gap: 3%; /* 设置子项之间的间隔 */
+        overflow: auto;
+    }
+    .card2 .title {
+        font-size: 20px;
+        color: #EE4141;
+        margin-top: 1%;
+        white-space: nowrap;
+        /*强制不换行*/
+    }
+    .card2 table {
+        position: absolute;
+        top: 20%;
+        left: 5%;
+        table-layout: fixed;
+        border: none;
+        width: 95%;
+        border-collapse: collapse;/* 移除表格边框 */
+    }
+    .card2 th, td {
+        border: 1px solid #e6e6e6;
+        height: 40px;
+        padding: 8px;
+        text-align: left;
+        /*background-color: white;*/
+    }
+    .card2 td, th{
+        border: none;
+        padding: 4px;
+        text-align: left;
+        font-size: 15px;
+    }
+    .card2 th{
+        background-color: #f2f2f2;
+        height: 5px;
+    }
+    .card2 tr {
+        border: none; /* 移除单元格边框 */
+        width: 90%;
+        /*background-color: #f8f8f8; /* 添加斑马纹 */
+    }
+
     .index {
         margin-left: 300px;
         margin-top: 0px;
@@ -85,6 +170,41 @@
         margin-right: 20px;
         margin-top: 20px;
     }
+    .notification {
+        border: 1px solid #ccc;
+        border-left-color: transparent;
+        border-right-color: transparent;
+        /*padding: 100px;*/
+        width: 90%;
+        margin-top: 10%;
+    }
+    .notification-item {
+        display: flex;
+        font-family: "黑体", serif;
+        font-size: 14px;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+    .notification-item img {
+        width: 20px;
+        height: 20px;
+        margin-right: 5px;
+    }
+    .notification-item:after{
+        content: "6分钟前";
+        display: flex;
+        font-family: "黑体", serif;
+        font-size: 14px;
+        align-items: end;
+        margin-left: 15%;
+        color: #aeacac;
+    }
+    .notification-item-divider {
+        border-top: 1px solid #ccc;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
 </style>
 <link rel="stylesheet" href="./css/sidebar.css">
 <link rel="stylesheet" href="./css/myNavbar.css">
@@ -112,7 +232,7 @@
     <div class="sidebar-container">
     <div class="sidebar">
         <div>
-            <a href="#home">
+            <a href="./index.html">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="64 64 896 896">
                     <path
                         d="M946.5 505L560.1 118.8l-25.9-25.9a31.5 31.5 0 0 0-44.4 0L77.5 505a63.9 63.9 0 0 0-18.8 46c.4 35.2 29.7 63.3 64.9 63.3h42.5V940h691.8V614.3h43.4c17.1 0 33.2-6.7 45.3-18.8a63.6 63.6 0 0 0 18.7-45.3c0-17-6.7-33.1-18.8-45.2zM568 868H456V664h112v204zm217.9-325.7V868H632V640c0-22.1-17.9-40-40-40H432c-22.1 0-40 17.9-40 40v228H238.1V542.3h-96l370-369.7 23.1 23.1L882 542.3h-96.1z">
@@ -131,8 +251,8 @@
             <i class="fa fa-caret-down"></i>
         </button>
         <div class="dropdown-container">
-            <a href="#link1">打卡发布</a>
-            <a href="#link2">考试发布</a>
+            <a href="issuePunch.html">打卡发布</a>
+            <a href="test-release.html">考试发布</a>
         </div>
         <button class="dropdown-btn">
             <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">
@@ -144,7 +264,7 @@
             <i class="fa fa-caret-down"></i>
         </button>
         <div class="dropdown-container">
-            <a href="#link1">考试情况</a>
+            <a href="test-statistics.html">考试情况</a>
         </div>
         <button class="dropdown-btn">
             <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">
@@ -156,8 +276,8 @@
             <i class="fa fa-caret-down"></i>
         </button>
         <div class="dropdown-container">
-            <a href="#link1">成员管理</a>
-            <a href="#link2">申请审核</a>
+            <a href="manage.html">成员管理</a>
+            <a href="review.html">申请审核</a>
         </div>
         <a href="#contact">
             <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">
@@ -209,13 +329,148 @@
             <image class="details_2" src="./image/右圆圈箭头.svg"></image>
         </div>
 </div>
-
-
+    <div class="cardContainer">
         <div class="card" style="max-height: 300px;margin-top: 3%">
             <div id="chart" style="width: 600px; height: 300px;"></div>
         </div>
+        <div class="card2" style="max-height: 300px;margin-top: 3%; position: relative">
+            <div class="title">打卡排行榜</div>
+            <table>
+                <tr>
+                    <td>成员</td>
+                    <td>打卡次数</td>
+                    <td>打卡率</td>
+                </tr>
+                <tr>
+                    <td >
+                        <div class="avatar2">
+                        <img src="image/男孩头像.svg" alt="头像">
+                            张三
+                        </div>
+                    </td>
+                    <td>45</td>
+                    <td style="color: #4DCA8A">45%</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="avatar2">
+                        <img src="image/男孩头像.svg" alt="头像">
+                        张三
+                        </div>
+                    </td>
+                    <td>45</td>
+                    <td style="color: #4DCA8A">45%</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="avatar2">
+                            <img src="image/男孩头像.svg" alt="头像">
+                            张三
+                        </div>
+                    </td>
+                    <td>45</td>
+                    <td style="color: #4DCA8A">45%</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="avatar2">
+                            <img src="image/男孩头像.svg" alt="头像">
+                            张三
+                        </div>
+                    </td>
+                    <td>45</td>
+                    <td style="color: #4DCA8A">45%</td>
+                </tr>
+
+            </table>
+        </div>
+        <div class="card2" style="max-height: 300px;margin-top: 3%; position: relative">
+            <div class="title" style="color: #ab02ff">上次考试排行</div>
+            <table class="average-distribution fixed-height">
+                <tr>
+                    <td>成员</td>
+                    <td>考试排名</td>
+                    <td>考试分数</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="avatar2">
+                            <img src="image/男孩头像.svg" alt="头像">
+                            张三
+                        </div>
+                    </td>
+                    <td>3</td>
+                    <td style="color: #4DCA8A">45%</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="avatar2">
+                            <img src="image/男孩头像.svg" alt="头像">
+                            张三
+                        </div>
+                    </td>
+                    <td>3</td>
+                    <td style="color: #4DCA8A">45%</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="avatar2">
+                            <img src="image/男孩头像.svg" alt="头像">
+                            张三
+                        </div>
+                    </td>
+                    <td>4</td>
+                    <td style="color: #4DCA8A">45%</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="avatar2">
+                            <img src="image/男孩头像.svg" alt="头像">
+                            张三
+                        </div>
+                    </td>
+                    <td>5</td>
+                    <td style="color: #4DCA8A">45%</td>
+                </tr>
+
+            </table>
+        </div>
+        <div class="card2" style="max-height: 300px;margin-top: 3%;flex-direction: column; position: relative">
+            <div class="title" style="color: #73D5A3;">最近通知</div>
+            <div class="notification">
+                <div class="notification-item">
+                    <img src="./image/通知2.svg" alt="Notification Icon 1">
+                    <span>您有新的成员加入申请，请及时审核</span>
+                </div>
+                <div class="notification-item-divider"></div>
+                <div class="notification-item">
+                    <img src="./image/通知2.svg" alt="Notification Icon 2">
+                    <span>您有新的成员加入申请，请及时审核</span>
+                </div>
+                <div class="notification-item-divider"></div>
+                <div class="notification-item">
+                    <img src="./image/通知2.svg" alt="Notification Icon 3">
+                    <span>您有新的成员加入申请，请及时审核</span>
+                </div>
+                <div class="notification-item-divider"></div>
+                <div class="notification-item">
+                    <img src="./image/通知2.svg" alt="Notification Icon 3">
+                    <span>您有新的成员加入申请，请及时审核</span>
+                </div>
+                <div class="notification-item-divider"></div>
+                <div class="notification-item">
+                    <img src="./image/通知2.svg" alt="Notification Icon 3">
+                    <span>您有新的成员加入申请，请及时审核</span>
+                </div>
+                <div class="notification-item-divider"></div>
+                <div class="notification-item">
+                    <img src="./image/通知2.svg" alt="Notification Icon 3">
+                    <span>您有新的成员加入申请，请及时审核</span>
+                </div>
+        </div>
     </div>
 
+    </div>
 
 </body>
 <script src="./js/Navbar.js"></script>

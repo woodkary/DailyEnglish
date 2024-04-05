@@ -60,7 +60,7 @@ function allTestStatistics() {
                 button.appendChild(span);
                 //按钮点击事件
                 button.addEventListener("click",()=>{
-                    window.location.href="/test-detail.html?name="+exam.name;
+                    window.location.href="./test-details.html?name="+exam.name;
                 });
                 buttonCell.appendChild(button);//将按钮添加到单元格中
                 //将单元格添加到行中

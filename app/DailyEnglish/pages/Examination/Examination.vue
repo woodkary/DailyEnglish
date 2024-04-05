@@ -44,8 +44,9 @@ export default {
     },
     handleJump() {
       // 处理跳转链接点击事件
-      // this.$router.push('../index/index');//应该跳转到生词本页面
-      // 例如：uni.navigateTo({ url: '/pages/OtherPage.vue' });
+      uni.navigateTo({
+      	url: '../Vocab/Vocab'
+      })//跳转到生词本页面
     },
     updateProgressBar(){
       // 处理按钮点击事件
