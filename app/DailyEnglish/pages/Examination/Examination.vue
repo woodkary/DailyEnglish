@@ -14,10 +14,10 @@
       <text class="phonetic">[ə'bændən]</text>
     </view>
     <view class="button-group">
-      <button class="button">A</button>
-      <button class="button">B</button>
-      <button class="button">C</button>
-      <button class="button">D</button>
+      <button class="button" @click="updateProgressBar">A</button>
+      <button class="button" @click="updateProgressBar">B</button>
+      <button class="button" @click="updateProgressBar">C</button>
+      <button class="button" @click="updateProgressBar">D</button>
     </view>
     <view class="jump-group" @click="handleJump">
       <text class="link" >加入生词本</text>
@@ -33,7 +33,7 @@ export default {
 	 data() {
 	    return {
 	      progress: 70 ,// 进度条的初始值
-		  current: 70
+		    current: 70,// 当前进度
 	    }
 	  },
   methods: {
@@ -44,14 +44,19 @@ export default {
     },
     handleJump() {
       // 处理跳转链接点击事件
-      this.$router.push('../index/index');
+      // this.$router.push('../index/index');//应该跳转到生词本页面
       // 例如：uni.navigateTo({ url: '/pages/OtherPage.vue' });
+    },
+    updateProgressBar(){
+      // 处理按钮点击事件
+      // 使得进度条增加1
+      this.updateProgress(this.progress+1);
     },
 	updateProgress(value) {
 	      // 更新进度条的方法，value 是 0 到 100 之间的数值
 	      if (value >= 0 && value <= 100) {
 	        this.progress = value;
-			this.current = value;
+			    this.current = value;
 	      } else {
 	        console.error('进度值必须在 0 到 100 之间');
 	      }
