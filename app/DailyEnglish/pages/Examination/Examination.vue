@@ -3,6 +3,11 @@
 -->
 <template>
   <view class="container">
+	  <text class="progress-text">{{ current }}/100</text>
+	  <view class="progress-container">
+	      <view class="progress-bar" :style="{ width: progress + '%' }"></view>
+	    </view>
+
     <image class="back-icon" src="../../static/back.svg" @click="handleBack"></image>
     <view class="text-info">
       <text class="word">abandon</text>
@@ -25,6 +30,12 @@
 
 <script>
 export default {
+	 data() {
+	    return {
+	      progress: 70 ,// 进度条的初始值
+		  current: 70
+	    }
+	  },
   methods: {
     handleBack() {
       // 处理返回按钮点击事件
@@ -35,7 +46,16 @@ export default {
       // 处理跳转链接点击事件
       this.$router.push('../index/index');
       // 例如：uni.navigateTo({ url: '/pages/OtherPage.vue' });
-    }
+    },
+	updateProgress(value) {
+	      // 更新进度条的方法，value 是 0 到 100 之间的数值
+	      if (value >= 0 && value <= 100) {
+	        this.progress = value;
+			this.current = value;
+	      } else {
+	        console.error('进度值必须在 0 到 100 之间');
+	      }
+	    }
   }
 }
 </script>
@@ -43,6 +63,7 @@ export default {
 
 <style>
 .container {
+	
   display: flex; /*flex布局 */
   flex-direction: column; /*垂直布局 */
   align-items: center;  /*水平居中 */
@@ -52,18 +73,46 @@ export default {
   background-image: linear-gradient(-190deg, #fff669 0%, #ecf1f1 50%, #d6f8f7 100%);
 }
 
+.progress-container {
+position: absolute;
+  width: 70%; 
+  height: 0.5rem;
+  top:1.5rem;
+  margin-left:5rem;
+  left:1rem;
+  background: cadetblue;
+  border:0.1rem solid #000;
+  border-radius: 0.5rem;
+  display: flex;
+    align-items: center; /* 垂直居中 */
+
+  z-index: 100;
+}
+
+.progress-bar {
+  height: 100%; 
+  background-color: #00ff00; 
+}
+.progress-text {
+  position: absolute;
+  color: #333; /* 文本颜色 */
+  font-size: 0.8rem; /* 文本大小 */
+   top: 1.3rem;	
+   left: 3rem;
+}
+
 .back-icon {
-  width: 30px;  /*图标宽度 */
-  height: 30px; /*图标高度 */
+  width: 2rem;  /*图标宽度 */
+  height: 2rem; /*图标高度 */
   position: absolute; /*绝对定位 */
-  top: 20px;  /*距离顶部20px */
-  left: 20px; /*距离左侧20px */
+  top: 0.8rem;  /*距离顶部20px */
+  left: 0.5rem; /*距离左侧20px */
   cursor: pointer;  /*鼠标移上去显示小手 */
 }
 
 .text-info {
   position: absolute;
-  top: 140px;
+  top: 10rem;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -73,29 +122,29 @@ export default {
 
 .word {
   position:relative;
-  font-size: 50px;  /*字体大小 */
+  font-size: 3rem;  /*字体大小 */
   font-weight: bold;  /*加粗 */
-  margin-bottom: 1px; /*调整与phonetic之间的距离 */
+  margin-bottom: 1rem; /*调整与phonetic之间的距离 */
 }
 
 .phonetic {
   display: block; /* 在新行显示 */
-  font-size: 30px;  /*字体大小 */
+  font-size: 1.7rem;  /*字体大小 */
   color: #666;  /*字体颜色 */
 }
 
 .button-group {
   display: flex;
   flex-direction: column;
-  gap: 40px;
-  margin-top: 120px;
+  gap: 2rem;
+  margin-top: 9rem;
 }
 
 .button {
-  border:1px solid #000;
-  width: 280px;
-  height: 60px;
-  border-radius: 200px;/*圆角 */
+  border:0.01rem solid #000;
+  width: 17rem;
+  height: 3.7rem;
+  border-radius: 2rem;/*圆角 */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -104,21 +153,23 @@ export default {
 
 .jump-group {
   position: fixed;/*固定定位 */
-  bottom: 40px;
-  right: 20px;
+  bottom: 4rem;
+  right: 2rem;
   display: flex; /* 使用 flexbox 布局 */
-  font-size: 20px;
+  font-size: 1rem;
 }
 
 .link {
+	width: 5rem;
+	height: 2rem;
   cursor: pointer;
 }
 
 .jump-icon {
-  width: 22px;
-  height: 30px!important;
-  margin-left: 5px;
-  
+  width: 1rem;
+  height: 1rem!important;
+  margin-left: 0.5rem;
+  margin-top: 0.2rem;
 }
 
 
