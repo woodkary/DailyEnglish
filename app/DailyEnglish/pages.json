@@ -27,6 +27,14 @@
         		"navigationBarTitleText" : "",
         		"enablePullDownRefresh" : false
         	}
+        },
+        {
+        	"path" : "pages/Vocab/Vocab",
+        	"style" : 
+        	{
+        		"navigationBarTitleText" : "vocabulary book",
+        		"enablePullDownRefresh" : false
+        	}
         }
        
     ],
