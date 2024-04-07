@@ -8,8 +8,12 @@
     background-color: #fff;
     display: flex;
     transition: all 0.5s ease; /* 添加过渡效果 */
-    width:300px;/*卡片宽度,记得改动！！！！！！！！！！！！！！！*/
+    width:400px;/*卡片宽度,记得改动！！！！！！！！！！！！！！！*/
     /* 使用 Flexbox 布局 */
+}
+.card:hover {
+    transform: scale(1.005); /* 略微放大 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 悬停时阴影加深 */
 }
 
 /* 头像容器样式 */
@@ -68,9 +72,6 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 } */
 
-.card:hover {
-    transform: scale(1.005); /* 略微放大 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 悬停时阴影加深 */
-}
+
 
 

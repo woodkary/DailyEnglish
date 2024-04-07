@@ -1,0 +1,156 @@
+body{
+    background-color: #F7F7F7;
+}
+
+
+/* 第一个框 */
+.detail-selection {  
+    
+    display: flex;
+    background-color: #ffffff; /* 将背景颜色改为白色 */
+    color: #000000; /* 文本颜色为黑色 */
+    text-decoration: none;
+    padding: 10px;
+    flex-direction: column;
+    align-items: flex-start; /* 或者使用其他对齐方式 */ 
+    border: 1px solid #000000; /* 添加边框，颜色为黑色 */
+    box-shadow: 0 0 5px rgba(73, 73, 73, 0.5); /* 添加阴影 */
+    margin-bottom: 20px;  
+  }  
+
+  .label {  
+    margin-left: 30px;
+    margin-right: 10px; /* 与按钮之间的间距 */  
+  }
+
+  .button-row {  
+    display: flex;  
+    justify-content: space-between; /* 或其他对齐方式 */  
+    align-items: center; /* 垂直对齐 */  
+    margin-bottom: 10px; /* 根据需要调整行间距 */  
+  }  
+    
+  .button {  
+    padding: 5px 20px;  
+    background-color: white;  
+    border: none;  
+    cursor: pointer;  
+  }
+
+  .button.active {  
+    background-color: #456DE7; /* 激活颜色 */  
+    color: white;
+    border-radius: 10px;
+  }
+
+
+
+/* 第二个框 */
+
+.search-container {
+    
+    display: flex;
+    background-color: #ffffff; /* 将背景颜色改为白色 */
+    color: #000000; /* 文本颜色为黑色 */
+    text-decoration: none;
+    padding: 10px;
+    border: 1px solid #000000; /* 添加边框，颜色为黑色 */
+    box-shadow: 0 0 5px rgba(73, 73, 73, 0.5); /* 添加阴影 */
+    margin-bottom: 20px;
+}
+
+.search-container img {
+    width: 27px;
+    height: 26px;
+    vertical-align: middle;
+}
+.search-container img[src="./image/搜索图标.png"] {
+    
+    border: 1px solid black;
+}
+.search-container span{
+    margin-left: 50px;
+}
+.blank{
+    margin-right: 50px;
+}
+.blue-text {
+    color: #456DE7; /* 设置文本颜色为蓝色 */
+}
+.right-aligned {  
+    position: absolute;
+    right: 3%;
+    display: flex;  
+    align-items: center; /* 垂直居中对齐 */  
+  }  
+    
+  .label {  
+    margin-right: 10px; /* span和button之间的间距 */  
+  }
+.blue-button{
+    background-color: white;
+    color: #456DE7;
+    border: none;
+    cursor: pointer;
+}
+
+.separator {
+    margin-right: 50px; /* 图标之间的间距 */
+}
+
+
+.question {  
+    margin-bottom: 20px; /* 每个题目之间的间距 */
+    background-color: #ffffff; /* 将背景颜色改为白色 */
+    color: #000000; /* 文本颜色为黑色 */
+    text-decoration: none;
+    padding: 10px;
+    border: 1px solid #000000; /* 添加边框，颜色为黑色 */
+    box-shadow: 0 0 5px rgba(73, 73, 73, 0.5); /* 添加阴影 */
+    align-items: center; /* 垂直居中子元素 */
+    margin-bottom: 10px;
+     order: 0; /* 默认顺序 */  
+}  
+.similar{
+    background-color: white;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+.similar:hover{
+    color: #456DE7;
+}
+.question-stem {  
+    font-weight: bold; /* 题干字体加粗 */  
+    margin-bottom: 10px; /* 题干与选项之间的间距 */  
+}  
+.options-container {  
+    display: flex;   
+    margin-top: 30px; /* 题干与选项之间的间距 */  
+} 
+.option {  
+    margin-bottom: 20px;
+    margin-right: 50px; /* 每个选项之间的间距 */  
+}  
+.option input[type="radio"] {  
+    margin-right: 5px; /* 选项前的单选框与文本之间的间距 */  
+} 
+
+.down {  
+    display: flex;  
+    justify-content: flex-end; /* 将子元素靠右对齐 */  
+    align-items: center; /* 如果需要垂直居中，可以添加这一行 */  
+}  
+.big-button{
+    color: white;
+    background-color: #456DE7;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 10px;
+}
+
+.pagination{
+    position: absolute;
+    right: 3%;
+    bottom: 5%;
+}

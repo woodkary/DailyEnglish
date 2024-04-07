@@ -1,0 +1,204 @@
+body{
+    background-color: rgba(0,0,0,0.03);
+}
+h1{
+    text-align: center;
+}
+.search-container2 {
+    position: relative;
+    width: 250px;
+    margin: 20px auto; /* 居中显示 */
+}
+.search-input {
+    width: 100%;
+    padding: 5px 10px;
+    border: 1px solid #030cc0;
+    border-radius: 5px;
+    box-sizing: border-box; /* 确保padding不会增加元素的总宽度 */
+}
+.search-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 50px; /* 调整按钮宽度 */
+    background-color: #030cc0; /* 设置按钮背景颜色 */
+    color: white;
+    border: none;
+    border-radius: 0 5px 5px 0; /* 圆角与搜索框保持一致 */
+    cursor: pointer;
+}
+.search-button:hover {
+    background-color: #5d64e6; /* 鼠标悬停时的背景颜色 */
+}
+
+.box{
+    position:absolute;
+    width: 80%;
+    height: 60%;
+    top: 30%;
+    left: 10%;
+    border: 1px solid #ddd;/*边框*/
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),/*下边阴影*/
+    4px 0 4px rgba(0, 0, 0, 0.1); /* 右边阴影 */
+    padding: 20px;/*内边距*/
+    border-radius: 15px;/*圆角设置*/
+    background-color: #fff;
+}
+
+.button{
+    width: 8%;
+    height: 7%;
+    background-color: #030cc0;
+    border-radius: 10px;/*圆角设置*/
+    color: #fff;
+}
+
+#button1{
+    position: absolute;
+    left: 3%;
+    top: 3%;
+}
+#button2{
+    position: absolute;
+    left: 13%;
+    top: 3%;
+}
+
+.button:hover {
+    background-color: #5d64e6; /* 鼠标悬停时的背景颜色 */
+}
+
+.membership{
+    position: absolute;
+    margin-left:300px;
+    width: 75%;
+    height: 80%;
+    top: 15%;
+
+    background-color: white;
+    border: 1px solid #ddd;
+}
+
+.member-number{
+    color: blue;
+}
+
+.manager-number{
+    color: blue;
+}
+
+.organization-name{
+    white-space: nowrap; /* 防止文本换行 */ 
+    font-size: 25px;
+    margin-top: 10%;
+    margin-left: 10%;
+}
+
+.test-name{
+    white-space: nowrap; /* 防止文本换行 */ 
+    font-size: 20px;
+    margin-top: 5%;
+    margin-left: 10%;
+}
+
+
+.RedButton{
+    background-color: #EE4141;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+.BlueButton{
+    background-color: #456DE7;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+button:hover{
+    cursor: pointer;
+}
+.search-icon{
+    cursor: pointer;
+}
+.search-container {  
+    position: relative; /* 使子元素可以相对于此容器定位 */  
+    margin-top: 20px;
+    right: 20px;
+    width: 100%; /* 宽度为100% */  
+    max-height: 20%; /* 最大高度为20% */  
+}  
+  
+.search-input {  
+    padding-right: 30px; /* 右侧内边距，为图标预留空间 */  
+    box-sizing: border-box; /* 确保padding不会增加元素的总宽度 */  
+}  
+  
+.search-icon {  
+    position: absolute; /* 绝对定位 */  
+    top: 50%; /* 垂直居中 */  
+    right: 10px; /* 图标距离输入框右侧的距离 */  
+    transform: translateY(-50%); /* 垂直方向上移自身高度的一半，实现垂直居中 */  
+    height: 16px; /* 根据图标实际大小设置 */  
+    width: 16px; /* 根据图标实际大小设置 */  
+}
+
+
+.members-admin {  
+    position: absolute;
+    right: 80px;
+    top: 80px;
+    display: flex; /* 使用 flex 布局 */  
+    justify-content: flex-start; /* 水平对齐方式，根据需要调整 */  
+    align-items: center; /* 垂直对齐方式，根据需要调整 */  
+}  
+  
+.members-admin div {  
+    margin-right: 20px; /* 可选：添加一些间距 */  
+}  
+  
+.members-admin div:last-child {  
+    margin-right: 0; /* 移除最后一个 div 的间距 */  
+}
+table {
+    position: absolute;
+    top: 18%;
+    left: 5%;
+    width: 90%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    border: none;
+}
+th, td {
+    border: 1px solid #e6e6e6;
+    height: 40px;
+    padding: 8px;
+    text-align: left;
+    background-color: white;
+}
+
+.rate{
+    color: #456DE7;
+}
+
+.list1{
+    width: 30%;
+}
+.list2{
+    width: 30%;
+}
+.list3{
+    width: 25%;
+}
+.list4{
+    width: 15%;
+}
+
+.pagination{
+    position: absolute;
+    right: 3%;
+    bottom: 5%;
+}

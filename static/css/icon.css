@@ -1,0 +1,54 @@
+.icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 5%;
+    width: 17%;
+    height: 100px;
+    margin: 10px;
+}
+.upper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 80%;
+}
+
+.icon p{
+    margin: 0;
+}
+
+.text {
+    font-size: 20px;
+    font-family: "黑体", serif;
+    font-weight: bolder;
+    color: white;
+}
+.text2 {
+    font-size: 30px;
+    font-family: "黑体", serif;
+    font-weight: bolder;
+    color: white;
+}
+.left{
+    max-width: 50%;
+}
+.icon .left img{
+    position: relative;
+    bottom: 10px;
+    max-width: 70%;
+    margin-left: 20%;
+    margin-top: 35%;
+    max-height: 80px;
+}
+.right{
+    max-width: 100%;
+    margin-left: 20%;
+}
+.lower{
+    height: 30%;
+    width: 100%;
+    display: flex;
+    border-radius: 5%;
+}

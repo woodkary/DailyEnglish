@@ -17,6 +17,7 @@ import (
 
 func main1() {
 
+<<<<<<< HEAD
 	//redis连接
 	client := redis.NewClient(&redis.Options{
 		Addr:     "r-bp1jdmrszl1yd6xxdipd.redis.rds.aliyuncs.com:6379", // Redis 服务器地址
@@ -73,6 +74,8 @@ func main() {
 }
 func main2() {
 
+=======
+>>>>>>> aa028757d1ec448d574a1642e567915fa9f71356
 	//mysql连接
 	db, er := sql.Open("mysql", "root:123456@tcp(47.107.81.75:3306)/daily_english")
 	if er != nil {
