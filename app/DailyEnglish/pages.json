@@ -35,6 +35,14 @@
         		"navigationBarTitleText" : "vocabulary book",
         		"enablePullDownRefresh" : false
         	}
+        },
+        {
+        	"path" : "pages/example/example",
+        	"style" : 
+        	{
+        		"navigationBarTitleText" : "",
+        		"enablePullDownRefresh" : false
+        	}
         }
        
     ],
