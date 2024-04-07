@@ -5,12 +5,15 @@ import (
 	service "DailyEnglish/Service"
 	"database/sql"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 )
 
 func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
+	//主页数据
 	r.GET("/api/team_manage/index/data", func(c *gin.Context) {
 		token := c.Request.Header.Get("token")
 		if token == "" {
@@ -104,6 +107,7 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		response.Notice.NoticeRecent = append(response.Notice.NoticeRecent, Item3)
 		c.JSON(200, response)
 	})
+	//考试情况数据
 	r.GET("/api/team_manage/exam_situation/data", func(c *gin.Context) {
 		token := c.Request.Header.Get("token")
 		if token == "" {
@@ -143,4 +147,50 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		Response.Msg = "成功"
 		c.JSON(200, Response)
 	})
+	r.GET("/api/team_manage/punch_statistics/data", func(c *gin.Context) {
+		token := c.Request.Header.Get("token")
+		if token == "" {
+			c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login.html")
+		}
+		user, err := service.ParseToken(token)
+		if err != nil {
+			c.JSON(400, "登录信息无效或过期")
+		}
+		type punchStatistic struct {
+			Name      string `json:"name"`
+			IsPunched string `json:"ispunched"`
+			PunchDay  string `json:"punch_day"`
+			PunchWord string `json:"punch_word"`
+			PunchRate string `json:"punch_rate"`
+		}
+		type response struct {
+			Code             string           `json:"code"` // 响应代码
+			Msg              string           `json:"msg"`  // 响应消息
+			Punch_statistics []punchStatistic `json:"punch_statistics"`
+		}
+		Item1, err := controlsql.GetTeamMembersAttendance1(client, user.TeamName)
+
+		Item2, Item3, err := controlsql.GetTeamMembersAttendanceAndWordCount(client, user.TeamName, time.Now())
+		if err != nil {
+			c.JSON(500, "服务器错误")
+		}
+		var Response response
+		var punchstatistic punchStatistic
+		Response.Code = "200"
+		Response.Msg = "成功"
+		for _, member := range Item1 {
+			punchstatistic.Name = member.Username
+			punchstatistic.PunchDay = strconv.Itoa(member.AttendanceDays)
+			punchstatistic.PunchRate = member.AttendanceRate
+			if Item2[member.Username] == 1 {
+				punchstatistic.IsPunched = "是"
+			} else {
+				punchstatistic.IsPunched = "否"
+			}
+			punchstatistic.PunchWord = strconv.Itoa(Item3[member.Username])
+			Response.Punch_statistics = append(Response.Punch_statistics, punchstatistic)
+		}
+		c.JSON(200, Response)
+	})
+
 }
