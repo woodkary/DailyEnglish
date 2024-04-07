@@ -15,7 +15,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func main() {
+func main1() {
 
 	//redis连接
 	client := redis.NewClient(&redis.Options{
@@ -59,8 +59,19 @@ func main() {
 	// 成功保存团队信息后输出成功提示
 	fmt.Println("团队信息保存成功！")
 }
+func main() {
 
-func main1() {
+	//mysql连接
+	db, er := sql.Open("mysql", "root:123456@tcp(47.107.81.75:3306)/Daily-English")
+	if er != nil {
+		log.Fatal(er)
+	}
+	defer db.Close()
+
+	controlsql.InsertUserInfo(db, "小明", "10086", "12344", "123456@qq.com", 2024000123, 19, 1, "2024-04-01")
+
+}
+func main2() {
 
 	//mysql连接
 	db, er := sql.Open("mysql", "root:123456@tcp(47.107.81.75:3306)/daily_english")
@@ -80,8 +91,9 @@ func main1() {
 
 	//数据库测试
 
-	//controlsql.SaveTeam(client, team)
+	controlsql.InsertUserInfo(db, "小明", "10086", "12344", "123456@qq.com", 2024000123, 19, 1, "2024-04-01")
 	//数据库测试
+
 	r := gin.Default()
 	r.Static("static/team_manager", "./static")
 	// r.Static("static/team_manager/css", "./static/css")

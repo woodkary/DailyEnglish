@@ -126,6 +126,39 @@ func GetTeamAttendanceByTeamName(client *redis.Client, teamName string) (Attenda
 	return attendanceRecord, nil
 }
 
+// 3.1 查询团队成员的打卡情况
+func GetTeamMembersAttendance(client *redis.Client, teamName string) (map[string]Member, error) {
+	// 获取团队成员信息的键名
+	memberKeys, err := client.Keys("team:" + teamName + ":member:*").Result()
+	if err != nil {
+		return nil, err
+	}
+
+	// 初始化团队成员打卡情况的map
+	teamMembersAttendance := make(map[string]Member)
+
+	// 遍历每个成员的键名，获取成员的打卡情况
+	for _, key := range memberKeys {
+		memberData, err := client.HGetAll(key).Result()
+		if err != nil {
+			return nil, err
+		}
+
+		// 解析成员打卡情况
+		var member Member
+		member.Username = strings.TrimPrefix(key, "team:"+teamName+":member:")
+		member.JoinDate = memberData["join_date"]
+		member.AttendanceDays, _ = strconv.Atoi(memberData["attendance_days"])
+		member.IsAdmin, _ = strconv.ParseBool(memberData["is_admin"])
+		member.AttendanceRate = memberData["attendance_rate"]
+
+		// 将成员信息存入map
+		teamMembersAttendance[member.Username] = member
+	}
+
+	return teamMembersAttendance, nil
+}
+
 // 4. 通过用户名和团队名查询该用户在该团队的打卡信息
 func GetUserAttendanceByTeamName(client *redis.Client, username string, teamName string) (int, error) {
 	// 查询该用户在该团队的打卡信息
