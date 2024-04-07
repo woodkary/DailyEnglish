@@ -12,203 +12,12 @@
         color-scheme: dark;
     }*/
     /* Card 容器样式 */
-    .card2 {
-        border: 1px solid #ddd;/*边框*/
-        border-radius: 0px;/*圆角设置*/
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),/*下边阴影*/
-        4px 0 4px rgba(0, 0, 0, 0.1); /* 右边阴影 */
-        padding: 20px;/*内边距*/
-        background-color: #fff;
-        display: flex;
-        transition: all 0.5s ease; /* 添加过渡效果 */
-        width:400px;/*卡片宽度,记得改动！！！！！！！！！！！！！！！*/
-        height:300px;/*卡片高度,记得改动！*!*/
-        /* 使用 Flexbox 布局 */
-    }
-    .card2:hover {
-        transform: scale(1.005); /* 略微放大 */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 悬停时阴影加深 */
-    }
-    .avatar2 {
-        display: flex;/* 弹性布局 */
-        flex-direction: row;/* 子项排列方向*/
-        align-items: center;/* 子项垂直对齐方式*/
-        gap: 15%;/* 子项之间的间距 */
-    }
-
-    /* 头像样式 */
-    .avatar2 img {
-        width: 25%;
-        /* 头像宽度 */
-        height: 25%;
-        /* 头像高度 */
-        border-radius: 50%;
-        /* 圆形头像 */
-    }
-    .cardContainer {
-        display: flex;   /* 弹性布局 */
-        flex-direction: row; /* 水平排列子项 */
-        flex-wrap: wrap; /* 允许子项换行 */
-        gap: 3%; /* 设置子项之间的间隔 */
-        overflow: auto;
-    }
-    .card2 .title {
-        font-size: 20px;
-        color: #EE4141;
-        margin-top: 1%;
-        white-space: nowrap;
-        /*强制不换行*/
-    }
-    .card2 table {
-        position: absolute;
-        top: 20%;
-        left: 5%;
-        table-layout: fixed;
-        border: none;
-        width: 95%;
-        border-collapse: collapse;/* 移除表格边框 */
-    }
-    .card2 th, td {
-        border: 1px solid #e6e6e6;
-        height: 40px;
-        padding: 8px;
-        text-align: left;
-        /*background-color: white;*/
-    }
-    .card2 td, th{
-        border: none;
-        padding: 4px;
-        text-align: left;
-        font-size: 15px;
-    }
-    .card2 th{
-        background-color: #f2f2f2;
-        height: 5px;
-    }
-    .card2 tr {
-        border: none; /* 移除单元格边框 */
-        width: 90%;
-        /*background-color: #f8f8f8; /* 添加斑马纹 */
-    }
-
-    .index {
-        margin-left: 300px;
-        margin-top: 0px;
-    }
-
-    .main_label {
-        background-color: #ffffff;
-        height: 35px;
-        line-height: 35px;
-        margin-bottom: 24px;
-        border-left: 2px solid #409eff;
-        padding-left: 10px;
-        /*文字离左边的距离*/
-    }
-    .test{
-        display: flex   /* 弹性布局 */;
-        flex-direction: row; /* 水平排列子项 */
-        flex-wrap: wrap; /* 允许子项换行 */
-        gap: 15px; /* 设置子项之间的间隔 */
-    }
-    .container {
-        display: flex;
-        width: 220px;
-        background: linear-gradient(to right, #ff7e5f, #feb47b);
-        padding: 0 20px;
-        box-sizing: border-box;
-        /*padding不会撑大盒子*/
-        position: relative; /* 为伪元素定位 */
-        height: 120px;
-        border-radius: 7%;
-    }
-    .container:after {
-        content: '';
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        width: 100%;
-        height: 15%; /* 底部高度为容器的15% */
-        background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)); /* 从上到下渐变，底部颜色更淡 */
-    }
-    .details_1{
-        font-size: 14px;
-        color: #666; /* 淡色文字 */
-        position: absolute;
-        bottom: 0px; /* 距离底部10px */
-        left: 20px; /* 距离左侧20px */
-    }
-    .details_2{
-        position: absolute;
-        bottom: 0px; /* 距离底部10px */
-        right: 20px; 
-        width: 20px;
-        height: 20px;
-    }
-    .title {
-        font-size: 20px;
-        color: #ffffff;
-        margin-top: 20px;
-        white-space: nowrap;
-        /*强制不换行*/
-    }
-
-    .count {
-        font-size: 30px;
-        color: white;
-        white-space: nowrap;
-        margin-top: 55px;
-        margin-left: -70px;
-    }
-
-    .image {
-        flex-shrink: 0;
-        width: 80px;
-        /* 图片宽度 */
-        height: 80px;
-        /* 图片高度 */
-        margin-right: 20px;
-        margin-top: 20px;
-    }
-    .notification {
-        border: 1px solid #ccc;
-        border-left-color: transparent;
-        border-right-color: transparent;
-        /*padding: 100px;*/
-        width: 90%;
-        margin-top: 10%;
-    }
-    .notification-item {
-        display: flex;
-        font-family: "黑体", serif;
-        font-size: 14px;
-        align-items: center;
-        margin-bottom: 5px;
-    }
-    .notification-item img {
-        width: 20px;
-        height: 20px;
-        margin-right: 5px;
-    }
-    .notification-item:after{
-        content: "6分钟前";
-        display: flex;
-        font-family: "黑体", serif;
-        font-size: 14px;
-        align-items: end;
-        margin-left: 15%;
-        color: #aeacac;
-    }
-    .notification-item-divider {
-        border-top: 1px solid #ccc;
-        margin-top: 5px;
-        margin-bottom: 5px;
-    }
-
+    
 </style>
 <link rel="stylesheet" href="./css/sidebar.css">
 <link rel="stylesheet" href="./css/myNavbar.css">
 <link rel="stylesheet" href="./css/card.css">
+<link rel="stylesheet" href="./css/index.css">
 
 <body>
     <div class="navbar">
@@ -225,7 +34,7 @@
                 <div>姓名</div>
                 <div>组织名称</div>
             </div>
-            <img src="./image/pikachu.jpg" alt="头像" class="user-avatar">
+            <img src="./image/pikachu.jpg" alt="头像" class="user-avatar not-change">
             <img src="./image/logout.svg" class="logout">
         </div>
     </div>
@@ -298,35 +107,35 @@
 
 
 <div class="test">
-        <div class="container" style="background-image: linear-gradient(120deg, #f093fb 0%, #f5576c 100%);">
-            <img class="image" src="image/书架.png">
+        <div class="container not-change" style="background-image: linear-gradient(120deg, #f093fb 0%, #f5576c 100%);">
+            <img class="image not-change" src="image/书架.png">
             <div class="title">今日打卡</div>
             <div class="count">45人</div>
             <div class="details_1">查看详情</div>
-            <image class="details_2" src="./image/右圆圈箭头.svg"></image>
+            <image class="details_2 not-change" src="./image/右圆圈箭头.svg"></image>
         </div>
-        <div class="container" style="background-image: linear-gradient(-225deg, #ff21bf 0%, #fc591d 100%);">
-            <img class="image" src="image/沙漏.png">
+        <div class="container not-change" style="background-image: linear-gradient(-225deg, #ff21bf 0%, #fc591d 100%);">
+            <img class="image not-change" src="image/沙漏.png">
             <div class="title">打卡率</div>
             <div class="count">45%</div>
             <div class="details_1">查看详情</div>
-            <image class="details_2" src="./image/右圆圈箭头.svg"></image>
+            <image class="details_2 not-change" src="./image/右圆圈箭头.svg"></image>
         </div>
 
-        <div class="container" style="background-image: linear-gradient(to right, #92fe9d 0%, #00c9ff 100%);">
-            <img class="image" src="image/笔记本2.png">
+        <div class="container not-change" style="background-image: linear-gradient(to right, #92fe9d 0%, #00c9ff 100%);">
+            <img class="image not-change" src="image/笔记本2.png">
             <div class="title">最近考试</div>
             <div class="count" style="margin-left: -50%;">3月25日</div>
             <div class="details_1">查看详情</div>
-            <image class="details_2" src="./image/右圆圈箭头.svg"></image>
+            <image class="details_2 not-change" src="./image/右圆圈箭头.svg"></image>
         </div>
 
-        <div class="container" style="background-image: linear-gradient(-225deg, #22E1FF 0%, #1D8FE1 48%, #625EB1 100%);">
-            <img class="image" src="image/笔记本.png">
+        <div class="container not-change" style="background-image: linear-gradient(-225deg, #22E1FF 0%, #1D8FE1 48%, #625EB1 100%);">
+            <img class="image not-change" src="image/笔记本.png">
             <div class="title">加入申请</div>
             <div class="count">45人</div>
             <div class="details_1">查看详情</div>
-            <image class="details_2" src="./image/右圆圈箭头.svg"></image>
+            <image class="details_2 not-change" src="./image/右圆圈箭头.svg"></image>
         </div>
 </div>
     <div class="cardContainer">
@@ -344,7 +153,7 @@
                 <tr>
                     <td >
                         <div class="avatar2">
-                        <img src="image/男孩头像.svg" alt="头像">
+                        <img src="image/男孩头像.svg" alt="头像" class="not-change">
                             张三
                         </div>
                     </td>
@@ -354,7 +163,7 @@
                 <tr>
                     <td>
                         <div class="avatar2">
-                        <img src="image/男孩头像.svg" alt="头像">
+                        <img src="image/男孩头像.svg" alt="头像" class="not-change">
                         张三
                         </div>
                     </td>
@@ -364,7 +173,7 @@
                 <tr>
                     <td>
                         <div class="avatar2">
-                            <img src="image/男孩头像.svg" alt="头像">
+                            <img src="image/男孩头像.svg" alt="头像" class="not-change">
                             张三
                         </div>
                     </td>
@@ -374,7 +183,7 @@
                 <tr>
                     <td>
                         <div class="avatar2">
-                            <img src="image/男孩头像.svg" alt="头像">
+                            <img src="image/男孩头像.svg" alt="头像" class="not-change">
                             张三
                         </div>
                     </td>
@@ -395,7 +204,7 @@
                 <tr>
                     <td>
                         <div class="avatar2">
-                            <img src="image/男孩头像.svg" alt="头像">
+                            <img src="image/男孩头像.svg" alt="头像" class="not-change">
                             张三
                         </div>
                     </td>
@@ -405,7 +214,7 @@
                 <tr>
                     <td>
                         <div class="avatar2">
-                            <img src="image/男孩头像.svg" alt="头像">
+                            <img src="image/男孩头像.svg" alt="头像" class="not-change">
                             张三
                         </div>
                     </td>
@@ -415,7 +224,7 @@
                 <tr>
                     <td>
                         <div class="avatar2">
-                            <img src="image/男孩头像.svg" alt="头像">
+                            <img src="image/男孩头像.svg" alt="头像" class="not-change">
                             张三
                         </div>
                     </td>
@@ -425,7 +234,7 @@
                 <tr>
                     <td>
                         <div class="avatar2">
-                            <img src="image/男孩头像.svg" alt="头像">
+                            <img src="image/男孩头像.svg" alt="头像" class="not-change">
                             张三
                         </div>
                     </td>
@@ -471,7 +280,7 @@
     </div>
 
     </div>
-
+</div>
 </body>
 <script src="./js/Navbar.js"></script>
 <script src="./js/sidebar.js"></script>

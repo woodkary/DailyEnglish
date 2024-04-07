@@ -4,21 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="40a60d59-6e65-465a-89ab-7764c8f00a1d" name="更改" comment="Examination.vue仅增加了每个选项加进度条的功能">
-      <change afterPath="$PROJECT_DIR$/static/js/test-details.js" afterDir="false" />
+    <list default="true" id="40a60d59-6e65-465a-89ab-7764c8f00a1d" name="更改" comment="Examination.vue加入一个跳转、为html大部分按钮加入跳转">
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/card.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/card.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/myNavbar.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/myNavbar.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/issuePunch.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/issuePunch.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/js/Navbar.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/Navbar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/test-statistics.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/test-statistics.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/manage.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/manage.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/memberDetails.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/memberDetails.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/personal-test-details.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/personal-test-details.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/review.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/review.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/test-details.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/test-details.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/test-statistics.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/test-statistics.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/word-statistics.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/word-statistics.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/template.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/template.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,6 +74,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
     &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.1\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
@@ -104,7 +98,10 @@
       <workItem from="1712017986691" duration="26000" />
       <workItem from="1712212132818" duration="3365000" />
       <workItem from="1712230436772" duration="1867000" />
-      <workItem from="1712293213452" duration="17344000" />
+      <workItem from="1712293213452" duration="22025000" />
+      <workItem from="1712331410745" duration="614000" />
+      <workItem from="1712402860598" duration="22000" />
+      <workItem from="1712484690704" duration="8494000" />
     </task>
     <task id="LOCAL-00001" summary="考试数据获取">
       <option name="closed" value="true" />
@@ -146,7 +143,15 @@
       <option name="project" value="LOCAL" />
       <updated>1712299209380</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Examination.vue加入一个跳转、为html大部分按钮加入跳转">
+      <option name="closed" value="true" />
+      <created>1712323164170</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1712323164171</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -181,7 +186,8 @@
     <MESSAGE value="复原index.html" />
     <MESSAGE value="修改顶部侧边导航栏" />
     <MESSAGE value="Examination.vue仅增加了每个选项加进度条的功能" />
-    <option name="LAST_COMMIT_MESSAGE" value="Examination.vue仅增加了每个选项加进度条的功能" />
+    <MESSAGE value="Examination.vue加入一个跳转、为html大部分按钮加入跳转" />
+    <option name="LAST_COMMIT_MESSAGE" value="Examination.vue加入一个跳转、为html大部分按钮加入跳转" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
