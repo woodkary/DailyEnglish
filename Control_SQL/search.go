@@ -160,7 +160,7 @@ func GetTeamMembersAttendance1(client *redis.Client, teamName string) (map[strin
 	return teamMembersAttendance, nil
 }
 
-//3.2查询当日团队成员的打卡情况和打卡单词数量
+//3.2查询当日团队成员的是否打卡和打卡单词数量
 
 func GetTeamMembersAttendanceAndWordCount(client *redis.Client, teamName string, currentDate string) (map[string]int, map[string]int, error) {
 	// 获取团队成员信息的键名
