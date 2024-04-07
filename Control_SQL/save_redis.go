@@ -28,13 +28,14 @@ type Member struct {
 	AttendanceDays int    // 打卡天数
 	IsAdmin        bool   // 是否是团队管理员
 	AttendanceRate string //打卡率
+	AttendanceNum  int    //打卡单词数量
 }
 
 type AttendanceRecord struct {
 	Date             string         // 日期
 	TeamName         string         // 团队名
 	AttendanceCount  int            // 打卡人数
-	MemberAttendance map[string]int // 成员打卡情况，键为用户名，值为打卡单词数量
+	MemberAttendance map[string]int // 成员打卡情况，键为用户名，值为是否打卡，1是0否
 	AttendanceRate   float64        // 打卡率
 }
 
@@ -72,7 +73,6 @@ type ExamInfo struct {
 }
 
 // 保存团队信息
-// 保存团队信息
 func SaveTeam(client *redis.Client, team Team) error {
 	// 使用哈希数据结构保存团队信息
 	_, err := client.HMSet("team:"+team.Name, map[string]interface{}{
@@ -94,6 +94,7 @@ func SaveTeam(client *redis.Client, team Team) error {
 			"attendance_days": strconv.Itoa(member.AttendanceDays), // Convert int to string
 			"is_admin":        member.IsAdmin,
 			"attendance_rate": member.AttendanceRate, // 保存成员的打卡率
+			"attendance_num":  member.AttendanceNum,  // 保存成员的打卡单词数量
 		}).Result()
 		if err != nil {
 			return err

@@ -128,7 +128,7 @@ func GetTeamAttendanceByTeamName(client *redis.Client, teamName string) (Attenda
 }
 
 // 3.1 查询团队成员的打卡情况
-func GetTeamMembersAttendance(client *redis.Client, teamName string) (map[string]Member, error) {
+func GetTeamMembersAttendance1(client *redis.Client, teamName string) (map[string]Member, error) {
 	// 获取团队成员信息的键名
 	memberKeys, err := client.Keys("team:" + teamName + ":member:*").Result()
 	if err != nil {
@@ -158,6 +158,46 @@ func GetTeamMembersAttendance(client *redis.Client, teamName string) (map[string
 	}
 
 	return teamMembersAttendance, nil
+}
+
+//3.2查询当日团队成员的打卡情况和打卡单词数量
+
+func GetTeamMembersAttendanceAndWordCount(client *redis.Client, teamName string, currentDate string) (map[string]int, map[string]int, error) {
+	// 获取团队成员信息的键名
+	memberKeys, err := client.Keys("team:" + teamName + ":member:*").Result()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// 初始化团队成员打卡情况和打卡单词数量的map
+	memberAttendance := make(map[string]int)
+	memberWordCount := make(map[string]int)
+
+	// 遍历每个成员的键名，获取成员的打卡情况和打卡单词数量
+	for _, key := range memberKeys {
+		// 解析成员用户名
+		username := strings.TrimPrefix(key, "team:"+teamName+":member:")
+
+		// 获取成员的是否打卡
+		attendance, err := client.HGet("team:"+teamName+":member:"+username, "attendance_days").Result()
+		if err != nil {
+			return nil, nil, err
+		}
+		attendanceDays, _ := strconv.Atoi(attendance)
+
+		// 获取成员的打卡单词数量
+		wordCount, err := client.HGet("team:"+teamName+":member:"+username, "attendance_num").Result()
+		if err != nil {
+			return nil, nil, err
+		}
+		attendanceNum, _ := strconv.Atoi(wordCount)
+
+		// 将成员是否打卡1是0否和打卡单词数量存入map
+		memberAttendance[username] = attendanceDays
+		memberWordCount[username] = attendanceNum
+	}
+
+	return memberAttendance, memberWordCount, nil
 }
 
 // 4. 通过用户名和团队名查询该用户在该团队的打卡信息
