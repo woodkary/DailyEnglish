@@ -4,15 +4,29 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="40a60d59-6e65-465a-89ab-7764c8f00a1d" name="更改" comment="反色改了一部分">
-      <change beforePath="$PROJECT_DIR$/.idea/DailyEnglish.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/DailyEnglish.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterDir="false" />
+    <list default="true" id="40a60d59-6e65-465a-89ab-7764c8f00a1d" name="更改" comment="为index.html加入Darkmode">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/css/card.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/card.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/icon.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/icon.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/css/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/sidebar.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/sidebar.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/manage.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/manage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/myNavbar.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/myNavbar.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/personal-test-details.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/personal-test-details.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/review.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/review.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/test-details.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/test-details.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/test-release.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/test-release.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/test-statistics.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/test-statistics.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/word-statistics.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/word-statistics.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/Navbar.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/Navbar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/issuePunch.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/issuePunch.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/manage.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/manage.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/personal-test-details.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/personal-test-details.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/review.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/review.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/template.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/template.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/test-details.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/test-details.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/test-release.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/test-release.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/test-statistics.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/test-statistics.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/word-statistics.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/word-statistics.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,7 +118,7 @@
       <workItem from="1712402860598" duration="22000" />
       <workItem from="1712484690704" duration="8510000" />
       <workItem from="1712555953828" duration="1623000" />
-      <workItem from="1712564195517" duration="2402000" />
+      <workItem from="1712564195517" duration="7619000" />
     </task>
     <task id="LOCAL-00001" summary="考试数据获取">
       <option name="closed" value="true" />
@@ -162,7 +176,15 @@
       <option name="project" value="LOCAL" />
       <updated>1712496609247</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="为index.html加入Darkmode">
+      <option name="closed" value="true" />
+      <created>1712566755238</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1712566755238</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -199,7 +221,8 @@
     <MESSAGE value="Examination.vue仅增加了每个选项加进度条的功能" />
     <MESSAGE value="Examination.vue加入一个跳转、为html大部分按钮加入跳转" />
     <MESSAGE value="反色改了一部分" />
-    <option name="LAST_COMMIT_MESSAGE" value="反色改了一部分" />
+    <MESSAGE value="为index.html加入Darkmode" />
+    <option name="LAST_COMMIT_MESSAGE" value="为index.html加入Darkmode" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

@@ -75,9 +75,14 @@ h1{
     width: 75%;
     height: 80%;
     margin-top: 0.2%;
+    z-index: 0;
 
     background-color: white;
     border: 1px solid #ddd;
+}
+.darkmode--activated .membership{
+    background-color: #333;
+    color: #fff;
 }
 
 .member-number{
@@ -111,37 +116,37 @@ h1{
 }
 
 
-  
-.search-input {  
-    padding-right: 30px; /* 右侧内边距，为图标预留空间 */  
-    box-sizing: border-box; /* 确保padding不会增加元素的总宽度 */  
-}  
-  
-.search-icon {  
-    position: absolute; /* 绝对定位 */  
-    top: 50%; /* 垂直居中 */  
-    right: 10px; /* 图标距离输入框右侧的距离 */  
-    transform: translateY(-50%); /* 垂直方向上移自身高度的一半，实现垂直居中 */  
-    height: 16px; /* 根据图标实际大小设置 */  
-    width: 16px; /* 根据图标实际大小设置 */  
+
+.search-input {
+    padding-right: 30px; /* 右侧内边距，为图标预留空间 */
+    box-sizing: border-box; /* 确保padding不会增加元素的总宽度 */
+}
+
+.search-icon {
+    position: absolute; /* 绝对定位 */
+    top: 50%; /* 垂直居中 */
+    right: 10px; /* 图标距离输入框右侧的距离 */
+    transform: translateY(-50%); /* 垂直方向上移自身高度的一半，实现垂直居中 */
+    height: 16px; /* 根据图标实际大小设置 */
+    width: 16px; /* 根据图标实际大小设置 */
 }
 
 
-.members-admin {  
+.members-admin {
     position: absolute;
     right: 80px;
     top: 80px;
-    display: flex; /* 使用 flex 布局 */  
-    justify-content: flex-start; /* 水平对齐方式，根据需要调整 */  
-    align-items: center; /* 垂直对齐方式，根据需要调整 */  
-}  
-  
-.members-admin div {  
-    margin-right: 20px; /* 可选：添加一些间距 */  
-}  
-  
-.members-admin div:last-child {  
-    margin-right: 0; /* 移除最后一个 div 的间距 */  
+    display: flex; /* 使用 flex 布局 */
+    justify-content: flex-start; /* 水平对齐方式，根据需要调整 */
+    align-items: center; /* 垂直对齐方式，根据需要调整 */
+}
+
+.members-admin div {
+    margin-right: 20px; /* 可选：添加一些间距 */
+}
+
+.members-admin div:last-child {
+    margin-right: 0; /* 移除最后一个 div 的间距 */
 }
 table {
     position: absolute;
@@ -180,7 +185,10 @@ body { font-family: Arial, sans-serif; }
     height: 100%;
     flex-direction: column;
 }
-
+.darkmode--activated .left-col {
+    background-color: #333;
+    color: #fff;
+}
 .right-col {
     display: flex;
     align-items: center;
@@ -218,6 +226,10 @@ body { font-family: Arial, sans-serif; }
     background-color: #f1f1f1;
     height: 20%;
 }
+.darkmode--activated .organization-info {
+    background-color: #333;
+}
+
 .organization-info div {
     margin-right: 10px;
 }
@@ -253,8 +265,13 @@ body { font-family: Arial, sans-serif; }
     cursor: pointer;
 }
 table{
-    width: 95%;
+    width: 100%;
+    margin-left: -5%;
     border-collapse: collapse;/* 移除表格边框 */
+}
+.darkmode--activated table{
+    background-color: #333;
+    color: #fff;
 }
 table .RedButton{
     background-color: transparent;
@@ -286,19 +303,30 @@ th{
     background-color: #f2f2f2;
     height: 10px;
 }
+.darkmode--activated th{
+    background-color: #333;
+}
 tr {
     border: none; /* 移除单元格边框 */
     width: 90%;
     /*background-color: #f8f8f8; /* 添加斑马纹 */
 }
-/* 设置奇数行的背景颜色 */
+.darkmode--activated tr {
+    background-color: #575757;
+}
+/* 设置偶数行的背景颜色 */
 tr:nth-child(even) {
     background-color: #f2f2f2;
 }
-
-/* 设置偶数行的背景颜色 */
+.darkmode--activated tr:nth-child(even) {
+    background-color: #333;
+}
+/* 设置奇数行的背景颜色 */
 tr:nth-child(odd) {
     background-color: #ffffff;
+}
+.darkmode--activated tr:nth-child(odd) {
+    background-color: #575757;
 }
 .UnderlinedRed {
     text-decoration: underline;

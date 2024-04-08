@@ -15,6 +15,9 @@
     margin-left: 20px;
     
 }
+.darkmode--activated .navbar-left img {
+    filter: invert(1);
+}
 
 .navbar-right {
     display: flex; align-items: center;
@@ -28,6 +31,9 @@
 .notifications img {
     width: 22px;
 }
+.darkmode--activated .notifications img {
+    filter: invert(1);
+}
 /* .notifications:hover{
     background-color: #d8d8d8;
 } */
@@ -36,6 +42,9 @@
     background-color: transparent;
     border: transparent;
     width:20px;
+}
+.darkmode--activated .night-mode {
+    filter: invert(1);
 }
 .user-info {
     margin-right: 10px;
@@ -55,6 +64,9 @@
     max-width: 25px; /* 设置最大宽度 */
     max-height: 30px; /* 设置最大高度 */
     background-color: aliceblue;
+}
+.darkmode--activated .logout {
+    filter: invert(1);
 }
 @font-face {
     font-family: '用户名字体';

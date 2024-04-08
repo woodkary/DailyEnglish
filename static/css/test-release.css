@@ -82,16 +82,23 @@ body{
     right: 3%;
     display: flex;  
     align-items: center; /* 垂直居中对齐 */  
-  }  
+  }
+.darkmode--activated .right-aligned{
+    color: white;
+}
     
   .label {  
     margin-right: 10px; /* span和button之间的间距 */  
   }
 .blue-button{
     background-color: white;
-    color: #456DE7;
+    color: #456de7;
     border: none;
     cursor: pointer;
+}
+.darkmode--activated .blue-button{
+    color: #ba9218;
+    background-color: #000000;
 }
 
 .separator {
@@ -139,7 +146,8 @@ body{
 .down {  
     display: flex;  
     justify-content: flex-end; /* 将子元素靠右对齐 */  
-    align-items: center; /* 如果需要垂直居中，可以添加这一行 */  
+    align-items: center; /* 如果需要垂直居中，可以添加这一行 */
+    isolation: isolate; /* 防止被其他元素影响 */
 }  
 .big-button{
     color: white;

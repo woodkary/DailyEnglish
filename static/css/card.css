@@ -13,7 +13,6 @@
 }
 .darkmode--activated .card {
     background-color: #222;
-    color: #fff;
 }
 .card:hover {
     transform: scale(1.005); /* 略微放大 */

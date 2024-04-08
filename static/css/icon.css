@@ -25,6 +25,9 @@
     font-weight: bolder;
     color: white;
 }
+.darkmode--activated .text {
+    color: #1a1e27;
+}
 .text2 {
     font-size: 30px;
     font-family: "黑体", serif;

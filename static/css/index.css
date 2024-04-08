@@ -30,6 +30,8 @@
         /* 头像高度 */
         border-radius: 50%;
         /* 圆形头像 */
+        isolation: isolate;
+        /* 图片不隔离 */
     }
     .cardContainer {
         display: flex;   /* 弹性布局 */
@@ -193,9 +195,6 @@
     .darkmode--activated .card2 {
         background-color: #222;
         color: #fff;
-    }
-    .darkmode--activated img{
-        filter: invert(1);
     }
     .darkmode--activated .avatar2 img {
         filter: invert(1);

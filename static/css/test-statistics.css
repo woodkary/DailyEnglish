@@ -74,7 +74,7 @@ h1{
     margin-left:300px;
     width: 75%;
     height: 80%;
-    top: 15%;
+    top: 20%;
 
     background-color: white;
     border: 1px solid #ddd;
@@ -89,9 +89,118 @@ h1{
 }
 
 .organization-name{
-    white-space: nowrap; /* 防止文本换行 */ 
+    white-space: nowrap; /* 防止文本换行 */
     font-size: 25px;
     margin-top: 10%;
+    margin-left: 10%;
+}
+
+.test-name{
+    white-space: nowrap; /* 防止文本换行 */
+    font-size: 20px;
+    margin-top: 5%;
+    margin-left: 10%;
+}
+
+
+body{
+    background-color: rgba(0,0,0,0.03);
+}
+h1{
+    text-align: center;
+}
+.search-container2 {
+    position: relative;
+    width: 250px;
+    margin: 20px auto; /* 居中显示 */
+}
+.search-input {
+    width: 100%;
+    padding: 5px 10px;
+    border: 1px solid #030cc0;
+    border-radius: 5px;
+    box-sizing: border-box; /* 确保padding不会增加元素的总宽度 */
+}
+.search-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 50px; /* 调整按钮宽度 */
+    background-color: #030cc0; /* 设置按钮背景颜色 */
+    color: white;
+    border: none;
+    border-radius: 0 5px 5px 0; /* 圆角与搜索框保持一致 */
+    cursor: pointer;
+}
+.search-button:hover {
+    background-color: #5d64e6; /* 鼠标悬停时的背景颜色 */
+}
+
+.box{
+    position:absolute;
+    width: 80%;
+    height: 60%;
+    top: 30%;
+    left: 10%;
+    border: 1px solid #ddd;/*边框*/
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),/*下边阴影*/
+    4px 0 4px rgba(0, 0, 0, 0.1); /* 右边阴影 */
+    padding: 20px;/*内边距*/
+    border-radius: 15px;/*圆角设置*/
+    background-color: #fff;
+}
+
+.button{
+    width: 8%;
+    height: 7%;
+    background-color: #030cc0;
+    border-radius: 10px;/*圆角设置*/
+    color: #fff;
+}
+
+#button1{
+    position: absolute;
+    left: 3%;
+    top: 3%;
+}
+#button2{
+    position: absolute;
+    left: 13%;
+    top: 3%;
+}
+
+.button:hover {
+    background-color: #5d64e6; /* 鼠标悬停时的背景颜色 */
+}
+
+.membership{
+    position: absolute;
+    margin-left:300px;
+    width: 75%;
+    height: 80%;
+    margin-top: 0.2%;
+    z-index: 0;
+
+    background-color: white;
+    border: 1px solid #ddd;
+}
+.darkmode--activated .membership{
+    background-color: #333;
+    color: #fff;
+}
+
+.member-number{
+    color: blue;
+}
+
+.manager-number{
+    color: blue;
+}
+
+.organization-name{
+    font-size: 25px;
+    margin-top: 5%;
     margin-left: 10%;
 }
 
@@ -111,50 +220,45 @@ h1{
     padding: 5px 10px;
 }
 
-.search-container {  
-    position: relative; /* 使子元素可以相对于此容器定位 */  
-    margin-top: 20px;
-    right: 20px;
-    width: 100%; /* 宽度为100% */  
-    max-height: 20%; /* 最大高度为20% */  
-}  
-  
-.search-input {  
-    padding-right: 30px; /* 右侧内边距，为图标预留空间 */  
-    box-sizing: border-box; /* 确保padding不会增加元素的总宽度 */  
-}  
-  
-.search-icon {  
-    position: absolute; /* 绝对定位 */  
-    top: 50%; /* 垂直居中 */  
-    right: 10px; /* 图标距离输入框右侧的距离 */  
-    transform: translateY(-50%); /* 垂直方向上移自身高度的一半，实现垂直居中 */  
-    height: 16px; /* 根据图标实际大小设置 */  
-    width: 16px; /* 根据图标实际大小设置 */  
+
+
+.search-input {
+    padding-right: 30px; /* 右侧内边距，为图标预留空间 */
+    box-sizing: border-box; /* 确保padding不会增加元素的总宽度 */
+}
+
+.search-icon {
+    position: absolute; /* 绝对定位 */
+    top: 50%; /* 垂直居中 */
+    right: 10px; /* 图标距离输入框右侧的距离 */
+    transform: translateY(-50%); /* 垂直方向上移自身高度的一半，实现垂直居中 */
+    height: 16px; /* 根据图标实际大小设置 */
+    width: 16px; /* 根据图标实际大小设置 */
 }
 
 
-.members-admin {  
+.members-admin {
     position: absolute;
     right: 80px;
     top: 80px;
-    display: flex; /* 使用 flex 布局 */  
-    justify-content: flex-start; /* 水平对齐方式，根据需要调整 */  
-    align-items: center; /* 垂直对齐方式，根据需要调整 */  
-}  
-  
-.members-admin div {  
-    margin-right: 20px; /* 可选：添加一些间距 */  
-}  
-  
-.members-admin div:last-child {  
-    margin-right: 0; /* 移除最后一个 div 的间距 */  
+    display: flex; /* 使用 flex 布局 */
+    justify-content: flex-start; /* 水平对齐方式，根据需要调整 */
+    align-items: center; /* 垂直对齐方式，根据需要调整 */
+}
+
+.members-admin div {
+    margin-right: 20px; /* 可选：添加一些间距 */
+}
+
+.members-admin div:last-child {
+    margin-right: 0; /* 移除最后一个 div 的间距 */
 }
 table {
     position: absolute;
-    top: 15%;
+    top: 20%;
     left: 5%;
-    width: 90%;
+    width: 100%;
+    margin-left: -5%;
     border-collapse: collapse;
     table-layout: fixed;
     border: none;
@@ -164,13 +268,8 @@ th, td {
     height: 40px;
     padding: 8px;
     text-align: left;
-    background-color: white;
+    /*background-color: white;*/
 }
-
-.rate{
-    color: #456DE7;
-}
-
 .list1{
     width: 30%;
 }
@@ -183,14 +282,175 @@ th, td {
 .list4{
     width: 15%;
 }
+body { font-family: Arial, sans-serif; }
+.header { text-align: left; }
+.left-col {
+    flex: 1;
+    margin-right: 20px;
+    margin-left: 40px;
+    height: 100%;
+    flex-direction: column;
+}
+.darkmode--activated .left-col {
+    background-color: #333;
+    color: #fff;
+}
+.right-col {
+    display: flex;
+    align-items: center;
+    padding-left: 550px;
+    height: 100%;
+
+    flex-direction: column;
+}
+
+.MainButton {
+    margin-right: 0;
+    padding: 6px 12px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-top: 15%;
+}
+.left-col .RedButton {
+    background-color: #dc3545;
+}
+.left-col .BlueButton {
+    background-color: #007bff;
+}
+
+.left-col  .RedButton:hover {
+    background-color: #c82333;
+}
+.left-col .BlueButton:hover {
+    background-color: #0056b3;
+}
+
+.organization-info {
+    display: flex;
+    justify-content: space-between;
+    background-color: #f1f1f1;
+    height: 20%;
+}
+.darkmode--activated .organization-info {
+    background-color: #333;
+}
+
+.organization-info div {
+    margin-right: 10px;
+}
+.pagination {
+    margin-top: 30px;
+    margin-left: 80%;
+}
+.members-admin {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20%;
+    margin-left: auto;
+}
+.search-container {
+    position: relative;
+    width: 100%; /* 调整搜索框的宽度 */
+    margin: 10% auto; /* 水平居中 */
+}
+.search-input {
+    width: 100%;
+    padding: 10px 40px 10px 10px; /* 调整内边距以适应图标 */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box; /* 让内边距和边框宽度包含在元素的宽度和高度之内 */
+}
+.search-icon {
+    position: absolute;
+    right: 10px;
+    /*top: 80%;*/
+    bottom: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+.darkmode--activated table{
+    background-color: #333;
+    color: #fff;
+}
+table .RedButton{
+    background-color: transparent;
+    color: #dc3545;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+table .RedButton:hover{
+    color: #c82333;
+}
+table .BlueButton{
+    background-color: transparent;
+    color: #007bff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+table .BlueButton:hover{
+    color: #0056b3;
+}
+td, th{
+    border: none;
+    padding: 4px;
+    text-align: left;
+    font-size: 15px;
+}
+th{
+    background-color: #f2f2f2;
+    height: 10px;
+}
+.darkmode--activated th{
+    background-color: #333;
+}
+tr {
+    border: none; /* 移除单元格边框 */
+    width: 90%;
+    /*background-color: #f8f8f8; /* 添加斑马纹 */
+}
+.darkmode--activated tr {
+    background-color: #575757;
+}
+/* 设置偶数行的背景颜色 */
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+.darkmode--activated tr:nth-child(even) {
+    background-color: #333;
+}
+/* 设置奇数行的背景颜色 */
+tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+.darkmode--activated tr:nth-child(odd) {
+    background-color: #575757;
+}
+.UnderlinedRed {
+    text-decoration: underline;
+    text-decoration-color: red; /* 下划线颜色 */
+    text-decoration-style: solid; /* 下划线样式：可以是 solid（实线）、dotted（点线）、dashed（虚线）等 */
+    text-decoration-thickness: 0; /* 下划线粗细 */
+}
+.UnderlinedBlue{
+    text-decoration: underline;
+    text-decoration-color: blue; /* 下划线颜色 */
+    text-decoration-style: solid; /* 下划线样式：可以是 solid（实线）、dotted（点线）、dashed（虚线）等 */
+    text-decoration-thickness: 0; /* 下划线粗细 */
+
+}
+
+.pagination{
+    position: absolute;
+    right: 3%;
+    bottom: 5%;
+}
 button:hover{
     cursor: pointer;
 }
 .search-icon{
     cursor: pointer;
-}
-.pagination{
-    position: absolute;
-    right: 3%;
-    bottom: 5%;
 }
