@@ -190,3 +190,25 @@
         margin-top: 5px;
         margin-bottom: 5px;
     }
+    .darkmode--activated .card2 {
+        background-color: #222;
+        color: #fff;
+    }
+    .darkmode--activated img{
+        filter: invert(1);
+    }
+    .darkmode--activated .avatar2 img {
+        filter: invert(1);
+    }
+    .darkmode--activated .title {
+        color: #fff;
+    }
+    .darkmode--activated .count {
+        color: #fff;
+    }
+    .darkmode--activated .image {
+        filter: invert(1);
+    }
+    .darkmode--activated .notification-item img {
+        filter: invert(1);
+    }

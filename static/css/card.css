@@ -11,6 +11,10 @@
     width:400px;/*卡片宽度,记得改动！！！！！！！！！！！！！！！*/
     /* 使用 Flexbox 布局 */
 }
+.darkmode--activated .card {
+    background-color: #222;
+    color: #fff;
+}
 .card:hover {
     transform: scale(1.005); /* 略微放大 */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 悬停时阴影加深 */
@@ -21,7 +25,6 @@
     margin-right: 20px;
     /* 头像与内容之间的间距 */
 }
-
 /* 头像样式 */
 .avatar img {
     width: 50px;
@@ -31,11 +34,16 @@
     border-radius: 50%;
     /* 圆形头像 */
 }
-
+.darkmode--activated .avatar img {
+    filter: brightness(0.8);
+}
 /* Card 内容样式 */
 .card-content {
     font-size: 16px;
     color: #333;
+}
+.darkmode--activated .card-content {
+    color: #fff;
 }
 
 /* 标题样式 */
@@ -47,6 +55,9 @@
     display: block;
     /* 设置为块级元素 */
 }
+.darkmode--activated .card-content .card-title {
+    color: #fff;
+}
 
 /* 正文样式 */
 .card-content .card-text {
@@ -57,6 +68,9 @@
     display: block;
     /* 设置为块级元素 */
 }
+.darkmode--activated .card-content .card-text {
+    color: #fff;
+}
 
 /* 副标题样式 */
 .card-content .card-subtitle{
@@ -65,6 +79,9 @@
     margin-left: 5px;
     /* 调整副标题上边距 */
     display: none;/*默认隐藏副标题*/
+}
+.darkmode--activated .card-content .card-subtitle {
+    color: #aaa;
 }
 
 /* 边框阴影样式,暂时没做好，因为实在没有思路

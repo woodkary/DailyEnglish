@@ -10,13 +10,13 @@ function toggleMoon() {
     }else{
         moon.src = "./image/moon.svg";
     }
-    toggleDarkModeSidebar();
+    /*toggleDarkModeSidebar();
     toggleDarkModeNavbar();
     toggleAllSvgs();
     toggleAllImages();
     toggleDarkModeCard2();
-    /*toggleAllHtml();*/
-    isDarkMode =!isDarkMode;
+    /!*toggleAllHtml();*!/
+    isDarkMode =!isDarkMode;*/
 }
 function toggleDarkModeSidebar() {
     var body = document.body;

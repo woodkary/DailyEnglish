@@ -9,5 +9,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="@coreui/coreui" level="application" />
     <orderEntry type="library" name="echarts" level="application" />
+    <orderEntry type="library" name="darkmode-js" level="application" />
   </component>
 </module>
