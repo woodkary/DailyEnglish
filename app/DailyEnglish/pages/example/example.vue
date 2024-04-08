@@ -54,6 +54,8 @@
     <view style="height: 100vh">
       <sliderzz @change="change"></sliderzz>
     </view>
+	
+	
   </view>
 </template>
 

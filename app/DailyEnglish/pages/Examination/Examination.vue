@@ -44,9 +44,11 @@ export default {
     },
     handleJump() {
       // 处理跳转链接点击事件
-      uni.navigateTo({
+      uni.switchTab({
       	url: '../Vocab/Vocab'
-      })//跳转到生词本页面
+      })//跳转到生词本页面，注意此处暂时用了switchTab，因为跳转到生词本页面后，需要刷新页面，所以用了switchTab
+	  //后面会讲到如何刷新页面，记得改啊！！！！！！11
+	  //todo:refresh the page
     },
     updateProgressBar(){
       // 处理按钮点击事件
