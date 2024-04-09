@@ -27,6 +27,9 @@
 .table-borderless tbody tr:hover {
     background-color: #ddd;
 }
+.darkmode--activated .table-borderless thead tr th {
+    background-color: #dddddd; /* 夜间模式背景色，可以更改 */
+}
 
 .table-borderless tbody tr:hover td {
     background-color: #ddd;
