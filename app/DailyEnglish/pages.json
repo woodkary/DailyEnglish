@@ -52,6 +52,14 @@
         		"navigationBarTitleText" : "",
         		"enablePullDownRefresh" : false
         	}
+        },
+        {
+        	"path" : "pages/register/register",
+        	"style" : 
+        	{
+        		"navigationBarTitleText" : "",
+        		"enablePullDownRefresh" : false
+        	}
         }
        
     ],
