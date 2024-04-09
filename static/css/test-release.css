@@ -162,7 +162,7 @@ body{
 .pagination{
     right: 3%;
     bottom: 5%;
-    text-align: right; /* 如果你想让按钮对齐到右边 *
+    text-align: right; 
 }
 
 button:hover{

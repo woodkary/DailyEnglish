@@ -133,7 +133,6 @@ h1{
 
 
 .members-admin {
-    position: absolute;
     right: 80px;
     top: 80px;
     display: flex; /* 使用 flex 布局 */
