@@ -94,45 +94,45 @@
     <div class="detail-selection">   
         <div class="button-row">
             <span class="label">年级:</span>  
-            <button class="button">一年级</button>  
-            <button class="button">二年级</button>  
-            <button class="button">三年级</button>  
-            <button class="button">四年级</button>  
-            <button class="button">五年级</button>  
-            <button class="button">六年级</button>
-            <button class="button">初一</button>  
-            <button class="button">初二</button>  
-            <button class="button">初三</button>  
-            <button class="button">高一</button>  
-            <button class="button">高二</button>  
-            <button class="button">高三</button>
-            <button class="button">专科</button>  
-            <button class="button">大学</button>  
-            <button class="button">考研</button>   
-            <button class="button">考公</button>
+            <button class="button" data-row="1">一年级</button>  
+            <button class="button" data-row="1">二年级</button>  
+            <button class="button" data-row="1">三年级</button>  
+            <button class="button" data-row="1">四年级</button>  
+            <button class="button" data-row="1">五年级</button>  
+            <button class="button" data-row="1">六年级</button>
+            <button class="button" data-row="1">初一</button>  
+            <button class="button" data-row="1">初二</button>  
+            <button class="button" data-row="1">初三</button>  
+            <button class="button" data-row="1">高一</button>  
+            <button class="button" data-row="1">高二</button>  
+            <button class="button" data-row="1">高三</button>
+            <button class="button" data-row="1">专科</button>  
+            <button class="button" data-row="1">大学</button>  
+            <button class="button" data-row="1">考研</button>   
+            <button class="button" data-row="1">考公</button>
         </div>   
         <div class="button-row">  
             <span class="label">题型:</span> 
-            <button class="button">全部</button>  
-            <button class="button">听力题</button>  
-            <button class="button">选词填空</button>  
-            <button class="button">补全对话</button>  
-            <button class="button">单词拼写</button>  
-            <button class="button">语法填空</button> 
+            <button class="button" data-row="2">全部</button>  
+            <button class="button" data-row="2">听力题</button>  
+            <button class="button" data-row="2">选词填空</button>  
+            <button class="button" data-row="2">补全对话</button>  
+            <button class="button" data-row="2">单词拼写</button>  
+            <button class="button" data-row="2">语法填空</button> 
         </div>   
         <div class="button-row">
             <span class="label">难度:</span>   
-            <button class="button">全部</button>  
-            <button class="button">简单</button>  
-            <button class="button">中档</button>  
-            <button class="button">困难</button>  
-            <button class="button">竞赛</button>  
+            <button class="button" data-row="3">全部</button>  
+            <button class="button" data-row="3">简单</button>  
+            <button class="button" data-row="3">中档</button>  
+            <button class="button" data-row="3">困难</button>  
+            <button class="button" data-row="3">竞赛</button>  
         </div>   
         <div class="button-row">
             <span class="label">方式:</span>   
-            <button class="button">全部</button>  
-            <button class="button">关联出题</button>  
-            <button class="button">精准出题</button>    
+            <button class="button" data-row="4">全部</button>  
+            <button class="button" data-row="4">关联出题</button>  
+            <button class="button" data-row="4">精准出题</button>    
         </div>
       </div>
 
@@ -227,17 +227,21 @@
     </div>
 </body>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {  
-  const buttons = document.querySelectorAll('.button');  
-  
-  buttons.forEach(button => {  
-    button.addEventListener('click', function() {  
-      // 移除所有按钮的激活状态  
-      buttons.forEach(btn => btn.classList.remove('active'));  
-        
-      // 给当前点击的按钮添加激活状态  
-      this.classList.add('active');  
+// 监听所有按钮的点击事件  
+document.querySelectorAll('.button').forEach(function(button) {  
+  button.addEventListener('click', function() {  
+    // 获取当前按钮的行和索引  
+    var row = this.getAttribute('data-row');  
+    var index = this.getAttribute('data-index');  
+      
+    // 移除当前行所有按钮的选中状态  
+    var buttonsInRow = document.querySelectorAll(`[data-row="${row}"]`);  
+    buttonsInRow.forEach(function(btn) {  
+      btn.classList.remove('active');  
     });  
+      
+    // 为当前按钮添加选中状态  
+    this.classList.add('active');  
   });  
 });
 </script>

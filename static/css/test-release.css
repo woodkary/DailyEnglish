@@ -12,6 +12,8 @@ body{
     text-decoration: none;
     padding: 10px;
     flex-direction: column;
+    white-space: nowrap; /* 防止词语间换行 */  
+    overflow-wrap: break-word; /* 允许在单词内换行 */  
     align-items: flex-start; /* 或者使用其他对齐方式 */ 
     border: 1px solid #000000; /* 添加边框，颜色为黑色 */
     box-shadow: 0 0 5px rgba(73, 73, 73, 0.5); /* 添加阴影 */
@@ -24,9 +26,9 @@ body{
   }
 
   .button-row {  
-    display: flex;  
-    justify-content: space-between; /* 或其他对齐方式 */  
-    align-items: center; /* 垂直对齐 */  
+    display: flex; /* 使用弹性盒子模型 */  
+    flex-wrap: wrap; /* 允许元素换行 */  
+    justify-content: flex-start; /* 水平对齐方式 */ 
     margin-bottom: 10px; /* 根据需要调整行间距 */  
   }  
     
@@ -158,7 +160,14 @@ body{
 }
 
 .pagination{
-    position: absolute;
     right: 3%;
     bottom: 5%;
+    text-align: right; 
+}
+
+button:hover{
+    cursor: pointer;
+}
+.search-icon{
+    cursor: pointer;
 }

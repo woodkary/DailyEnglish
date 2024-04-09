@@ -15,7 +15,7 @@
     /* Card 容器样式 */
     .card {
         max-height: 300px;
-        margin-top: 3%;
+        margin-top: 30px;
         padding: 20px;
         /*内边距*/
         display: flex;
@@ -210,11 +210,11 @@
                 <div id="chart" style="width:400px; height: 300px;"></div>
             </div>
             <div class="card">
-                <div class="title" style="margin-top:5px">打卡排行榜</div>
-                    <div id="daka-table" class="scrollable-table"></div>
+                <div class="title" style="color:#222;margin-top:5px">打卡排行榜</div>
+                <div id="daka-table" class="scrollable-table"></div>
             </div>
             <div class="card">
-                <div class="title" style="margin-top:5px">考试排位</div>
+                <div class="title" style="color:#222;margin-top:5px">考试排位</div>
                 <div id="exam-table" class="table-borderless"></div>
             </div>
 
@@ -236,7 +236,7 @@
     function createTable(data) {
         // 创建表格元素
         const table = document.createElement('table');
-        table.classList.add('zebra-table');
+        table.className = 'zebra-table';
 
         // 创建表头
         const thead = document.createElement('thead');

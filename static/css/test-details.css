@@ -444,7 +444,6 @@ tr:nth-child(odd) {
 }
 
 .pagination{
-    position: absolute;
     right: 3%;
     bottom: 5%;
 }

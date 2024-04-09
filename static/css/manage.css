@@ -95,8 +95,14 @@ h1{
 
 .organization-name{
     font-size: 25px;
-    margin-top: 5%;
+    margin-top: 10px;
     margin-left: 10%;
+    margin-bottom: -20px;
+    
+    &::first-letter {
+        font-size: 35px;
+        margin-top:10px;
+    }
 }
 
 .RedButton{
@@ -133,7 +139,6 @@ h1{
 
 
 .members-admin {
-    position: absolute;
     right: 80px;
     top: 80px;
     display: flex; /* 使用 flex 布局 */
@@ -192,9 +197,7 @@ body { font-family: Arial, sans-serif; }
 .right-col {
     display: flex;
     align-items: center;
-    padding-left: 550px;
-    height: 100%;
-
+    padding-left: 600px;/* 调整右侧列的内边距 */
     flex-direction: column;
 }
 
@@ -224,7 +227,6 @@ body { font-family: Arial, sans-serif; }
     display: flex;
     justify-content: space-between;
     background-color: #f1f1f1;
-    height: 20%;
 }
 .darkmode--activated .organization-info {
     background-color: #333;
@@ -240,7 +242,7 @@ body { font-family: Arial, sans-serif; }
 .members-admin {
     display: flex;
     justify-content: space-between;
-    margin-top: 20%;
+    margin-top: 0px;
     margin-left: auto;
 }
 .search-container {
@@ -352,4 +354,4 @@ button:hover{
 }
 .search-icon{
     cursor: pointer;
-}
+}//考试发布
