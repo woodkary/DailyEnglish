@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Table</title>
+    <style>
+        .card {
+            max-height: 300px;
+            margin-top: 3%;
+            padding: 20px;
+            /*内边距*/
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #ddd;
+            /*边框*/
+            border-radius: 0px;
+            /*圆角设置*/
+            width: 400px;
+            height: 300px;
+        }
+    </style>
+</head>
+<link rel="stylesheet" href="./css/wu-hang-table.css">
+
+<body>
+    <div class="card">
+        <h1>Dynamic Table</h1>
+        <div class="wu-hang-table" id="info-table">
+            <!-- 动态生成的行将在这里插入 -->
+        </div>
+
+
+</body>
+<script>
+    function createTableRow(message, time) {
+        // 创建行元素
+        const row = document.createElement('div');
+        row.className = 'table-row';
+
+        // 创建图标元素
+        const icon = document.createElement('span');
+        icon.className = 'table-icon';
+        // 根据文本内容设置图标
+        if (message.includes('Success')) {
+            icon.textContent = '✅';
+        } else if (message.includes('Error')) {
+            icon.textContent = '❌';
+        } else {
+            icon.textContent = '🔹';
+        }
+
+        // 创建消息元素
+        const messageElement = document.createElement('span');
+        messageElement.className = 'table-message';
+        messageElement.textContent = message;
+
+        // 创建时间元素
+        const timeElement = document.createElement('span');
+        timeElement.className = 'table-time';
+        timeElement.textContent = time;
+
+        // 组合行内的元素
+        row.appendChild(icon);
+        row.appendChild(messageElement);
+        row.appendChild(timeElement);
+
+        return row;
+    }
+
+    // 模拟后端数据
+    const backendData = [
+        { message: 'Success message', time: '2024-04-09 10:00:00' },
+        { message: 'Error message', time: '2024-04-09 10:05:00' },
+        { message: 'Info message', time: '2024-04-09 10:10:00' },
+    ];
+
+    // 获取容器元素
+    const tableContainer = document.getElementById('info-table');
+
+    // 循环遍历数据，创建行，并将其添加到容器中
+    backendData.forEach(data => {
+        const row = createTableRow(data.message, data.time);
+        tableContainer.appendChild(row);
+    });
+
+</script>
+
+</html>
