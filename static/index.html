@@ -26,8 +26,10 @@
         /*圆角设置*/
         width: 400px;
         height: 300px;
+        isolation: isolate;/*隔离*/
         .title {
-        margin-top: 0px;
+            color:#222;
+            margin-top: 0px;
         }
     }
 
@@ -142,39 +144,65 @@
 
 
         <div class="test">
-            <div class="container not-change"
+            <div class="container "
                 style="background-image: linear-gradient(120deg, #f093fb 0%, #f5576c 100%);">
-                <img class="image not-change" src="image/书架.png">
+                <img class="darkmode-ignore"
+                     style="flex-shrink: 0;
+                            width: 80px;
+                            /* 图片宽度 */
+                            height: 80px;
+                            /* 图片高度 */
+                            margin-right: 20px;
+                            margin-top: 20px;"
+                     src="image/书架.png">
                 <div class="title">今日打卡</div>
                 <div class="count">45人</div>
                 <div class="details_1">查看详情</div>
-                <image class="details_2 not-change" src="./image/右圆圈箭头.svg"></image>
+                <img class="details_2 " src="./image/右圆圈箭头.svg">
             </div>
-            <div class="container not-change"
+            <div class="container "
                 style="background-image: linear-gradient(-225deg, #ff21bf 0%, #fc591d 100%);">
-                <img class="image not-change" src="image/沙漏.png">
+                <img class="darkmode-ignore" style="flex-shrink: 0;
+                            width: 80px;
+                            /* 图片宽度 */
+                            height: 80px;
+                            /* 图片高度 */
+                            margin-right: 20px;
+                            margin-top: 20px;"  src="image/沙漏.png">
                 <div class="title">打卡率</div>
                 <div class="count">45%</div>
                 <div class="details_1">查看详情</div>
-                <image class="details_2 not-change" src="./image/右圆圈箭头.svg"></image>
+                <img class="details_2 " src="./image/右圆圈箭头.svg">
             </div>
 
-            <div class="container not-change"
+            <div class="container "
                 style="background-image: linear-gradient(to right, #92fe9d 0%, #00c9ff 100%);">
-                <img class="image not-change" src="image/笔记本2.png">
+                <img class="darkmode-ignore" style="flex-shrink: 0;
+                            width: 80px;
+                            /* 图片宽度 */
+                            height: 80px;
+                            /* 图片高度 */
+                            margin-right: 20px;
+                            margin-top: 20px;"  src="image/笔记本2.png">
                 <div class="title">最近考试</div>
                 <div class="count" style="margin-left: -50%;">3月25日</div>
                 <div class="details_1">查看详情</div>
-                <image class="details_2 not-change" src="./image/右圆圈箭头.svg"></image>
+                <img class="details_2 " src="./image/右圆圈箭头.svg">
             </div>
 
-            <div class="container not-change"
+            <div class="container "
                 style="background-image: linear-gradient(-225deg, #22E1FF 0%, #1D8FE1 48%, #625EB1 100%);">
-                <img class="image not-change" src="image/笔记本.png">
+                <img class="darkmode-ignore" style="flex-shrink: 0;
+                            width: 80px;
+                            /* 图片宽度 */
+                            height: 80px;
+                            /* 图片高度 */
+                            margin-right: 20px;
+                            margin-top: 20px;"  src="image/笔记本.png">
                 <div class="title">加入申请</div>
                 <div class="count">45人</div>
                 <div class="details_1">查看详情</div>
-                <image class="details_2 not-change" src="./image/右圆圈箭头.svg"></image>
+                <img class="details_2 " src="./image/右圆圈箭头.svg">
             </div>
         </div>
         <div class="cardContainer">
@@ -182,11 +210,11 @@
                 <div id="chart" style="width:400px; height: 300px;"></div>
             </div>
             <div class="card">
-                <div class="title" style="color:#222;margin-top:5px">打卡排行榜</div>
-                <div id="daka-table" class="scrollable-table"></div>
+                <div class="title" style="margin-top:5px">打卡排行榜</div>
+                    <div id="daka-table" class="scrollable-table"></div>
             </div>
             <div class="card">
-                <div class="title" style="color:#222;margin-top:5px">考试排位</div>
+                <div class="title" style="margin-top:5px">考试排位</div>
                 <div id="exam-table" class="table-borderless"></div>
             </div>
 
@@ -208,7 +236,7 @@
     function createTable(data) {
         // 创建表格元素
         const table = document.createElement('table');
-        table.className = 'zebra-table';
+        table.classList.add('zebra-table');
 
         // 创建表头
         const thead = document.createElement('thead');

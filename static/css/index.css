@@ -40,6 +40,9 @@
         gap: 3%; /* 设置子项之间的间隔 */
         overflow: auto;
     }
+    /*.darkmode--activated .cardContainer {
+        filter: invert(1);
+    }*/
     .card2 .title {
         font-size: 20px;
         color: #EE4141;
@@ -138,7 +141,10 @@
         color: #ffffff;
         margin-top: 20px;
         white-space: nowrap;
-        /*强制不换行*/
+        /*!*强制不换行*!*/
+    }
+    .darkmode--activated .title {
+        color: #fff;
     }
 
     .count {
@@ -157,6 +163,8 @@
         /* 图片高度 */
         margin-right: 20px;
         margin-top: 20px;
+        isolation: isolate;
+        /* 图片不隔离 */
     }
     .notification {
         border: 1px solid #ccc;

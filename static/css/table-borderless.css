@@ -4,6 +4,10 @@
     max-width: 400px;
     width:400px;
     overflow-x: hidden; /* 隐藏水平滚动条 */
+    background-color: #fff; /* 设置背景颜色 */
+}
+.darkmode--activated .table-borderless {
+    filter: invert(1); /* 夜间模式背景色，可以更改 */
 }
 
 .table-borderless th,
@@ -13,11 +17,9 @@
     padding: 8px; /* 设置单元格内边距 */
     width:200px;/*在考试排位中，宽度200合适*/
 }
-
 .table-borderless thead tr th {
     position: sticky;
     background-color: #f0f0f0; /* 设置表头的背景颜色 */
-
     top: 0; /* 表头将固定在顶部 */
     z-index: 10; /* 确保表头在滚动时保持在其他内容的上方 */
 }
