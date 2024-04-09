@@ -6,33 +6,44 @@
     <title>成员管理</title>
 </head>
 <style>
+    .darkmode--activated .table-row {
+        filter: invert(1);
+        color: #333;
+    }
     /* 添加斑马条纹样式 */
     .table-container {
         display: table;
         width: 100%;
-
         .button {
             cursor: pointer;
-            /*鼠标移上去变成小手*/
-            padding: 5px 10px;
-            /*上下左右内边距*/
+            padding: 5px 26px;
             border: 1px solid #ccc;
             border-radius: 3px;
             color: #333;
             text-decoration: none;
             display: inline-block;
-            /*行内块元素*/
             margin-left: 5px;
             background-color: #f0f0f0;
+            text-align: center;
+            /* 水平居中文字 */
         }
 
         .button:hover {
-            background-color: #f0f0f0;
+            background-color: #e0e0e0;
+            /* 鼠标悬停时改变背景颜色 */
         }
+
 
         .table-row {
             display: table-row;
             background-color: #f2f2f2;
+        }
+
+        .table-row:first-child .table-cell {
+            font-family: "SimHei", sans-serif;
+            /* 设置黑体字体 */
+            font-weight: bold;
+            /* 使文字加粗 */
         }
 
         .table-row:nth-child(odd) {
@@ -173,18 +184,18 @@
         </div>
         <div id="table-container" class="table-container">
 
-            
+
         </div>
         <div class="pagination" id="pagination">
-                <!-- 分页按钮 -->
-                <button>&lt;</button>
-                <button>1</button>
-                <button>2</button>
-                <button>3</button>
-                <button>4</button>
-                <button>5</button>
-                <button>&gt;</button>
-            </div>
+            <!-- 分页按钮 -->
+            <button>&lt;</button>
+            <button>1</button>
+            <button>2</button>
+            <button>3</button>
+            <button>4</button>
+            <button>5</button>
+            <button>&gt;</button>
+        </div>
 
 </body>
 <script src="./js/Navbar.js"></script>
