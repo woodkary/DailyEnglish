@@ -248,6 +248,84 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 	})
 	//获取审核申请页面信息
 	r.GET("/api/team_manage/request_manage/data", func(c *gin.Context) {
+		token := c.Request.Header.Get("token")
+		if token == "" {
+			c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login.html")
+		}
+		user, err := service.ParseToken(token)
+		if err != nil {
+			c.JSON(400, "登录信息无效或过期")
+		}
 
+		Item1, err := controlsql.QueryUnprocessedNotifications(client, user.TeamName)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+		}
+		Item2, err := controlsql.GetTeamInfo(client, user.TeamName)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+		}
+		type Request struct {
+			Name     string `json:"name"`      // 请求者姓名
+			Time     string `json:"time"`      // 请求时间
+			LeaveMsg string `json:"leave_msg"` // 留言信息
+		}
+
+		// Response 定义了响应的信息
+		type response struct {
+			Code       string    `json:"code"`        // 状态码
+			Msg        string    `json:"msg"`         // 消息
+			MemberNum  int       `json:"member_num"`  // 成员数量
+			ManagerNum int       `json:"manager_num"` // 管理员数量
+			Requests   []Request `json:"request"`     // 请求列表
+		}
+		var Response response
+		Response.Code = "200"
+		Response.Msg = "成功"
+		Response.ManagerNum = Item2.AdminCount
+		Response.MemberNum = Item2.TotalMembers
+		for _, notice := range Item1 {
+			if notice.Title == "加入申请" {
+				var request Request
+				request.LeaveMsg = notice.Content
+				request.Name = notice.ID
+			}
+		}
+	})
+	//获取个人中心界面所需信息
+	r.GET("/api/team_manage/personal_center/data", func(c *gin.Context) {
+		token := c.Request.Header.Get("token")
+		if token == "" {
+			c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login.html")
+		}
+		user, err := service.ParseToken(token)
+		if err != nil {
+			c.JSON(400, "登录信息无效或过期")
+		}
+		Item1, Item2, err := controlsql.GetUserInfoByEmailPwd(db, user.UserName)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+		}
+		type User struct {
+			Name     string `json:"name"`  // 用户姓名
+			Team     string `json:"team"`  // 用户所属团队
+			Right    string `json:"right"` // 用户权限
+			Email    string `json:"email"` // 用户邮箱
+			Password string `json:"pwd"`   //用户密码
+		}
+		// Response 定义了响应的信息
+		type Response struct {
+			Code string `json:"code"` // 状态码
+			Msg  string `json:"msg"`  // 消息
+			User User   `json:"user"` // 用户信息
+		}
+		var response Response
+		response.User.Email = Item1
+		response.User.Password = Item2
+		response.User.Name = user.UserName
+		response.User.Team = user.TeamName
+		response.Code = "200"
+		response.Msg = "成功"
+		c.JSON(200, response)
 	})
 }
