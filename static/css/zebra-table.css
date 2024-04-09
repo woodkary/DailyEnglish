@@ -4,6 +4,9 @@
     max-height: 270px;
     border-collapse: collapse;/*合并边框*/
 }
+.darkmode--activated.zebra-table {
+    filter: invert(1);/* 这里可以设置暗黑模式下的样式 */
+}
 
 .zebra-table th,
 .zebra-table td {
@@ -21,6 +24,15 @@
 .zebra-table tbody tr:nth-child(odd) {
     background-color: #f2f2f2;
 }
+.darkmode--activated.zebra-table tbody tr:nth-child(odd) {
+    background-color: #333; /* 这里可以设置暗黑模式下的样式 */
+}
+.zebra-table tbody tr:nth-child(even) {
+    background-color: #fff;
+}
+.darkmode--activated.zebra-table tbody tr:nth-child(even) {
+    background-color: #fff; /* 这里可以设置暗黑模式下的样式 */
+}
 
 .zebra-table tbody tr:hover {
     background-color: #ddd;
@@ -30,4 +42,7 @@ max-width: 400px; /* 设置表格容器的最大宽度 */
 max-height: 270px; /* 设置表格容器的最大高度 */
 overflow-y: auto;
     overflow-x: hidden; /* 隐藏水平滚动条 */
+}
+.darkmode--activated .scrollable-table {
+    filter: invert(1);/* 这里可以设置暗黑模式下的样式 */
 }
