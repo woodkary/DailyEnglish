@@ -295,16 +295,14 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		}
 	})
 	//获取个人中心界面所需信息
-	r.GET("/api/team_manage/personal_center/data", func(c *gin.Context) {
-		token := c.Request.Header.Get("token")
-		if token == "" {
-			c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login.html")
+	r.GET("/api/team_manage/personal_center/data", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
+		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
 		}
-		user, err := service.ParseToken(token)
-		if err != nil {
-			c.JSON(400, "登录信息无效或过期")
-		}
-		Item1, Item2, err := controlsql.GetUserInfoByEmailPwd(db, user.UserName)
+		Item1, Item2, err := controlsql.GetUserInfoByEmailPwd(db, userClaims.UserName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
@@ -324,8 +322,8 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		var response Response
 		response.User.Email = Item1
 		response.User.Password = Item2
-		response.User.Name = user.UserName
-		response.User.Team = user.TeamName
+		response.User.Name = userClaims.UserName
+		response.User.Team = userClaims.TeamName
 		response.Code = "200"
 		response.Msg = "成功"
 		c.JSON(200, response)
@@ -360,5 +358,24 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		Response.Code = "200"
 		Response.Msg = "成功"
 		c.JSON(200, Response)
+	})
+	//删除成员
+	r.POST("/api/team_manage/member_manage/delete", func(c *gin.Context) {
+		type Request struct {
+			Username string `json:"username"` // 要删除的成员的用户名
+			Teamname string `json:"teamname"` // 团队名
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+		err := controlsql.DeleteUserFromTeam(client, request.Teamname, request.Username)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+		}
+		c.JSON(200, "删除成功")
 	})
 }
