@@ -1,6 +1,7 @@
 package controlsql
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"time"
@@ -39,8 +40,9 @@ type AttendanceRecord struct {
 	AttendanceRate   float64        // 打卡率
 }
 
-type AdminRequest struct {
+type TeamRequest struct {
 	TeamName string // 团队名
+	flag     string // 0加入申请 1管理员申请
 	Username string // 申请者用户名
 	Time     string // 申请时间
 	Message  string // 申请留言内容
@@ -70,6 +72,18 @@ type ExamInfo struct {
 	AverageScore  float64        // 考试平均分
 	PassRate      float64        // 及格率
 	TopSix        map[string]int // 前6名成员用户名及分数，键为用户名，值为分数
+}
+
+// 保存每个用户所加入的若干团队
+func RecordTeamJoin(redisClient *redis.Client, username string, teamNames []string) error {
+	// 使用 Redis 的 Hash 数据结构存储每个用户名加入的团队名
+	for _, teamName := range teamNames {
+		_, err := redisClient.HSet("user_teams:"+username, teamName, 1).Result()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // 保存团队信息
@@ -161,13 +175,16 @@ func SaveAttendanceRecord(client *redis.Client, record AttendanceRecord) error {
 	return nil
 }
 
-// 保存团队申请信息
-func SaveAdminRequest(client *redis.Client, request AdminRequest) error {
-	// 使用哈希数据结构保存申请信息
-	_, err := client.HMSet("admin_request:"+request.TeamName+":user:"+request.Username, map[string]interface{}{
-		"time":    request.Time,
-		"message": request.Message,
-	}).Result()
+// 保存团队申请信息（0加入/1管理员申请）
+func SaveTeamRequest(client *redis.Client, request TeamRequest) error {
+	// 将 TeamRequest 结构体转换为 JSON 格式
+	requestJSON, err := json.Marshal(request)
+	if err != nil {
+		return err
+	}
+
+	// 保存 JSON 格式的数据到 Redis 中
+	err = client.Set(request.TeamName, requestJSON, 0).Err()
 	if err != nil {
 		return err
 	}
