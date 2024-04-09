@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>成员详情</title>
+    <title>首页</title>
 </head>
 <style >
     /*html[theme='dark-mode'] {
@@ -15,7 +15,7 @@
     /* Card 容器样式 */
     .card {
         max-height: 300px;
-        margin-top: 3%;
+        margin-top: 30px;
         padding: 20px;
         /*内边距*/
         display: flex;
@@ -182,11 +182,11 @@
                 <div id="chart" style="width:400px; height: 300px;"></div>
             </div>
             <div class="card">
-                <div class="title" style="color:#222;margin-top:5px">打卡排行榜</div>
-                <div id="daka-table" class="scrollable-table"></div>
+                <div class="title" style="color:#E91D63;margin-bottom: 15px;">打卡排行榜</div>
+                <div id="daka-table" class="table-borderless"></div>
             </div>
             <div class="card">
-                <div class="title" style="color:#222;margin-top:5px">考试排位</div>
+                <div class="title" style="color:#6200EE;margin-bottom: 15px;">考试排位</div>
                 <div id="exam-table" class="table-borderless"></div>
             </div>
 
@@ -208,7 +208,7 @@
     function createTable(data) {
         // 创建表格元素
         const table = document.createElement('table');
-        table.className = 'zebra-table';
+        table.className = 'borderless-table';
 
         // 创建表头
         const thead = document.createElement('thead');
@@ -311,10 +311,10 @@
 
     // 示例数据
     const score_data = {
-        headers: ['成员', '打卡天数', '个人打卡率'],
+        headers: ['成员', '考试排名', '考试分数'],
         rows: [
-            ['otto', '666', '87%'], ['otto', '666', '87%'],
-            ['otto', '666', '87%'], ['otto', '666', '87%'], ['otto', '666', '87%'], ['otto', '666', '87%']
+            ['otto', '第1名', '100'], ['otto', '第2名', '99'],
+            ['otto', '第3名', '98'], ['otto', '第4名', '97'], ['otto', '第5名', '96'], ['otto', '第6名', '95']
             // 更多数据行
         ]
     };
