@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="40a60d59-6e65-465a-89ab-7764c8f00a1d" name="更改" comment="为大部分页面加入darkmode" />
+    <list default="true" id="40a60d59-6e65-465a-89ab-7764c8f00a1d" name="更改" comment="index">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/manage.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/manage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/issuePunch.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/issuePunch.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/review.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/review.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/test-release.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/test-release.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/test-statistics.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/test-statistics.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -187,7 +194,15 @@
       <option name="project" value="LOCAL" />
       <updated>1712574853717</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="index">
+      <option name="closed" value="true" />
+      <created>1712664874347</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1712664874347</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -226,7 +241,8 @@
     <MESSAGE value="反色改了一部分" />
     <MESSAGE value="为index.html加入Darkmode" />
     <MESSAGE value="为大部分页面加入darkmode" />
-    <option name="LAST_COMMIT_MESSAGE" value="为大部分页面加入darkmode" />
+    <MESSAGE value="index" />
+    <option name="LAST_COMMIT_MESSAGE" value="index" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
