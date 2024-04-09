@@ -1,6 +1,6 @@
 <template>
 	<view>
-		
+		<image class="background" src="../../static/background.png"></image>	
 	</view>
 </template>
 
@@ -18,5 +18,8 @@
 </script>
 
 <style>
-
+	.background{
+		width: 100vh;
+		height: 100vh;
+	}
 </style>
