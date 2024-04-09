@@ -2,6 +2,7 @@ package controlsql
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 )
 
@@ -100,41 +101,35 @@ func QueryBooks(db *sql.DB) ([]Books, error) {
 	return bookInfos, nil
 }
 
-// 2.2QueryBooksByGrade 根据gradeordifficulty和flag参数查询所有gradeordifficulty的书籍
-func QueryBooksByGrade(db *sql.DB, gradeordifficulty string, flag int) ([]Books, error) {
-	var books []Books
-
-	// 准备查询语句
-	query := "SELECT * FROM books WHERE grade = ?"
-	// 根据 flag 参数决定排序方式
-	if flag == 0 {
-		query += " ORDER BY date DESC"
-	} else if flag == 1 {
-		query += " ORDER BY learner_num DESC"
+// QueryBooks 根据grade、difficulty和flag参数查询书籍，并根据标志参数排序
+func QueryBooksBy(db *sql.DB, grade, difficulty string, flag int) ([]Books, error) {
+	var query string
+	switch flag {
+	case 0:
+		query = "SELECT * FROM books WHERE grade = ? AND difficulty = ? ORDER BY date DESC"
+	case 1:
+		query = "SELECT * FROM books WHERE grade = ? AND difficulty = ? ORDER BY learner_num DESC"
+	default:
+		return nil, errors.New("invalid flag value")
 	}
 
-	// 执行查询操作
-	rows, err := db.Query(query, gradeordifficulty)
+	rows, err := db.Query(query, grade, difficulty)
 	if err != nil {
-		return nil, fmt.Errorf("error querying books by grade: %v", err)
+		return nil, fmt.Errorf("error querying books: %v", err)
 	}
 	defer rows.Close()
 
-	// 遍历查询结果
+	var books []Books
 	for rows.Next() {
 		var book Books
-		err := rows.Scan(&book.Title, &book.LearnerNum, &book.FinishNum, &book.Type, &book.Describe, &book.ID, &book.WordsNum, &book.Grade, &book.Difficulty, &book.Date)
-		if err != nil {
-			return nil, fmt.Errorf("error scanning book row: %v", err)
+		if err := rows.Scan(&book.Title, &book.LearnerNum, &book.FinishNum, &book.Type, &book.Describe, &book.ID, &book.WordsNum, &book.Grade, &book.Difficulty, &book.Date); err != nil {
+			return nil, fmt.Errorf("error scanning row: %v", err)
 		}
 		books = append(books, book)
 	}
-
-	// 检查遍历过程中是否出错
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("error iterating book rows: %v", err)
+		return nil, fmt.Errorf("error iterating over rows: %v", err)
 	}
-
 	return books, nil
 }
 
