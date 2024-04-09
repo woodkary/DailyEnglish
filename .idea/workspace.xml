@@ -4,29 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="40a60d59-6e65-465a-89ab-7764c8f00a1d" name="更改" comment="为index.html加入Darkmode">
+    <list default="true" id="40a60d59-6e65-465a-89ab-7764c8f00a1d" name="更改" comment="index">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/card.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/card.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/icon.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/icon.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/index.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/css/manage.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/manage.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/myNavbar.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/myNavbar.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/personal-test-details.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/personal-test-details.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/review.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/review.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/test-details.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/test-details.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/test-release.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/test-release.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/test-statistics.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/test-statistics.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/word-statistics.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/word-statistics.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/issuePunch.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/issuePunch.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/manage.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/manage.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/personal-test-details.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/personal-test-details.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/review.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/review.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/template.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/template.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/test-details.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/test-details.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/test-release.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/test-release.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/test-statistics.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/test-statistics.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/word-statistics.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/word-statistics.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,6 +58,7 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;JavaScript 调试.index.html.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
@@ -82,7 +67,7 @@
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/clk/Desktop/陈立凯_2021150219_实验一&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/karywoodOyo/Downloads/我的东西/DailyEnglish/DailyEnglish/app/DailyEnglish&quot;,
     &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -94,6 +79,21 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\karywoodOyo\Downloads\我的东西\DailyEnglish\DailyEnglish\app\DailyEnglish" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="index.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/DailyEnglish/static/index.html" useBuiltInWebServerPort="true">
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JavaScript 调试.index.html" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -118,7 +118,9 @@
       <workItem from="1712402860598" duration="22000" />
       <workItem from="1712484690704" duration="8510000" />
       <workItem from="1712555953828" duration="1623000" />
-      <workItem from="1712564195517" duration="7619000" />
+      <workItem from="1712564195517" duration="10660000" />
+      <workItem from="1712628736136" duration="5002000" />
+      <workItem from="1712659104315" duration="3847000" />
     </task>
     <task id="LOCAL-00001" summary="考试数据获取">
       <option name="closed" value="true" />
@@ -184,7 +186,23 @@
       <option name="project" value="LOCAL" />
       <updated>1712566755238</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="为大部分页面加入darkmode">
+      <option name="closed" value="true" />
+      <created>1712574853717</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1712574853717</updated>
+    </task>
+    <task id="LOCAL-00010" summary="index">
+      <option name="closed" value="true" />
+      <created>1712664874347</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1712664874347</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -222,7 +240,9 @@
     <MESSAGE value="Examination.vue加入一个跳转、为html大部分按钮加入跳转" />
     <MESSAGE value="反色改了一部分" />
     <MESSAGE value="为index.html加入Darkmode" />
-    <option name="LAST_COMMIT_MESSAGE" value="为index.html加入Darkmode" />
+    <MESSAGE value="为大部分页面加入darkmode" />
+    <MESSAGE value="index" />
+    <option name="LAST_COMMIT_MESSAGE" value="index" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

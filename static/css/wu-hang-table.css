@@ -3,6 +3,11 @@
     flex-direction: column;
 }
 
+.darkmode--activated .wu-hang-table {
+    background-color: #222;
+    color: #fff;
+}
+
 .table-row {
     display: flex;
     align-items: center;
