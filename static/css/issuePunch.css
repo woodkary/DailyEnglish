@@ -31,6 +31,7 @@ body{
 .horizontal-list li {
     margin-right: 30px; /* 为了给列表项之间添加间距 */
     margin-top: 10px;
+    cursor: pointer;
 }
 
 
@@ -74,6 +75,7 @@ body{
     width: 24px;
     height: 24px;
     vertical-align: middle;
+    cursor: pointer;
 }
 .search-container img[src="./image/搜索图标.png"] {
     
@@ -130,6 +132,9 @@ body{
     display: flex; /* 每个包含p元素的div水平排列 */
     align-items: center; /* 垂直居中子元素 */
     margin-bottom: 10px; /* 设置div元素之间的间距 */
+}
+.prefix{
+    color: aquamarine;
 }
 .num span{
     border: 1px solid #BBBBBB;
