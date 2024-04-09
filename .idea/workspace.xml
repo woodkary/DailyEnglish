@@ -5,10 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="40a60d59-6e65-465a-89ab-7764c8f00a1d" name="更改" comment="为大部分页面加入darkmode">
+      <change afterPath="$PROJECT_DIR$/static/js/createDaKaTable.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DailyEnglish.exe" beforeDir="false" afterPath="$PROJECT_DIR$/DailyEnglish.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/pages.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/pages.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/Navbar.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/Navbar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/creatTabelRow.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/createTableRow.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,6 +58,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "JavaScript 调试.index.html.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.go.formatter.settings.were.checked": "true",
@@ -80,6 +83,16 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\karywoodOyo\Downloads\我的东西\DailyEnglish\DailyEnglish\app\DailyEnglish" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="index.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/DailyEnglish/static/index.html" useBuiltInWebServerPort="true">
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JavaScript 调试.index.html" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -107,6 +120,7 @@
       <workItem from="1712555953828" duration="1623000" />
       <workItem from="1712564195517" duration="10660000" />
       <workItem from="1712628736136" duration="5002000" />
+      <workItem from="1712659104315" duration="3847000" />
     </task>
     <task id="LOCAL-00001" summary="考试数据获取">
       <option name="closed" value="true" />

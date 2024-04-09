@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>成员详情</title>
+    <title>首页</title>
 </head>
 <style >
     /*html[theme='dark-mode'] {
@@ -26,21 +26,16 @@
         /*圆角设置*/
         width: 400px;
         height: 300px;
-        isolation: isolate;/*隔离*/
         .title {
-            color:#222;
             margin-top: 0px;
         }
-    }
-
-    .darkmode--activated .card {
-        background-color: #222;
+        isolation: isolate;
     }
 
     .darkmode--activated .card .title {
         color: #fff;
     }
-    
+
 </style>
 <link rel="stylesheet" href="./css/sidebar.css">
 <link rel="stylesheet" href="./css/myNavbar.css">
@@ -51,222 +46,187 @@
 <link rel="stylesheet" href="css/wu-hang-table.css">
 
 <body>
-    <div class="navbar">
-        <div class="navbar-left">
-            <img src="./image/little-edellweiss.regular.webp" class="brand-logo">
-        </div>
-        <div class="navbar-right">
-            <img src="./image/moon.svg" alt="夜间模式" id="moon" onclick="toggleMoon()" class="night-mode">
-            <button class="notifications">
-                <img src="./image/通知.svg">
-            </button>
-
-            <div class="user-info">
-                <div>姓名</div>
-                <div>组织名称</div>
-            </div>
-            <div class="darkmode-ignored">
-                <img src="./image/pikachu.jpg" alt="头像" class="user-avatar">
-            </div>
-            <img src="./image/logout.svg" class="logout">
-        </div>
+<div class="navbar">
+    <div class="navbar-left">
+        <img src="./image/little-edellweiss.regular.webp" class="brand-logo">
     </div>
-    <div class="sidebar-container">
-        <div class="sidebar">
-            <div>
-                <a href="./index.html">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" style="isolation: isolate"
-                        viewBox="64 64 896 896">
-                        <path
+    <div class="navbar-right">
+        <img src="./image/moon.svg" alt="夜间模式" id="moon" onclick="toggleMoon()" class="night-mode">
+        <button class="notifications">
+            <img src="./image/通知.svg">
+        </button>
+
+        <div class="user-info">
+            <div>姓名</div>
+            <div>组织名称</div>
+        </div>
+        <div class="darkmode-ignored">
+            <img src="./image/pikachu.jpg" alt="头像" class="user-avatar">
+        </div>
+        <img src="./image/logout.svg" class="logout">
+    </div>
+</div>
+<div class="sidebar-container">
+    <div class="sidebar">
+        <div>
+            <a href="./index.html">
+                <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" style="isolation: isolate"
+                     viewBox="64 64 896 896">
+                    <path
                             d="M946.5 505L560.1 118.8l-25.9-25.9a31.5 31.5 0 0 0-44.4 0L77.5 505a63.9 63.9 0 0 0-18.8 46c.4 35.2 29.7 63.3 64.9 63.3h42.5V940h691.8V614.3h43.4c17.1 0 33.2-6.7 45.3-18.8a63.6 63.6 0 0 0 18.7-45.3c0-17-6.7-33.1-18.8-45.2zM568 868H456V664h112v204zm217.9-325.7V868H632V640c0-22.1-17.9-40-40-40H432c-22.1 0-40 17.9-40 40v228H238.1V542.3h-96l370-369.7 23.1 23.1L882 542.3h-96.1z">
-                        </path>
-                    </svg>
-                    主页
-                </a>
-            </div>
-            <button class="dropdown-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" style="isolation: isolate"
-                    viewBox="64 64 896 896">
-                    <path
-                        d="M928 160H96c-17.7 0-32 14.3-32 32v640c0 17.7 14.3 32 32 32h832c17.7 0 32-14.3 32-32V192c0-17.7-14.3-32-32-32zm-40 110.8V792H136V270.8l-27.6-21.5 39.3-50.5 42.8 33.3h643.1l42.8-33.3 39.3 50.5-27.7 21.5zM833.6 232L512 482 190.4 232l-42.8-33.3-39.3 50.5 27.6 21.5 341.6 265.6a55.99 55.99 0 0 0 68.7 0L888 270.8l27.6-21.5-39.3-50.5-42.7 33.2z">
                     </path>
                 </svg>
-                任务发布
-                <i class="fa fa-caret-down"></i>
-            </button>
-            <div class="dropdown-container">
-                <a href="issuePunch.html">打卡发布</a>
-                <a href="test-release.html">考试发布</a>
-            </div>
-            <button class="dropdown-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">" viewBox="64 64
-                    896 896">
-                    <path
-                        d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z">
-                    </path>
-                </svg>
-                学习情况
-                <i class="fa fa-caret-down"></i>
-            </button>
-            <div class="dropdown-container">
-                <a href="test-statistics.html">考试情况</a>
-            </div>
-            <button class="dropdown-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" style="isolation: isolate"
-                    viewBox="64 64 896 896">" viewBox="64 64 896 896">
-                    <path
-                        d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z">
-                    </path>
-                </svg>
-                团队管理
-                <i class="fa fa-caret-down"></i>
-            </button>
-            <div class="dropdown-container">
-                <a href="manage.html">成员管理</a>
-                <a href="review.html">申请审核</a>
-            </div>
-            <a href="#contact">
-                <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">
-                    <path
-                        d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z">
-                    </path>
-                </svg>
-                个人中心
+                主页
             </a>
         </div>
+        <button class="dropdown-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" style="isolation: isolate"
+                 viewBox="64 64 896 896">
+                <path
+                        d="M928 160H96c-17.7 0-32 14.3-32 32v640c0 17.7 14.3 32 32 32h832c17.7 0 32-14.3 32-32V192c0-17.7-14.3-32-32-32zm-40 110.8V792H136V270.8l-27.6-21.5 39.3-50.5 42.8 33.3h643.1l42.8-33.3 39.3 50.5-27.7 21.5zM833.6 232L512 482 190.4 232l-42.8-33.3-39.3 50.5 27.6 21.5 341.6 265.6a55.99 55.99 0 0 0 68.7 0L888 270.8l27.6-21.5-39.3-50.5-42.7 33.2z">
+                </path>
+            </svg>
+            任务发布
+            <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-container">
+            <a href="issuePunch.html">打卡发布</a>
+            <a href="test-release.html">考试发布</a>
+        </div>
+        <button class="dropdown-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">" viewBox="64 64
+                896 896">
+                <path
+                        d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z">
+                </path>
+            </svg>
+            学习情况
+            <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-container">
+            <a href="test-statistics.html">考试情况</a>
+        </div>
+        <button class="dropdown-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" style="isolation: isolate"
+                 viewBox="64 64 896 896">" viewBox="64 64 896 896">
+                <path
+                        d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z">
+                </path>
+            </svg>
+            团队管理
+            <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-container">
+            <a href="manage.html">成员管理</a>
+            <a href="review.html">申请审核</a>
+        </div>
+        <a href="#contact">
+            <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">
+                <path
+                        d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z">
+                </path>
+            </svg>
+            个人中心
+        </a>
+    </div>
+</div>
+
+<div class="index">
+    <h2>首页</h2>
+    <div class="main_label">
+        欢迎来到英语每日练团队管理端(这里写通知)
     </div>
 
-    <div class="index">
-        <h2>首页</h2>
-        <div class="main_label">
-            欢迎来到英语每日练团队管理端(这里写通知)
+
+    <div class="test">
+        <div class="container"
+             style="background-image: linear-gradient(120deg, #f093fb 0%, #f5576c 100%);">
+            <img class="darkmode-ignore" style="flex-shrink: 0;
+        width: 80px;
+        /* 图片宽度 */
+        height: 80px;
+        /* 图片高度 */
+        margin-right: 20px;
+        margin-top: 20px;" src="image/书架.png">
+            <div class="title">今日打卡</div>
+            <div class="count">45人</div>
+            <div class="details_1">查看详情</div>
+            <img class="details_2" src="./image/右圆圈箭头.svg"></img>
+        </div>
+        <div class="container"
+             style="background-image: linear-gradient(-225deg, #ff21bf 0%, #fc591d 100%);">
+            <img class="darkmode-ignore" style="flex-shrink: 0;
+        width: 80px;
+        /* 图片宽度 */
+        height: 80px;
+        /* 图片高度 */
+        margin-right: 20px;
+        margin-top: 20px;" src="image/沙漏.png">
+            <div class="title">打卡率</div>
+            <div class="count">45%</div>
+            <div class="details_1">查看详情</div>
+            <img class="details_2" src="./image/右圆圈箭头.svg"></img>
         </div>
 
-
-        <div class="test">
-            <div class="container "
-                style="background-image: linear-gradient(120deg, #f093fb 0%, #f5576c 100%);">
-                <img class="darkmode-ignore"
-                     style="flex-shrink: 0;
-                            width: 80px;
-                            /* 图片宽度 */
-                            height: 80px;
-                            /* 图片高度 */
-                            margin-right: 20px;
-                            margin-top: 20px;"
-                     src="image/书架.png">
-                <div class="title">今日打卡</div>
-                <div class="count">45人</div>
-                <div class="details_1">查看详情</div>
-                <img class="details_2 " src="./image/右圆圈箭头.svg">
-            </div>
-            <div class="container "
-                style="background-image: linear-gradient(-225deg, #ff21bf 0%, #fc591d 100%);">
-                <img class="darkmode-ignore" style="flex-shrink: 0;
-                            width: 80px;
-                            /* 图片宽度 */
-                            height: 80px;
-                            /* 图片高度 */
-                            margin-right: 20px;
-                            margin-top: 20px;"  src="image/沙漏.png">
-                <div class="title">打卡率</div>
-                <div class="count">45%</div>
-                <div class="details_1">查看详情</div>
-                <img class="details_2 " src="./image/右圆圈箭头.svg">
-            </div>
-
-            <div class="container "
-                style="background-image: linear-gradient(to right, #92fe9d 0%, #00c9ff 100%);">
-                <img class="darkmode-ignore" style="flex-shrink: 0;
-                            width: 80px;
-                            /* 图片宽度 */
-                            height: 80px;
-                            /* 图片高度 */
-                            margin-right: 20px;
-                            margin-top: 20px;"  src="image/笔记本2.png">
-                <div class="title">最近考试</div>
-                <div class="count" style="margin-left: -50%;">3月25日</div>
-                <div class="details_1">查看详情</div>
-                <img class="details_2 " src="./image/右圆圈箭头.svg">
-            </div>
-
-            <div class="container "
-                style="background-image: linear-gradient(-225deg, #22E1FF 0%, #1D8FE1 48%, #625EB1 100%);">
-                <img class="darkmode-ignore" style="flex-shrink: 0;
-                            width: 80px;
-                            /* 图片宽度 */
-                            height: 80px;
-                            /* 图片高度 */
-                            margin-right: 20px;
-                            margin-top: 20px;"  src="image/笔记本.png">
-                <div class="title">加入申请</div>
-                <div class="count">45人</div>
-                <div class="details_1">查看详情</div>
-                <img class="details_2 " src="./image/右圆圈箭头.svg">
-            </div>
+        <div class="container"
+             style="background-image: linear-gradient(to right, #92fe9d 0%, #00c9ff 100%);">
+            <img class="darkmode-ignore" style="flex-shrink: 0;
+        width: 80px;
+        /* 图片宽度 */
+        height: 80px;
+        /* 图片高度 */
+        margin-right: 20px;
+        margin-top: 20px;" src="image/笔记本2.png">
+            <div class="title">最近考试</div>
+            <div class="count" style="margin-left: -50%;">3月25日</div>
+            <div class="details_1">查看详情</div>
+            <img class="details_2" src="./image/右圆圈箭头.svg"></img>
         </div>
-        <div class="cardContainer">
-            <div class="card">
-                <div id="chart" style="width:400px; height: 300px;"></div>
-            </div>
-            <div class="card">
-                <div class="title" style="color:#222;margin-top:5px">打卡排行榜</div>
-                <div id="daka-table" class="scrollable-table"></div>
-            </div>
-            <div class="card">
-                <div class="title" style="color:#222;margin-top:5px">考试排位</div>
-                <div id="exam-table" class="table-borderless"></div>
-            </div>
 
-            <div class="card">
-                <div class="title" style="color: #73D5A3;">最近通知</div>
-                <div class="wu-hang-table" id="info-table">
+        <div class="container"
+             style="background-image: linear-gradient(-225deg, #22E1FF 0%, #1D8FE1 48%, #625EB1 100%);">
+            <img class="darkmode-ignore" style="flex-shrink: 0;
+        width: 80px;
+        /* 图片宽度 */
+        height: 80px;
+        /* 图片高度 */
+        margin-right: 20px;
+        margin-top: 20px;" src="image/笔记本.png">
+            <div class="title">加入申请</div>
+            <div class="count">45人</div>
+            <div class="details_1">查看详情</div>
+            <img class="details_2" src="./image/右圆圈箭头.svg"></img>
+        </div>
+    </div>
+    <div class="cardContainer">
+        <div class="card">
+            <div id="chart" style="width:400px; height: 300px;"></div>
+        </div>
+        <div class="card">
+            <div class="title" style="color:#E91D63;margin-bottom: 15px;">打卡排行榜</div>
+            <div id="daka-table" class="table-borderless"></div>
+        </div>
+        <div class="card">
+            <div class="title" style="color:#6200EE;margin-bottom: 15px;">考试排位</div>
+            <div id="exam-table" class="table-borderless"></div>
+        </div>
 
-                </div>
+        <div class="card">
+            <div class="title" style="color: #73D5A3;">最近通知</div>
+            <div class="wu-hang-table" id="info-table">
+
             </div>
         </div>
     </div>
+</div>
 </body>
 <script src="./js/Navbar.js"></script>
 <script src="./js/sidebar.js"></script>
 <script src="https://cdn.staticfile.net/echarts/4.3.0/echarts.min.js"></script>
 <script src="./js/creatExamTable.js"></script>
-<script src="./js/creatTableRow.js"></script>
+<script src="./js/createTableRow.js"></script>
+<script src="./js/createDaKaTable.js"></script>
 <script>
-    function createTable(data) {
-        // 创建表格元素
-        const table = document.createElement('table');
-        table.className = 'zebra-table';
-
-        // 创建表头
-        const thead = document.createElement('thead');
-        const headerRow = document.createElement('tr');
-        data.headers.forEach(headerText => {
-            const header = document.createElement('th');
-            header.textContent = headerText;
-            headerRow.appendChild(header);
-        });
-        thead.appendChild(headerRow);
-        table.appendChild(thead);
-
-        // 创建表体
-        const tbody = document.createElement('tbody');
-        data.rows.forEach(rowData => {
-            const row = document.createElement('tr');
-            rowData.forEach(cellData => {
-                const cell = document.createElement('td');
-                cell.textContent = cellData;
-                row.appendChild(cell);
-            });
-            tbody.appendChild(row);
-        });
-        table.appendChild(tbody);
-
-        // 将表格添加到容器中
-        const container = document.getElementById('daka-table');
-        container.appendChild(table);
-    }
-
     // 示例数据
     const data = {
         headers: ['成员', '打卡天数', '个人打卡率'],
@@ -278,9 +238,11 @@
     };
 
     // 调用函数创建表格
-    createTable(data);
+    createDaKaTable(data);
 
-    var chart = echarts.init(document.getElementById('chart'));// 初始化图表
+    let chartElement=document.getElementById('chart');
+    var chart = echarts.init(chartElement);// 初始化图表
+
 
     // 数据
     var chartdata = {
@@ -299,7 +261,7 @@
         },
         xAxis: {
             type: 'category',
-            data: data.date
+            data: chartdata.date,
         },
         yAxis: [
             {
@@ -339,51 +301,16 @@
 
     // 示例数据
     const score_data = {
-        headers: ['成员', '打卡天数', '个人打卡率'],
+        headers: ['成员', '考试排名', '考试分数'],
         rows: [
-            ['otto', '666', '87%'], ['otto', '666', '87%'],
-            ['otto', '666', '87%'], ['otto', '666', '87%'], ['otto', '666', '87%'], ['otto', '666', '87%']
+            ['otto', '第1名', '100'], ['otto', '第2名', '99'],
+            ['otto', '第3名', '98'], ['otto', '第4名', '97'], ['otto', '第5名', '96'], ['otto', '第6名', '95']
             // 更多数据行
         ]
     };
 
     // 调用函数创建表格
     createExamTable(score_data);
-
-    function createTableRow(message, time) {
-        // 创建行元素
-        const row = document.createElement('div');
-        row.className = 'table-row';
-
-        // 创建图标元素
-        const icon = document.createElement('span');
-        icon.className = 'table-icon';
-        // 根据文本内容设置图标
-        if (message.includes('Success')) {
-            icon.textContent = '✅';
-        } else if (message.includes('Error')) {
-            icon.textContent = '❌';
-        } else {
-            icon.textContent = '🔹';
-        }
-
-        // 创建消息元素
-        const messageElement = document.createElement('span');
-        messageElement.className = 'table-message';
-        messageElement.textContent = message;
-
-        // 创建时间元素
-        const timeElement = document.createElement('span');
-        timeElement.className = 'table-time';
-        timeElement.textContent = time;
-
-        // 组合行内的元素
-        row.appendChild(icon);
-        row.appendChild(messageElement);
-        row.appendChild(timeElement);
-
-        return row;
-    }
 
     // 模拟后端数据
     const backendData = [
@@ -402,12 +329,22 @@
     });
 
 </script>
-
-
-
 <script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.0/lib/darkmode-js.min.js"></script>
 <script>
-    new Darkmode().showWidget();
+    var options = {
+        bottom: '64px', // default: '32px'
+        right: 'unset', // default: '32px'
+        left: '32px', // default: 'unset'
+        time: '0.3s', // default: '0.3s'
+        mixColor: '#fff', // default: '#fff'
+        backgroundColor: '#fff',  // default: '#fff'
+        buttonColorDark: '#100f2c',  // default: '#100f2c'
+        buttonColorLight: '#fff', // default: '#fff'
+        saveInCookies: false, // default: true,
+        label: '', // default: ''
+        autoMatchOsTheme: true // default: true
+    }
+    new Darkmode(options).showWidget();
 </script>
 
 </html>

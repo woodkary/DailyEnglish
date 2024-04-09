@@ -163,8 +163,6 @@
         /* 图片高度 */
         margin-right: 20px;
         margin-top: 20px;
-        isolation: isolate;
-        /* 图片不隔离 */
     }
     .notification {
         border: 1px solid #ccc;
