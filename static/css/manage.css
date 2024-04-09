@@ -227,6 +227,7 @@ body { font-family: Arial, sans-serif; }
     display: flex;
     justify-content: space-between;
     background-color: #f1f1f1;
+    padding-bottom: 20px;
 }
 .darkmode--activated .organization-info {
     background-color: #333;
@@ -345,7 +346,6 @@ tr:nth-child(odd) {
 }
 
 .pagination{
-    position: absolute;
     right: 3%;
     bottom: 5%;
 }
@@ -354,4 +354,4 @@ button:hover{
 }
 .search-icon{
     cursor: pointer;
-}//考试发布
+}
