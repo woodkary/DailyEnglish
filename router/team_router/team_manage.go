@@ -11,17 +11,28 @@ import (
 	"github.com/go-redis/redis"
 )
 
-func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
-	//主页数据
-	r.GET("/api/team_manage/index/data", func(c *gin.Context) {
+func tokenAuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
 		token := c.Request.Header.Get("token")
 		if token == "" {
-			c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login.html")
+			c.JSON(http.StatusUnauthorized, "未提供令牌")
+			c.Abort()
+			return
 		}
-		_, err := service.ParseToken(token)
+		user, err := service.ParseToken(token)
 		if err != nil {
-			c.JSON(400, "登录信息无效或过期")
+			c.JSON(http.StatusUnauthorized, "令牌无效")
+			c.Abort()
+			return
 		}
+		// 将用户信息存储在context中，后续的处理器可以使用
+		c.Set("user", user)
+		c.Next()
+	}
+}
+func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
+	//主页数据
+	r.GET("/api/team_manage/index/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		// 定义JSON响应的结构体
 		type Response struct {
 			Code  string `json:"code"`
@@ -107,17 +118,14 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		c.JSON(200, response)
 	})
 	//考试情况数据
-	r.GET("/api/team_manage/exam_situation/data", func(c *gin.Context) {
-		token := c.Request.Header.Get("token")
-		if token == "" {
-			c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login.html")
+	r.GET("/api/team_manage/exam_situation/data", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
+		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
 		}
-		user, err := service.ParseToken(token)
-		if err != nil {
-			c.JSON(400, "登录信息无效或过期")
-		}
-
-		Item, err := controlsql.QueryTeamExams(client, user.TeamName)
+		Item, err := controlsql.QueryTeamExams(client, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
@@ -151,25 +159,23 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		c.JSON(200, Response)
 	})
 	//打卡详情界面
-	r.GET("/api/team_manage/punch_statistics/data", func(c *gin.Context) {
-		token := c.Request.Header.Get("token")
-		if token == "" {
-			c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login.html")
-		}
-		user, err := service.ParseToken(token)
-		if err != nil {
-			c.JSON(400, "登录信息无效或过期")
+	r.GET("/api/team_manage/punch_statistics/data", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
+		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
 		}
 
-		Item1, err := controlsql.GetTeamMembersAttendance1(client, user.TeamName)
+		Item1, err := controlsql.GetTeamMembersAttendance1(client, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
-		Item2, err := controlsql.GetTeamMembersAttendanceByDate(client, user.TeamName)
+		Item2, err := controlsql.GetTeamMembersAttendanceByDate(client, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
-		Item3, err := controlsql.GetTeamMembersAttendanceNum(client, user.TeamName)
+		Item3, err := controlsql.GetTeamMembersAttendanceNum(client, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
@@ -204,17 +210,15 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		c.JSON(200, Response)
 	})
 	//成员管理页面
-	r.GET("/api/team_manage/member_manage/data", func(c *gin.Context) {
-		token := c.Request.Header.Get("token")
-		if token == "" {
-			c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login.html")
-		}
-		user, err := service.ParseToken(token)
-		if err != nil {
-			c.JSON(400, "登录信息无效或过期")
+	r.GET("/api/team_manage/member_manage/data", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
+		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
 		}
 
-		Item, err := controlsql.GetTeamInfo(client, user.TeamName)
+		Item, err := controlsql.GetTeamInfo(client, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
@@ -247,21 +251,19 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		c.JSON(200, Response)
 	})
 	//获取审核申请页面信息
-	r.GET("/api/team_manage/request_manage/data", func(c *gin.Context) {
-		token := c.Request.Header.Get("token")
-		if token == "" {
-			c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login.html")
-		}
-		user, err := service.ParseToken(token)
-		if err != nil {
-			c.JSON(400, "登录信息无效或过期")
+	r.GET("/api/team_manage/request_manage/data", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
+		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
 		}
 
-		Item1, err := controlsql.QueryUnprocessedNotifications(client, user.TeamName)
+		Item1, err := controlsql.QueryUnprocessedNotifications(client, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
-		Item2, err := controlsql.GetTeamInfo(client, user.TeamName)
+		Item2, err := controlsql.GetTeamInfo(client, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
@@ -327,5 +329,36 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		response.Code = "200"
 		response.Msg = "成功"
 		c.JSON(200, response)
+	})
+	//打卡信息发布界面信息
+	r.GET("/api/team_manage/task_daily/data", tokenAuthMiddleware(), func(c *gin.Context) {
+		c.Get("user")
+		Item, err := controlsql.QueryBooksBy(db, "大一", "简单", 0)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+		}
+		type Book struct { //书籍信息
+			Title      string `json:"title"`       // 书名
+			LearnerNum int    `json:"learner_num"` // 学习人数
+			Describe   string `json:"describe"`    // 描述
+			WordsNum   int    `json:"words_num"`   // 单词数
+		}
+		type response struct { //响应信息
+			Code  string `json:"code"`  // 状态码
+			Msg   string `json:"msg"`   // 消息
+			Books []Book `json:"books"` // 书籍列表
+		}
+		var Response response
+		for _, item := range Item {
+			var book Book
+			book.Title = item.Title
+			book.LearnerNum = item.LearnerNum
+			book.Describe = item.Describe
+			book.WordsNum = item.WordsNum
+			Response.Books = append(Response.Books, book)
+		}
+		Response.Code = "200"
+		Response.Msg = "成功"
+		c.JSON(200, Response)
 	})
 }
