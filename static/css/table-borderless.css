@@ -1,0 +1,31 @@
+.table-borderless {
+    border-collapse: collapse; /* 合并边框 */
+    max-height: 270px; /* 设置表格容器的最大高度 */
+    max-width: 400px;
+    width:400px;
+    overflow-x: hidden; /* 隐藏水平滚动条 */
+}
+
+.table-borderless th,
+.table-borderless td {
+    border: 0; /* 移除边框 */
+    text-align: center; /* 居中文字 */
+    padding: 8px; /* 设置单元格内边距 */
+    width:200px;/*在考试排位中，宽度200合适*/
+}
+
+.table-borderless thead tr th {
+    position: sticky;
+    background-color: #f0f0f0; /* 设置表头的背景颜色 */
+
+    top: 0; /* 表头将固定在顶部 */
+    z-index: 10; /* 确保表头在滚动时保持在其他内容的上方 */
+}
+
+.table-borderless tbody tr:hover {
+    background-color: #ddd;
+}
+
+.table-borderless tbody tr:hover td {
+    background-color: #ddd;
+}
