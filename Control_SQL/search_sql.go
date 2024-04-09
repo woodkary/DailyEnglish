@@ -100,8 +100,8 @@ func QueryBooks(db *sql.DB) ([]Books, error) {
 	return bookInfos, nil
 }
 
-// 2.2QueryBooksByGrade 根据grade和flag参数查询所有grade的书籍
-func QueryBooksByGrade(db *sql.DB, grade int, flag int) ([]Books, error) {
+// 2.2QueryBooksByGrade 根据gradeordifficulty和flag参数查询所有gradeordifficulty的书籍
+func QueryBooksByGrade(db *sql.DB, gradeordifficulty string, flag int) ([]Books, error) {
 	var books []Books
 
 	// 准备查询语句
@@ -114,7 +114,7 @@ func QueryBooksByGrade(db *sql.DB, grade int, flag int) ([]Books, error) {
 	}
 
 	// 执行查询操作
-	rows, err := db.Query(query, grade)
+	rows, err := db.Query(query, gradeordifficulty)
 	if err != nil {
 		return nil, fmt.Errorf("error querying books by grade: %v", err)
 	}
