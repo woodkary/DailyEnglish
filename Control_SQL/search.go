@@ -1,6 +1,9 @@
 package controlsql
 
 import (
+	"database/sql"
+	"encoding/json"
+	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -35,7 +38,7 @@ func GetUserByUsername(client *redis.Client, username string) (Member, error) {
 	return member, nil
 }
 
-// 通过团队名查询团队信息
+// 2 通过团队名查询团队信息
 func GetTeamInfo(client *redis.Client, teamName string) (Team, error) {
 	// 查询团队信息
 	teamInfo, err := client.HGetAll("team:" + teamName).Result()
@@ -75,6 +78,57 @@ func GetTeamInfo(client *redis.Client, teamName string) (Team, error) {
 	}
 
 	return team, nil
+}
+
+// 2.1 根据用户名查询该用户加入的所有团队
+func GetJoinedTeams(redisClient *redis.Client, username string) ([]string, error) {
+	// 使用 HGetAll 命令获取指定用户名加入的所有团队名
+	teamNamesMap, err := redisClient.HGetAll("user_teams:" + username).Result()
+	if err != nil {
+		return nil, err
+	}
+
+	// 将团队名从 map 转换为 slice
+	var teamNames []string
+	for teamName := range teamNamesMap {
+		teamNames = append(teamNames, teamName)
+	}
+
+	return teamNames, nil
+}
+
+// 2.2 【团队管理个人中心】根据用户名查询邮箱和密码
+
+func GetUserInfoByEmailPwd(db *sql.DB, username string) (string, string, error) {
+	// 准备查询语句
+	query := "SELECT email, pwd FROM user_info WHERE username = ?"
+	// 执行查询操作
+	row := db.QueryRow(query, username)
+
+	// 从查询结果中获取邮箱和密码
+	var email, pwd string
+	err := row.Scan(&email, &pwd)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", "", fmt.Errorf("user not found")
+		}
+		return "", "", fmt.Errorf("error getting user info: %v", err)
+	}
+
+	return email, pwd, nil
+}
+
+// 2.3 【团队管理个人中心】根据用户名和团队名查询团队权限
+func GetIsAdminByTeamAndUsername(team Team, username string) (bool, error) {
+	// 遍历团队成员列表
+	for _, member := range team.Members {
+		// 如果用户名匹配，则返回该成员的 IsAdmin 属性
+		if member.Username == username {
+			return member.IsAdmin, nil
+		}
+	}
+	// 如果未找到匹配的用户，则返回错误
+	return false, fmt.Errorf("user '%s' not found in team '%s'", username, team.Name)
 }
 
 // 3. 通过团队名查询团队打卡信息
@@ -477,31 +531,31 @@ func GetTeamAdmins(client *redis.Client, teamName string) ([]string, error) {
 	return admins, nil
 }
 
-// 12. 通过团队名查询该团队所有团队管理员申请信息
-func GetTeamAdminRequests(client *redis.Client, teamName string) ([]AdminRequest, error) {
-	// 查询该团队所有团队管理员申请信息
-	// 使用 Key 格式为 "admin_request:{teamName}:user:*" 进行查询
-	requestKeys, err := client.Keys("admin_request:" + teamName + ":user:*").Result()
+// 12. 通过团队名和flag（0加入/1管理员）查询该团队申请信息
+
+func GetTeamRequestsByFlag(client *redis.Client, teamName string, flag string) ([]TeamRequest, error) {
+	// 从 Redis 中根据团队名和标志获取数据
+	val, err := client.Get(teamName).Bytes()
 	if err != nil {
 		return nil, err
 	}
 
-	// 解析申请信息并返回
-	var adminRequests []AdminRequest
-	for _, requestKey := range requestKeys {
-		requestData, err := client.HGetAll(requestKey).Result()
-		if err != nil {
-			return nil, err
-		}
-		adminRequests = append(adminRequests, AdminRequest{
-			TeamName: teamName,
-			Username: requestData["username"],
-			Time:     requestData["time"],
-			Message:  requestData["message"],
-		})
+	// 解析 JSON 格式的数据
+	var requests []TeamRequest
+	err = json.Unmarshal(val, &requests)
+	if err != nil {
+		return nil, err
 	}
 
-	return adminRequests, nil
+	// 根据标志筛选出符合条件的 TeamRequest
+	var filteredRequests []TeamRequest
+	for _, req := range requests {
+		if req.flag == flag {
+			filteredRequests = append(filteredRequests, req)
+		}
+	}
+
+	return filteredRequests, nil
 }
 
 // 根据团队名和日期查询最近7天的打卡情况
