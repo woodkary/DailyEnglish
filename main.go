@@ -20,7 +20,7 @@ func main() {
 	// 数据库连接信息
 	username := "mimahezhanghao1yang"
 	password := "MIMAhezhanghao1yang"
-	hostname := "rm-wz9p61j3qlj6lg69f.mysql.rds.aliyuncs.com"
+	hostname := "rm-wz9p61j3qlj6lg69fpo.mysql.rds.aliyuncs.com"
 	port := "3306"
 	dbname := "dailyenglish"
 
