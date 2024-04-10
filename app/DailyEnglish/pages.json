@@ -74,14 +74,6 @@
                 "enablePullDownRefresh" : false,
                 "navigationBarTitleText" : ""
             }
-        },
-        {
-        	"path" : "pages/backTop/backTop",
-        	"style" : 
-        	{
-        		"navigationBarTitleText" : "",
-        		"enablePullDownRefresh" : false
-        	}
         }
     ],
     "globalStyle" : {
