@@ -53,7 +53,7 @@ func main() {
 	// r.Static("static/team_manager/css", "./static/css")
 	// r.Static("static/team_manager/js", "./static/js")
 	//r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html", "./static/404.html")
-	r.LoadHTMLGlob("./static/*.html")
+	// r.LoadHTMLGlob("./static/*.html")
 
 	//注册接口
 	r.POST("/api/team_manager/register", func(c *gin.Context) {
