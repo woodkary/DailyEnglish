@@ -24,6 +24,8 @@
       <image class="jump-icon" src="../../static/jump.svg" />
       
     </view>
+	
+	
   </view>
 </template>
 
