@@ -418,7 +418,7 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			return
 		}
 
-		Item1, err := controlsql.QueryUnprocessedNotifications(client, userClaims.TeamName)
+		Item1, err := controlsql.GetTeamRequestsByFlag(client, userClaims.TeamName, "0")
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
@@ -445,13 +445,14 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		Response.Msg = "成功"
 		Response.ManagerNum = Item2.AdminCount
 		Response.MemberNum = Item2.TotalMembers
-		for _, notice := range Item1 {
-			if notice.Title == "加入申请" {
-				var request Request
-				request.LeaveMsg = notice.Content
-				request.Name = notice.ID
-			}
+		for _, r := range Item1 {
+			var request Request
+			request.Name = r.Username
+			request.Time = r.Time
+			request.LeaveMsg = r.Message
+			Response.Requests = append(Response.Requests, request)
 		}
+		c.JSON(200, Response)
 	})
 	//获取个人中心界面所需信息
 	r.GET("/api/team_manage/personal_center/data", tokenAuthMiddleware(), func(c *gin.Context) {
