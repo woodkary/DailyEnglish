@@ -54,7 +54,7 @@ func main() {
 
 	//数据库测试
 
-	controlsql.InsertUserInfo(db, "小明", "10086", "12344", "123456@qq.com", 2024000123, 19, 1, "2024-04-01")
+	//controlsql.InsertUserInfo(db, "小明", "10086", "12344", "123456@qq.com", 2024000123, 19, 1, "2024-04-01")
 	//数据库测试
 
 	r := gin.Default()
@@ -104,7 +104,10 @@ func main() {
 	r.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login.html")
 	})
+	//登录界面验证header头部
+	r.GET("/static/team_manager/login.html", func(c *gin.Context) {
 
+	})
 	//登录接口
 	r.POST("/api/team_manager/login", func(c *gin.Context) {
 		type logdata struct {
@@ -126,10 +129,28 @@ func main() {
 				"message": "用户不存在",
 			})
 		} else if controlsql.CheckUser(db, data.Username, data.Pwd) {
+			teamName, err := controlsql.GetJoinedTeams(client, data.Username)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"code":  "500",
+					"error": "服务器错误",
+				})
+				return
+			}
+			token, err := service.GenerateToken(data.Username, teamName[0])
+
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"code":  "500",
+					"error": "服务器错误",
+				})
+				return
+			}
+
 			c.JSON(http.StatusOK, gin.H{
 				"code":    "200",
 				"message": "登录成功",
-				"token":   "123456",
+				"token":   token,
 			})
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{

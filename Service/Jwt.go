@@ -14,7 +14,7 @@ type UserClaims struct {
 	TeamName string
 }
 
-func GenerateToken(userName string) (string, error) {
+func GenerateToken(userName string, teamName string) (string, error) {
 	claims := UserClaims{
 		UserName: userName,
 		StandardClaims: jwt.StandardClaims{
