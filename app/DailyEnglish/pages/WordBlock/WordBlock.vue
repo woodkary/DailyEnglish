@@ -52,8 +52,10 @@ export default {
   justify-content: space-between;
   border: 3rpx solid #ccc;
   padding: 20rpx;
+  position: relative;
   width: 100%;
   background: #fff;
+  
 }
 
 .word-container {
