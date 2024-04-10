@@ -1,123 +1,204 @@
 <template>
-  <view class="container">
-    <image class="back-icon" src="../../static/back.svg" @click="handleBack"></image>
-	<view class="vocabook" >
-		<image class="vocabook-img" src="../../static/书.png"></image>
-		<view class="vocabook-title">单词书:{{book}}</view>
-		<view class="vocabook-cnt">生词数：{{cnt}}</view>
-		<view class="button-container"><button class="review" @click="Review">复习</button></view>
-		<view class="button-container"><button class="export" @click="Export">导出</button></view>
+	<view class="container">
+		<image class="back-icon" src="../../static/back.svg" @click="handleBack"></image>
+		<view class="vocabook">
+			<image class="vocabook-img" src="../../static/书.png"></image>
+			<view class="vocabook-title">单词书:{{book}}</view>
+			<view class="vocabook-cnt">生词数：{{cnt}}</view>
+			<view class="button-container"><button class="review" @click="Review">复习</button></view>
+			<view class="button-container"><button class="export" @click="Export">导出</button></view>
+
+		</view>
+		<view class="word-blocks"  @touchend="handleTouchEnd()">
+			<word-block v-for="word in words" :word="word" pronunciation="/ˈæpəl/" meaning="苹果" review-count="5">
+
+			</word-block>
+		</view>
+
 
 	</view>
-<word-block word="apple" pronunciation="/ˈæpəl/" meaning="苹果" review-count="5"></word-block>
-
-  </view>
 </template>
 
 <script>
-import WordBlock from "../WordBlock/WordBlock.vue";
-export default {
-  components: {WordBlock},
+	import WordBlock from "../WordBlock/WordBlock.vue";
+	export default {
+		components: {
+			WordBlock
+		},
+		// mounted() {
+		// 	this.fetchWords(); //加载单词,mounted()是在页面加载完成后执行的
+		// },
 
-  data() {
-    return {
-      words: ['moral', 'abandon', 'banana', 'apple', 'cat', 'dog'] ,// 单词列表
-	  cnt: 0,
-	  book: 'cet4'    ,
-	  }
-  },
-  methods: {
-    handleBack() {
-      uni.navigateBack()
-    },
-	Review(){
-		;//预计跳转到Review页面，后续再写，内容是复习生词
-	},
-	Export(){
-		;//预计导出生词，后续再写
-		
+		data() {
+			return {
+				words: ['moral', 'abandon', 'banana', 'apple', 'cat', 'dog', 'site', 'lagrg'], // 单词列表
+				cnt: 0,
+				book: 'cet4',
+				startIndex: 0, // 开始加载的索引
+				endIndex: 20, // 结束加载的索引
+			}
+		},
+		methods: {
+			handleBack() {
+				uni.navigateBack()
+			},
+			Review() {
+				; //预计跳转到Review页面，后续再写，内容是复习生词
+			},
+			Export() {
+				; //预计导出生词，后续再写
+
+			},
+			fetchWords() {
+				// 使用 axios 或其他 HTTP 客户端来发送请求
+				axios.get('/api/words', {
+					params: {
+						start: this.startIndex,
+						end: this.endIndex,
+					},
+				}).then(response => {
+					// 假设 API 返回的是一个新的单词数组
+					// todo根据需要合并新旧单词列表
+					this.words = [...this.words, ...response.data];
+					// 更新起始索引和结束索引
+					this.startIndex += 20;
+					this.endIndex += 20;
+				});
+			},
+ handleTouchEnd(event) {
+    // 用户结束触摸时执行的代码
+    // 判断是否滑动到了页面底部
+    const scrollTop = event.detail.scrollTop;
+    const scrollHeight = event.detail.scrollHeight;
+    const clientHeight = event.detail.clientHeight;
+    if (scrollTop + clientHeight >= scrollHeight) {
+      // 用户已经滑动到了页面底部
+      //this.fetchWords();
+	  console.log('滑动到底部');
+    }
+	else{
+		alert('Hello, World!');
 	}
-  }
-}
+  },
+		}
+	}
 </script>
 
 <style>
-.container {
-	
-  display: flex; /*flex布局 */
-  flex-direction: column; /*垂直布局 */
-  align-items: center;  /*水平居中 */
-  justify-content: center;  /*垂直居中 */
-  height: 100vh;  /*占满整个屏幕 */
-  overflow: hidden;  /*隐藏溢出部分 不能滚动*/
-  background-image: linear-gradient(-190deg, #fff669 0%, #ecf1f1 50%, #d6f8f7 100%);
-}
-
-.back-icon {
-  width: 2rem;  /*图标宽度 */
-  height: 2rem; /*图标高度 */
-  position: absolute; /*绝对定位 */
-  top: 0.8rem;  /*距离顶部20px */
-  left: 0.5rem; /*距离左侧20px */
-  cursor: pointer;  /*鼠标移上去显示小手 */
-}
-
-.vocabook {
-	width:100%;/*宽度100%*/
-	display:flex;/*flex布局 */
-	border-bottom: thick groove #ffff00;/*改一下颜色*/
-	height: 10rem;
-	margin-top: -35rem;
-	
-}
-.vocabook-img{
-	width: 6rem;
-	height: 7rem;
-	margin-left: 2rem;
-	/* 在父容器中垂直居中 */
-	align-self: center;
-}
-
-.vocabook-title{
-	font-size:1rem;
-	margin-left: 2rem;
-	margin-top: 1.7rem;
-	margin-bottom: 17rem;
-}
-.vocabook-cnt{
-	font-size:0.9rem;
-	margin-left: -3.7rem;
-	margin-top: 3.8rem;
-	margin-bottom: 17rem;
-}
-.button-container{
-	display: flex;
-	  justify-content: center;/*水平居中*/
-	  align-items: center;/*垂直居中*/
+	html,
+	body {
+		height: 100%;
+		overflow: auto;
 	}
-.review{
-	margin-left: -4rem;
-	margin-top: 5rem;
-	border: 1px solid #000;
-	border-radius: 5px;
-	width: 4rem;
-	height: 2rem;
-	font-size: 1rem;
-	/*文字居中*/
-	text-align: center;
-	line-height: 2rem;
-}
-.export{
-	margin-left: 1rem;
-	margin-top: 5rem;
-	border: 1px solid #000;
-	border-radius: 5px;
-	width: 4rem;
-	height: 2rem;
-	font-size: 1rem;
-	/*文字居中*/
-	text-align: center;
-	line-height: 2rem;
-}
-</style>
 
+	.container {
+
+		display: grid;
+		flex-direction: column;
+		/*垂直布局 */
+		align-items: center;
+		/*水平居中 */
+		justify-content: center;
+		/*垂直居中 */
+
+		background-image: linear-gradient(-190deg, #fff669 0%, #ecf1f1 50%, #d6f8f7 100%);
+	}
+
+	.back-icon {
+		width: 2rem;
+		/*图标宽度 */
+		height: 2rem;
+		/*图标高度 */
+		position: absolute;
+		/*绝对定位 */
+		top: 0.8rem;
+		/*距离顶部20px */
+		left: 0.5rem;
+		/*距离左侧20px */
+		cursor: pointer;
+		/*鼠标移上去显示小手 */
+	}
+
+	.vocabook {
+		position: relative;
+		width: 100%;
+		/*宽度100%*/
+		display: flex;
+		/*flex布局 */
+		border-bottom: thick groove #ffff00;
+		/*改一下颜色*/
+		height: 10rem;
+		margin-top: 2rem;
+
+	}
+
+	.vocabook-img {
+		width: 6rem;
+		height: 7rem;
+		margin-left: 2rem;
+		/* 在父容器中垂直居中 */
+		align-self: center;
+	}
+
+	.vocabook-title {
+		font-size: 1rem;
+		margin-left: 2rem;
+		margin-top: 1.7rem;
+		margin-bottom: 17rem;
+	}
+
+	.vocabook-cnt {
+		font-size: 0.9rem;
+		margin-left: -3.7rem;
+		margin-top: 3.8rem;
+		margin-bottom: 17rem;
+	}
+
+	.button-container {
+		display: flex;
+		justify-content: center;
+		/*水平居中*/
+		align-items: center;
+		/*垂直居中*/
+	}
+
+	.review {
+		margin-left: -4rem;
+		margin-top: 5rem;
+		border: 1px solid #000;
+		border-radius: 5px;
+		width: 4rem;
+		height: 2rem;
+		font-size: 1rem;
+		/*文字居中*/
+		text-align: center;
+		line-height: 2rem;
+	}
+
+	.export {
+		margin-left: 1rem;
+		margin-top: 5rem;
+		border: 1px solid #000;
+		border-radius: 5px;
+		width: 4rem;
+		height: 2rem;
+		font-size: 1rem;
+		/*文字居中*/
+		text-align: center;
+		line-height: 2rem;
+	}
+
+	.word-blocks {
+
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-start;
+		/* 或使用 'center', 'flex-end' 等 */
+		align-content: flex-start;
+		width: 100%;
+		margin-top: -0.1rem;
+		/* height: auto; 移除这一行，或者使用 min-height */
+		min-height: 50vh;
+		/* 根据需要设置最小高度 */
+	}
+</style>

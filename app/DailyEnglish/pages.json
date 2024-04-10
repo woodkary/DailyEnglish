@@ -69,12 +69,11 @@
             }
         },
         {
-        	"path" : "pages/WordBlock/WordBlock",
-        	"style" : 
-        	{
-        		"navigationBarTitleText" : "",
-        		"enablePullDownRefresh" : false
-        	}
+            "path" : "pages/WordBlock/WordBlock",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : ""
+            }
         }
     ],
     "globalStyle" : {
