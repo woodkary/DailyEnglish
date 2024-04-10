@@ -1,8 +1,6 @@
 <template>
   <view class="tab-bar">
-    <router-link class="tab-item" to="/pages/Home/Home">Home</router-link>
-    <router-link class="tab-item" to="/pages/About/About">About</router-link>
-    <text class="tab-item">Helloworld</text>
+    
   </view>
 </template>
 
