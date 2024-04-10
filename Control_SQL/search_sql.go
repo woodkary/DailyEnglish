@@ -11,7 +11,7 @@ type Books struct {
 	Title      string
 	LearnerNum int
 	FinishNum  int
-	Type       int
+
 	Describe   string
 	ID         int
 	WordsNum   int
@@ -93,7 +93,7 @@ func QueryBooks(db *sql.DB) ([]Books, error) {
 	var bookInfos []Books
 	for rows.Next() {
 		var bookInfo Books
-		if err := rows.Scan(&bookInfo.Title, &bookInfo.LearnerNum, &bookInfo.FinishNum, &bookInfo.Type, &bookInfo.Describe, &bookInfo.ID, &bookInfo.WordsNum, &bookInfo.Grade, &bookInfo.Difficulty, &bookInfo.Date); err != nil {
+		if err := rows.Scan(&bookInfo.Title, &bookInfo.LearnerNum, &bookInfo.FinishNum, &bookInfo.Describe, &bookInfo.ID, &bookInfo.WordsNum, &bookInfo.Grade, &bookInfo.Difficulty, &bookInfo.Date); err != nil {
 			return nil, err
 		}
 		bookInfos = append(bookInfos, bookInfo)
@@ -122,7 +122,7 @@ func QueryBooksBy(db *sql.DB, grade, difficulty string, flag int) ([]Books, erro
 	var books []Books
 	for rows.Next() {
 		var book Books
-		if err := rows.Scan(&book.Title, &book.LearnerNum, &book.FinishNum, &book.Type, &book.Describe, &book.ID, &book.WordsNum, &book.Grade, &book.Difficulty, &book.Date); err != nil {
+		if err := rows.Scan(&book.Title, &book.LearnerNum, &book.FinishNum, &book.Describe, &book.ID, &book.WordsNum, &book.Grade, &book.Difficulty, &book.Date); err != nil {
 			return nil, fmt.Errorf("error scanning row: %v", err)
 		}
 		books = append(books, book)

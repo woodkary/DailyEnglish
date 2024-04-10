@@ -26,7 +26,7 @@ CREATE TABLE `books` (
   `title` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '单词本书名',
   `learner_num` int(0) NOT NULL COMMENT '正在学习人数',
   `finish_num` int(0) NOT NULL COMMENT '完成学习人数',
-  `type` int(0) NOT NULL COMMENT '分类，1：小学 2：初中 3：高中 4：大学 5：其他',
+  
   `describe` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '描述',
   `id` int(0) NOT NULL COMMENT '书籍id',
   `words_num` int(0) NOT NULL COMMENT '单词数量',
