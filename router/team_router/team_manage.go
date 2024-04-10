@@ -158,6 +158,45 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		Response.Msg = "成功"
 		c.JSON(200, Response)
 	})
+	//获取单次考试详情
+	r.POST("/api/team_manage/exam_situation/exam_detail", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			ExamName string `json:"exam_name"` // 考试名称
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(400, "请求参数错误")
+		}
+		examInfo, err := controlsql.GetExamInfoByExamName(client, request.ExamName)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+		}
+		type UserResult struct {
+			Attend   string `json:"attend"`   // 考试参与情况
+			Username string `json:"username"` // 用户名
+			Score    string `json:"score"`    // 得分
+			FailNum  string `json:"fail_num"` // 错题数量
+
+		}
+		type ExamDetail struct {
+			ID          string       `json:"exam_id"`     // 考试ID
+			Name        string       `json:"exam_name"`   // 考试名称
+			UserResults []UserResult `json:"user_result"` // 考试参与人员及得分
+		}
+		type response struct {
+			Code       string     `json:"code"`        // 状态码
+			Msg        string     `json:"msg"`         // 消息
+			ExamDetail ExamDetail `json:"exam_detail"` // 考试详情
+		}
+		var Response response
+		Response.Code = "200"
+		Response.Msg = "成功"
+		Response.ExamDetail.ID = strconv.Itoa(examInfo.ID)
+		Response.ExamDetail.Name = examInfo.Name
+		//TODO 这里应该查询数据库获取考试所有参与人员等情况
+		c.JSON(200, Response)
+	})
+
 	//打卡详情界面
 	r.GET("/api/team_manage/punch_statistics/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
@@ -250,6 +289,75 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		Response.Msg = "成功"
 		c.JSON(200, Response)
 	})
+	//成员删除
+	r.POST("/api/team_manage/member_manage/delete", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			Username string `json:"username"` // 要删除的成员的用户名
+			Teamname string `json:"teamname"` // 团队名
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(400, "请求参数错误")
+		}
+		err := controlsql.DeleteUserFromTeam(client, request.Teamname, request.Username)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+		}
+		c.JSON(200, "删除成功")
+	})
+	//搜索成员
+	r.POST("/api/team_manage/member_manage/search", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			Username string `json:"username"` // 用户名
+			Teamname string `json:"teamname"` // 团队名
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(400, "请求参数错误")
+		}
+		Item, err := controlsql.GetTeamMembers(client, request.Teamname)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+		}
+		type Member struct {
+			Name     string `json:"name"`      // 成员姓名
+			Right    string `json:"right"`     // 成员权限
+			Time     string `json:"time"`      // 加入组织时间
+			PunchDay string `json:"punch_day"` // 打卡天数
+		}
+		type response struct {
+			Code    string   `json:"code"`    // 状态码
+			Msg     string   `json:"msg"`     // 消息
+			Members []Member `json:"members"` // 团队成员列表
+		}
+		var Response response
+		for _, m := range Item {
+			if m.Username == request.Username { // 检查成员名称是否与请求中的用户名匹配
+				var member Member
+				member.Name = m.Username
+				member.PunchDay = strconv.Itoa(m.AttendanceDays)
+				member.Time = m.JoinDate
+				if m.IsAdmin {
+					member.Right = "Admin"
+				} else {
+					member.Right = "Member"
+				}
+				Response.Members = append(Response.Members, member)
+				break // 如果找到了匹配的成员，就没有必要继续循环
+			}
+		}
+
+		if len(Response.Members) == 0 {
+			// 如果没有找到匹配的成员，返回空列表
+			Response.Code = "404"
+			Response.Msg = "未找到成员"
+		} else {
+			Response.Code = "200"
+			Response.Msg = "成功"
+		}
+		c.JSON(200, Response)
+	})
+
 	//获取审核申请页面信息
 	r.GET("/api/team_manage/request_manage/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
@@ -359,24 +467,4 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		Response.Msg = "成功"
 		c.JSON(200, Response)
 	})
-	//删除成员
-	r.POST("/api/team_manage/member_manage/delete", func(c *gin.Context) {
-		type Request struct {
-			Username string `json:"username"` // 要删除的成员的用户名
-			Teamname string `json:"teamname"` // 团队名
-		}
-		var request Request
-		if err := c.ShouldBind(&request); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-		err := controlsql.DeleteUserFromTeam(client, request.Teamname, request.Username)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-		}
-		c.JSON(200, "删除成功")
-	})
-
 }
