@@ -17,10 +17,20 @@ import (
 
 func main() {
 
-	//mysql连接
-	db, er := sql.Open("mysql", "root:123456@tcp(47.107.81.75:3306)/daily_english")
-	if er != nil {
-		log.Fatal(er)
+	// 数据库连接信息
+	username := "mimahezhanghao1yang"
+	password := "MIMAhezhanghao1yang"
+	hostname := "rm-wz9p61j3qlj6lg69f.mysql.rds.aliyuncs.com"
+	port := "3306"
+	dbname := "dailyenglish"
+
+	// 构建数据库连接字符串
+	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", username, password, hostname, port, dbname)
+
+	// 连接数据库
+	db, err := sql.Open("mysql", dataSourceName)
+	if err != nil {
+		panic(err.Error())
 	}
 	defer db.Close()
 

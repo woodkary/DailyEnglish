@@ -40,44 +40,41 @@ func GetUserByUsername(client *redis.Client, username string) (Member, error) {
 
 // 2 通过团队名查询团队信息
 func GetTeamInfo(client *redis.Client, teamName string) (Team, error) {
-	// 查询团队信息
-	teamInfo, err := client.HGetAll("team:" + teamName).Result()
+	// 构建 Redis Key
+	teamKey := "team:" + teamName
+
+	// 从 Redis 中获取团队信息
+	teamJSON, err := client.Get(teamKey).Result()
 	if err != nil {
 		return Team{}, err
 	}
 
-	// 解析团队信息并返回
-	team := Team{
-		Name:           teamName,
-		ID:             0,  // Initialize with default value
-		TotalMembers:   0,  // Initialize with default value
-		AdminCount:     0,  // Initialize with default value
-		RecentExamDate: "", // Initialize with default value
-		Last7DaysAttendance: struct {
-			Count int
-			Rate  float64
-		}{}, // Initialize with default value
-		Members: nil, // Initialize with default value
-	}
-
-	// Parse integer values
-	if teamInfo["id"] != "" {
-		team.ID, _ = strconv.Atoi(teamInfo["id"])
-	}
-	if teamInfo["total_members"] != "" {
-		team.TotalMembers, _ = strconv.Atoi(teamInfo["total_members"])
-	}
-	if teamInfo["admin_count"] != "" {
-		team.AdminCount, _ = strconv.Atoi(teamInfo["admin_count"])
-	}
-	if teamInfo["last_7_days_attendance_count"] != "" {
-		team.Last7DaysAttendance.Count, _ = strconv.Atoi(teamInfo["last_7_days_attendance_count"])
-	}
-	if teamInfo["last_7_days_attendance_rate"] != "" {
-		team.Last7DaysAttendance.Rate, _ = strconv.ParseFloat(teamInfo["last_7_days_attendance_rate"], 64)
+	// 解析 JSON 格式的团队信息
+	var team Team
+	err = json.Unmarshal([]byte(teamJSON), &team)
+	if err != nil {
+		return Team{}, err
 	}
 
 	return team, nil
+}
+
+// 2.0通过团队名查询成员列表
+func GetTeamMembers(client *redis.Client, teamName string) ([]Member, error) {
+	// 查询团队成员信息
+	membersJSON, err := client.Get("team:" + teamName + ":members").Result()
+	if err != nil {
+		return nil, err
+	}
+
+	// 解析成员信息
+	var members []Member
+	err = json.Unmarshal([]byte(membersJSON), &members)
+	if err != nil {
+		return nil, err
+	}
+
+	return members, nil
 }
 
 // 2.1 根据用户名查询该用户加入的所有团队
@@ -301,7 +298,7 @@ func GetUserExamScore(client *redis.Client, username string, teamName string, ex
 	return strconv.Atoi(score)
 }
 
-// 6. 通过团队名和考试名称查询该团队该考试的成绩信息
+// 5.1通过团队名和考试名称查询该团队该考试的成绩信息
 func GetTeamExamResult(client *redis.Client, teamName string, examName string) (ExamResult, error) {
 	// 查询该团队该考试的成绩信息
 	// 使用 Key 格式为 "exam_result:{teamName}:{examName}" 进行查询
@@ -313,6 +310,7 @@ func GetTeamExamResult(client *redis.Client, teamName string, examName string) (
 	// 解析考试成绩信息并返回
 	examResult := ExamResult{
 		TeamName: teamName,
+		ExamName: examName,
 		Scores:   make(map[string]int),
 		Rankings: make(map[string]int),
 	}
@@ -332,7 +330,7 @@ func GetTeamExamResult(client *redis.Client, teamName string, examName string) (
 	return examResult, nil
 }
 
-// 根据团队名查询该团队所有考试的考试名称、考试日期、平均分、通过率，并按照考试日期排序
+// 5.2根据团队名查询该团队所有考试的考试名称、考试日期、平均分、通过率，并按照考试日期排序
 func QueryTeamExams(client *redis.Client, teamName string) ([]map[string]string, error) {
 	// 获取所有考试的键名
 	keys, err := client.Keys("exam_info:*").Result()
@@ -558,7 +556,7 @@ func GetTeamRequestsByFlag(client *redis.Client, teamName string, flag string) (
 	return filteredRequests, nil
 }
 
-// 根据团队名和日期查询最近7天的打卡情况
+// 13根据团队名和日期查询最近7天的打卡情况
 func QueryAttendance(client *redis.Client, teamName string, date time.Time) (map[string]string, error) {
 	attendanceData := make(map[string]string)
 	for i := 0; i < 7; i++ {
@@ -581,7 +579,7 @@ func QueryAttendance(client *redis.Client, teamName string, date time.Time) (map
 	return attendanceData, nil
 }
 
-// 根据团队名，查询该团队所有成员中，打卡天数前6名的成员名，以及他们各自的打卡天数和打卡率，其中需要把 float64 的打卡率数据转化成 string
+// 14根据团队名，查询该团队所有成员中，打卡天数前6名的成员名，以及他们各自的打卡天数和打卡率，其中需要把 float64 的打卡率数据转化成 string
 func GetTopSixAttendanceMembers(client *redis.Client, teamName string) (map[string]int, map[string]string, error) {
 	// 查询团队成员列表
 	members, err := client.Keys("team:" + teamName + ":member:*").Result()
@@ -632,7 +630,7 @@ func GetTopSixAttendanceMembers(client *redis.Client, teamName string) (map[stri
 	return topSixMembers, topSixAttendanceRate, nil
 }
 
-// 查询考试 id 最大的考试 ExamInfo 前六名信息 TopSix
+// 15查询考试 id 最大的考试 ExamInfo 前六名信息 TopSix
 func GetTopSixExamScores(client *redis.Client) (map[string]int, error) {
 	// 查询考试信息列表
 	examInfos, err := client.Keys("exam_info:*").Result()
