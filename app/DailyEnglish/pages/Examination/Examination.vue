@@ -70,8 +70,10 @@
 			}
 		},
 		methods: {
-			handleBack() {// 处理返回按钮点击事件
+			handleBack() {
+				// 处理返回按钮点击事件
 				this.$router.back();
+				// 例如：uni.navigateBack();
 			},
 			handleJump() {
 				// 处理跳转链接点击事件
@@ -145,19 +147,12 @@
 			},
 			unlockSlice() {
 				// 解锁下一题
-				this.updateProgressBar();//更新进度条
+				this.updateProgressBar();
 				this.selectedChoice = '';
 				this.$nextTick(() => {
 					this.resetButtonStyle(); //重置按钮样式
 				});
-				this.currentQuestionIndex++;
-				if(currentQuestionIndex===questions.length){
-					uni.showToast({
-						title: '恭喜你完成了所有题目',
-						icon: 'success',
-						duration: 2000
-					})
-				}
+
 			},
 		}
 	}
