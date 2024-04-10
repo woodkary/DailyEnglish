@@ -3,21 +3,28 @@
     <image class="back-icon" src="../../static/back.svg" @click="handleBack"></image>
 	<view class="vocabook" >
 		<image class="vocabook-img" src="../../static/书.png"></image>
-		<view class="vocabook-title">单词书1</view>
+		<view class="vocabook-title">单词书:{{book}}</view>
 		<view class="vocabook-cnt">生词数：{{cnt}}</view>
 		<view class="button-container"><button class="review" @click="Review">复习</button></view>
 		<view class="button-container"><button class="export" @click="Export">导出</button></view>
+
 	</view>
-</view>
+<word-block word="apple" pronunciation="/ˈæpəl/" meaning="苹果" review-count="5"></word-block>
+
+  </view>
 </template>
 
 <script>
+import WordBlock from "../WordBlock/WordBlock.vue";
 export default {
+  components: {WordBlock},
+
   data() {
     return {
       words: ['moral', 'abandon', 'banana', 'apple', 'cat', 'dog'] ,// 单词列表
 	  cnt: 0,
-    }
+	  book: 'cet4'    ,
+	  }
   },
   methods: {
     handleBack() {
