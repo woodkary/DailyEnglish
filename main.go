@@ -2,6 +2,7 @@ package main
 
 import (
 	controlsql "DailyEnglish/Control_SQL"
+	teamrouter "DailyEnglish/router/team_router"
 
 	service "DailyEnglish/Service"
 
@@ -117,22 +118,7 @@ func main() {
 			})
 		}
 	})
-
-	r.GET("/getToken/:userName", func(c *gin.Context) {
-		str := c.Param("userName")
-		fmt.Println(str)
-		str1, err := service.GenerateToken(str)
-		str2, err := service.ParseToken(str1)
-		c.JSON(200, gin.H{
-			"code":        "200",
-			"msg":         "123456",
-			"userName":    str,
-			"token":       str1,
-			"error":       err,
-			"tokenParsed": str2,
-		})
-	})
-
+	teamrouter.Team_manager(r, client, db)
 	r.Run(":8080")
 
 	users, err := controlsql.QueryUserInfo(db)

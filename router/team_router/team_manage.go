@@ -378,4 +378,5 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		}
 		c.JSON(200, "删除成功")
 	})
+
 }
