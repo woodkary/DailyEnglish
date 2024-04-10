@@ -8,7 +8,7 @@ window.onload = function () {
 }
 function allTestStatistics() {
     let token = localStorage.getItem('token');
-    let url = "http://localhost:8080/api/team_manage/member_manage/data";
+    let url = "http://localhost:8080/api/team_manage/request_manage/data";
     fetch(url, {
         method: 'GET',
         headers: {
@@ -19,8 +19,8 @@ function allTestStatistics() {
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            let members=data.members;
-            totalPage=Math.ceil(members.length/PAGE_SIZE);
+            let request=data.request;
+            totalPage=Math.ceil(request.length/PAGE_SIZE);
             //在获取数据后再创建分页按钮
             pagination.innerHTML='';
             createPaginationButtons();
@@ -30,19 +30,19 @@ function allTestStatistics() {
             const backendData =[];
             //显示总人数
             let memberNumber=document.getElementById("member-number");
-            memberNumber.textContent=members.length;
+            memberNumber.textContent=data.member_num;
             //显示管理员数量
             let managerNumber=document.getElementById("manager-number");
-            let managerCount=members.filter(member=>member.right=="团队管理员").length;
+            let managerCount=data.manager_num;
             managerNumber.textContent=managerCount;
             //将后端数据格式化
-            members.forEach(member => {
+            request.forEach(request => {
                 //获取到后端数据后，显示对应的内容
                 let memberData={};
-                memberData.nickname=member.name;
-                memberData.teamPermission=member.right;
-                memberData.joinDate=member.time;
-                memberData.totalCheckIns=member.punch_day;
+                memberData.name=request.name;
+                memberData.time=request.time;
+                memberData.telephone=request.telephone;
+                memberData.email=request.email;
                 backendData.push(memberData);
             });
             generateTable(backendData.slice(startIndex, endIndex));
@@ -57,7 +57,7 @@ function generateTable(data) {
     // 生成表头
     const headerRow = document.createElement('div');
     headerRow.className = 'table-row';
-    const headers = ['昵称', '团队权限', '加入组织时间', '累计打卡天数', '操作'];
+    const headers = ['昵称', '申请时间', '手机号', '邮箱', '操作'];
     headers.forEach(headerText => {
         const headerCell = document.createElement('div');
         headerCell.className = 'table-cell';
@@ -83,12 +83,12 @@ function generateTable(data) {
         actionsCell.className = 'table-cell actions-cell';
         const detailBtn = document.createElement('span');
         detailBtn.className = 'button';
-        detailBtn.textContent = '详情';
-        detailBtn.onclick = () => console.log('详情 clicked');
+        detailBtn.textContent = '同意';
+        detailBtn.onclick = () => console.log('同意 clicked');
         const deleteBtn = document.createElement('span');
         deleteBtn.className = 'button';
-        deleteBtn.textContent = '删除';
-        deleteBtn.onclick = () => console.log('删除 clicked');
+        deleteBtn.textContent = '拒绝';
+        deleteBtn.onclick = () => console.log('拒绝 clicked');
         actionsCell.appendChild(detailBtn);
         actionsCell.appendChild(deleteBtn);
         row.appendChild(actionsCell);
@@ -96,8 +96,7 @@ function generateTable(data) {
         container.appendChild(row);
     });
 }
-
-///分页按钮
+//分页按钮
 function createPaginationButtons() {
     const pagination = document.getElementById("pagination");
     // 清空之前的按钮

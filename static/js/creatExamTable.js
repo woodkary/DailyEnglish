@@ -40,7 +40,7 @@ function getLatestExamNameAndRenderTable() {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'token': localStorage.getItem('token')
+            'Authorization': 'Bearer '+localStorage.getItem('token')
         }
     })
         .then(response => response.json())
@@ -52,11 +52,13 @@ function getLatestExamNameAndRenderTable() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'token': localStorage.getItem('token')
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
                 },
                 body: JSON.stringify({
                     exam_name: latestExam
-                }).then(response => response.json())
+                })
+            })
+                    .then(response => response.json())
                     .then(data => {
                         const examResult = data.response.result;
                         // render table using examResult
@@ -84,19 +86,19 @@ function getLatestExamNameAndRenderTable() {
                         createExamTable(score_data);
                     })
             })
-    }).catch(error => {
-        console.log(error);
-        // 示例数据
-        const score_data = {
-            headers: ['成员', '考试排名', '考试分数'],
-            rows: [
-                ['otto', '第1名', '100'], ['otto', '第2名', '99'],
-                ['otto', '第3名', '98'], ['otto', '第4名', '97'], ['otto', '第5名', '96'], ['otto', '第6名', '95']
-                // 更多数据行
-            ]
-        };
-        // 调用函数创建表格
-        createExamTable(score_data);
+        .catch(error => {
+                console.log(error);
+                // 示例数据
+                const score_data = {
+                    headers: ['成员', '考试排名', '考试分数'],
+                    rows: [
+                        ['otto', '第1名', '100'], ['otto', '第2名', '99'],
+                        ['otto', '第3名', '98'], ['otto', '第4名', '97'], ['otto', '第5名', '96'], ['otto', '第6名', '95']
+                        // 更多数据行
+                    ]
+                };
+                // 调用函数创建表格
+                createExamTable(score_data);
     });
 }
 
