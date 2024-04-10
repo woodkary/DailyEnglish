@@ -104,18 +104,22 @@ export default {
           this.endIndex += 20;
         });
     },
-    handleTouchEnd(event) {
-      // 用户结束触摸时执行的代码
+    handleTouchEnd(e) {
+      // 获取scroll-view的滚动高度
+      const scrollTop = e.target.scrollTop;
+      const scrollHeight = e.target.scrollHeight;
+      const clientHeight = e.target.clientHeight;
+
       // 判断是否滑动到了页面底部
-      const scrollTop = event.detail.scrollTop;
-      const scrollHeight = event.detail.scrollHeight;
-      const clientHeight = event.detail.clientHeight;
       if (scrollTop + clientHeight >= scrollHeight) {
         // 用户已经滑动到了页面底部
-        //this.fetchWords();
         console.log("滑动到底部");
       } else {
-        alert("Hello, World!");
+        // 这里可以执行其他逻辑，比如弹出提示
+        wx.showToast({
+          title: "Hello, World!",
+          icon: "none", // 设置为'none'可以避免出现加载图标
+        });
       }
     },
   },
