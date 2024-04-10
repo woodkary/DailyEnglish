@@ -40,44 +40,41 @@ func GetUserByUsername(client *redis.Client, username string) (Member, error) {
 
 // 2 通过团队名查询团队信息
 func GetTeamInfo(client *redis.Client, teamName string) (Team, error) {
-	// 查询团队信息
-	teamInfo, err := client.HGetAll("team:" + teamName).Result()
+	// 构建 Redis Key
+	teamKey := "team:" + teamName
+
+	// 从 Redis 中获取团队信息
+	teamJSON, err := client.Get(teamKey).Result()
 	if err != nil {
 		return Team{}, err
 	}
 
-	// 解析团队信息并返回
-	team := Team{
-		Name:           teamName,
-		ID:             0,  // Initialize with default value
-		TotalMembers:   0,  // Initialize with default value
-		AdminCount:     0,  // Initialize with default value
-		RecentExamDate: "", // Initialize with default value
-		Last7DaysAttendance: struct {
-			Count int
-			Rate  float64
-		}{}, // Initialize with default value
-		Members: nil, // Initialize with default value
-	}
-
-	// Parse integer values
-	if teamInfo["id"] != "" {
-		team.ID, _ = strconv.Atoi(teamInfo["id"])
-	}
-	if teamInfo["total_members"] != "" {
-		team.TotalMembers, _ = strconv.Atoi(teamInfo["total_members"])
-	}
-	if teamInfo["admin_count"] != "" {
-		team.AdminCount, _ = strconv.Atoi(teamInfo["admin_count"])
-	}
-	if teamInfo["last_7_days_attendance_count"] != "" {
-		team.Last7DaysAttendance.Count, _ = strconv.Atoi(teamInfo["last_7_days_attendance_count"])
-	}
-	if teamInfo["last_7_days_attendance_rate"] != "" {
-		team.Last7DaysAttendance.Rate, _ = strconv.ParseFloat(teamInfo["last_7_days_attendance_rate"], 64)
+	// 解析 JSON 格式的团队信息
+	var team Team
+	err = json.Unmarshal([]byte(teamJSON), &team)
+	if err != nil {
+		return Team{}, err
 	}
 
 	return team, nil
+}
+
+// 2.0通过团队名查询成员列表
+func GetTeamMembers(client *redis.Client, teamName string) ([]Member, error) {
+	// 查询团队成员信息
+	membersJSON, err := client.Get("team:" + teamName + ":members").Result()
+	if err != nil {
+		return nil, err
+	}
+
+	// 解析成员信息
+	var members []Member
+	err = json.Unmarshal([]byte(membersJSON), &members)
+	if err != nil {
+		return nil, err
+	}
+
+	return members, nil
 }
 
 // 2.1 根据用户名查询该用户加入的所有团队
