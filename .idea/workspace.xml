@@ -4,13 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="40a60d59-6e65-465a-89ab-7764c8f00a1d" name="更改" comment="index">
+    <list default="true" id="40a60d59-6e65-465a-89ab-7764c8f00a1d" name="更改" comment="js">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/manage.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/manage.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/issuePunch.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/issuePunch.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/review.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/review.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/test-release.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/test-release.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/test-statistics.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/test-statistics.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/pages.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/pages.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/pages/Vocab/Vocab.vue" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/pages/Vocab/Vocab.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/manage.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/manage.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -121,6 +119,7 @@
       <workItem from="1712564195517" duration="10660000" />
       <workItem from="1712628736136" duration="5002000" />
       <workItem from="1712659104315" duration="3847000" />
+      <workItem from="1712706655235" duration="8739000" />
     </task>
     <task id="LOCAL-00001" summary="考试数据获取">
       <option name="closed" value="true" />
@@ -202,7 +201,15 @@
       <option name="project" value="LOCAL" />
       <updated>1712664874347</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="js">
+      <option name="closed" value="true" />
+      <created>1712668103452</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1712668103452</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -242,7 +249,8 @@
     <MESSAGE value="为index.html加入Darkmode" />
     <MESSAGE value="为大部分页面加入darkmode" />
     <MESSAGE value="index" />
-    <option name="LAST_COMMIT_MESSAGE" value="index" />
+    <MESSAGE value="js" />
+    <option name="LAST_COMMIT_MESSAGE" value="js" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

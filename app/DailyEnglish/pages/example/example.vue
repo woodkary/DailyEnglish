@@ -51,22 +51,33 @@
       </swiper>
     </view>
 
-    <view style="height: 100vh">
+    <view style="height: auto">
       <sliderzz @change="change"></sliderzz>
     </view>
 	
+	<view class="toast-container" >
+		<button @click="showToast('Hello World')">点击我</button>
+
+		<toast ref="toast" />
+
+	  </view>
 	
   </view>
 </template>
 
 <script>
 import sliderzz from "@/components/sliderzz.vue";
+import toast from "@/components/toast.vue";
 export default {
   data() {
-    return {};
+    return {
+	
+    };
+  
   },
   components: {
     sliderzz,
+	    toast,
   },
   methods: {
     change({ finish, reset }) {
@@ -76,6 +87,9 @@ export default {
       // 	reset();//这个是提交之后过一会可能会重新提交进入重置状态
       // },2000)
     },
+	showToast(message){
+		 this.$refs.toast.showToast(message);
+	}
   },
 };
 </script>

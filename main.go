@@ -15,14 +15,32 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func main1() {
+func main() {
 
-	//mysql连接
-	db, er := sql.Open("mysql", "root:123456@tcp(47.107.81.75:3306)/daily_english")
-	if er != nil {
-		log.Fatal(er)
+	// 数据库连接信息
+	username := "mimahezhanghao1yang"
+	password := "MIMAhezhanghao1yang"
+	hostname := "rm-wz9p61j3qlj6lg69fpo.mysql.rds.aliyuncs.com"
+	port := "3306"
+	dbname := "dailyenglish"
+
+	// 构建数据库连接字符串
+	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", username, password, hostname, port, dbname)
+
+	// 连接数据库
+	db, err := sql.Open("mysql", dataSourceName)
+	if err != nil {
+		panic(err.Error())
 	}
 	defer db.Close()
+
+	// 检查数据库连接是否成功
+	err = db.Ping()
+	if err != nil {
+		panic("Failed to connect to the database")
+	}
+
+	fmt.Println("Successfully connected to the database")
 
 	//redis连接
 	client := redis.NewClient(&redis.Options{
@@ -43,8 +61,7 @@ func main1() {
 	// r.Static("static/team_manager/css", "./static/css")
 	// r.Static("static/team_manager/js", "./static/js")
 	//r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html", "./static/404.html")
-
-	service.TestAES()
+	// r.LoadHTMLGlob("./static/*.html")
 
 	//注册接口
 	r.POST("/api/team_manager/register", func(c *gin.Context) {
@@ -78,10 +95,13 @@ func main1() {
 		}
 	})
 
+	r.GET("/api/team_manager/login", func(c *gin.Context) {
+		c.File("/static/team_manager/login.html")
+	})
+
 	//重定向至登录页面
 	r.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login.html")
-		//c.String(http.StatusOK, "Welcome to Daily English!")
 	})
 
 	//登录接口
@@ -133,11 +153,6 @@ func main1() {
 		})
 	})
 
-	r.GET("/api/team_manager/index", func(c *gin.Context) {
-		//@TODO
-		//添加发送前端需要的json数据
-		c.JSON(200, gin.H{"code": "200", "msg": "成功", "completed": 80, "uncompleted": 20, "exam": "exam"})
-	})
 	r.Run(":8080")
 
 	users, err := controlsql.QueryUserInfo(db)

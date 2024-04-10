@@ -1,14 +1,12 @@
 {
     "pages" : [
-		{
-			"path" : "pages/Examination/Examination",
-			"style" : 
-			{
-				"navigationBarTitleText" : "答题测验",
-				"enablePullDownRefresh" : false
-				
-			}
-		},
+        {
+            "path" : "pages/Examination/Examination",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : "答题测验"
+            }
+        },
         {
             "path" : "pages/index/index",
             "style" : {
@@ -18,50 +16,65 @@
         {
             "path" : "pages/index/HelloWorld",
             "style" : {
-				"navigationBarTitleText" : "helloworld"
-			}
+                "navigationBarTitleText" : "helloworld"
+            }
         },
         {
-        	"path" : "pages/user/user",
-        	"style" : 
-        	{
-        		"navigationBarTitleText" : "",
-        		"enablePullDownRefresh" : false
-        	}
+            "path" : "pages/user/user",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : ""
+            }
         },
         {
-        	"path" : "pages/Vocab/Vocab",
-        	"style" : 
-        	{
-        		"navigationBarTitleText" : "vocabulary book",
-        		"enablePullDownRefresh" : false
-        	}
+            "path" : "pages/Vocab/Vocab",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : "vocabulary book"
+            }
         },
         {
-        	"path" : "pages/example/example",
-        	"style" : 
-        	{
-        		"navigationBarTitleText" : "",
-        		"enablePullDownRefresh" : false
-        	}
+            "path" : "pages/example/example",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : ""
+            }
         },
         {
-        	"path" : "pages/login/login",
-        	"style" : 
-        	{
-        		"navigationBarTitleText" : "",
-        		"enablePullDownRefresh" : false
-        	}
+            "path" : "pages/login/login",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : ""
+            }
         },
         {
-        	"path" : "pages/register/register",
-        	"style" : 
-        	{
-        		"navigationBarTitleText" : "",
-        		"enablePullDownRefresh" : false
-        	}
+            "path" : "pages/register/register",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : ""
+            }
+        },
+        {
+            "path" : "pages/Loading/Loading",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : ""
+            }
+        },
+        {
+            "path" : "pages/PopUp/PopUp",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : ""
+            }
+        },
+        {
+            "path" : "pages/WordBlock/WordBlock",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : ""
+            }
         }
-       
     ],
     "globalStyle" : {
         "navigationBarTextStyle" : "black",
@@ -70,36 +83,37 @@
         "backgroundColor" : "#F8F8F8"
     },
     "uniIdRouter" : {},
-	"tabBar": {//凡是在tabBar内的页面，都不能由默认的navigateTo，navigateBack跳转，只能通过switchTab跳转
-		"color": "#333",
-		"selectedColor": "#007AFF",
-		"list": [
-			{
-				"pagePath": "pages/index/index",
-				"text": "首页"
-				// "iconPath": "static/tabbar/home.png",
-				// "selectedIconPath": "static/tabbar/home-active.png"
-			},
-			{
-				"pagePath": "pages/Vocab/Vocab",
-				"text": "词汇书"
-				// "iconPath": "static/tabbar/vocab.png",
-				// "selectedIconPath": "static/tabbar/vocab-active.png"
-			},
-			{
-				"pagePath": "pages/Examination/Examination",
-				"text": "答题测验"
-				// "iconPath": "static/tabbar/exam.png",
-				// "selectedIconPath": "static/tabbar/exam-active.png"
-			},
-			{
-				"pagePath": "pages/user/user",
-				"text": "我的"
-				// "iconPath": "static/tabbar/user.png",
-				// "selectedIconPath": "static/tabbar/user-active.png"
-			}
-		]
-	},
+    "tabBar" : {
+        //凡是在tabBar内的页面，都不能由默认的navigateTo，navigateBack跳转，只能通过switchTab跳转
+        "color" : "#333",
+        "selectedColor" : "#007AFF",
+        "list" : [
+            {
+                "pagePath" : "pages/index/index",
+                "text" : "首页"
+            },
+            // "iconPath": "static/tabbar/home.png",
+            // "selectedIconPath": "static/tabbar/home-active.png"
+            {
+                "pagePath" : "pages/Vocab/Vocab",
+                "text" : "词汇书"
+            },
+            // "iconPath": "static/tabbar/vocab.png",
+            // "selectedIconPath": "static/tabbar/vocab-active.png"
+            {
+                "pagePath" : "pages/Examination/Examination",
+                "text" : "答题测验"
+            },
+            // "iconPath": "static/tabbar/exam.png",
+            // "selectedIconPath": "static/tabbar/exam-active.png"
+            {
+                "pagePath" : "pages/user/user",
+                "text" : "我的"
+            }
+        ]
+    },
+    // "iconPath": "static/tabbar/user.png",
+    // "selectedIconPath": "static/tabbar/user-active.png"
     "condition" : {
         //模式配置，仅开发期间生效
         "current" : 0, //当前激活的模式(list 的索引项)
