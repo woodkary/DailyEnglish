@@ -4,8 +4,6 @@ import (
 	controlsql "DailyEnglish/Control_SQL"
 	teamrouter "DailyEnglish/router/team_router"
 
-	service "DailyEnglish/Service"
-
 	"database/sql"
 	"fmt"
 	"log"
