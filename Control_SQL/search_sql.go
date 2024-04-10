@@ -61,8 +61,6 @@ type Punch struct {
 	}
 }
 
-// @TODO
-// func QueryTEAM_Punch(db *sql.DB, team string) (Punch, error) //查询团队打卡情况，传入团队名team（团队表的主键）
 // 1 QueryUserInfo 查询用户信息
 func QueryUser_Info(db *sql.DB) ([]UserInfo, error) {
 	rows, err := db.Query("SELECT * FROM user_info")
@@ -101,7 +99,7 @@ func QueryBooks(db *sql.DB) ([]Books, error) {
 	return bookInfos, nil
 }
 
-// QueryBooks 根据grade、difficulty和flag参数查询书籍，并根据标志参数排序
+// 2.2QueryBooks 根据grade、difficulty和flag参数查询书籍，并根据标志参数排序
 func QueryBooksBy(db *sql.DB, grade, difficulty string, flag int) ([]Books, error) {
 	var query string
 	switch flag {
@@ -133,7 +131,7 @@ func QueryBooksBy(db *sql.DB, grade, difficulty string, flag int) ([]Books, erro
 	return books, nil
 }
 
-// QueryCET4WordInfo 查询 CET4 单词信息
+// 3 QueryCET4WordInfo 查询 CET4 单词信息
 func QueryCet4_dictionary(db *sql.DB) ([]Cet4_dictionary, error) {
 	rows, err := db.Query("SELECT * FROM cet4_dictionary")
 	if err != nil {
@@ -152,7 +150,7 @@ func QueryCet4_dictionary(db *sql.DB) ([]Cet4_dictionary, error) {
 	return cet4WordInfos, nil
 }
 
-// QueryMistakeInfo 查询错题信息
+// 4 QueryMistakeInfo 查询错题信息
 func QueryMistake(db *sql.DB) ([]Mistake, error) {
 	rows, err := db.Query("SELECT * FROM mistakes")
 	if err != nil {
@@ -171,7 +169,7 @@ func QueryMistake(db *sql.DB) ([]Mistake, error) {
 	return mistakeInfos, nil
 }
 
-// QueryNotebookInfo 查询单词收藏本信息
+// 5 QueryNotebookInfo 查询单词收藏本信息
 func QueryNotebook(db *sql.DB) ([]Notebook, error) {
 	rows, err := db.Query("SELECT * FROM notebook")
 	if err != nil {
@@ -190,7 +188,7 @@ func QueryNotebook(db *sql.DB) ([]Notebook, error) {
 	return notebookInfos, nil
 }
 
-// QueryUserStudyInfo 查询用户学习信息
+// 6 QueryUserStudyInfo 查询用户学习信息
 func QueryUser_Study(db *sql.DB) ([]User_Study, error) {
 	rows, err := db.Query("SELECT * FROM user_study")
 	if err != nil {
