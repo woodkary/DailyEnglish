@@ -21,7 +21,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- Table structure for books
 -- ----------------------------
 DROP TABLE IF EXISTS `books`;
-CREATE TABLE `books`  (
+
+CREATE TABLE `books` (
   `title` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '单词本书名',
   `learner_num` int(0) NOT NULL COMMENT '正在学习人数',
   `finish_num` int(0) NOT NULL COMMENT '完成学习人数',
@@ -29,6 +30,9 @@ CREATE TABLE `books`  (
   `describe` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '描述',
   `id` int(0) NOT NULL COMMENT '书籍id',
   `words_num` int(0) NOT NULL COMMENT '单词数量',
+  `grade` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '年级',
+  `difficulty` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '难度',
+  `date` date NOT NULL COMMENT '日期',
   PRIMARY KEY (`title`, `id`) USING BTREE,
   INDEX `title`(`title`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '词本库' ROW_FORMAT = Dynamic;

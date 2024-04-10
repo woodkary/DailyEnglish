@@ -2,6 +2,8 @@ package controlsql
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 )
 
 // BookInfo 结构体用于存储书籍信息
@@ -13,6 +15,9 @@ type Books struct {
 	Describe   string
 	ID         int
 	WordsNum   int
+	Grade      string
+	Difficulty string
+	Date       string
 }
 
 // CET4WordInfo 结构体用于存储 CET4 单词信息
@@ -58,7 +63,7 @@ type Punch struct {
 
 // @TODO
 // func QueryTEAM_Punch(db *sql.DB, team string) (Punch, error) //查询团队打卡情况，传入团队名team（团队表的主键）
-// QueryUserInfo 查询用户信息
+// 1 QueryUserInfo 查询用户信息
 func QueryUser_Info(db *sql.DB) ([]UserInfo, error) {
 	rows, err := db.Query("SELECT * FROM user_info")
 	if err != nil {
@@ -77,7 +82,7 @@ func QueryUser_Info(db *sql.DB) ([]UserInfo, error) {
 	return userInfos, nil
 }
 
-// QueryBookInfo 查询书籍信息
+// 2.1 QueryBooks 查询所有书籍
 func QueryBooks(db *sql.DB) ([]Books, error) {
 	rows, err := db.Query("SELECT * FROM books")
 	if err != nil {
@@ -88,12 +93,44 @@ func QueryBooks(db *sql.DB) ([]Books, error) {
 	var bookInfos []Books
 	for rows.Next() {
 		var bookInfo Books
-		if err := rows.Scan(&bookInfo.Title, &bookInfo.LearnerNum, &bookInfo.FinishNum, &bookInfo.Type, &bookInfo.Describe, &bookInfo.ID, &bookInfo.WordsNum); err != nil {
+		if err := rows.Scan(&bookInfo.Title, &bookInfo.LearnerNum, &bookInfo.FinishNum, &bookInfo.Type, &bookInfo.Describe, &bookInfo.ID, &bookInfo.WordsNum, &bookInfo.Grade, &bookInfo.Difficulty, &bookInfo.Date); err != nil {
 			return nil, err
 		}
 		bookInfos = append(bookInfos, bookInfo)
 	}
 	return bookInfos, nil
+}
+
+// QueryBooks 根据grade、difficulty和flag参数查询书籍，并根据标志参数排序
+func QueryBooksBy(db *sql.DB, grade, difficulty string, flag int) ([]Books, error) {
+	var query string
+	switch flag {
+	case 0:
+		query = "SELECT * FROM books WHERE grade = ? AND difficulty = ? ORDER BY date DESC"
+	case 1:
+		query = "SELECT * FROM books WHERE grade = ? AND difficulty = ? ORDER BY learner_num DESC"
+	default:
+		return nil, errors.New("invalid flag value")
+	}
+
+	rows, err := db.Query(query, grade, difficulty)
+	if err != nil {
+		return nil, fmt.Errorf("error querying books: %v", err)
+	}
+	defer rows.Close()
+
+	var books []Books
+	for rows.Next() {
+		var book Books
+		if err := rows.Scan(&book.Title, &book.LearnerNum, &book.FinishNum, &book.Type, &book.Describe, &book.ID, &book.WordsNum, &book.Grade, &book.Difficulty, &book.Date); err != nil {
+			return nil, fmt.Errorf("error scanning row: %v", err)
+		}
+		books = append(books, book)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating over rows: %v", err)
+	}
+	return books, nil
 }
 
 // QueryCET4WordInfo 查询 CET4 单词信息

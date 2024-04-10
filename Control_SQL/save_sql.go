@@ -21,11 +21,11 @@ func InsertUserInfo(db *sql.DB, username, phone, pwd, email string, id, age, sex
 }
 
 // InsertBookInfo 向书籍表插入书籍数据
-func InsertBooks(db *sql.DB, title, describe string, learnerNum, finishNum, bookType, id, wordsNum int) error {
+func InsertBooks(db *sql.DB, title, describe, grade, difficulty, date string, learnerNum, finishNum, bookType, id, wordsNum int) error {
 	// 准备插入语句
-	query := "INSERT INTO books (title, learner_num, finish_num, type, `describe`, id, words_num) VALUES (?, ?, ?, ?, ?, ?, ?)"
+	query := "INSERT INTO books (title, learner_num, finish_num, type, `describe`, id, words_num, grade, difficulty, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 	// 执行插入操作
-	_, err := db.Exec(query, title, learnerNum, finishNum, bookType, describe, id, wordsNum)
+	_, err := db.Exec(query, title, learnerNum, finishNum, bookType, describe, id, wordsNum, grade, difficulty, date)
 	if err != nil {
 		return fmt.Errorf("error inserting book info: %v", err)
 	}

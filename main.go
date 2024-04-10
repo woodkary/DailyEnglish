@@ -15,7 +15,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func main1() {
+func main() {
 
 	//mysql连接
 	db, er := sql.Open("mysql", "root:123456@tcp(47.107.81.75:3306)/daily_english")
@@ -133,11 +133,6 @@ func main1() {
 		})
 	})
 
-	r.GET("/api/team_manager/index", func(c *gin.Context) {
-		//@TODO
-		//添加发送前端需要的json数据
-		c.JSON(200, gin.H{"code": "200", "msg": "成功", "completed": 80, "uncompleted": 20, "exam": "exam"})
-	})
 	r.Run(":8080")
 
 	users, err := controlsql.QueryUserInfo(db)
