@@ -82,6 +82,19 @@ func QueryUser_Info(db *sql.DB) ([]UserInfo, error) {
 	return userInfos, nil
 }
 
+// 1.1
+func QueryUserContactInfo(db *sql.DB, username string) (string, string, error) {
+	var phone, email string
+	err := db.QueryRow("SELECT phone, email FROM user_info WHERE username = ?", username).Scan(&phone, &email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", "", fmt.Errorf("user with username %s not found", username)
+		}
+		return "", "", err
+	}
+	return phone, email, nil
+}
+
 // 2.1 QueryBooks 查询所有书籍
 func QueryBooks(db *sql.DB) ([]Books, error) {
 	rows, err := db.Query("SELECT * FROM books")
