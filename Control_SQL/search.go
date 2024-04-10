@@ -301,7 +301,7 @@ func GetUserExamScore(client *redis.Client, username string, teamName string, ex
 	return strconv.Atoi(score)
 }
 
-// 6. 通过团队名和考试名称查询该团队该考试的成绩信息
+// 通过团队名和考试名称查询该团队该考试的成绩信息
 func GetTeamExamResult(client *redis.Client, teamName string, examName string) (ExamResult, error) {
 	// 查询该团队该考试的成绩信息
 	// 使用 Key 格式为 "exam_result:{teamName}:{examName}" 进行查询
@@ -313,6 +313,7 @@ func GetTeamExamResult(client *redis.Client, teamName string, examName string) (
 	// 解析考试成绩信息并返回
 	examResult := ExamResult{
 		TeamName: teamName,
+		ExamName: examName,
 		Scores:   make(map[string]int),
 		Rankings: make(map[string]int),
 	}

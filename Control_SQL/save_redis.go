@@ -58,7 +58,8 @@ type Notification struct {
 }
 
 type ExamResult struct {
-	TeamName string         // 团队名
+	TeamName string // 团队名
+	ExamName string
 	Scores   map[string]int // 成员分数，键为用户名，值为分数
 	Rankings map[string]int // 成员排名，键为用户名，值为排名
 }
@@ -233,14 +234,18 @@ func MarkNotificationAsProcessed(client *redis.Client, teamName string, notifica
 	return nil
 }
 
-// 保存考试成绩
+// 保存考试成绩到 Redis 数据库
 func SaveExamResult(client *redis.Client, examResult ExamResult) error {
-	// 使用哈希数据结构保存考试成绩
-	for username, score := range examResult.Scores {
-		_, err := client.HSet("exam:"+examResult.TeamName+":user:"+username, "score", score).Result()
-		if err != nil {
-			return err
-		}
+	// 将 examResult 转换为 JSON 格式
+	examResultJSON, err := json.Marshal(examResult)
+	if err != nil {
+		return err
+	}
+
+	// 将 examResultJSON 保存到 Redis 中
+	err = client.Set("exam_result:"+examResult.TeamName+":"+examResult.ExamName, examResultJSON, 0).Err()
+	if err != nil {
+		return err
 	}
 
 	return nil
