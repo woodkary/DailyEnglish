@@ -43,8 +43,7 @@ func main() {
 	// r.Static("static/team_manager/css", "./static/css")
 	// r.Static("static/team_manager/js", "./static/js")
 	//r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html", "./static/404.html")
-
-	service.TestAES()
+	r.LoadHTMLGlob("./static/*.html")
 
 	//注册接口
 	r.POST("/api/team_manager/register", func(c *gin.Context) {
@@ -78,10 +77,13 @@ func main() {
 		}
 	})
 
+	r.GET("/api/team_manager/login", func(c *gin.Context) {
+		c.File("/static/team_manager/login.html")
+	})
+
 	//重定向至登录页面
 	r.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login.html")
-		//c.String(http.StatusOK, "Welcome to Daily English!")
 	})
 
 	//登录接口
