@@ -11,15 +11,12 @@ import (
 )
 
 type Team struct {
-	Name                string // 团队名
-	ID                  int    // 团队ID
-	TotalMembers        int    // 团队总人数
-	AdminCount          int    // 管理员人数
-	RecentExamDate      string // 最近一场考试日期
-	Last7DaysAttendance struct {
-		Count int     // 最近7天的打卡人数
-		Rate  float64 // 最近7天的打卡率
-	}
+	Name           string // 团队名
+	ID             int    // 团队ID
+	TotalMembers   int    // 团队总人数
+	AdminCount     int    // 管理员人数
+	RecentExamDate string // 最近一场考试日期
+
 	Members []Member // 团队成员列表
 }
 
@@ -58,7 +55,8 @@ type Notification struct {
 }
 
 type ExamResult struct {
-	TeamName string         // 团队名
+	TeamName string // 团队名
+	ExamName string
 	Scores   map[string]int // 成员分数，键为用户名，值为分数
 	Rankings map[string]int // 成员排名，键为用户名，值为排名
 }
@@ -90,12 +88,10 @@ func RecordTeamJoin(redisClient *redis.Client, username string, teamNames []stri
 func SaveTeam(client *redis.Client, team Team) error {
 	// 使用哈希数据结构保存团队信息
 	_, err := client.HMSet("team:"+team.Name, map[string]interface{}{
-		"id":                           team.ID,
-		"total_members":                team.TotalMembers,
-		"admin_count":                  team.AdminCount,
-		"recent_exam_date":             team.RecentExamDate,
-		"last_7_days_attendance_count": team.Last7DaysAttendance.Count,
-		"last_7_days_attendance_rate":  team.Last7DaysAttendance.Rate,
+		"id":               team.ID,
+		"total_members":    team.TotalMembers,
+		"admin_count":      team.AdminCount,
+		"recent_exam_date": team.RecentExamDate,
 	}).Result()
 	if err != nil {
 		return err
@@ -233,14 +229,18 @@ func MarkNotificationAsProcessed(client *redis.Client, teamName string, notifica
 	return nil
 }
 
-// 保存考试成绩
+// 保存考试成绩到 Redis 数据库
 func SaveExamResult(client *redis.Client, examResult ExamResult) error {
-	// 使用哈希数据结构保存考试成绩
-	for username, score := range examResult.Scores {
-		_, err := client.HSet("exam:"+examResult.TeamName+":user:"+username, "score", score).Result()
-		if err != nil {
-			return err
-		}
+	// 将 examResult 转换为 JSON 格式
+	examResultJSON, err := json.Marshal(examResult)
+	if err != nil {
+		return err
+	}
+
+	// 将 examResultJSON 保存到 Redis 中
+	err = client.Set("exam_result:"+examResult.TeamName+":"+examResult.ExamName, examResultJSON, 0).Err()
+	if err != nil {
+		return err
 	}
 
 	return nil

@@ -11,7 +11,7 @@ type Books struct {
 	Title      string
 	LearnerNum int
 	FinishNum  int
-	Type       int
+
 	Describe   string
 	ID         int
 	WordsNum   int
@@ -61,8 +61,6 @@ type Punch struct {
 	}
 }
 
-// @TODO
-// func QueryTEAM_Punch(db *sql.DB, team string) (Punch, error) //查询团队打卡情况，传入团队名team（团队表的主键）
 // 1 QueryUserInfo 查询用户信息
 func QueryUser_Info(db *sql.DB) ([]UserInfo, error) {
 	rows, err := db.Query("SELECT * FROM user_info")
@@ -93,7 +91,7 @@ func QueryBooks(db *sql.DB) ([]Books, error) {
 	var bookInfos []Books
 	for rows.Next() {
 		var bookInfo Books
-		if err := rows.Scan(&bookInfo.Title, &bookInfo.LearnerNum, &bookInfo.FinishNum, &bookInfo.Type, &bookInfo.Describe, &bookInfo.ID, &bookInfo.WordsNum, &bookInfo.Grade, &bookInfo.Difficulty, &bookInfo.Date); err != nil {
+		if err := rows.Scan(&bookInfo.Title, &bookInfo.LearnerNum, &bookInfo.FinishNum, &bookInfo.Describe, &bookInfo.ID, &bookInfo.WordsNum, &bookInfo.Grade, &bookInfo.Difficulty, &bookInfo.Date); err != nil {
 			return nil, err
 		}
 		bookInfos = append(bookInfos, bookInfo)
@@ -101,7 +99,7 @@ func QueryBooks(db *sql.DB) ([]Books, error) {
 	return bookInfos, nil
 }
 
-// QueryBooks 根据grade、difficulty和flag参数查询书籍，并根据标志参数排序
+// 2.2QueryBooks 根据grade、difficulty和flag参数查询书籍，并根据标志参数排序
 func QueryBooksBy(db *sql.DB, grade, difficulty string, flag int) ([]Books, error) {
 	var query string
 	switch flag {
@@ -122,7 +120,7 @@ func QueryBooksBy(db *sql.DB, grade, difficulty string, flag int) ([]Books, erro
 	var books []Books
 	for rows.Next() {
 		var book Books
-		if err := rows.Scan(&book.Title, &book.LearnerNum, &book.FinishNum, &book.Type, &book.Describe, &book.ID, &book.WordsNum, &book.Grade, &book.Difficulty, &book.Date); err != nil {
+		if err := rows.Scan(&book.Title, &book.LearnerNum, &book.FinishNum, &book.Describe, &book.ID, &book.WordsNum, &book.Grade, &book.Difficulty, &book.Date); err != nil {
 			return nil, fmt.Errorf("error scanning row: %v", err)
 		}
 		books = append(books, book)
@@ -133,7 +131,7 @@ func QueryBooksBy(db *sql.DB, grade, difficulty string, flag int) ([]Books, erro
 	return books, nil
 }
 
-// QueryCET4WordInfo 查询 CET4 单词信息
+// 3 QueryCET4WordInfo 查询 CET4 单词信息
 func QueryCet4_dictionary(db *sql.DB) ([]Cet4_dictionary, error) {
 	rows, err := db.Query("SELECT * FROM cet4_dictionary")
 	if err != nil {
@@ -152,7 +150,7 @@ func QueryCet4_dictionary(db *sql.DB) ([]Cet4_dictionary, error) {
 	return cet4WordInfos, nil
 }
 
-// QueryMistakeInfo 查询错题信息
+// 4 QueryMistakeInfo 查询错题信息
 func QueryMistake(db *sql.DB) ([]Mistake, error) {
 	rows, err := db.Query("SELECT * FROM mistakes")
 	if err != nil {
@@ -171,7 +169,7 @@ func QueryMistake(db *sql.DB) ([]Mistake, error) {
 	return mistakeInfos, nil
 }
 
-// QueryNotebookInfo 查询单词收藏本信息
+// 5 QueryNotebookInfo 查询单词收藏本信息
 func QueryNotebook(db *sql.DB) ([]Notebook, error) {
 	rows, err := db.Query("SELECT * FROM notebook")
 	if err != nil {
@@ -190,7 +188,7 @@ func QueryNotebook(db *sql.DB) ([]Notebook, error) {
 	return notebookInfos, nil
 }
 
-// QueryUserStudyInfo 查询用户学习信息
+// 6 QueryUserStudyInfo 查询用户学习信息
 func QueryUser_Study(db *sql.DB) ([]User_Study, error) {
 	rows, err := db.Query("SELECT * FROM user_study")
 	if err != nil {
