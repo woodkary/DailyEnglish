@@ -4,20 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="40a60d59-6e65-465a-89ab-7764c8f00a1d" name="更改" comment="js js js">
-      <change afterPath="$PROJECT_DIR$/static/image/closeButton.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/js/review.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/review.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/review.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/creatExamTable.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/creatExamTable.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/createDaKaTable.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/createDaKaTable.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/manage.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/manage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/pieChart.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/pieChart.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/test-statistics.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/test-statistics.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/manage.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/manage.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/review.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/review.html" afterDir="false" />
-    </list>
+    <list default="true" id="40a60d59-6e65-465a-89ab-7764c8f00a1d" name="更改" comment="js js js js js" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -129,7 +116,7 @@
       <workItem from="1712659104315" duration="3847000" />
       <workItem from="1712706655235" duration="8739000" />
       <workItem from="1712721181258" duration="197000" />
-      <workItem from="1712735981611" duration="19216000" />
+      <workItem from="1712735981611" duration="19605000" />
     </task>
     <task id="LOCAL-00001" summary="考试数据获取">
       <option name="closed" value="true" />
@@ -235,7 +222,15 @@
       <option name="project" value="LOCAL" />
       <updated>1712749570305</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="js js js js js">
+      <option name="closed" value="true" />
+      <created>1712758037607</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1712758037607</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -278,7 +273,8 @@
     <MESSAGE value="js" />
     <MESSAGE value="单词卡组件" />
     <MESSAGE value="js js js" />
-    <option name="LAST_COMMIT_MESSAGE" value="js js js" />
+    <MESSAGE value="js js js js js" />
+    <option name="LAST_COMMIT_MESSAGE" value="js js js js js" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

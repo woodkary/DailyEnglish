@@ -216,7 +216,7 @@
             <img class="details_2" src="./image/右圆圈箭头.svg"></img>
         </div>
 
-        <div class="container"
+        <div class="container" id="join-apply"
              style="background-image: linear-gradient(-225deg, #22E1FF 0%, #1D8FE1 48%, #625EB1 100%);">
             <img class="darkmode-ignore" style="flex-shrink: 0;
         width: 80px;
@@ -227,7 +227,7 @@
         margin-top: 20px;" src="image/笔记本.png">
             <div class="title">加入申请</div>
             <div class="count">45人</div>
-            <div class="details_1" id="join-apply">查看详情</div>
+            <div class="details_1">查看详情</div>
             <img class="details_2" src="./image/右圆圈箭头.svg"></img>
         </div>
     </div>
@@ -522,6 +522,10 @@
         const container = document.getElementById('exam-toast-content');
         container.appendChild(table);
     }
+    document.getElementById('join-apply').addEventListener('click', function() {
+        console.log("加入申请");
+        window.location.href = "/review.html";
+    });
 </script>
 
 </html>
