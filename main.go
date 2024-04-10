@@ -34,6 +34,14 @@ func main() {
 	}
 	defer db.Close()
 
+	// 检查数据库连接是否成功
+	err = db.Ping()
+	if err != nil {
+		panic("Failed to connect to the database")
+	}
+
+	fmt.Println("Successfully connected to the database")
+
 	//redis连接
 	client := redis.NewClient(&redis.Options{
 		Addr:     "r-bp1jdmrszl1yd6xxdipd.redis.rds.aliyuncs.com:6379", // Redis 服务器地址
