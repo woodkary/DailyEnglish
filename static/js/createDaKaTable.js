@@ -31,3 +31,46 @@ function createDaKaTable(data) {
     const container = document.getElementById('daka-table');
     container.appendChild(table);
 }
+
+// 调用函数，传入数据
+function fetchDataAndCreateTable(url) {
+    let token = localStorage.getItem('token');
+    fetch(url,{
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer '+token
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            let chartData={
+                headers: ['成员', '打卡天数', '个人打卡率','学习单词数'],
+                rows: []
+            }
+            data.punch_statistics.forEach(item => {
+                let rowData = [item.name, item.punch_day, item.punch_rate, item.punch_word];
+                chartData.rows.push(rowData);
+            });
+            console.log(chartData);
+            createDaKaTable(chartData);
+            res=chartData;
+        })
+        .catch(error => {
+            console.error('Error fetching and creating table:', error);
+            let data = {
+                headers: ['成员', '打卡天数', '个人打卡率'],
+                rows: [
+                    ['otto', '666', '87%'], ['otto', '666', '87%'],
+                    ['otto', '666', '87%'], ['otto', '666', '87%'], ['otto', '666', '87%'], ['otto', '666', '87%']
+                    // 更多数据行
+                ]
+            };
+            createDaKaTable(data);
+        });
+}

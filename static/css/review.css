@@ -352,3 +352,56 @@ button:hover{
 .search-icon{
     cursor: pointer;
 }
+.table-container {
+    display: table;
+    width: 100%;
+    .button {
+        cursor: pointer;
+        padding: 5px 26px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        color: #333;
+        text-decoration: none;
+        display: inline-block;
+        margin-left: 5px;
+        background-color: #f0f0f0;
+        text-align: center;
+        /* 水平居中文字 */
+    }
+
+    .button:hover {
+        background-color: #e0e0e0;
+        /* 鼠标悬停时改变背景颜色 */
+    }
+
+
+    .table-row {
+        display: table-row;
+        background-color: #f2f2f2;
+    }
+
+    .table-row:first-child .table-cell {
+        font-family: "SimHei", sans-serif;
+        /* 设置黑体字体 */
+        font-weight: bold;
+        /* 使文字加粗 */
+    }
+
+    .table-row:nth-child(odd) {
+        background-color: #ffffff;
+    }
+
+    .table-cell {
+        display: table-cell;
+        padding: 8px;
+        text-align: center;
+        /* 使内容居中 */
+
+    }
+
+    .actions-cell {
+        text-align: center;
+        /* 使最后一列的按钮居中 */
+
+    }
+}

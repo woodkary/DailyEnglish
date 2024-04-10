@@ -176,8 +176,8 @@
 
                     </div>
                     <div class="members-admin">
-                        <div>当前成员：<span class="member-number">50</span>人</div>
-                        <div>当前管理员：<span class="manager-number">5</span>人</div>
+                        <div>当前成员：<span class="member-number" id="member-number">50</span>人</div>
+                        <div>当前管理员：<span class="manager-number" id="manager-number">5</span>人</div>
                     </div>
                 </div>
             </div>
@@ -200,6 +200,7 @@
 </body>
 <script src="./js/Navbar.js"></script>
 <script src="./js/sidebar.js"></script>
+<script src="./js/manage.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.0/lib/darkmode-js.min.js"></script>
 <script>
     var options = {
@@ -223,7 +224,7 @@
         // ... 更多数据
     ];
 
-    function generateTable(data) {
+/*    function generateTable(data) {
         const container = document.getElementById('table-container');
         container.innerHTML = ''; // 清空容器
 
@@ -271,7 +272,7 @@
     }
 
     // 初始化表格
-    generateTable(backendData.slice(0, 10)); // 限制每页最多10行
+    generateTable(backendData.slice(0, 10)); // 限制每页最多10行*/
 </script>
 
 </html>
