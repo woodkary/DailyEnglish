@@ -5,7 +5,8 @@ let totalPage=0;
 const pagination = document.getElementById("pagination");
 window.onload = function () {
     let team=document.getElementById("team-name");
-    team.textContent=localStorage.getItem("team");
+    let localTeam=localStorage.getItem("team");
+    team.textContent=localTeam==null?"春田花花幼儿园":localTeam;
     allTestStatistics();
 }
 function allTestStatistics() {
