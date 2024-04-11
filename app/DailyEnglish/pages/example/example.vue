@@ -51,30 +51,63 @@
       </swiper>
     </view>
 
-    <view style="height: 100vh">
+    <view style="height: auto">
       <sliderzz @change="change"></sliderzz>
     </view>
-	
-	
+
+    <view class="toast-container">
+      <button @click="showToast('Hello World')">点击我</button>
+      <toast ref="toast" />
+    </view>
+    <view class="jiliancontainer">
+      <view class="picker">
+        <picker
+          mode="selector"
+          :range="genderList"
+          :value="genderIndex"
+          @change="onGenderChange"
+        >
+          <view class="picker-box">
+            <text class="picker-text">{{ genderList[genderIndex] }}</text>
+            
+          </view>
+        </picker>
+      </view>
+    </view>
   </view>
 </template>
 
 <script>
 import sliderzz from "@/components/sliderzz.vue";
+import toast from "@/components/toast.vue";
 export default {
   data() {
-    return {};
+    return {
+      showBackTop: true,
+      genderList: ["请选择性别", "男", "女"],
+      genderIndex: 0,
+    };
   },
   components: {
     sliderzz,
+    toast,
   },
   methods: {
-    change({ finish, reset }) {
+    change({ finish }) {
       //这里有两个函数一般滑动都是要校验之后才能提交的，所以第一个finish知行之后他会提交
       finish(); //保存提交状态
       // setTimeout(() => {
       // 	reset();//这个是提交之后过一会可能会重新提交进入重置状态
       // },2000)
+    },
+    showToast(message) {
+      this.$refs.toast.showToast(message);
+    },
+    onGenderChange(e) {
+      if (e.detail.value !== undefined) {
+        this.genderIndex = e.detail.value;
+        // 这里可以处理性别选择后的逻辑，例如保存或者返回上一个页面等
+      }
     },
   },
 };
@@ -135,6 +168,33 @@ export default {
     width: 99%;
     height: 99%;
     border: 1rpx solid #f00000;
+  }
+}
+.jiliancontainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 180rpx;
+  .picker {
+    width: 100%;
+    padding: 20px;
+  }
+  .picker-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  .picker-text {
+    font-size: 16px;
+    color: #333;
+  }
+  .picker-icon {
+    margin-left: 10px;
   }
 }
 </style>

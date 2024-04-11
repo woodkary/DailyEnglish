@@ -35,6 +35,39 @@
     .darkmode--activated .card .title {
         color: #fff;
     }
+    .toast {
+        position: fixed;/*固定定位，建议别改*/
+        top: 50%;/*距离顶部，使用中修改*/
+        left: 50%;/*居中，使用中修改*/
+        transform: translate(-50%, -50%);/*可以修改*/
+        border: 1px solid #ddd;/*边框*/
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),/*下边阴影*/
+        4px 0 4px rgba(0, 0, 0, 0.1); /* 右边阴影 */
+        background-color: #ddd;/*背景色，使用中修改*/
+        display: flex;
+        transition: all 0.5s ease; /*添加过渡效果*/
+        width:400px;
+        color: black;/*字体颜色，使用中修改*/
+        padding: 10px 20px;/*内边距，使用中修改*/
+        border-radius: 5px;/*圆角，使用中修改*/
+        z-index: 9999;/*层级，不建议更改*/
+        text-align: center;/*文字居中，不建议更改*/
+    }
+    .toast #closeButton {
+        position: fixed;
+        top: 5px;
+        right: 5px;
+        width: 15px;/* 按钮的宽度 */
+        height: 15px; /* 按钮的高度 */
+        /* 其他样式，如背景色、边框等 */
+        background-image: url("./image/closeButton.svg");
+        background-size: cover;
+    }
+
+    .darkmode--activated .toast {
+        background-color: #111;
+        color: #fff;
+    }
 
 </style>
 <link rel="stylesheet" href="./css/sidebar.css">
@@ -139,7 +172,7 @@
 
 
     <div class="test">
-        <div class="container"
+        <div class="container" id="sign-in-details"
              style="background-image: linear-gradient(120deg, #f093fb 0%, #f5576c 100%);">
             <img class="darkmode-ignore" style="flex-shrink: 0;
         width: 80px;
@@ -153,7 +186,7 @@
             <div class="details_1">查看详情</div>
             <img class="details_2" src="./image/右圆圈箭头.svg"></img>
         </div>
-        <div class="container"
+        <div class="container" id="sign-in-rate"
              style="background-image: linear-gradient(-225deg, #ff21bf 0%, #fc591d 100%);">
             <img class="darkmode-ignore" style="flex-shrink: 0;
         width: 80px;
@@ -168,7 +201,7 @@
             <img class="details_2" src="./image/右圆圈箭头.svg"></img>
         </div>
 
-        <div class="container"
+        <div class="container" id="latest-exam"
              style="background-image: linear-gradient(to right, #92fe9d 0%, #00c9ff 100%);">
             <img class="darkmode-ignore" style="flex-shrink: 0;
         width: 80px;
@@ -178,12 +211,12 @@
         margin-right: 20px;
         margin-top: 20px;" src="image/笔记本2.png">
             <div class="title">最近考试</div>
-            <div class="count" style="margin-left: -50%;">3月25日</div>
+            <div class="count" id="latest-exam-date" style="margin-left: -50%;">3月25日</div>
             <div class="details_1">查看详情</div>
             <img class="details_2" src="./image/右圆圈箭头.svg"></img>
         </div>
 
-        <div class="container"
+        <div class="container" id="join-apply"
              style="background-image: linear-gradient(-225deg, #22E1FF 0%, #1D8FE1 48%, #625EB1 100%);">
             <img class="darkmode-ignore" style="flex-shrink: 0;
         width: 80px;
@@ -218,6 +251,12 @@
             </div>
         </div>
     </div>
+<!-- 弹窗-->
+    <div class="toast" id="toast" style="visibility: hidden">
+
+    </div>
+
+
 </div>
 </body>
 <script src="./js/Navbar.js"></script>
@@ -228,7 +267,7 @@
 <script src="./js/createDaKaTable.js"></script>
 <script>
     // 示例数据
-    const data = {
+    let data = {
         headers: ['成员', '打卡天数', '个人打卡率'],
         rows: [
             ['otto', '666', '87%'], ['otto', '666', '87%'],
@@ -238,7 +277,8 @@
     };
 
     // 调用函数创建表格
-    createDaKaTable(data);
+    /*createDaKaTable(data);*/
+    fetchDataAndCreateTable("http://localhost:8080/api/team_manage/punch_statistics/data");
 
     let chartElement=document.getElementById('chart');
     var chart = echarts.init(chartElement);// 初始化图表
@@ -298,19 +338,9 @@
             color: 'red'
         }]
     });
-
-    // 示例数据
-    const score_data = {
-        headers: ['成员', '考试排名', '考试分数'],
-        rows: [
-            ['otto', '第1名', '100'], ['otto', '第2名', '99'],
-            ['otto', '第3名', '98'], ['otto', '第4名', '97'], ['otto', '第5名', '96'], ['otto', '第6名', '95']
-            // 更多数据行
-        ]
-    };
-
     // 调用函数创建表格
-    createExamTable(score_data);
+    /*createExamTable(score_data);*/
+    getLatestExamNameAndRenderTable();
 
     // 模拟后端数据
     const backendData = [
@@ -345,6 +375,158 @@
         autoMatchOsTheme: true // default: true
     }
     new Darkmode(options).showWidget();
+    // 签到详情弹窗
+    document.getElementById('sign-in-details').addEventListener('click', getSignInDetailsToast);
+    document.getElementById('sign-in-rate').addEventListener('click', getSignInDetailsToast);
+    function getSignInDetailsToast(){
+        console.log("签到详情");
+        let toast = document.getElementById('toast');
+        toast.innerHTML = '<button id="closeButton"></button>' +
+            '<div class="wu-hang-table" id="signInToastContent"></div>';
+        const closeButton = document.getElementById('closeButton');
+        closeButton.addEventListener('click', function() {
+            toast.style.visibility = "hidden";
+        });
+        console.log(localStorage.getItem('token'));
+        let url="http://localhost:8080/api/team_manage/index/sign_in_details";
+        fetch(url,{
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer '+localStorage.getItem('token')
+            }
+        })
+           .then(response => response.json())
+           .then(json => {
+                console.log(json);
+                let data=json.sign_in_details;
+                let content = document.getElementById('signInToastContent');
+                content.innerHTML = '';
+                data.forEach(item => {
+                    let name = item.name;// 姓名
+                    let isSignIn = item.issignIn;// 是否签到
+                    let row = createTableRow(name, isSignIn);
+                    content.appendChild(row);
+                });
+            })
+           .catch(error => {
+               console.error(error);
+               const backendData = [
+                   { message: 'Success message', time: '2024-04-09 10:00:00' },
+                   { message: 'Error message', time: '2024-04-09 10:05:00' },
+                   { message: 'Info message', time: '2024-04-09 10:10:00' },
+               ];
+               let content = document.getElementById('signInToastContent');
+               content.innerHTML = '';
+               // 循环遍历数据，创建行，并将其添加到容器中
+               backendData.forEach(data => {
+                   const row = createTableRow(data.message, data.time);
+                   content.appendChild(row);
+               });
+           });
+        toast.style.visibility = "visible";
+    }
+    // 考试详情弹窗
+    document.getElementById('latest-exam').addEventListener('click', createExamTableToast);
+    function createExamTableToast() {
+        let toast = document.getElementById('toast');
+        toast.innerHTML ='<button id="closeButton"></button>' +
+            '<div id="exam-toast-content" class="table-borderless" style="margin-top: 10%;"></div>';
+        const closeButton = document.getElementById('closeButton');
+        closeButton.addEventListener('click', function() {
+            toast.style.visibility = "hidden";
+        });
+        let url = "http://localhost:8080/api/team_manage/exam_situation/data";
+
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer '+localStorage.getItem('token')
+            }
+        })
+            .then(response => response.json())
+            .then(json => {
+                console.log(json);
+                let exam_data = json.exams;
+                let content = document.getElementById('exam-toast-content');
+                content.innerHTML = '';
+                let headers = ['考试名称', '考试时间', '满分', '平均分', '通过率'];
+                let rows = [];
+                exam_data.forEach(item => {
+                    let name = item.name;
+                    let time = item.time;
+                    let full_score = item.full_score;
+                    let average_score = item.average_score;
+                    let pass_rate = item.pass_rate;
+                    let row = [name, time, full_score, average_score, pass_rate];
+                    rows.push(row);
+                });
+                createExamTable2({headers: headers, rows: rows});
+            })
+            .catch(error => {
+                console.error(error);
+                let content = document.getElementById('exam-toast-content');
+                content.innerHTML = '';
+                const backendData = [
+                    { name: '2021年春季学期期末考试', time: '2021-06-30 23:59:59', full_score: '100', average_score: '80', pass_rate: '80%' },
+                    { name: '2021年秋季学期期末考试', time: '2021-09-30 23:59:59', full_score: '100', average_score: '80', pass_rate: '80%' },
+                    { name: '2022年春季学期期末考试', time: '2022-06-30 23:59:59', full_score: '100', average_score: '80', pass_rate: '80%' },
+                    { name: '2022年秋季学期期末考试', time: '2022-09-30 23:59:59', full_score: '100', average_score: '80', pass_rate: '80%' },
+                ];
+                let headers = ['考试名称', '考试时间', '满分', '平均分', '通过率'];
+                let rows = [];
+                backendData.forEach(item => {
+                    let name = item.name;
+                    let time = item.time;
+                    let full_score = item.full_score;
+                    let average_score = item.average_score;
+                    let pass_rate = item.pass_rate;
+                    let row = [name, time, full_score, average_score, pass_rate];
+                    rows.push(row);
+                });
+                createExamTable2({headers: headers, rows: rows});
+            });
+        toast.style.visibility = "visible";
+    }
+
+    function createExamTable2(data) {
+        // 创建表格元素
+        const table = document.createElement('table');
+        table.className = 'borderless-table';
+
+        // 创建表头
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        data.headers.forEach(headerText => {
+            const header = document.createElement('th');
+            header.textContent = headerText;
+            headerRow.appendChild(header);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        // 创建表体
+        const tbody = document.createElement('tbody');
+        data.rows.forEach(rowData => {
+            const row = document.createElement('tr');
+            rowData.forEach(cellData => {
+                const cell = document.createElement('td');
+                cell.textContent = cellData;
+                row.appendChild(cell);
+            });
+            tbody.appendChild(row);
+        });
+        table.appendChild(tbody);
+
+        // 将表格添加到容器中
+        const container = document.getElementById('exam-toast-content');
+        container.appendChild(table);
+    }
+    document.getElementById('join-apply').addEventListener('click', function() {
+        console.log("加入申请");
+        window.location.href = "./review.html";
+    });
 </script>
 
 </html>

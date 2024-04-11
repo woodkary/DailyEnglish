@@ -18,7 +18,7 @@ window.onload = function () {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'token': token//在请求头设置 token
+            'Authorization': 'Bearer '+token//在请求头设置 token
         }
     }).then(response => {
         return response.json();
