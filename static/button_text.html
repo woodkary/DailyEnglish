@@ -1,0 +1,273 @@
+<!--
+ * @Date: 2024-04-11 19:13:24
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container">
+        <div data-tooltip="qq登录" class="button">
+            <div class="button-wrapper">
+                <div class="text">qq</div>
+                <span class="icon">
+                    <image src="../static/image/qq.svg" style="width: 20px;background-color: white;"></image>
+                </span>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="form-control">
+                <input type="value" required="">
+                <label>
+                    <span style="transition-delay:0ms">U</span><span style="transition-delay:50ms">s</span><span
+                        style="transition-delay:100ms">e</span><span style="transition-delay:150ms">r</span><span
+                        style="transition-delay:200ms">n</span><span style="transition-delay:250ms">a</span><span
+                        style="transition-delay:300ms">m</span><span style="transition-delay:350ms">e</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="group">
+                <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
+                    <g>
+                        <path
+                            d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z">
+                        </path>
+                    </g>
+                </svg>
+                <input class="input" type="search" placeholder="Search" />
+            </div>
+
+        </div>
+    </div>
+
+
+
+</body>
+<style>
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .button {
+        --width: 100px;
+        --height: 35px;
+        --tooltip-height: 35px;
+        --tooltip-width: 90px;
+        --gap-between-tooltip-to-button: 18px;
+        --button-color: #222;
+        --tooltip-color: #fff;
+        width: var(--width);
+        height: var(--height);
+        background: var(--button-color);
+        position: relative;
+        text-align: center;
+        border-radius: 0.45em;
+        font-family: "Arial";
+        transition: background 0.3s;
+    }
+
+    .button::before {
+        position: absolute;
+        content: attr(data-tooltip);
+        width: var(--tooltip-width);
+        height: var(--tooltip-height);
+        background-color: #555;
+        font-size: 0.9rem;
+        color: #fff;
+        border-radius: .25em;
+        line-height: var(--tooltip-height);
+        bottom: calc(var(--height) + var(--gap-between-tooltip-to-button) + 10px);
+        left: calc(50% - var(--tooltip-width) / 2);
+    }
+
+    .button::after {
+        position: absolute;
+        content: '';
+        width: 0;
+        height: 0;
+        border: 10px solid transparent;
+        border-top-color: #555;
+        left: calc(50% - 10px);
+        bottom: calc(100% + var(--gap-between-tooltip-to-button) - 10px);
+    }
+
+    .button::after,
+    .button::before {
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.5s;
+    }
+
+    .text {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .button-wrapper,
+    .text,
+    .icon {
+        overflow: hidden;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        color: #fff;
+    }
+
+    .text {
+        top: 0
+    }
+
+    .text,
+    .icon {
+        transition: top 0.5s;
+    }
+
+    .icon {
+        color: #fff;
+        top: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .icon svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .button:hover {
+        background: #222;
+    }
+
+    .button:hover .text {
+        top: -100%;
+    }
+
+    .button:hover .icon {
+        top: 0;
+    }
+
+    .button:hover:before,
+    .button:hover:after {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .button:hover:after {
+        bottom: calc(var(--height) + var(--gap-between-tooltip-to-button) - 20px);
+    }
+
+    .button:hover:before {
+        bottom: calc(var(--height) + var(--gap-between-tooltip-to-button));
+    }
+
+    /**********************************************************/
+
+    .form-control {
+        position: relative;
+        margin: 20px 0 40px;
+        width: 190px;
+    }
+
+    .form-control input {
+        background-color: transparent;
+        border: 0;
+        border-bottom: 2px #000000 solid;
+        display: block;
+        width: 100%;
+        padding: 15px 0;
+        font-size: 18px;
+        color: #8e3333;
+    }
+
+    .form-control input:focus,
+    .form-control input:valid {
+        outline: 0;
+        border-bottom-color: lightblue;
+    }
+
+    .form-control label {
+        position: absolute;
+        top: 15px;
+        left: 0;
+        pointer-events: none;
+    }
+
+    .form-control label span {
+        display: inline-block;
+        font-size: 18px;
+        min-width: 5px;
+        color: #6e4040;
+        /*文字颜色*/
+        transition: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .form-control input:focus+label span,
+    .form-control input:valid+label span {
+        color: lightblue;
+        transform: translateY(-30px);
+    }
+
+
+
+
+
+    .group {
+        display: flex;
+        line-height: 28px;
+        align-items: center;
+        position: relative;
+        max-width: 190px;
+
+        .input {
+            width: 100%;
+            height: 40px;
+            line-height: 28px;
+            padding: 0 1rem;
+            padding-left: 2.5rem;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            outline: none;
+            background-color: #f3f3f4;
+            color: #0d0c22;
+            transition: 0.3s ease;
+        }
+
+        .input::placeholder {
+            color: #9e9ea7;
+        }
+
+        .input:focus,
+        input:hover {
+            outline: none;
+            border-color: rgba(247, 127, 0, 0.4);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgb(247 127 0 / 10%);
+        }
+
+        .icon {
+            position: relative;
+            left: 2rem;
+            fill: #9e9ea7;
+            width: 1rem;
+            height: 1rem;
+
+        }
+
+    }
+</style>
+
+</html>
