@@ -4,7 +4,52 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="40a60d59-6e65-465a-89ab-7764c8f00a1d" name="更改" comment="js js js js js" />
+    <list default="true" id="40a60d59-6e65-465a-89ab-7764c8f00a1d" name="更改" comment="js js js">
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/pages/Loading/Loading.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/pages/PopUp/PopUp.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/pages/Vocab/Vocab.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/pages/WordBlock/WordBlock.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/pages/example/example.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/pages/login/login.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/pages/register/register.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/static/backTop.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/static/background.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/static/color.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/static/logo2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/static/read-icon.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/pages/Loading/Loading.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/pages/PopUp/PopUp.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/pages/WordBlock/WordBlock.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/pages/login/login.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/pages/register/register.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/static/backTop.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/static/background.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/static/book.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/static/color.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/static/logo2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/static/read-icon.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/release/apk/__UNI__EEA1027__20240411091808.apk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/pages.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/pages.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/pages/Vocab/Vocab.vue" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/pages/Vocab/Vocab.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/static/书.png" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/static/book.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/apk/__UNI__EEA1027_cm.apk" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/apk/__UNI__EEA1027_cm.apk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/apk/apkurl" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/apk/apkurl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/apk/cmManifestCache.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/apk/cmManifestCache.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/app-config-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/app-config-service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/app-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/app-service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/app.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/pages/Examination/Examination.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/pages/Examination/Examination.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/pages/index/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/pages/index/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/app-config-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/app-config-service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/app-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/app-service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/pages/Examination/Examination.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/pages/Examination/Examination.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/pages/Vocab/Vocab.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/pages/Vocab/Vocab.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/pages/example/example.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/pages/example/example.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/DailyEnglish/unpackage/dist/build/app-plus/static/书.png" beforeDir="false" afterPath="$PROJECT_DIR$/app/DailyEnglish/unpackage/cache/wgt/__UNI__EEA1027/static/book.png" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -60,7 +105,7 @@
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/karywoodOyo/Downloads/我的东西/DailyEnglish/DailyEnglish/app/DailyEnglish&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/beidanci/DailyEnglish&quot;,
     &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -87,14 +132,6 @@
       </list>
     </recent_temporary>
   </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-jdk-9f38398b9061-18abd8497189-intellij.indexing.shared.core-IU-241.14494.240" />
-        <option value="bundled-js-predefined-1d06a55b98c1-74d2a5396914-JavaScript-IU-241.14494.240" />
-      </set>
-    </attachedChunks>
-  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="默认任务">
@@ -117,6 +154,7 @@
       <workItem from="1712706655235" duration="8739000" />
       <workItem from="1712721181258" duration="197000" />
       <workItem from="1712735981611" duration="19605000" />
+      <workItem from="1712799510716" duration="278000" />
     </task>
     <task id="LOCAL-00001" summary="考试数据获取">
       <option name="closed" value="true" />
