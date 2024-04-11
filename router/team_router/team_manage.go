@@ -519,25 +519,6 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		Response.Msg = "成功"
 		c.JSON(200, Response)
 	})
-	//删除成员
-	r.POST("/api/team_manage/member_manage/delete", func(c *gin.Context) {
-		type Request struct {
-			Username string `json:"username"` // 要删除的成员的用户名
-			Teamname string `json:"teamname"` // 团队名
-		}
-		var request Request
-		if err := c.ShouldBind(&request); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-		err := controlsql.DeleteUserFromTeam(client, request.Teamname, request.Username)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-		}
-		c.JSON(200, "删除成功")
-	})
 	//团队管理员选择打卡发布页面信息
 	r.POST("/api/team_manage/task_daily/deliver_punch", func(c *gin.Context) {
 		type Request struct {

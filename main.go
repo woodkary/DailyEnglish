@@ -103,10 +103,6 @@ func main() {
 	r.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login.html")
 	})
-	//登录界面验证header头部
-	r.GET("/static/team_manager/login.html", func(c *gin.Context) {
-
-	})
 	//登录接口
 	r.POST("/api/team_manager/login", func(c *gin.Context) {
 		type logdata struct {
