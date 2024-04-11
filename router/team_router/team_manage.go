@@ -340,22 +340,22 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		Response.Msg = "成功"
 		c.JSON(200, Response)
 	})
-	//成员删除
-	r.POST("/api/team_manage/member_manage/delete", tokenAuthMiddleware(), func(c *gin.Context) {
-		type Request struct {
-			Username string `json:"username"` // 要删除的成员的用户名
-			Teamname string `json:"teamname"` // 团队名
-		}
-		var request Request
-		if err := c.ShouldBind(&request); err != nil {
-			c.JSON(400, "请求参数错误")
-		}
-		err := controlsql.DeleteUserFromTeam(client, request.Teamname, request.Username)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-		}
-		c.JSON(200, "删除成功")
-	})
+	// //成员删除
+	// r.POST("/api/team_manage/member_manage/delete", tokenAuthMiddleware(), func(c *gin.Context) {
+	// 	type Request struct {
+	// 		Username string `json:"username"` // 要删除的成员的用户名
+	// 		Teamname string `json:"teamname"` // 团队名
+	// 	}
+	// 	var request Request
+	// 	if err := c.ShouldBind(&request); err != nil {
+	// 		c.JSON(400, "请求参数错误")
+	// 	}
+	// 	err := controlsql.DeleteUserFromTeam(client, request.Teamname, request.Username)
+	// 	if err != nil {
+	// 		c.JSON(500, "服务器错误")
+	// 	}
+	// 	c.JSON(200, "删除成功")
+	// })
 	//搜索成员
 	r.POST("/api/team_manage/member_manage/search", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {

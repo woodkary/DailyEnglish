@@ -387,6 +387,7 @@
         closeButton.addEventListener('click', function() {
             toast.style.visibility = "hidden";
         });
+        console.log(localStorage.getItem('token'));
         let url="http://localhost:8080/api/team_manage/index/sign_in_details";
         fetch(url,{
             method: 'GET',
