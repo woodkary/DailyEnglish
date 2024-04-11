@@ -36,6 +36,7 @@ function createExamTable(data) {
 }
 //获取最新考试名称并渲染表格
 function getLatestExamNameAndRenderTable() {
+    console.log(localStorage.getItem('token'));
     fetch('http://localhost:8080/api/team_manage/exam_situation/data',{
         method: 'GET',
         headers: {

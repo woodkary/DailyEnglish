@@ -35,6 +35,7 @@ function createDaKaTable(data) {
 // 调用函数，传入数据
 function fetchDataAndCreateTable(url) {
     let token = localStorage.getItem('token');
+    console.log(token);
     fetch(url,{
         method: 'GET',
         headers: {

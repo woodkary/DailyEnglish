@@ -74,14 +74,6 @@
         "enablePullDownRefresh" : false,
         "navigationBarTitleText" : ""
       }
-    },
-    {
-      "path" : "pages/backTop/backTop",
-      "style" :
-      {
-        "navigationBarTitleText" : "",
-        "enablePullDownRefresh" : false
-      }
     }
   ],
   "globalStyle" : {
@@ -97,8 +89,8 @@
     "selectedColor" : "#007AFF",
     "list" : [
       {
-        "pagePath" : "pages/index/index",
-        "text" : "首页"
+        "pagePath" : "pages/login/login",
+        "text" : "登录"
       },
       // "iconPath": "static/tabbar/home.png",
       // "selectedIconPath": "static/tabbar/home-active.png"
@@ -115,8 +107,8 @@
       // "iconPath": "static/tabbar/exam.png",
       // "selectedIconPath": "static/tabbar/exam-active.png"
       {
-        "pagePath" : "pages/user/user",
-        "text" : "我的"
+        "pagePath" : "pages/register/register",
+        "text" : "注册"
       }
     ]
   },
@@ -132,6 +124,6 @@
         "query" : "" //启动参数，在页面的onLoad函数里面得到
       }
     ]
-	}
-	}
+  }
+  }
   

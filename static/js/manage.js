@@ -4,6 +4,9 @@ const BUTTON_NUM=5;//分页按钮数量
 let totalPage=0;
 const pagination = document.getElementById("pagination");
 window.onload = function () {
+    let team=document.getElementById("team-name");
+    let localTeam=localStorage.getItem("team");
+    team.textContent=localTeam==null?"春田花花幼儿园":localTeam;
     allTestStatistics();
 }
 function allTestStatistics() {
@@ -88,7 +91,36 @@ function generateTable(data) {
         const deleteBtn = document.createElement('span');
         deleteBtn.className = 'button';
         deleteBtn.textContent = '删除';
-        deleteBtn.onclick = () => console.log('删除 clicked');
+        deleteBtn.onclick = function(){
+            let username=item.nickname;
+            let teamName=document.getElementById("team-name").textContent;
+            console.log(username);
+            console.log(teamName);
+            let token=localStorage.getItem('token');
+            let url="http://localhost:8080/api/team_manage/member_manage/delete";
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer '+token
+                },
+                body: JSON.stringify({
+                    username:username,
+                    teamname:teamName
+                })
+                }).then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    if(data.code==200){
+                        console.log("删除成功");
+                        allTestStatistics();
+                    }else{
+                        console.log("删除失败");
+                    }
+                }).catch(error => {
+                    console.log(error);
+                });
+        };
         actionsCell.appendChild(detailBtn);
         actionsCell.appendChild(deleteBtn);
         row.appendChild(actionsCell);
