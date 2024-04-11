@@ -37,7 +37,7 @@
     }
     .toast {
         position: fixed;/*固定定位，建议别改*/
-        top: 20%;/*距离顶部，使用中修改*/
+        top: 50%;/*距离顶部，使用中修改*/
         left: 50%;/*居中，使用中修改*/
         transform: translate(-50%, -50%);/*可以修改*/
         border: 1px solid #ddd;/*边框*/
@@ -53,6 +53,17 @@
         z-index: 9999;/*层级，不建议更改*/
         text-align: center;/*文字居中，不建议更改*/
     }
+    .toast #closeButton {
+        position: fixed;
+        top: 5px;
+        right: 5px;
+        width: 15px;/* 按钮的宽度 */
+        height: 15px; /* 按钮的高度 */
+        /* 其他样式，如背景色、边框等 */
+        background-image: url("./image/closeButton.svg");
+        background-size: cover;
+    }
+
     .darkmode--activated .toast {
         background-color: #111;
         color: #fff;
@@ -200,12 +211,12 @@
         margin-right: 20px;
         margin-top: 20px;" src="image/笔记本2.png">
             <div class="title">最近考试</div>
-            <div class="count" style="margin-left: -50%;">3月25日</div>
+            <div class="count" id="latest-exam-date" style="margin-left: -50%;">3月25日</div>
             <div class="details_1">查看详情</div>
             <img class="details_2" src="./image/右圆圈箭头.svg"></img>
         </div>
 
-        <div class="container"
+        <div class="container" id="join-apply"
              style="background-image: linear-gradient(-225deg, #22E1FF 0%, #1D8FE1 48%, #625EB1 100%);">
             <img class="darkmode-ignore" style="flex-shrink: 0;
         width: 80px;
@@ -216,7 +227,7 @@
         margin-top: 20px;" src="image/笔记本.png">
             <div class="title">加入申请</div>
             <div class="count">45人</div>
-            <div class="details_1" id="join-apply">查看详情</div>
+            <div class="details_1">查看详情</div>
             <img class="details_2" src="./image/右圆圈箭头.svg"></img>
         </div>
     </div>
@@ -370,13 +381,19 @@
     function getSignInDetailsToast(){
         console.log("签到详情");
         let toast = document.getElementById('toast');
-        toast.innerHTML = '<div class="wu-hang-table" id="signInToastContent"></div>';
+        toast.innerHTML = '<button id="closeButton"></button>' +
+            '<div class="wu-hang-table" id="signInToastContent"></div>';
+        const closeButton = document.getElementById('closeButton');
+        closeButton.addEventListener('click', function() {
+            toast.style.visibility = "hidden";
+        });
+        console.log(localStorage.getItem('token'));
         let url="http://localhost:8080/api/team_manage/index/sign_in_details";
         fetch(url,{
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'token': localStorage.getItem('token')
+                'Authorization': 'Bearer '+localStorage.getItem('token')
             }
         })
            .then(response => response.json())
@@ -408,22 +425,24 @@
                });
            });
         toast.style.visibility = "visible";
-        setTimeout(function () {
-            toast.style.visibility = "hidden";
-        }, 3000)
     }
     // 考试详情弹窗
     document.getElementById('latest-exam').addEventListener('click', createExamTableToast);
     function createExamTableToast() {
         let toast = document.getElementById('toast');
-        toast.innerHTML = '<div id="exam-toast-content" class="table-borderless"></div>';
+        toast.innerHTML ='<button id="closeButton"></button>' +
+            '<div id="exam-toast-content" class="table-borderless" style="margin-top: 10%;"></div>';
+        const closeButton = document.getElementById('closeButton');
+        closeButton.addEventListener('click', function() {
+            toast.style.visibility = "hidden";
+        });
         let url = "http://localhost:8080/api/team_manage/exam_situation/data";
 
         fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'token': localStorage.getItem('token')
+                'Authorization': 'Bearer '+localStorage.getItem('token')
             }
         })
             .then(response => response.json())
@@ -469,9 +488,6 @@
                 createExamTable2({headers: headers, rows: rows});
             });
         toast.style.visibility = "visible";
-        setTimeout(function () {
-            toast.style.visibility = "hidden";
-        }, 3000);
     }
 
     function createExamTable2(data) {
@@ -507,6 +523,10 @@
         const container = document.getElementById('exam-toast-content');
         container.appendChild(table);
     }
+    document.getElementById('join-apply').addEventListener('click', function() {
+        console.log("加入申请");
+        window.location.href = "./review.html";
+    });
 </script>
 
 </html>

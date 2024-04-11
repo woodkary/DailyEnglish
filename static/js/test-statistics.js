@@ -16,7 +16,7 @@ function allTestStatistics() {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'token': token
+            'Authorization': 'Bearer ' + token
         }
     })
        .then(response => response.json())
