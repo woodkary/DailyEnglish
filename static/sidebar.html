@@ -1,0 +1,121 @@
+<!--
+ * @Date: 2024-04-11 17:14:28
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>可伸缩侧边栏</title>
+  </head>
+
+  <body>
+    <div class="shell">
+      <a href="#" class="box">
+        <img src="../static/image/moon.svg" class="icon icon1"></img>
+        <span>文字</span>
+      </a>
+      <a href="#" class="box">
+        <i class="icon icon2"></i>
+        <span>2</span>
+      </a>
+      <a href="#" class="box">
+        <i class="icon icon3"></i>
+        <span>3</span>
+      </a>
+      <a href="#" class="box">
+        <i class="icon icon4"></i>
+        <span>4</span>
+      </a>
+      <a href="#" class="box">
+        <i class="icon icon5"></i>
+        <span>5</span>
+      </a>
+      <a href="#" class="box">
+        <i class="icon icon6"></i>
+        <span>6</span>
+      </a>
+      <a href="#" class="box">
+        <i class="icon icon7"></i>
+        <span>7</span>
+      </a>
+      <a href="#" class="box">
+        <i class="icon icon8"></i>
+        <span>8</span>
+      </a>
+    </div>
+  </body>
+
+  <style>
+    .shell{
+        width: 100px;
+        height: 700px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #f1f1f1;
+        border-radius: 10px;
+        transition: .3s;
+        overflow: hidden;
+    }
+    .box{
+        width: 85%;
+        height: 15%;
+        display: block;
+        justify-content: center;
+        position: relative;
+        margin: 9px;
+        transition: .3s;
+        border-radius: 5px;
+        /*color: ;*/
+    }
+    .box i{
+        font-size:60px;
+        position:absolute;
+        margin: 7px 0 0 13px;
+    }
+
+    .box:nth-child(1)::before
+    .box:nth-child(5)::before
+    {
+        background-color: rgb(55,65,81);
+        content: '';
+        display: block;
+        width: 100%;
+        height: 2px;
+        position: absolute;
+        bottom: -10px;
+    }
+
+    .box span{
+        position: relative;
+        top: 0px;
+        left: 80px;
+        font: 500 20px '';
+        opacity: 0;
+        transition: .1s;
+    }
+    .shell:hover{
+        width: 270px;
+    }
+    .box:hover{
+        background-color: rgb(55,65,81);
+    }
+    .shell:hover span{
+        opacity: 1;
+    }
+    .box:hover{
+        color: #fff;
+    }
+    .icon{
+        width: 60px;
+        height: auto;
+        
+    }
+    
+  </style>
+ 
+    
+</html>
+
