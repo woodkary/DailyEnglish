@@ -1,108 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Static Table with Fixed Actions</title>
-<style>
-  /* 添加斑马条纹样式 */
-  .table-container {
-    display: table;
-    width: 100%;
-  }
-  .table-row {
-    display: table-row;
-    background-color: #f2f2f2;
-  }
-  .table-row:nth-child(odd) {
-    background-color: #ffffff;
-  }
-  .table-cell {
-    display: table-cell;
-    padding: 8px;
-    text-align: left;
-  }
-  .actions-cell {
-    text-align: right;
-  }
-  .button {
-  cursor: pointer;
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  color: #333;
-  text-decoration: none;
-  display: inline-block;
-  margin-left: 5px;
-}
-
-.button:hover {
-  background-color: #f0f0f0;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Style HTML Tables with CSS</title>
+  <link rel="stylesheet" href="css/main.css">
 </head>
-<body>
-<div id="table-container" class="table-container">
-  <!-- 动态生成的行将在这里插入 -->
-</div>
-
-<script>
-  // 模拟后端数据
-  const backendData = [
-    { nickname: 'John Doe', teamPermission: 'Admin', joinDate: '2023-01-01', totalCheckIns: 100 },
-    { nickname: 'John Doe', teamPermission: 'Admin', joinDate: '2023-01-01', totalCheckIns: 100 },  { nickname: 'John Doe', teamPermission: 'Admin', joinDate: '2023-01-01', totalCheckIns: 100 },  { nickname: 'John Doe', teamPermission: 'Admin', joinDate: '2023-01-01', totalCheckIns: 100 },  { nickname: 'John Doe', teamPermission: 'Admin', joinDate: '2023-01-01', totalCheckIns: 100 },  { nickname: 'John Doe', teamPermission: 'Admin', joinDate: '2023-01-01', totalCheckIns: 100 },
-    // ... 更多数据
-  ];
-
-  function generateTable(data) {
-    const container = document.getElementById('table-container');
-    container.innerHTML = ''; // 清空容器
-
-    // 生成表头
-    const headerRow = document.createElement('div');
-    headerRow.className = 'table-row';
-    const headers = ['昵称', '团队权限', '加入组织时间', '累计打卡天数', '操作'];
-    headers.forEach(headerText => {
-      const headerCell = document.createElement('div');
-      headerCell.className = 'table-cell';
-      headerCell.textContent = headerText;
-      headerRow.appendChild(headerCell);
-    });
-    container.appendChild(headerRow);
-
-    // 生成行
-    data.forEach(item => {
-      const row = document.createElement('div');
-      row.className = 'table-row';
-
-      Object.keys(item).forEach(key => {
-        const cell = document.createElement('div');
-        cell.className = 'table-cell';
-        cell.textContent = item[key];
-        row.appendChild(cell);
-      });
-
-      // 添加操作单元格
-      const actionsCell = document.createElement('div');
-      actionsCell.className = 'table-cell actions-cell';
-      const detailBtn = document.createElement('span');
-      detailBtn.className = 'button';
-      detailBtn.textContent = '详情';
-      detailBtn.onclick = () => console.log('详情 clicked');
-      const deleteBtn = document.createElement('span');
-      deleteBtn.className = 'button';
-      deleteBtn.textContent = '删除';
-      deleteBtn.onclick = () => console.log('删除 clicked');
-      actionsCell.appendChild(detailBtn);
-      actionsCell.appendChild(deleteBtn);
-      row.appendChild(actionsCell);
-
-      container.appendChild(row);
-    });
+<style>
+  * {
+    font-family: sans-serif;
   }
 
-  // 初始化表格
-  generateTable(backendData.slice(0, 10)); // 限制每页最多10行
-</script>
+  .content-table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    min-width: 400px;
+    border-radius: 5px 5px 0 0;
+    overflow: hidden;
+    /*box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);/*阴影*/
+  }
+
+  .content-table thead tr {
+    background-color: #3a7afe;
+    color: #ffffff;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .content-table th {
+    background-image: url('../static/image/updown.svg');
+    /* 设置背景图像 */
+    background-size: 16px;
+    /* 背景图像大小 */
+    background-repeat: no-repeat;
+    /* 不重复背景图像 */
+    background-position: right center;
+    /* 定位背景图像到单元格右侧中间 */
+    cursor: pointer;
+    /* 将鼠标光标改为手指形状，表示可以点击 */
+    /*颜色*/
+    color: #ffffff;
+  }
+
+  .content-table th,
+  .content-table td {
+    padding: 12px 15px;
+  }
+
+  .content-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+    color: #3f3ba2;
+    text-align: center;
+  }
+
+  .content-table tbody tr:last-of-type {
+    border-bottom: 2px solid #3a7afe;
+    /*最后一行加粗*/
+  }
+
+  .name-cell a {
+    text-decoration: none;
+    /* 移除下划线 */
+    color: inherit;
+    /* 继承父元素的文字颜色 */
+  }
+
+
+  .name-cell a:hover {
+    color: #3a7afe;
+  }
+  .cascader select {
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    color: #333333;
+    padding: 5px;
+  }
+
+  
+
+  .group {
+        display: flex;
+        line-height: 28px;
+        align-items: center;
+        position: relative;
+        max-width: 190px;
+
+        .input {
+            width: 100%;
+            height: 40px;
+            line-height: 28px;
+            padding: 0 1rem;
+            padding-left: 2.5rem;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            outline: none;
+            background-color: #f3f3f4;
+            color: #89879f;
+            transition: 0.3s ease;
+        }
+
+        .input::placeholder {
+            color: #9e9ea7;
+        }
+
+        .input:focus,
+        input:hover {
+            outline: none;
+            border-color: rgba(88, 128, 219, 0.4);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(3, 3, 224, 0.1);
+        }
+
+        .icon {
+            position: relative;
+            left: 2rem;
+            fill: #7272ae;
+            width: 1rem;
+            height: 1rem;
+
+        }
+
+    }
+
+    
+  /*鼠标悬停时字体加粗*/
+  /* .content-table tbody tr:hover {
+    font-weight: bold;
+    color: #3a7afe;
+  } */
+  /* 这是斑马条纹，小杜不喜欢 */
+  /* 
+  .content-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+  } */
+</style>
+
+<body>
+
+  <div class="cascader">
+    <div>行数
+      <select id="cascader">
+        <option value="category1">10</option>
+        <option value="category2">20</option>
+        <option value="category3">30</option>
+      </select>
+      <div>
+      </div>
+
+      <div class="container">
+        <div class="group">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
+                <g>
+                    <path
+                        d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z">
+                    </path>
+                </g>
+            </svg>
+            <input class="input" type="search" placeholder="Search" />
+        </div>
+
+    </div>
+
+    
+      <table class="content-table">
+        <thead>
+          <tr>
+           
+          </tr>
+        </thead>
+
+        <tbody id="tableBody"></tbody>
+      </table>
 </body>
+<script>
+  // 假设这是从后端获取的数据
+  const data = [
+      { rank: 1, name: 'Domenic', points: 10, progress: 0 },
+      { rank: 2, name: 'Drake', points: 9, progress: 0 },
+      { rank: 3, name: 'Drake1', points: 9, progress: 0 },
+    ];
+
+    // 创建表头
+    const tableHead = document.querySelector('thead tr');
+    const headers = Object.keys(data[0]); // 获取第一个数据对象的所有属性作为表头
+    headers.forEach(header => {
+      const th = document.createElement('th');
+      th.textContent = header;
+      tableHead.appendChild(th);
+    });
+
+    // 创建表格行
+    data.forEach(item => {
+      const row = document.createElement('tr');
+      headers.forEach(header => {
+        const td = document.createElement('td');
+        td.textContent = item[header]; // 设置单元格内容
+        row.appendChild(td);
+      });
+      document.getElementById('tableBody').appendChild(row);
+    });
+</script>
+
 </html>
