@@ -174,6 +174,8 @@
 
         <tbody id="tableBody"></tbody>
       </table>
+    </div>
+  </div>
 </body>
 <script>
   // 假设这是从后端获取的数据
@@ -182,26 +184,59 @@
       { rank: 2, name: 'Drake', points: 9, progress: 0 },
       { rank: 3, name: 'Drake1', points: 9, progress: 0 },
     ];
+  //需要制定url、'GET'或'POST'、请求数据,用Map类型表示
+  function fetchDataToTable(url,method, requestData) {
+      let responseData={}
+      method=method.toUpperCase();
+      fetch(url,{
+          method: method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer '+localStorage.getItem('token')
+          },
+          body: JSON.stringify(requestData)
+      }).then(response => response.json())
+     .then(data => {
+        for(let key in data){
+            //遍历并寻找到值为列表的属性
+            let value=data[key];
+            if(Array.isArray(value)){
+                //列表中的每一项都是map对象
+                value.forEach(mapItem=>{
+                    for(let key2 in mapItem){
+                        responseData[key2]=mapItem[key2];
+                    }
+                })
+            }
+        }
+        createTable(responseData);
+      }).catch(error => console.error(error));
+  }
+    function createTable(data) {
+        // 清空表格内容
+        document.getElementById('tableBody').innerHTML = '';
+        // 创建表头
+        const tableHead = document.querySelector('thead tr');
+        const headers = Object.keys(data[0]); // 获取第一个数据对象的所有属性作为表头
+        headers.forEach(header => {
+            const th = document.createElement('th');
+            th.textContent = header;
+            tableHead.appendChild(th);
+        });
 
-    // 创建表头
-    const tableHead = document.querySelector('thead tr');
-    const headers = Object.keys(data[0]); // 获取第一个数据对象的所有属性作为表头
-    headers.forEach(header => {
-      const th = document.createElement('th');
-      th.textContent = header;
-      tableHead.appendChild(th);
-    });
+        // 创建表格行
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            headers.forEach(header => {
+                const td = document.createElement('td');
+                td.textContent = item[header]; // 设置单元格内容
+                row.appendChild(td);
+            });
+            document.getElementById('tableBody').appendChild(row);
+        });
+    }
+    createTable(data);
 
-    // 创建表格行
-    data.forEach(item => {
-      const row = document.createElement('tr');
-      headers.forEach(header => {
-        const td = document.createElement('td');
-        td.textContent = item[header]; // 设置单元格内容
-        row.appendChild(td);
-      });
-      document.getElementById('tableBody').appendChild(row);
-    });
 </script>
 
 </html>
