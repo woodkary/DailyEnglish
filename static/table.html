@@ -168,10 +168,7 @@
       <table class="content-table">
         <thead>
           <tr>
-            <th>Rank</th>
-            <th>Name</th>
-            <th>Points</th>
-            <th>Progress</th>
+           
           </tr>
         </thead>
 
@@ -181,22 +178,30 @@
 <script>
   // 假设这是从后端获取的数据
   const data = [
-    { rank: 1, name: 'Domenic', points: 10, progress: 0 },
-    { rank: 2, name: 'Drake', points: 9, progress: 0 },
-    { rank: 3, name: 'Drake1', points: 9, progress: 0 },
-  ];
+      { rank: 1, name: 'Domenic', points: 10, progress: 0 },
+      { rank: 2, name: 'Drake', points: 9, progress: 0 },
+      { rank: 3, name: 'Drake1', points: 9, progress: 0 },
+    ];
 
-  // 动态生成表格行
-  data.forEach((item) => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${item.rank}</td>
-      <td class="name-cell"><a href="#">${item.name}</a></td>
-      <td>${item.points}</td>
-      <td>${item.progress}</td>
-    `;
-    document.getElementById('tableBody').appendChild(row);
-  });
+    // 创建表头
+    const tableHead = document.querySelector('thead tr');
+    const headers = Object.keys(data[0]); // 获取第一个数据对象的所有属性作为表头
+    headers.forEach(header => {
+      const th = document.createElement('th');
+      th.textContent = header;
+      tableHead.appendChild(th);
+    });
+
+    // 创建表格行
+    data.forEach(item => {
+      const row = document.createElement('tr');
+      headers.forEach(header => {
+        const td = document.createElement('td');
+        td.textContent = item[header]; // 设置单元格内容
+        row.appendChild(td);
+      });
+      document.getElementById('tableBody').appendChild(row);
+    });
 </script>
 
 </html>
