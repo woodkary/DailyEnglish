@@ -35,39 +35,100 @@
     .darkmode--activated .card .title {
         color: #fff;
     }
-    .toast {
-        position: fixed;/*固定定位，建议别改*/
-        top: 50%;/*距离顶部，使用中修改*/
-        left: 50%;/*居中，使用中修改*/
-        transform: translate(-50%, -50%);/*可以修改*/
-        border: 1px solid #ddd;/*边框*/
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),/*下边阴影*/
-        4px 0 4px rgba(0, 0, 0, 0.1); /* 右边阴影 */
-        background-color: #ddd;/*背景色，使用中修改*/
-        display: flex;
-        transition: all 0.5s ease; /*添加过渡效果*/
-        width:400px;
-        color: black;/*字体颜色，使用中修改*/
-        padding: 10px 20px;/*内边距，使用中修改*/
-        border-radius: 5px;/*圆角，使用中修改*/
-        z-index: 9999;/*层级，不建议更改*/
-        text-align: center;/*文字居中，不建议更改*/
-    }
-    .toast #closeButton {
-        position: fixed;
-        top: 5px;
-        right: 5px;
-        width: 15px;/* 按钮的宽度 */
-        height: 15px; /* 按钮的高度 */
-        /* 其他样式，如背景色、边框等 */
-        background-image: url("./image/closeButton.svg");
-        background-size: cover;
+    .toast{
+        position: absolute;
+        top: 25px;
+        right: 30px;
+        border-radius: 12px;
+        background: #fff;
+        padding: 20px 35px 20px 25px;
+        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        border-left: 6px solid #4070f4;
+        overflow: hidden;
+        transform: translateX(calc(100% + 30px));
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.35);
     }
 
-    .darkmode--activated .toast {
-        background-color: #111;
-        color: #fff;
+    .toast.active{
+        transform: translateX(0%);
     }
+
+    .toast .toast-content{
+        display: flex;
+        align-items: center;
+    }
+
+    .toast-content .check{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 35px;
+        width: 35px;
+        background-color: #4070f4;
+        color: #fff;
+        font-size: 20px;
+        border-radius: 50%;
+    }
+
+    .toast-content .message{
+        display: flex;
+        flex-direction: column;
+        margin: 0 20px;
+    }
+
+    .message .text{
+        font-size: 20px;
+        font-weight: 400;;
+        color: #666666;
+    }
+
+    .message .text.text-1{
+        font-weight: 600;
+        color: #333;
+    }
+
+    .toast .close{
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        padding: 5px;
+        cursor: pointer;
+        opacity: 0.7;
+    }
+
+    .toast .close:hover{
+        opacity: 1;
+    }
+
+    .toast .progress{
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        width: 100%;
+        background: #ddd;
+    }
+
+    .toast .progress:before{
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        height: 100%;
+        width: 100%;
+        background-color: #4070f4;
+    }
+
+    .progress.active:before{
+        animation: progress 5s linear forwards;
+    }
+
+    @keyframes progress {
+        100%{
+            right: 100%;
+        }
+    }
+
 
 </style>
 <link rel="stylesheet" href="./css/sidebar.css">
@@ -77,6 +138,7 @@
 <link rel="stylesheet" href="./css/zebra-table.css">
 <link rel="stylesheet" href="css/table-borderless.css">
 <link rel="stylesheet" href="css/wu-hang-table.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
 
 <body>
 <div class="navbar">
@@ -252,8 +314,18 @@
         </div>
     </div>
 <!-- 弹窗-->
-    <div class="toast" id="toast" style="visibility: hidden">
+    <div class="toast">
+        <div class="toast-content">
+            <i class="fas fa-solid fa-check check"></i>
 
+            <div class="message" id="toast">
+                <span class="text text-1">标题</span>
+                <span class="text text-2">内容内容内容内容内容内容</span>
+            </div>
+        </div>
+        <i class="fa-solid fa-xmark close"></i>
+
+        <div class="progress"></div>
     </div>
 
 
@@ -381,12 +453,7 @@
     function getSignInDetailsToast(){
         console.log("签到详情");
         let toast = document.getElementById('toast');
-        toast.innerHTML = '<button id="closeButton"></button>' +
-            '<div class="wu-hang-table" id="signInToastContent"></div>';
-        const closeButton = document.getElementById('closeButton');
-        closeButton.addEventListener('click', function() {
-            toast.style.visibility = "hidden";
-        });
+        toast.innerHTML = '<div class="wu-hang-table" id="signInToastContent"></div>';
         console.log(localStorage.getItem('token'));
         let url="http://localhost:8080/api/team_manage/index/sign_in_details";
         fetch(url,{
@@ -430,12 +497,8 @@
     document.getElementById('latest-exam').addEventListener('click', createExamTableToast);
     function createExamTableToast() {
         let toast = document.getElementById('toast');
-        toast.innerHTML ='<button id="closeButton"></button>' +
-            '<div id="exam-toast-content" class="table-borderless" style="margin-top: 10%;"></div>';
-        const closeButton = document.getElementById('closeButton');
-        closeButton.addEventListener('click', function() {
-            toast.style.visibility = "hidden";
-        });
+        toast.innerHTML = '<div id="exam-toast-content" class="table-borderless" style="margin-top: 10%;"></div>';
+
         let url = "http://localhost:8080/api/team_manage/exam_situation/data";
 
         fetch(url, {
@@ -526,6 +589,35 @@
     document.getElementById('join-apply').addEventListener('click', function() {
         console.log("加入申请");
         window.location.href = "./review.html";
+    });
+// 弹窗动画效果
+    const buttons = document.getElementsByClassName("container"),
+        toast = document.querySelector(".toast")
+    closeIcon = document.querySelector(".close")
+    progress = document.querySelector(".progress");
+
+    let timer1, timer2;
+    //对所有按钮添加点击事件
+    for (let i = 0; i < buttons.length; i++) {
+        buttons[i].addEventListener("click", () => {
+            toast.classList.add("active");
+            progress.classList.add("active");
+
+            timer1 = setTimeout(() => {
+                progress.style.width = "100%";
+            })
+        })
+    }
+
+    closeIcon.addEventListener("click", () => {
+        toast.classList.remove("active");
+
+        setTimeout(() => {
+            progress.classList.remove("active");
+        }, 300);
+
+        clearTimeout(timer1);
+        clearTimeout(timer2);
     });
 </script>
 
