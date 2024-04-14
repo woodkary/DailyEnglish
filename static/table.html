@@ -184,9 +184,24 @@
       { rank: 2, name: 'Drake', points: 9, progress: 0 },
       { rank: 3, name: 'Drake1', points: 9, progress: 0 },
     ];
+  fetchDataToTable('http://localhost:8080/api/team_manage/exam_situation/exam_detail', 'POST', {exam_name:"我是傻逼"})
+  function getMapValue(data,responseData){
+      for(let key in data){
+          //遍历并寻找到值为列表的属性
+          let value=data[key];
+          if(Array.isArray(value)){
+              //列表中的每一项都是map对象
+              for(let i=0;i<value.length;i++) {
+                  responseData.push(value[i])
+              }
+          }else if(typeof value === 'object'){
+              getMapValue(value,responseData)
+          }
+      }
+  }
   //需要制定url、'GET'或'POST'、请求数据,用Map类型表示
   function fetchDataToTable(url,method, requestData) {
-      let responseData={}
+      let responseData=[]
       method=method.toUpperCase();
       fetch(url,{
           method: method,
@@ -194,22 +209,11 @@
             'Content-Type': 'application/json',
             'Authorization': 'Bearer '+localStorage.getItem('token')
           },
-          body: JSON.stringify(requestData)
+          body: method === 'GET' ? null : JSON.stringify(requestData)
       }).then(response => response.json())
      .then(data => {
-        for(let key in data){
-            //遍历并寻找到值为列表的属性
-            let value=data[key];
-            if(Array.isArray(value)){
-                //列表中的每一项都是map对象
-                value.forEach(mapItem=>{
-                    for(let key2 in mapItem){
-                        responseData[key2]=mapItem[key2];
-                    }
-                })
-            }
-        }
-        createTable(responseData);
+         getMapValue(data,responseData)
+         createTable(responseData);
       }).catch(error => console.error(error));
   }
     function createTable(data) {
@@ -235,7 +239,7 @@
             document.getElementById('tableBody').appendChild(row);
         });
     }
-    createTable(data);
+    /*createTable(data);*/
 
 </script>
 

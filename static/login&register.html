@@ -297,10 +297,10 @@
                     <i class="iconfont icon-bilibili-line"></i>
                 </div>
                 <span class="form_span">选择登录方式活电子邮箱登录</span>
-                <input type="text" class="form_input" placeholder="Email">
-                <input type="text" class="form_input" placeholder="Password">
+                <input type="text" class="form_input" id="username" placeholder="Username">
+                <input type="text" class="form_input" id="password" placeholder="Password">
                 <a class="form_link">忘记密码？</a>
-                <button class="form_button button submit">SIGN IN</button>
+                <button class="form_button button submit" onclick="login(event)">SIGN IN</button>
             </form>
         </div>
 
@@ -360,3 +360,4 @@
     window.addEventListener("load", shell);
 
 </script>
+<script src="./js/login.js"></script>
