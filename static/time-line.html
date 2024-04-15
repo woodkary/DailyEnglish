@@ -1,0 +1,68 @@
+<!--
+ * @Date: 2024-04-13 15:31:19
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<link rel="stylesheet" href="../static/css/time-line.css">
+
+<body>
+ <!-- 以下是时间线的图表
+      内容从span开始
+      文本可以写在span h4 h6 p里
+      信息的颜色可以通过修改timelint-badge的颜色来改变
+      主要有primary info danger success四种颜色，所以目前就做4个安排
+       -->
+  <div class="col-xl-4 col-xxl-4 col-lg-12 col-md-12">
+    <div class="card">
+      <div class="card-header border-0 pb-0">
+        <h4 class="card-title">考试安排</h4>
+      </div>
+      <div class="card-body p-0">
+        <div id="DZ_W_TimeLine1" class="widget-timeline dz-scroll style-1 px-4 ms-2 py-2 my-4" style="height:250px;">
+          <ul class="timeline">
+            <li>
+              <div class="timeline-badge primary"></div>
+              <a class="timeline-panel text-muted" href="#">
+                <span>2024/4/15</span>
+                <h6 class="mb-0">Youtube, a video-sharing website <strong class="text-primary">$500</strong>.</h6>
+              </a>
+            </li>
+            <li>
+              <div class="timeline-badge info">
+              </div>
+              <a class="timeline-panel text-muted" href="#">
+                <span>2024/4/16</span>
+                <h6 class="mb-0">New order placed <strong class="text-info">#XF-2356.</strong></h6>
+                <p class="mb-0">Quisque a consequat ante Sit...</p>
+              </a>
+            </li>
+            <li>
+              <div class="timeline-badge danger">
+              </div>
+              <a class="timeline-panel text-muted" href="#">
+                <span>2024/4/17</span>
+                <h6 class="mb-0">john just buy your product <strong class="text-warning">Sell $250</strong></h6>
+              </a>
+            </li>
+            <li>
+              <div class="timeline-badge success">
+              </div>
+              <a class="timeline-panel text-muted" href="#">
+                <span>2024/4/18</span>
+                <h6 class="mb-0">StumbleUpon is acquired by eBay. </h6>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
