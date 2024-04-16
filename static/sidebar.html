@@ -109,9 +109,16 @@
                         <span class="text" style=" margin-right: auto;">打卡进度</span>
                         <div class="skill-box">
 
-                            <span class="title">90%</span>
+                            <span class="title">团队1：</span>
                             <div class="skill-bar">
                                 <span class="skill-per html">
+                                    <span class="skill-text">90%</span>
+                                </span>
+                            </div>
+                            <span class="title">团队2：</span>
+                            <div class="skill-bar">
+                                <span class="skill-per html">
+                                    <span class="skill-text">90%</span>
                                 </span>
                             </div>
                         </div>
@@ -149,8 +156,8 @@
                                         <div class="timeline-badge primary"></div>
                                         <a class="timeline-panel text-muted" href="#">
                                             <span>2024/4/15</span>
-                                            <h6 class="mb-0">Youtube, a video-sharing website <strong
-                                                    class="text-primary">$500</strong>.</h6>
+                                            <h6 class="mb-0">考试题型：<strong
+                                                    class="text-primary">选择、填空</strong>.</h6>
                                         </a>
                                     </li>
                                     <li>
@@ -158,9 +165,9 @@
                                         </div>
                                         <a class="timeline-panel text-muted" href="#">
                                             <span>2024/4/16</span>
-                                            <h6 class="mb-0">New order placed <strong
-                                                    class="text-info">#XF-2356.</strong></h6>
-                                            <p class="mb-0">Quisque a consequat ante Sit...</p>
+                                            <h6 class="mb-0">考试题型：<strong
+                                                    class="text-info">选择</strong></h6>
+                                            <!-- <p class="mb-0">Quisque a consequat ante Sit...</p> -->
                                         </a>
                                     </li>
                                     <li>
@@ -168,8 +175,8 @@
                                         </div>
                                         <a class="timeline-panel text-muted" href="#">
                                             <span>2024/4/17</span>
-                                            <h6 class="mb-0">john just buy your product <strong
-                                                    class="text-warning">Sell $250</strong></h6>
+                                            <h6 class="mb-0">考试题型：<strong
+                                                    class="text-warning">填空</strong></h6>
                                         </a>
                                     </li>
                                     <li>
@@ -177,7 +184,8 @@
                                         </div>
                                         <a class="timeline-panel text-muted" href="#">
                                             <span>2024/4/18</span>
-                                            <h6 class="mb-0">StumbleUpon is acquired by eBay. </h6>
+                                            <h6 class="mb-0">考试题型：<strong
+                                                class="text-danger">填空</strong></h6>
                                         </a>
                                     </li>
                                 </ul>
@@ -194,22 +202,21 @@
 <style>
     .skill-box {
         width: 100%;
-        margin: 25px 0;
+        margin: 5px 0;
     }
 
     .skill-box .title {
         display: block;
-        font-size: 30px;
-        font-weight: 600;
+        font-size: 16px;
         color: #333;
-        margin-top: -10px;
+        margin-top: 20px;
     }
 
     .skill-box .skill-bar {
-        height: 8px;
+        height: 14px;
         width: 100%;
         border-radius: 6px;
-        margin-top: 6px;
+        margin-top: -15px;
         background: rgba(0, 0, 0, 0.1);
     }
 
@@ -224,6 +231,16 @@
         opacity: 0;
     }
 
+    .skill-bar .skill-per .skill-text {  
+    position: absolute; /* 使用绝对定位 */  
+    top: 50%; /* 垂直居中 */  
+    right: 5px; /* 与进度条右边缘保持一定距离 */  
+    transform: translateY(-50%); /* 垂直居中调整 */  
+    color: white; /* 文本颜色 */  
+    font-size: 12px; /* 文本大小 */  
+}
+
+  
     .skill-per.css {
         width: 70%;
         animation-delay: 0.1s;
@@ -269,7 +286,7 @@
         ],
         series: [
             {
-                name: 'Access From',
+                name: '打卡情况',
                 type: 'pie',
                 radius: ['40%', '70%'],
                 avoidLabelOverlap: false,
@@ -290,8 +307,8 @@
                 },
                 center: ['50%', '60%'],//设置饼图的位置
                 data: [
-                    { value: 484, name: 'Union Ads' },
-                    { value: 300, name: 'Video Ads' }
+                    { value: 484, name: '已打卡' },
+                    { value: 300, name: '未打卡' }
                 ]
             }
         ]
@@ -357,7 +374,7 @@
         },
         xAxis: {
             type: 'category',
-            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            data: ['4/15', '4/16', '4/17', '4/18', '4/19', '4/20', '4/21']
         },
         series
     };
