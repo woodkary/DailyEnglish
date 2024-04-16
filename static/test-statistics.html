@@ -14,72 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 </head>
 <style>
-    /* 添加斑马条纹样式 */
-    .table-container {
-        display: table;
-        width: 100%;
-        table-layout: fixed; /* 固定表布局，确保单元格大小固定 */
 
-        .table-row {
-            display: table-row;
-            background-color: #f2f2f2;
-            height: 20px; /* 设置每行的高度 */
-
-        }
-
-        .table-row:nth-child(odd) {
-            background-color: #ffffff;
-        }
-
-        .table-cell {
-            display: table-cell;
-            padding: 8px;
-            text-align: center;
-        }
-
-        .actions-cell {
-            text-align: center;
-        }
-
-        .button {
-            cursor: pointer;
-            padding: 5px 20px;
-            border: 1px solid #ccc;
-            /*border-radius: 5%;*/
-            color: #333;
-            text-decoration: none;
-            /* display: inline-block;行内块元素 */
-            background-color: #f2f2f2;
-            /*不换行*/
-            white-space: nowrap;
-            /*设置超出部分隐藏*/
-            overflow: hidden;
-            text-align: center;
-        }
-
-        .button:hover {
-            background-color: #f0f0f0;
-        }
-    }
-    .darkmode--activated .table-container .table-cell {
-        color: #fff;
-    }
-    .darkmode--activated .table-container .actions-cell {
-        background-color: #333;
-    }
-    .darkmode--activated .table-container .button {
-        background-color: #333;
-        color: #fff;
-    }
-    .darkmode--activated .table-container .button:hover {
-        background-color: #444;
-    }
-    .darkmode--activated .table-container .table-row {
-        background-color: #333;
-    }
-   .darkmode--activated .table-container .table-row:nth-child(odd) {
-        background-color: #333;
-    }
 </style>
 
 <body>
@@ -155,122 +90,202 @@
             <img src="image/pikachu.jpg" alt="">
         </div>
 
-        
-    </section>
-        
-    </section>
-    <h2 style="margin-left: 300px">学习情况 > 考试情况</h2>
-    <div class="membership">
-        <!-- <h2>这是页面模板</h2>
-    <p>这部分是页面的主要内容。</p> -->
-        <div class="organization-info">
-
-            <div style="display: flex; justify-content: space-between;">
-                <div class="left-col">
-                    <div class="organization-name"style="margin-left:-20px">春田花花幼稚园</div>
-                    <text class="exam" style="margin-left:-20px;">第一学期第二单元小测</text>
+        <div class="dash-content">
+            <div class="filter-container"
+                style="margin-top: 40px;background: white;height: 150px;margin-left: 20px;border-radius: 15px;">
+                <div class="filter-box" style="border-bottom: 1px solid #eeeeee;height: 60px;display:flex;">
+                    <span
+                        style="width:100%;margin-top: 10px; margin-left: 20px; font-size: 23px; color: #3a7afe; display: flex; align-items: center;">
+                        <img src="./image/filter.svg" style="width: 24px;">
+                        <span style="margin-right: auto;">Filter</span>
+                        <img src="./image/updown.svg"
+                            style="width: 24px; background-color: #3a7afe;margin-right: 20px;">
+                    </span>
                 </div>
-                <div class="right-col">
-                    <div style="width: 100%; max-height: 20%">
-                        <div class="search-container" style="margin-right: 40px;">
-                            <input type="text" class="search-input" placeholder="搜索成员...">
-                            <img src="./image/搜索图标.png" alt="Search" class="search-icon">
+                <div class="filter" style="display: flex; padding: 20px;">
+                    <div class="container" style="display: flex;align-items: center;">
+                        <div class="group">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
+                                <g>
+                                    <path
+                                        d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z">
+                                    </path>
+                                </g>
+                            </svg>
+                            <input class="input" type="search" placeholder="Search" />
                         </div>
 
+                        <select name="category" id="category" style="height: 40px; margin-left: 30px;">
+                            <option value="category1">Category 1</option>
+                            <option value="category2">Category 2</option>
+                            <option value="category3">Category 3</option>
+                        </select>
+
+                        <select name="category" id="category" style="height: 40px; margin-left: 30px;">
+                            <option value="category1">Category 1</option>
+                            <option value="category2">Category 2</option>
+                            <option value="category3">Category 3</option>
+                        </select>
+
+                        <select name="category" id="category" style="height: 40px; margin-left: 30px;">
+                            <option value="category1">Category 1</option>
+                            <option value="category2">Category 2</option>
+                            <option value="category3">Category 3</option>
+                        </select>
                     </div>
+
                 </div>
             </div>
-        </div>
-        <img src="./image/线条%201.png" alt="线条" style="margin-top: 2%; width: 100%">
-        <!--<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <line x1="0" y1="10" x2="60" y2="10" style="stroke:rgb(0,0,0);stroke-width:2;width"></line>
-    </svg>-->
-        <div id="table-container" class="table-container"></div>
 
-        <div class="pagination" id="pagination">
-            <!-- 分页按钮 -->
-            <button>&lt;</button>
-            <button>1</button>
-            <button>2</button>
-            <button>3</button>
-            <button>4</button>
-            <button>5</button>
-            <button>&gt;</button>
-
+            <div class="chart-container" >
+                <div class="chart-title">6.16考试情况</div>
+                <div  id="main" style="width:400px;height:300px ;">                </div>
+            </div>
         </div>
-    </div>
+    </section>
+
+
+
 </body>
 <script src="./js/Navbar.js"></script>
 <script src="./js/sidebar.js"></script>
 <script src="./js/test-statistics.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.0/lib/darkmode-js.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.0/lib/darkmode-js.min.js"></script> -->
 <script>
-    var options = {
-        bottom: '64px', // default: '32px'
-        right: 'unset', // default: '32px'
-        left: '32px', // default: 'unset'
-        time: '0.3s', // default: '0.3s'
-        mixColor: '#fff', // default: '#fff'
-        backgroundColor: '#fff',  // default: '#fff'
-        buttonColorDark: '#100f2c',  // default: '#100f2c'
-        buttonColorLight: '#fff', // default: '#fff'
-        saveInCookies: false, // default: true,
-        label: '', // default: ''
-        autoMatchOsTheme: true // default: true
-    }
-    new Darkmode(options).showWidget();
+    var chartDom = document.getElementById('main');
+    var myChart = echarts.init(chartDom);
+    var option;
 
-    // 模拟后端数据
-    const backendData = [
-        { nickname: 'John Doe', teamPermission: 'Admin', joinDate: '2023-01-01', totalCheckIns: 100 },
+    option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            top:'10%',
+            bottom: '10%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value',
+            boundaryGap: [0, 0.01]
+        },
+        yAxis: {
+            type: 'category',
+            data: ['F', 'E', 'D', 'C', 'B', 'A']
+        },
+        series: [
+            {
+                name: '6.16',
+                type: 'bar',
+                data: [1, 5, 12, 21, 14, 6],
+                itemStyle: {
+                    color: '#4e88fe'
+                }
+            }
+        ]
+    };
 
-    ];
-
-    function generateTable(data) {
-        const container = document.getElementById('table-container');
-        container.innerHTML = ''; // 清空容器
-
-        // 生成表头
-        const headerRow = document.createElement('div');
-        headerRow.className = 'table-row';
-        const headers = ['昵称', '是否参加考试', '考试成绩', '错题数', '操作'];
-        headers.forEach(headerText => {
-            const headerCell = document.createElement('div');
-            headerCell.className = 'table-cell';
-            headerCell.textContent = headerText;
-            headerRow.appendChild(headerCell);
-        });
-        container.appendChild(headerRow);
-
-        // 生成行
-        data.forEach(item => {
-            const row = document.createElement('div');
-            row.className = 'table-row';
-
-            Object.keys(item).forEach(key => {
-                const cell = document.createElement('div');
-                cell.className = 'table-cell';
-                cell.textContent = item[key];
-                row.appendChild(cell);
-            });
-
-            // 添加操作单元格
-            const actionsCell = document.createElement('div');
-            actionsCell.className = 'table-cell actions-cell';
-            const detailBtn = document.createElement('span');
-            detailBtn.classList.add('button');
-            detailBtn.textContent = '详情';
-            detailBtn.onclick = () => console.log('详情 clicked');
-
-            actionsCell.appendChild(detailBtn);
-            row.appendChild(actionsCell);
-
-            container.appendChild(row);
-        });
-    }
-
-    // 初始化表格
-    generateTable(backendData.slice(0, 10)); // 限制每页最多10行
+    option && myChart.setOption(option);
 </script>
+<style>
+    .group {
+        display: flex;
+        line-height: 28px;
+        align-items: center;
+        position: relative;
+        max-width: 190px;
+
+        .input {
+            width: 100%;
+            height: 40px;
+            line-height: 28px;
+            padding: 0 1rem;
+            padding-left: 2.5rem;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            outline: none;
+            color: #89879f;
+            transition: 0.3s ease;
+            border-color: #d7dae3;
+        }
+
+        .input::placeholder {
+            color: #9e9ea7;
+        }
+
+        .input:focus,
+        input:hover {
+            outline: none;
+            border-color: #9dbdff;
+            background-color: #fff;
+        }
+
+        .icon {
+            position: relative;
+            left: 2rem;
+            width: 1rem;
+            height: 1rem;
+
+        }
+
+    }
+
+    #category {
+        height: 40px;
+        width: 150px;
+        margin-left: 20px;
+        font-size: 13px;
+        font-weight: 400;
+        padding: 8px;
+        border: 1px solid #d7dae3;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #7e7e7e;
+        outline: none;
+        /* 去除默认的聚焦边框 */
+    }
+
+    #category:hover,
+    #category:focus {
+        border-color: #9dbdff;
+        /* 鼠标悬停和聚焦时改变边框颜色 */
+    }
+
+    /* 鼠标悬停在选项上时的样式 */
+    #category option:hover {
+        background-color: #f0f0f0;
+        /* 悬停时的背景颜色 */
+    }
+
+    /* 选中的选项样式 */
+    #category option:checked {
+        background-color: #6e93f7;
+        /* 选中时的背景颜色 */
+        color: #fff;
+        /* 选中时的文字颜色 */
+    }
+
+    .chart-container{
+        margin-left: 20px;
+        margin-top: 20px;
+        width: 400px;
+        height: 330px;
+        background-color: white;
+        padding-top:20px;
+        border-radius: 15px;
+    }
+    .chart-container .chart-title{
+        font-size: 20px;
+        font-weight: 600;
+        color: #3a7afe;
+        margin-left: 20px;
+    }
+</style>
 
 </html>
