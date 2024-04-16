@@ -9,7 +9,7 @@
 
 :root{
     /* ===== Colors ===== */
-    --primary-color: #fff;
+    --primary-color: #dad8d8;
     --panel-color: #FFF;
     --text-color: #000;
     --black-light-color: #707070;
@@ -19,6 +19,9 @@
     --box2-color: #FFE6AC;
     --box3-color: #E7D1FC;
     --title-icon-color: #fff;
+    /*--xxx: #000000FF;*/
+    /*使用示例——background-color: var(--xxx)*/
+
 
     /* ====== Transition ====== */
     --tran-05: all 0.5s ease;
@@ -37,10 +40,11 @@ body.dark{
     --black-light-color: #CCC;
     --border-color: #4D4C4C;
     --toggle-color: #FFF;
-    --box1-color: #3A3B3C;
-    --box2-color: #3A3B3C;
-    --box3-color: #3A3B3C;
+    --box1-color: #4da3ff;
+    --box2-color: #ffe6ac;
+    --box3-color: #e7d1fc;
     --title-icon-color: #CCC;
+    --box-text-color: #000000FF
 }
 /* === Custom Scroll Bar CSS === */
 ::-webkit-scrollbar {
@@ -209,7 +213,7 @@ body.dark .switch:before{
 .dashboard{
     position: relative;
     left: 250px;
-    background-color: var(--panel-color);
+    background-color: var(--primary-color);
     min-height: 100vh;
     width: calc(100% - 250px);
     padding: 10px 14px;
@@ -318,18 +322,18 @@ nav.close ~ .dashboard .top{
 }
 .boxes .box i{
     font-size: 35px;
-    color: var(--text-color);
+    color: var(--box-text-color);
 }
 .boxes .box .text{
     white-space: nowrap;
     font-size: 18px;
     font-weight: 500;
-    color: var(--text-color);
+    color: var(--box-text-color);
 }
 .boxes .box .number{
     font-size: 40px;
     font-weight: 500;
-    color: var(--text-color);
+    color: var(--box-text-color);
 }
 .boxes .box.box2{
     background-color: var(--box2-color);
