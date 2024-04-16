@@ -72,6 +72,7 @@
   .name-cell a:hover {
     color: #3a7afe;
   }
+
   .cascader select {
     border: 1px solid #cccccc;
     border-radius: 5px;
@@ -79,53 +80,53 @@
     padding: 5px;
   }
 
-  
+
 
   .group {
-        display: flex;
-        line-height: 28px;
-        align-items: center;
-        position: relative;
-        max-width: 190px;
+    display: flex;
+    line-height: 28px;
+    align-items: center;
+    position: relative;
+    max-width: 190px;
 
-        .input {
-            width: 100%;
-            height: 40px;
-            line-height: 28px;
-            padding: 0 1rem;
-            padding-left: 2.5rem;
-            border: 2px solid transparent;
-            border-radius: 8px;
-            outline: none;
-            background-color: #f3f3f4;
-            color: #89879f;
-            transition: 0.3s ease;
-        }
+    .input {
+      width: 100%;
+      height: 40px;
+      line-height: 28px;
+      padding: 0 1rem;
+      padding-left: 2.5rem;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      outline: none;
+      background-color: #f3f3f4;
+      color: #89879f;
+      transition: 0.3s ease;
+    }
 
-        .input::placeholder {
-            color: #9e9ea7;
-        }
+    .input::placeholder {
+      color: #9e9ea7;
+    }
 
-        .input:focus,
-        input:hover {
-            outline: none;
-            border-color: rgba(88, 128, 219, 0.4);
-            background-color: #fff;
-            box-shadow: 0 0 0 4px rgba(3, 3, 224, 0.1);
-        }
+    .input:focus,
+    input:hover {
+      outline: none;
+      border-color: rgba(88, 128, 219, 0.4);
+      background-color: #fff;
+      box-shadow: 0 0 0 4px rgba(3, 3, 224, 0.1);
+    }
 
-        .icon {
-            position: relative;
-            left: 2rem;
-            fill: #7272ae;
-            width: 1rem;
-            height: 1rem;
-
-        }
+    .icon {
+      position: relative;
+      left: 2rem;
+      fill: #7272ae;
+      width: 1rem;
+      height: 1rem;
 
     }
 
-    
+  }
+
+
   /*鼠标悬停时字体加粗*/
   /* .content-table tbody tr:hover {
     font-weight: bold;
@@ -152,23 +153,23 @@
 
       <div class="container">
         <div class="group">
-            <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
-                <g>
-                    <path
-                        d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z">
-                    </path>
-                </g>
-            </svg>
-            <input class="input" type="search" placeholder="Search" />
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
+            <g>
+              <path
+                d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z">
+              </path>
+            </g>
+          </svg>
+          <input class="input" type="search" placeholder="Search" />
         </div>
 
-    </div>
+      </div>
 
-    
+
       <table class="content-table">
         <thead>
           <tr>
-           
+
           </tr>
         </thead>
 
@@ -180,66 +181,66 @@
 <script>
   // 假设这是从后端获取的数据
   const data = [
-      { rank: 1, name: 'Domenic', points: 10, progress: 0 },
-      { rank: 2, name: 'Drake', points: 9, progress: 0 },
-      { rank: 3, name: 'Drake1', points: 9, progress: 0 },
-    ];
-  fetchDataToTable('http://localhost:8080/api/team_manage/exam_situation/exam_detail', 'POST', {exam_name:"我是傻逼"})
-  function getMapValue(data,responseData){
-      for(let key in data){
-          //遍历并寻找到值为列表的属性
-          let value=data[key];
-          if(Array.isArray(value)){
-              //列表中的每一项都是map对象
-              for(let i=0;i<value.length;i++) {
-                  responseData.push(value[i])
-              }
-          }else if(typeof value === 'object'){
-              getMapValue(value,responseData)
-          }
+    { rank: 1, name: 'Domenic', points: 10, progress: 0 },
+    { rank: 2, name: 'Drake', points: 9, progress: 0 },
+    { rank: 3, name: 'Drake1', points: 9, progress: 0 },
+  ];
+  fetchDataToTable('http://localhost:8080/api/team_manage/exam_situation/exam_detail', 'POST', { exam_name: "我是傻逼" })
+  function getMapValue(data, responseData) {
+    for (let key in data) {
+      //遍历并寻找到值为列表的属性
+      let value = data[key];
+      if (Array.isArray(value)) {
+        //列表中的每一项都是map对象
+        for (let i = 0; i < value.length; i++) {
+          responseData.push(value[i])
+        }
+      } else if (typeof value === 'object') {
+        getMapValue(value, responseData)
       }
+    }
   }
   //需要制定url、'GET'或'POST'、请求数据,用Map类型表示
-  function fetchDataToTable(url,method, requestData) {
-      let responseData=[]
-      method=method.toUpperCase();
-      fetch(url,{
-          method: method,
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer '+localStorage.getItem('token')
-          },
-          body: method === 'GET' ? null : JSON.stringify(requestData)
-      }).then(response => response.json())
-     .then(data => {
-         getMapValue(data,responseData)
-         createTable(responseData);
+  function fetchDataToTable(url, method, requestData) {
+    let responseData = []
+    method = method.toUpperCase();
+    fetch(url, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('token')
+      },
+      body: method === 'GET' ? null : JSON.stringify(requestData)
+    }).then(response => response.json())
+      .then(data => {
+        getMapValue(data, responseData)
+        createTable(responseData);
       }).catch(error => console.error(error));
   }
-    function createTable(data) {
-        // 清空表格内容
-        document.getElementById('tableBody').innerHTML = '';
-        // 创建表头
-        const tableHead = document.querySelector('thead tr');
-        const headers = Object.keys(data[0]); // 获取第一个数据对象的所有属性作为表头
-        headers.forEach(header => {
-            const th = document.createElement('th');
-            th.textContent = header;
-            tableHead.appendChild(th);
-        });
+  function createTable(data) {
+    // 清空表格内容
+    document.getElementById('tableBody').innerHTML = '';
+    // 创建表头
+    const tableHead = document.querySelector('thead tr');
+    const headers = Object.keys(data[0]); // 获取第一个数据对象的所有属性作为表头
+    headers.forEach(header => {
+      const th = document.createElement('th');
+      th.textContent = header;
+      tableHead.appendChild(th);
+    });
 
-        // 创建表格行
-        data.forEach(item => {
-            const row = document.createElement('tr');
-            headers.forEach(header => {
-                const td = document.createElement('td');
-                td.textContent = item[header]; // 设置单元格内容
-                row.appendChild(td);
-            });
-            document.getElementById('tableBody').appendChild(row);
-        });
-    }
-    /*createTable(data);*/
+    // 创建表格行
+    data.forEach(item => {
+      const row = document.createElement('tr');
+      headers.forEach(header => {
+        const td = document.createElement('td');
+        td.textContent = item[header]; // 设置单元格内容
+        row.appendChild(td);
+      });
+      document.getElementById('tableBody').appendChild(row);
+    });
+  }
+  createTable(data);
 
 </script>
 
