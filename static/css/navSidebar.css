@@ -10,7 +10,7 @@
 :root{
     /* ===== Colors ===== */
     --primary-color: #1eaae7;
-    --panel-color: #fcfcfc;
+    --panel-color: #FFF;
     --text-color: #000;
     --black-light-color: #707070;
     --border-color: #e6e5e5;
@@ -20,6 +20,8 @@
     --box3-color: #E7D1FC;
     --title-icon-color: #fff;
     --dashboard-color:#f5f5f5;
+    /*--xxx: #000000FF;*/
+    /*使用示例——background-color: var(--xxx)*/
     /* ====== Transition ====== */
     --tran-05: all 0.5s ease;
     --tran-03: all 0.3s ease;
@@ -32,7 +34,7 @@ body{
 }
 body.dark{
     --primary-color: #3A3B3C;
-    --panel-color: #1e2746;
+    --panel-color: #242526;
     --text-color: #CCC;
     --black-light-color: #CCC;
     --border-color: #4D4C4C;
@@ -248,7 +250,6 @@ nav.close ~ .dashboard .top{
     max-width: 600px;
     width: 100%;
     margin: 0 30px;
-    background-color: var(--dashboard-color);
 }
 .top .search-box input{
     position: absolute;
@@ -258,7 +259,8 @@ nav.close ~ .dashboard .top{
     border-radius: 5px;
     height: 100%;
     width: 100%;
-    color: #7e7e7e;/*夜间模式没改*/
+    color: var(--text-color);
+    /*color: #7e7e7e;!*夜间模式没改*!*/
     font-size: 15px;
     font-weight: 400;
     outline: none;
@@ -317,15 +319,17 @@ nav.close ~ .dashboard .top{
     border-radius: 12px;
     width: calc(100% / 3 - 15px);
     padding: 15px 20px;
-    /* background-color: var(--box1-color); */
+    /*background-color: var(--box1-color);*/
     transition: var(--tran-05);
 }
 .boxes .box i{
     font-size: 35px;
-    /* color: var(--text-color); */
+    /*color: var(--text-color);*/
 }
 .boxes .box .text{
     white-space: nowrap;
+    /*font-size: 18px;
+    font-weight: 500;*/
     color: var(--black-light-color);
 }
 .boxes .box .number{

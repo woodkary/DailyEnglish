@@ -1,419 +1,389 @@
 <!DOCTYPE html>
+<!-- Coding By CodingNepal - codingnepalweb.com -->
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>首页</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!----======== CSS ======== -->
+    <link rel="stylesheet" href="./css/navSidebar.css">
+    <link rel="stylesheet" href="../static/css/time-line.css">
+
+    <!----===== Iconscout CSS ===== -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="css/wu-hang-table.css">
+
+    <title>Admin Dashboard Panel</title>
 </head>
-<style >
-    /*html[theme='dark-mode'] {
-        filter: invert(1) hue-rotate(180deg);
-    }*/
-    /*:root {
-        color-scheme: dark;
-    }*/
-    /* Card 容器样式 */
-    .card {
-        max-height: 300px;
-        margin-top: 30px;
-        padding: 20px;
-        /*内边距*/
-        display: flex;
-        flex-direction: column;
-        border: 1px solid #ddd;
-        /*边框*/
-        border-radius: 0px;
-        /*圆角设置*/
-        width: 400px;
-        height: 300px;
-        .title {
-            margin-top: 0px;
-        }
-        isolation: isolate;
+
+<body>
+<nav>
+    <div class="logo-name">
+        <!--        <div class="logo-image">
+        <img src="./image/little-edellweiss.regular.webp" alt="">
+    </div>-->
+
+        <span class="logo_name">DailyEnglish</span>
+    </div>
+
+    <div class="menu-items">
+        <ul class="nav-links">
+            <li><a href="index.html">
+                <i class="uil uil-estate"></i>
+                <span class="link-name">主页</span>
+            </a></li>
+            <li><a href="issuePunch.html">
+                <i class="uil uil-calendar-alt"></i>
+                <span class="link-name">打卡发布</span>
+            </a></li>
+            <li><a href="test-release.html">
+                <i class="uil uil-calender"></i>
+                <span class="link-name">考试发布</span>
+            </a></li>
+            <li><a href="test-statistics.html">
+                <i class="uil uil-chart"></i>
+                <span class="link-name">考试情况</span>
+            </a></li>
+            <li><a href="manage.html">
+                <i class="uil uil-meh-alt"></i>
+                <span class="link-name">成员管理</span>
+            </a></li>
+            <li><a href="review.html">
+                <i class="uil uil-message"></i>
+                <span class="link-name">申请审核</span>
+            </a></li>
+            <li><a href="#">
+                <i class="uil uil-user"></i>
+                <span class="link-name">个人中心</span>
+            </a></li>
+        </ul>
+
+        <ul class="logout-mode">
+            <li><a href="#">
+                <i class="uil uil-signout"></i>
+                <span class="link-name">Logout</span>
+            </a></li>
+
+            <li class="mode">
+                <a href="#">
+                    <i class="uil uil-moon"></i>
+                    <span class="link-name">Dark Mode</span>
+                </a>
+
+                <div class="mode-toggle">
+                    <span class="switch"></span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<section class="dashboard">
+    <div class="top">
+        <i class="uil uil-bars sidebar-toggle"></i>
+
+        <div class="search-box">
+            <i class="uil uil-search"></i>
+            <input type="text" placeholder="Search here...">
+        </div>
+
+        <img src="image/pikachu.jpg" alt="">
+    </div>
+
+    <div class="dash-content">
+        <div class="overview">
+            <div class="title">
+                <i class="uil uil-tachometer-fast-alt"></i>
+                <span class="text">Dashboard</span>
+            </div>
+
+            <div class="boxes">
+                <div class="box box1" style="background-color: white;">
+                    <span class="text" style=" margin-right: auto;">今日打卡情况</span>
+                    <div id="main" style="width: 200px;height:180px;"></div>
+                </div>
+                <div class="box box2" style="background-color: white; height: 230px;">
+                    <span class="text" style=" margin-right: auto;">打卡进度</span>
+                    <div class="skill-box">
+
+                        <span class="title">团队1：</span>
+                        <div class="skill-bar">
+                                <span class="skill-per html">
+                                    <span class="skill-text">90%</span>
+                                </span>
+                        </div>
+                        <span class="title">团队2：</span>
+                        <div class="skill-bar">
+                                <span class="skill-per html">
+                                    <span class="skill-text">90%</span>
+                                </span>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="box box3" style="background-color: white;height: 230px;">
+                    <div class="text" style=" margin-right: auto;">最近通知</div>
+                    <div class="wu-hang-table" id="info-table" style="margin-top:5px">
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="activity">
+            <div class="title">
+                <i class="uil uil-clock-three"></i>
+                <span class="text">Recent Activity</span>
+            </div>
+            <div style="display: flex;">
+                <div class="activity-data" style="background-color: white;display: inline-block;height: 390px;">
+                    <div class="text" style="margin-top: 20px;margin-left: 20px;">近期考试情况</div>
+                    <div id="main2" style="width: 650px;height:300px;"></div>
+                </div>
+                <div class="card" style="margin-left: 20px;">
+                    <div class="card-header border-0 pb-0" >
+                        <h4 class="card-title">考试安排</h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="DZ_W_TimeLine1" class="widget-timeline dz-scroll style-1 px-4 ms-2 py-2 my-4"
+                             style="height:300px;">
+                            <ul class="timeline">
+                                <li>
+                                    <div class="timeline-badge primary"></div>
+                                    <a class="timeline-panel text-muted" href="#">
+                                        <span>2024/4/15</span>
+                                        <h6 class="mb-0">考试题型：<strong
+                                                class="text-primary">选择、填空</strong>.</h6>
+                                    </a>
+                                </li>
+                                <li>
+                                    <div class="timeline-badge info">
+                                    </div>
+                                    <a class="timeline-panel text-muted" href="#">
+                                        <span>2024/4/16</span>
+                                        <h6 class="mb-0">考试题型：<strong
+                                                class="text-info">选择</strong></h6>
+                                        <!-- <p class="mb-0">Quisque a consequat ante Sit...</p> -->
+                                    </a>
+                                </li>
+                                <li>
+                                    <div class="timeline-badge danger">
+                                    </div>
+                                    <a class="timeline-panel text-muted" href="#">
+                                        <span>2024/4/17</span>
+                                        <h6 class="mb-0">考试题型：<strong
+                                                class="text-warning">填空</strong></h6>
+                                    </a>
+                                </li>
+                                <li>
+                                    <div class="timeline-badge success">
+                                    </div>
+                                    <a class="timeline-panel text-muted" href="#">
+                                        <span>2024/4/18</span>
+                                        <h6 class="mb-0">考试题型：<strong
+                                                class="text-danger">填空</strong></h6>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="./js/navSidebar.js"></script>
+</body>
+<style>
+    .skill-box {
+        width: 100%;
+        margin: 5px 0;
     }
 
-    .darkmode--activated .card .title {
-        color: #fff;
-    }
-    .toast{
-        position: absolute;
-        top: 25px;
-        right: 30px;
-        border-radius: 12px;
-        background: #fff;
-        padding: 20px 35px 20px 25px;
-        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-        border-left: 6px solid #4070f4;
-        overflow: hidden;
-        transform: translateX(calc(100% + 30px));
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.35);
-    }
-
-    .toast.active{
-        transform: translateX(0%);
-    }
-
-    .toast .toast-content{
-        display: flex;
-        align-items: center;
-    }
-
-    .toast-content .check{
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 35px;
-        width: 35px;
-        background-color: #4070f4;
-        color: #fff;
-        font-size: 20px;
-        border-radius: 50%;
-    }
-
-    .toast-content .message{
-        display: flex;
-        flex-direction: column;
-        margin: 0 20px;
-    }
-
-    .message .text{
-        font-size: 20px;
-        font-weight: 400;;
-        color: #666666;
-    }
-
-    .message .text.text-1{
-        font-weight: 600;
+    .skill-box .title {
+        display: block;
+        font-size: 16px;
         color: #333;
+        margin-top: 20px;
     }
 
-    .toast .close{
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        padding: 5px;
-        cursor: pointer;
-        opacity: 0.7;
-    }
-
-    .toast .close:hover{
-        opacity: 1;
-    }
-
-    .toast .progress{
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        height: 3px;
+    .skill-box .skill-bar {
+        height: 14px;
         width: 100%;
-        background: #ddd;
+        border-radius: 6px;
+        margin-top: -15px;
+        background: rgba(0, 0, 0, 0.1);
     }
 
-    .toast .progress:before{
-        content: '';
-        position: absolute;
-        bottom: 0;
-        right: 0;
+    .skill-bar .skill-per {
+        position: relative;
+        display: block;
         height: 100%;
-        width: 100%;
-        background-color: #4070f4;
+        width: 90%;
+        border-radius: 6px;
+        background: #77cbf0;
+        animation: progress 0.4s ease-in-out forwards;
+        opacity: 0;
     }
 
-    .progress.active:before{
-        animation: progress 5s linear forwards;
+    .skill-bar .skill-per .skill-text {
+        position: absolute; /* 使用绝对定位 */
+        top: 50%; /* 垂直居中 */
+        right: 5px; /* 与进度条右边缘保持一定距离 */
+        transform: translateY(-50%); /* 垂直居中调整 */
+        color: white; /* 文本颜色 */
+        font-size: 12px; /* 文本大小 */
+    }
+
+
+    .skill-per.css {
+        width: 70%;
+        animation-delay: 0.1s;
+    }
+
+    .skill-per.javascript {
+        width: 50%;
+        animation-delay: 0.2s;
+    }
+
+    .skill-per.nodejs {
+        width: 30%;
+        animation-delay: 0.3s;
     }
 
     @keyframes progress {
-        100%{
-            right: 100%;
+        0% {
+            width: 0;
+            opacity: 1;
+        }
+
+        100% {
+            opacity: 1;
         }
     }
-
-
 </style>
-<link rel="stylesheet" href="./css/sidebar.css">
-<link rel="stylesheet" href="./css/myNavbar.css">
-<!-- <link rel="stylesheet" href="./css/card.css"> -->
-<link rel="stylesheet" href="./css/index.css">
-<link rel="stylesheet" href="./css/zebra-table.css">
-<link rel="stylesheet" href="css/table-borderless.css">
-<link rel="stylesheet" href="css/wu-hang-table.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+<script type="text/javascript">
 
-<body>
-<div class="navbar">
-    <div class="navbar-left">
-        <img src="./image/little-edellweiss.regular.webp" class="brand-logo">
-    </div>
-    <div class="navbar-right">
-        <img src="./image/moon.svg" alt="夜间模式" id="moon" onclick="toggleMoon()" class="night-mode">
-        <button class="notifications">
-            <img src="./image/通知.svg">
-        </button>
+    var chartDom = document.getElementById('main');
+    var myChart = echarts.init(chartDom);
+    var option;
 
-        <div class="user-info">
-            <div>姓名</div>
-            <div>组织名称</div>
-        </div>
-        <div class="darkmode-ignored">
-            <img src="./image/pikachu.jpg" alt="头像" class="user-avatar">
-        </div>
-        <img src="./image/logout.svg" class="logout">
-    </div>
-</div>
-<div class="sidebar-container">
-    <div class="sidebar">
-        <div>
-            <a href="./index.html">
-                <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" style="isolation: isolate"
-                     viewBox="64 64 896 896">
-                    <path
-                            d="M946.5 505L560.1 118.8l-25.9-25.9a31.5 31.5 0 0 0-44.4 0L77.5 505a63.9 63.9 0 0 0-18.8 46c.4 35.2 29.7 63.3 64.9 63.3h42.5V940h691.8V614.3h43.4c17.1 0 33.2-6.7 45.3-18.8a63.6 63.6 0 0 0 18.7-45.3c0-17-6.7-33.1-18.8-45.2zM568 868H456V664h112v204zm217.9-325.7V868H632V640c0-22.1-17.9-40-40-40H432c-22.1 0-40 17.9-40 40v228H238.1V542.3h-96l370-369.7 23.1 23.1L882 542.3h-96.1z">
-                    </path>
-                </svg>
-                主页
-            </a>
-        </div>
-        <button class="dropdown-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" style="isolation: isolate"
-                 viewBox="64 64 896 896">
-                <path
-                        d="M928 160H96c-17.7 0-32 14.3-32 32v640c0 17.7 14.3 32 32 32h832c17.7 0 32-14.3 32-32V192c0-17.7-14.3-32-32-32zm-40 110.8V792H136V270.8l-27.6-21.5 39.3-50.5 42.8 33.3h643.1l42.8-33.3 39.3 50.5-27.7 21.5zM833.6 232L512 482 190.4 232l-42.8-33.3-39.3 50.5 27.6 21.5 341.6 265.6a55.99 55.99 0 0 0 68.7 0L888 270.8l27.6-21.5-39.3-50.5-42.7 33.2z">
-                </path>
-            </svg>
-            任务发布
-            <i class="fa fa-caret-down"></i>
-        </button>
-        <div class="dropdown-container">
-            <a href="issuePunch.html">打卡发布</a>
-            <a href="test-release.html">考试发布</a>
-        </div>
-        <button class="dropdown-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">" viewBox="64 64
-                896 896">
-                <path
-                        d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z">
-                </path>
-            </svg>
-            学习情况
-            <i class="fa fa-caret-down"></i>
-        </button>
-        <div class="dropdown-container">
-            <a href="test-statistics.html">考试情况</a>
-        </div>
-        <button class="dropdown-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" style="isolation: isolate"
-                 viewBox="64 64 896 896">" viewBox="64 64 896 896">
-                <path
-                        d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z">
-                </path>
-            </svg>
-            团队管理
-            <i class="fa fa-caret-down"></i>
-        </button>
-        <div class="dropdown-container">
-            <a href="manage.html">成员管理</a>
-            <a href="review.html">申请审核</a>
-        </div>
-        <a href="#contact">
-            <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">
-                <path
-                        d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z">
-                </path>
-            </svg>
-            个人中心
-        </a>
-    </div>
-</div>
-
-<div class="index">
-    <h2>首页</h2>
-    <div class="main_label">
-        欢迎来到英语每日练团队管理端(这里写通知)
-    </div>
-
-
-    <div class="test">
-        <div class="container" id="sign-in-details"
-             style="background-image: linear-gradient(120deg, #f093fb 0%, #f5576c 100%);">
-            <img class="darkmode-ignore" style="flex-shrink: 0;
-        width: 80px;
-        /* 图片宽度 */
-        height: 80px;
-        /* 图片高度 */
-        margin-right: 20px;
-        margin-top: 20px;" src="image/书架.png">
-            <div class="title">今日打卡</div>
-            <div class="count">45人</div>
-            <div class="details_1">查看详情</div>
-            <img class="details_2" src="./image/右圆圈箭头.svg"></img>
-        </div>
-        <div class="container" id="sign-in-rate"
-             style="background-image: linear-gradient(-225deg, #ff21bf 0%, #fc591d 100%);">
-            <img class="darkmode-ignore" style="flex-shrink: 0;
-        width: 80px;
-        /* 图片宽度 */
-        height: 80px;
-        /* 图片高度 */
-        margin-right: 20px;
-        margin-top: 20px;" src="image/沙漏.png">
-            <div class="title">打卡率</div>
-            <div class="count">45%</div>
-            <div class="details_1">查看详情</div>
-            <img class="details_2" src="./image/右圆圈箭头.svg"></img>
-        </div>
-
-        <div class="container" id="latest-exam"
-             style="background-image: linear-gradient(to right, #92fe9d 0%, #00c9ff 100%);">
-            <img class="darkmode-ignore" style="flex-shrink: 0;
-        width: 80px;
-        /* 图片宽度 */
-        height: 80px;
-        /* 图片高度 */
-        margin-right: 20px;
-        margin-top: 20px;" src="image/笔记本2.png">
-            <div class="title">最近考试</div>
-            <div class="count" id="latest-exam-date" style="margin-left: -50%;">3月25日</div>
-            <div class="details_1">查看详情</div>
-            <img class="details_2" src="./image/右圆圈箭头.svg"></img>
-        </div>
-
-        <div class="container" id="join-apply"
-             style="background-image: linear-gradient(-225deg, #22E1FF 0%, #1D8FE1 48%, #625EB1 100%);">
-            <img class="darkmode-ignore" style="flex-shrink: 0;
-        width: 80px;
-        /* 图片宽度 */
-        height: 80px;
-        /* 图片高度 */
-        margin-right: 20px;
-        margin-top: 20px;" src="image/笔记本.png">
-            <div class="title">加入申请</div>
-            <div class="count">45人</div>
-            <div class="details_1">查看详情</div>
-            <img class="details_2" src="./image/右圆圈箭头.svg"></img>
-        </div>
-    </div>
-    <div class="cardContainer">
-        <div class="card">
-            <div id="chart" style="width:400px; height: 300px;"></div>
-        </div>
-        <div class="card">
-            <div class="title" style="color:#E91D63;margin-bottom: 15px;">打卡排行榜</div>
-            <div id="daka-table" class="table-borderless"></div>
-        </div>
-        <div class="card">
-            <div class="title" style="color:#6200EE;margin-bottom: 15px;">考试排位</div>
-            <div id="exam-table" class="table-borderless"></div>
-        </div>
-
-        <div class="card">
-            <div class="title" style="color: #73D5A3;">最近通知</div>
-            <div class="wu-hang-table" id="info-table">
-
-            </div>
-        </div>
-    </div>
-<!-- 弹窗-->
-    <div class="toast">
-        <div class="toast-content">
-            <i class="fas fa-solid fa-check check"></i>
-
-            <div class="message" id="toast">
-                <span class="text text-1">标题</span>
-                <span class="text text-2">内容内容内容内容内容内容</span>
-            </div>
-        </div>
-        <i class="fa-solid fa-xmark close"></i>
-
-        <div class="progress"></div>
-    </div>
-
-
-</div>
-</body>
-<script src="./js/Navbar.js"></script>
-<script src="./js/sidebar.js"></script>
-<script src="https://cdn.staticfile.net/echarts/4.3.0/echarts.min.js"></script>
-<script src="./js/creatExamTable.js"></script>
-<script src="./js/createTableRow.js"></script>
-<script src="./js/createDaKaTable.js"></script>
-<script>
-    // 示例数据
-    let data = {
-        headers: ['成员', '打卡天数', '个人打卡率'],
-        rows: [
-            ['otto', '666', '87%'], ['otto', '666', '87%'],
-            ['otto', '666', '87%'], ['otto', '666', '87%'], ['otto', '666', '87%'], ['otto', '666', '87%']
-            // 更多数据行
+    option = {
+        tooltip: {
+            trigger: 'item'
+        },
+        legend: {
+            top: '5%',
+            left: 'center'
+        },
+        color: [
+            '#77cbf0', '#eaeaea',
+        ],
+        series: [
+            {
+                name: '打卡情况',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                avoidLabelOverlap: false,
+                padAngle: 5,
+                itemStyle: {
+                    borderRadius: 5
+                },
+                label: {
+                    show: false,
+                    position: 'center'
+                },
+                emphasis: { // 鼠标悬停时的高亮效果
+                    scale: true,
+                    itemStyle: {
+                        shadowOffsetX: 0,
+                        opacity: 0.8 // 高亮时的透明度
+                    }
+                },
+                center: ['50%', '60%'],//设置饼图的位置
+                data: [
+                    { value: 484, name: '已打卡' },
+                    { value: 300, name: '未打卡' }
+                ]
+            }
         ]
     };
 
-    // 调用函数创建表格
-    /*createDaKaTable(data);*/
-    fetchDataAndCreateTable("http://localhost:8080/api/team_manage/punch_statistics/data");
+    option && myChart.setOption(option);
+</script>
+<script>
+    var chartDom2 = document.getElementById('main2');
+    var myChart2 = echarts.init(chartDom2);
+    var option2;
 
-    let chartElement=document.getElementById('chart');
-    var chart = echarts.init(chartElement);// 初始化图表
-
-
-    // 数据
-    var chartdata = {
-        date: ['1月1日', '1月2日', '1月3日', '1月4日', '1月5日', '1月6日', '1月7日'],
-        barData: [49, 48, 37, 42, 48, 22, 48], // 柱状图数据
-        lineData: [40, 45, 32, 37, 43, 20, 45]  // 折线图数据
+    // There should not be negative values in rawData
+    const rawData = [
+        [100, 302, 301, 334, 390, 330, 320],
+        [320, 132, 101, 134, 90, 230, 210],
+        [220, 182, 191, 234, 290, 330, 310],
+        [150, 212, 201, 154, 190, 330, 410],
+        [820, 832, 901, 934, 1290, 1330, 1320]
+    ];
+    const totalData = [];
+    for (let i = 0; i < rawData[0].length; ++i) {
+        let sum = 0;
+        for (let j = 0; j < rawData.length; ++j) {
+            sum += rawData[j][i];
+        }
+        totalData.push(sum);
+    }
+    const grid = {
+        left: 50,
+        right: 50,
+        top: 50,
+        bottom: 20
     };
-
-    // 创建图表
-    chart.setOption({
-        tooltip: {
-            trigger: 'axis'// 鼠标悬浮提示
-        },
+    const series = [
+        '未参与',
+        '不及格',
+        '及格',
+        '良好',
+        '优秀'
+    ].map((name, sid) => {
+        return {
+            name,
+            type: 'bar',
+            stack: 'total',
+            barWidth: '60%',
+            label: {
+                show: true,
+                formatter: (params) => Math.round(params.value * 1000) / 10 + '%'
+            },
+            data: rawData[sid].map((d, did) =>
+                totalData[did] <= 0 ? 0 : (d / totalData[did])
+            )
+        };
+    });
+    option2 = {
         legend: {
-            data: ['打卡人数', '打卡率']
+            selectedMode: false
+        },
+        grid,
+        yAxis: {
+            type: 'value'
         },
         xAxis: {
             type: 'category',
-            data: chartdata.date,
+            data: ['4/15', '4/16', '4/17', '4/18', '4/19', '4/20', '4/21']
         },
-        yAxis: [
-            {
-                type: 'value',
-                name: '打卡人数',
-                position: 'left',
-                axisLine: {
-                    lineStyle: {
-                        color: '#409EFF'
-                    }
-                }
-            },
-            {
-                type: 'value',
-                name: '打卡率',
-                position: 'right',
-                axisLine: {
-                    lineStyle: {
-                        color: 'red'
-                    }
-                }
-            }],
-        series: [{
-            name: '打卡人数',
-            type: 'bar',
-            data: chartdata.barData,
-            yAxisIndex: 0,
-            color: '#409EFF'
-        }, {
-            name: '打卡率',
-            type: 'line',
-            data: chartdata.lineData,
-            yAxisIndex: 1,// 使用右边的坐标轴
-            color: 'red'
-        }]
-    });
-    // 调用函数创建表格
-    /*createExamTable(score_data);*/
-    getLatestExamNameAndRenderTable();
+        series
+    };
 
+    option2 && myChart2.setOption(option2);
+</script>
+<script src="./js/createTableRow.js"></script>
+
+<script>
     // 模拟后端数据
     const backendData = [
         { message: 'Success message', time: '2024-04-09 10:00:00' },
@@ -428,196 +398,6 @@
     backendData.forEach(data => {
         const row = createTableRow(data.message, data.time);
         tableContainer.appendChild(row);
-    });
-
-</script>
-<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.0/lib/darkmode-js.min.js"></script>
-<script>
-    var options = {
-        bottom: '64px', // default: '32px'
-        right: 'unset', // default: '32px'
-        left: '32px', // default: 'unset'
-        time: '0.3s', // default: '0.3s'
-        mixColor: '#fff', // default: '#fff'
-        backgroundColor: '#fff',  // default: '#fff'
-        buttonColorDark: '#100f2c',  // default: '#100f2c'
-        buttonColorLight: '#fff', // default: '#fff'
-        saveInCookies: false, // default: true,
-        label: '', // default: ''
-        autoMatchOsTheme: true // default: true
-    }
-    new Darkmode(options).showWidget();
-    // 签到详情弹窗
-    document.getElementById('sign-in-details').addEventListener('click', getSignInDetailsToast);
-    document.getElementById('sign-in-rate').addEventListener('click', getSignInDetailsToast);
-    function getSignInDetailsToast(){
-        console.log("签到详情");
-        let toast = document.getElementById('toast');
-        toast.innerHTML = '<div class="wu-hang-table" id="signInToastContent"></div>';
-        console.log(localStorage.getItem('token'));
-        let url="http://localhost:8080/api/team_manage/index/sign_in_details";
-        fetch(url,{
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer '+localStorage.getItem('token')
-            }
-        })
-           .then(response => response.json())
-           .then(json => {
-                console.log(json);
-                let data=json.sign_in_details;
-                let content = document.getElementById('signInToastContent');
-                content.innerHTML = '';
-                data.forEach(item => {
-                    let name = item.name;// 姓名
-                    let isSignIn = item.issignIn;// 是否签到
-                    let row = createTableRow(name, isSignIn);
-                    content.appendChild(row);
-                });
-            })
-           .catch(error => {
-               console.error(error);
-               const backendData = [
-                   { message: 'Success message', time: '2024-04-09 10:00:00' },
-                   { message: 'Error message', time: '2024-04-09 10:05:00' },
-                   { message: 'Info message', time: '2024-04-09 10:10:00' },
-               ];
-               let content = document.getElementById('signInToastContent');
-               content.innerHTML = '';
-               // 循环遍历数据，创建行，并将其添加到容器中
-               backendData.forEach(data => {
-                   const row = createTableRow(data.message, data.time);
-                   content.appendChild(row);
-               });
-           });
-        toast.style.visibility = "visible";
-    }
-    // 考试详情弹窗
-    document.getElementById('latest-exam').addEventListener('click', createExamTableToast);
-    function createExamTableToast() {
-        let toast = document.getElementById('toast');
-        toast.innerHTML = '<div id="exam-toast-content" class="table-borderless" style="margin-top: 10%;"></div>';
-
-        let url = "http://localhost:8080/api/team_manage/exam_situation/data";
-
-        fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer '+localStorage.getItem('token')
-            }
-        })
-            .then(response => response.json())
-            .then(json => {
-                console.log(json);
-                let exam_data = json.exams;
-                let content = document.getElementById('exam-toast-content');
-                content.innerHTML = '';
-                let headers = ['考试名称', '考试时间', '满分', '平均分', '通过率'];
-                let rows = [];
-                exam_data.forEach(item => {
-                    let name = item.name;
-                    let time = item.time;
-                    let full_score = item.full_score;
-                    let average_score = item.average_score;
-                    let pass_rate = item.pass_rate;
-                    let row = [name, time, full_score, average_score, pass_rate];
-                    rows.push(row);
-                });
-                createExamTable2({headers: headers, rows: rows});
-            })
-            .catch(error => {
-                console.error(error);
-                let content = document.getElementById('exam-toast-content');
-                content.innerHTML = '';
-                const backendData = [
-                    { name: '2021年春季学期期末考试', time: '2021-06-30 23:59:59', full_score: '100', average_score: '80', pass_rate: '80%' },
-                    { name: '2021年秋季学期期末考试', time: '2021-09-30 23:59:59', full_score: '100', average_score: '80', pass_rate: '80%' },
-                    { name: '2022年春季学期期末考试', time: '2022-06-30 23:59:59', full_score: '100', average_score: '80', pass_rate: '80%' },
-                    { name: '2022年秋季学期期末考试', time: '2022-09-30 23:59:59', full_score: '100', average_score: '80', pass_rate: '80%' },
-                ];
-                let headers = ['考试名称', '考试时间', '满分', '平均分', '通过率'];
-                let rows = [];
-                backendData.forEach(item => {
-                    let name = item.name;
-                    let time = item.time;
-                    let full_score = item.full_score;
-                    let average_score = item.average_score;
-                    let pass_rate = item.pass_rate;
-                    let row = [name, time, full_score, average_score, pass_rate];
-                    rows.push(row);
-                });
-                createExamTable2({headers: headers, rows: rows});
-            });
-        toast.style.visibility = "visible";
-    }
-
-    function createExamTable2(data) {
-        // 创建表格元素
-        const table = document.createElement('table');
-        table.className = 'borderless-table';
-
-        // 创建表头
-        const thead = document.createElement('thead');
-        const headerRow = document.createElement('tr');
-        data.headers.forEach(headerText => {
-            const header = document.createElement('th');
-            header.textContent = headerText;
-            headerRow.appendChild(header);
-        });
-        thead.appendChild(headerRow);
-        table.appendChild(thead);
-
-        // 创建表体
-        const tbody = document.createElement('tbody');
-        data.rows.forEach(rowData => {
-            const row = document.createElement('tr');
-            rowData.forEach(cellData => {
-                const cell = document.createElement('td');
-                cell.textContent = cellData;
-                row.appendChild(cell);
-            });
-            tbody.appendChild(row);
-        });
-        table.appendChild(tbody);
-
-        // 将表格添加到容器中
-        const container = document.getElementById('exam-toast-content');
-        container.appendChild(table);
-    }
-    document.getElementById('join-apply').addEventListener('click', function() {
-        console.log("加入申请");
-        window.location.href = "./review.html";
-    });
-// 弹窗动画效果
-    const buttons = document.getElementsByClassName("container"),
-        toast = document.querySelector(".toast")
-    closeIcon = document.querySelector(".close")
-    progress = document.querySelector(".progress");
-
-    let timer1, timer2;
-    //对所有按钮添加点击事件
-    for (let i = 0; i < buttons.length; i++) {
-        buttons[i].addEventListener("click", () => {
-            toast.classList.add("active");
-            progress.classList.add("active");
-
-            timer1 = setTimeout(() => {
-                progress.style.width = "100%";
-            })
-        })
-    }
-
-    closeIcon.addEventListener("click", () => {
-        toast.classList.remove("active");
-
-        setTimeout(() => {
-            progress.classList.remove("active");
-        }, 300);
-
-        clearTimeout(timer1);
-        clearTimeout(timer2);
     });
 </script>
 
