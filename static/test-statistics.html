@@ -92,14 +92,17 @@
 
         <div class="dash-content">
             <div class="filter-container"
-                style="margin-top: 40px;background: white;height: 150px;margin-left: 20px;border-radius: 15px;">
+                style="margin-top: 40px;background: white;max-height: 150px;margin-left: 20px;border-radius: 15px;">
                 <div class="filter-box" style="border-bottom: 1px solid #eeeeee;height: 60px;display:flex;">
                     <span
                         style="width:100%;margin-top: 10px; margin-left: 20px; font-size: 23px; color: #3a7afe; display: flex; align-items: center;">
                         <img src="./image/filter.svg" style="width: 24px;">
                         <span style="margin-right: auto;">Filter</span>
-                        <img src="./image/updown.svg"
-                            style="width: 24px; background-color: #3a7afe;margin-right: 20px;">
+                        <span class="toggle-filter">
+                            <i class="uil uil-angle-up" style="margin-right: 20px;"></i>
+<!--                            <img src="./image/updown.svg"
+                                style="width: 24px; background-color: #3a7afe;margin-right: 20px;">-->
+                        </span>
                     </span>
                 </div>
                 <div class="filter" style="display: flex; padding: 20px;">
@@ -136,11 +139,25 @@
 
                 </div>
             </div>
-
+<div style="display: flex; ">
             <div class="chart-container" >
                 <div class="chart-title">6.16考试情况</div>
                 <div  id="main" style="width:400px;height:300px ;">                </div>
             </div>
+            <div class="chart-container" style="width: 500px;">
+                <div style="scale: 0.8; margin: -50px">
+                    <div style="height: 40px; margin-left: 160px;">
+                        <span class="chart-title" style="font-size: 25px; font-weight: 600; color: #3a7afe;">选择题号</span>
+                        <select name="category" id="category">
+                            <option value="category1">Category 1</option>
+                            <option value="category2">Category 2</option>
+                            <option value="category3">Category 3</option>
+                        </select>
+                    </div>
+                    <div id="choices" style="width: 600px;height:400px;"></div>
+                </div>
+            </div>
+        </div>
         </div>
     </section>
 
@@ -192,6 +209,107 @@
     };
 
     option && myChart.setOption(option);
+
+
+// 选择题统计图
+    var correctChoice = 'B'; // 正确选项的索引，假设 'B' 是正确选项
+    var choiceNum=[0.1,0.2,0.3,0.4]; // 选择此选项的人数百分比
+    var examsNum=100; // 考试人数
+    var colors = ['#4E88FE', '#EE6666']; // 定义颜色列表，i=0 时为错误选项颜色，i=1 时为正确选项颜色
+
+    var chartDom2 = document.getElementById('choices');
+    var myChart2 = echarts.init(chartDom2);
+    var option2;
+
+    option2 = {
+        tooltip: {
+            trigger: 'item',
+            formatter: function(params) {
+                // 计算选择该选项的人数
+                var num = choiceNum[params.dataIndex] * examsNum;
+                return  params.name + ': ' + num.toFixed(0) + ' 人 (' + params.value.toFixed(1) + '%)';
+            }
+        },
+        xAxis: {
+            type: 'category',
+            data: ['A', 'B', 'C', 'D'],
+            /*axisLabel: {
+                fontSize: 16 // 设置横坐标轴标签字体大小
+            }*/
+        },
+        yAxis: {
+            type: 'value',
+            max: 100,
+            axisLabel: {
+                formatter: function(value) {
+                    return value + '%';
+                },
+                fontSize: 16 // 设置纵坐标轴标签字体大小
+            }
+        },
+        series: [
+            {
+                data: [
+                    {
+                        value: choiceNum[0]*100,
+                        itemStyle: {
+                            color: colors[correctChoice === 'A' ? 1 : 0] // 如果 'A' 是正确选项，则使用 '#a90000'，否则使用 '#5470C6'
+                        }
+                    },
+                    {
+                        value: choiceNum[1]*100,
+                        itemStyle: {
+                            color: colors[correctChoice === 'B' ? 1 : 0] // 如果 'B' 是正确选项，则使用 '#a90000'，否则使用 '#5470C6'
+                        }
+                    },
+                    {
+                        value: choiceNum[2]*100,
+                        itemStyle: {
+                            color: colors[correctChoice === 'C' ? 1 : 0] // 如果 'C' 是正确选项，则使用 '#a90000'，否则使用 '#5470C6'
+                        }
+                    },
+                    {
+                        value: choiceNum[3]*100,
+                        itemStyle: {
+                            color: colors[correctChoice === 'D' ? 1 : 0] // 如果 'D' 是正确选项，则使用 '#a90000'，否则使用 '#5470C6'
+                        }
+                    }
+                ],
+                type: 'bar'
+            }
+        ]
+    };
+
+    option2 && myChart2.setOption(option2);
+    //添加隐藏筛选框点击事件
+    document.addEventListener('DOMContentLoaded', function() {
+        // 获取点击的图标元素
+        var toggleFilter = document.querySelector('.toggle-filter');
+
+        // 获取 i 元素
+        var filterIcon = toggleFilter.querySelector('i');
+
+        // 获取需要隐藏和显示的 filter 容器
+        var filterContainer = document.querySelector('.filter');
+
+        // 添加点击事件
+        toggleFilter.addEventListener('click', function() {
+            // 切换 filter 容器的显示和隐藏
+            if (filterContainer.style.display === 'none') {
+                filterContainer.style.display = 'flex';
+                filterContainer.style.maxHeight = '1000px'; // 使用足够大的值来确保内容可以完全展开
+                filterIcon.classList.remove('uil-angle-down');
+                filterIcon.classList.add('uil-angle-up');
+            } else {
+                filterContainer.style.display = 'none';
+                filterContainer.style.maxHeight = '0'; // 隐藏内容
+                filterIcon.classList.remove('uil-angle-up');
+                filterIcon.classList.add('uil-angle-down');
+            }
+        });
+    });
+
+
 </script>
 <style>
     .group {
