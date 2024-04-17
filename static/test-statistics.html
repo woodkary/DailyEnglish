@@ -328,9 +328,14 @@
 <script>
     // 假设这是从后端获取的数据
     const data = [
-        { rank: 1, name: 'Domenic', points: 10, progress: 0 },
-        { rank: 2, name: 'Drake', points: 9, progress: 0 },
-        { rank: 3, name: 'Drake1', points: 9, progress: 0 },
+        { rank: 1, name: 'Domenic', points: 10, progress: 1 },
+        { rank: 2, name: 'Drake', points: 9, progress: -1 },
+        { rank: 3, name: 'Drake1', points: 9, progress: 3 },
+        { rank: 4, name: 'Drake2', points: 11, progress: -5 },
+        { rank: 5, name: 'Drake3', points: 13, progress: 7 },
+        { rank: 6, name: 'Drake4', points: 17, progress: -6 },
+        { rank: 7, name: 'Drake5', points: 21, progress: -9 },
+        { rank: 8, name: 'Drake6', points: 25, progress: -12 }
     ];
     fetchDataToTable('http://localhost:8080/api/team_manage/exam_situation/exam_detail', 'POST', { exam_name: "我是傻逼" })
     function getMapValue(data, responseData) {
