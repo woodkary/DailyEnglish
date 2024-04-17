@@ -6,7 +6,7 @@
       @click="handleBack"
     ></image>
     <view class="vocabook">
-      <image class="vocabook-img" src="../../static/书.png"></image>
+      <image class="vocabook-img" src="../../static/book.png"></image>
       <view class="vocabook-title">单词书:{{ book }}</view>
       <view class="vocabook-cnt">生词数：{{ cnt }}</view>
       <view class="button-container"

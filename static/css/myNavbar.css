@@ -72,7 +72,4 @@
     font-family: '用户名字体';
     src: url('../font/字魅行楷.ttf') format('truetype');
 }
-.dark{
-    filter: invert(1);
-}
 .not-change{}
