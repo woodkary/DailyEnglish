@@ -123,7 +123,7 @@
                         </div>
                     </div>
                     <div class="col-md-2">
-                        <input type="submit" class="profile-edit-btn" name="btnAddMore" value="Edit Profile" />
+                        <input type="submit" class="profile-edit-btn" name="btnAddMore" id="editProfileBtn" value="Edit Profile" />
                     </div>
                 </div>
                 <div class="row">
@@ -183,6 +183,8 @@
                         </div>
                     </div>
                 </div>
+                <!-- 保存按钮 -->
+                <button id="saveBtn" class="save-btn" style="display:none;">保存</button>
             </form>
         </div>
         </div>
@@ -195,6 +197,43 @@
 <script src="./js/test-details.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.0/lib/darkmode-js.min.js"></script>
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var editBtn = document.getElementById('editProfileBtn');
+        var saveBtn = document.getElementById('saveBtn');
+        var profileContent = document.getElementById('myTabContent');
+
+        editBtn.addEventListener('click', function(evt) {
+            evt.preventDefault();
+            // 将所有的p元素变为输入框
+            var ps = profileContent.getElementsByTagName('p');
+            for (var i = ps.length - 1; i >= 0; i--) { // 使用倒序循环
+                var p = ps[i];
+                var input = document.createElement('input');
+                input.type = 'text';
+                input.value = p.textContent;
+                p.parentNode.replaceChild(input, p);
+            }
+
+            // 显示保存按钮
+            saveBtn.style.display = 'block';
+        });
+
+
+        saveBtn.addEventListener('click', function(evt) {
+            evt.preventDefault();
+            // 将所有的输入框变回p元素，并保存输入框中的文本
+            var inputs = profileContent.getElementsByTagName('input');
+            for (var i = inputs.length-1; i >=0; i--) {
+                var input = inputs[i];
+                var p = document.createElement('p');
+                p.textContent = input.value;
+                input.parentNode.replaceChild(p, input);
+            }
+
+            // 隐藏保存按钮
+            saveBtn.style.display = 'none';
+        });
+    });
 </script>
 <style>
     
