@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/test-statistics.css">
-    <link rel="stylesheet" href="./css/sidebar.css">
+    <!-- <link rel="stylesheet" href="./css/test-statistics.css"> -->
+    <!-- <link rel="stylesheet" href="./css/sidebar.css"> -->
     <link rel="stylesheet" href="./css/myNavbar.css">
     <title>考试情况</title>
     <link rel="stylesheet" href="./css/navSidebar.css">
@@ -100,7 +100,7 @@
                         <span style="margin-right: auto;">Filter</span>
                         <span class="toggle-filter">
                             <i class="uil uil-angle-up" style="margin-right: 20px;"></i>
-<!--                            <img src="./image/updown.svg"
+                            <!--                            <img src="./image/updown.svg"
                                 style="width: 24px; background-color: #3a7afe;margin-right: 20px;">-->
                         </span>
                     </span>
@@ -139,25 +139,39 @@
 
                 </div>
             </div>
-<div style="display: flex; ">
-            <div class="chart-container" >
-                <div class="chart-title">6.16考试情况</div>
-                <div  id="main" style="width:400px;height:300px ;">                </div>
-            </div>
-            <div class="chart-container" style="width: 500px;">
-                <div style="scale: 0.8; margin: -50px">
-                    <div style="height: 40px; margin-left: 160px;">
-                        <span class="chart-title" style="font-size: 25px; font-weight: 600; color: #3a7afe;">选择题号</span>
-                        <select name="category" id="category">
-                            <option value="category1">Category 1</option>
-                            <option value="category2">Category 2</option>
-                            <option value="category3">Category 3</option>
-                        </select>
+            <div style="display: flex; ">
+                <div class="chart-container">
+                    <div class="chart-title">6.16考试情况</div>
+                    <div id="main" style="width:400px;height:300px ;"> </div>
+                </div>
+                <div class="chart-container" style="width: 550px;">
+                    <div style="scale: 0.8; margin: -50px">
+                        <div style="height: 40px; margin-left: 160px;">
+                            <span class="chart-title"
+                                style="font-size: 25px; font-weight: 600; color: #3a7afe;">选择题号</span>
+                            <select name="category" id="category">
+                                <option value="category1">Category 1</option>
+                                <option value="category2">Category 2</option>
+                                <option value="category3">Category 3</option>
+                            </select>
+                        </div>
+                        <div id="choices" style="width: 600px;height:400px;"></div>
                     </div>
-                    <div id="choices" style="width: 600px;height:400px;"></div>
                 </div>
             </div>
-        </div>
+
+            <div>
+
+                <table class="content-table">
+                    <thead>
+                        <tr>
+
+                        </tr>
+                    </thead>
+
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
         </div>
     </section>
 
@@ -184,7 +198,7 @@
         grid: {
             left: '3%',
             right: '4%',
-            top:'10%',
+            top: '10%',
             bottom: '10%',
             containLabel: true
         },
@@ -211,10 +225,10 @@
     option && myChart.setOption(option);
 
 
-// 选择题统计图
+    // 选择题统计图
     var correctChoice = 'B'; // 正确选项的索引，假设 'B' 是正确选项
-    var choiceNum=[0.1,0.2,0.3,0.4]; // 选择此选项的人数百分比
-    var examsNum=100; // 考试人数
+    var choiceNum = [0.1, 0.2, 0.3, 0.4]; // 选择此选项的人数百分比
+    var examsNum = 100; // 考试人数
     var colors = ['#4E88FE', '#EE6666']; // 定义颜色列表，i=0 时为错误选项颜色，i=1 时为正确选项颜色
 
     var chartDom2 = document.getElementById('choices');
@@ -224,10 +238,10 @@
     option2 = {
         tooltip: {
             trigger: 'item',
-            formatter: function(params) {
+            formatter: function (params) {
                 // 计算选择该选项的人数
                 var num = choiceNum[params.dataIndex] * examsNum;
-                return  params.name + ': ' + num.toFixed(0) + ' 人 (' + params.value.toFixed(1) + '%)';
+                return params.name + ': ' + num.toFixed(0) + ' 人 (' + params.value.toFixed(1) + '%)';
             }
         },
         xAxis: {
@@ -241,7 +255,7 @@
             type: 'value',
             max: 100,
             axisLabel: {
-                formatter: function(value) {
+                formatter: function (value) {
                     return value + '%';
                 },
                 fontSize: 16 // 设置纵坐标轴标签字体大小
@@ -251,25 +265,25 @@
             {
                 data: [
                     {
-                        value: choiceNum[0]*100,
+                        value: choiceNum[0] * 100,
                         itemStyle: {
                             color: colors[correctChoice === 'A' ? 1 : 0] // 如果 'A' 是正确选项，则使用 '#a90000'，否则使用 '#5470C6'
                         }
                     },
                     {
-                        value: choiceNum[1]*100,
+                        value: choiceNum[1] * 100,
                         itemStyle: {
                             color: colors[correctChoice === 'B' ? 1 : 0] // 如果 'B' 是正确选项，则使用 '#a90000'，否则使用 '#5470C6'
                         }
                     },
                     {
-                        value: choiceNum[2]*100,
+                        value: choiceNum[2] * 100,
                         itemStyle: {
                             color: colors[correctChoice === 'C' ? 1 : 0] // 如果 'C' 是正确选项，则使用 '#a90000'，否则使用 '#5470C6'
                         }
                     },
                     {
-                        value: choiceNum[3]*100,
+                        value: choiceNum[3] * 100,
                         itemStyle: {
                             color: colors[correctChoice === 'D' ? 1 : 0] // 如果 'D' 是正确选项，则使用 '#a90000'，否则使用 '#5470C6'
                         }
@@ -282,7 +296,7 @@
 
     option2 && myChart2.setOption(option2);
     //添加隐藏筛选框点击事件
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // 获取点击的图标元素
         var toggleFilter = document.querySelector('.toggle-filter');
 
@@ -293,7 +307,7 @@
         var filterContainer = document.querySelector('.filter');
 
         // 添加点击事件
-        toggleFilter.addEventListener('click', function() {
+        toggleFilter.addEventListener('click', function () {
             // 切换 filter 容器的显示和隐藏
             if (filterContainer.style.display === 'none') {
                 filterContainer.style.display = 'flex';
@@ -309,6 +323,71 @@
         });
     });
 
+
+</script>
+<script>
+    // 假设这是从后端获取的数据
+    const data = [
+        { rank: 1, name: 'Domenic', points: 10, progress: 0 },
+        { rank: 2, name: 'Drake', points: 9, progress: 0 },
+        { rank: 3, name: 'Drake1', points: 9, progress: 0 },
+    ];
+    fetchDataToTable('http://localhost:8080/api/team_manage/exam_situation/exam_detail', 'POST', { exam_name: "我是傻逼" })
+    function getMapValue(data, responseData) {
+        for (let key in data) {
+            //遍历并寻找到值为列表的属性
+            let value = data[key];
+            if (Array.isArray(value)) {
+                //列表中的每一项都是map对象
+                for (let i = 0; i < value.length; i++) {
+                    responseData.push(value[i])
+                }
+            } else if (typeof value === 'object') {
+                getMapValue(value, responseData)
+            }
+        }
+    }
+    //需要制定url、'GET'或'POST'、请求数据,用Map类型表示
+    function fetchDataToTable(url, method, requestData) {
+        let responseData = []
+        method = method.toUpperCase();
+        fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+            body: method === 'GET' ? null : JSON.stringify(requestData)
+        }).then(response => response.json())
+            .then(data => {
+                getMapValue(data, responseData)
+                createTable(responseData);
+            }).catch(error => console.error(error));
+    }
+    function createTable(data) {
+        // 清空表格内容
+        document.getElementById('tableBody').innerHTML = '';
+        // 创建表头
+        const tableHead = document.querySelector('thead tr');
+        const headers = Object.keys(data[0]); // 获取第一个数据对象的所有属性作为表头
+        headers.forEach(header => {
+            const th = document.createElement('th');
+            th.textContent = header;
+            tableHead.appendChild(th);
+        });
+
+        // 创建表格行
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            headers.forEach(header => {
+                const td = document.createElement('td');
+                td.textContent = item[header]; // 设置单元格内容
+                row.appendChild(td);
+            });
+            document.getElementById('tableBody').appendChild(row);
+        });
+    }
+    createTable(data);
 
 </script>
 <style>
@@ -389,20 +468,83 @@
         /* 选中时的文字颜色 */
     }
 
-    .chart-container{
+    .chart-container {
         margin-left: 20px;
         margin-top: 20px;
         width: 400px;
         height: 330px;
         background-color: white;
-        padding-top:20px;
+        padding-top: 20px;
         border-radius: 15px;
     }
-    .chart-container .chart-title{
+
+    .chart-container .chart-title {
         font-size: 20px;
         font-weight: 600;
         color: #3a7afe;
         margin-left: 20px;
+    }
+
+    .content-table {
+        border-collapse: collapse;/*合并边框*/
+        margin-top: 30px;
+        margin-left:20px;
+        font-size: 1em;
+        width:970px;
+        border-radius: 5px 5px 0 0;
+        overflow: hidden;
+        background-color: white;
+        /*box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);/*阴影*/
+    }
+
+    .content-table thead tr {
+        background-color: #3a7afe;
+        color: #ffffff;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .content-table th {
+        background-image: url('../static/image/updown.svg');
+        /* 设置背景图像 */
+        background-size: 16px;
+        /* 背景图像大小 */
+        background-repeat: no-repeat;
+        /* 不重复背景图像 */
+        background-position: right center;
+        /* 定位背景图像到单元格右侧中间 */
+        cursor: pointer;
+        /* 将鼠标光标改为手指形状，表示可以点击 */
+        /*颜色*/
+        color: #ffffff;
+    }
+
+    .content-table th,
+    .content-table td {
+        padding: 12px 15px;
+    }
+
+    .content-table tbody tr {
+        border-bottom: 1px solid #dddddd;
+        color: #3f3ba2;
+        text-align: center;
+    }
+
+    .content-table tbody tr:last-of-type {
+        border-bottom: 2px solid #3a7afe;
+        /*最后一行加粗*/
+    }
+
+    .name-cell a {
+        text-decoration: none;
+        /* 移除下划线 */
+        color: inherit;
+        /* 继承父元素的文字颜色 */
+    }
+
+
+    .name-cell a:hover {
+        color: #3a7afe;
     }
 </style>
 
