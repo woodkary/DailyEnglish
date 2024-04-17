@@ -53,7 +53,7 @@
                         <i class="uil uil-message"></i>
                         <span class="link-name">申请审核</span>
                     </a></li>
-                <li><a href="#">
+                <li><a href="user.html">
                         <i class="uil uil-user"></i>
                         <span class="link-name">个人中心</span>
                     </a></li>
@@ -78,101 +78,131 @@
             </ul>
         </div>
     </nav>
+
     <section class="dashboard">
-        <div class="container emp-profile">
-            <form method="post">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="profile-img">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52y5aInsxSm31CvHOFHWujqUx_wWTS9iM6s7BAm21oEN_RiGoog"
-                                alt="" />
-                            <div class="file btn btn-lg btn-primary">
-                                修改头像
-                                <input type="file" name="file" />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="profile-head">
-                            <h5>
-                                CarryWood
-                            </h5>
-                            <h6>
-                                SZU 软工学院
-                            </h6>
-                            <p class="proile-rating">团队码 : <span>#ryjsbtkq23</span></p>
-                            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
-                                        aria-controls="home" aria-selected="true">About</a>
-                                </li>
-                                
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <input type="submit" class="profile-edit-btn" name="btnAddMore" value="Edit Profile" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="profile-work">
-                            <p>团队</p>
-                            <a href="" style="text-decoration: underline;">1班</a><br />
-                            <a href="">2班</a><br />
-                            
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="tab-content profile-tab" id="myTabContent">
-                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <label>用户id</label>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <p>Kshiti123</p>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <label>姓名</label>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <p>CarryWood</p>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <label>邮箱</label>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <p>1221124124@gmail.com</p>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <label>电话</label>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <p>123 456 7890</p>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <label>从属</label>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <p>SZU 软件工程学院</p>
-                                    </div>
-                                </div>
-                            </div>
-                           
-                        </div>
-                    </div>
-                </div>
-            </form>
+        <div class="top">
+            <i class="uil uil-bars sidebar-toggle"></i>
+
+            <div class="search-box">
+                <i class="uil uil-search"></i>
+                <input type="text" placeholder="Search here...">
+            </div>
+
+            <img src="image/pikachu.jpg" alt="">
         </div>
+        <div class="dash-content">
+            <div class="container emp-profile">
+                <form method="post">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="profile-img">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52y5aInsxSm31CvHOFHWujqUx_wWTS9iM6s7BAm21oEN_RiGoog"
+                                     alt="" />
+                                <div class="file btn btn-lg btn-primary">
+                                    修改头像
+                                    <input type="file" name="file" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="profile-head">
+                                <h5>
+                                    CarryWood
+                                </h5>
+                                <h6>
+                                    SZU 软工学院
+                                </h6>
+                                <p class="profile-rating" style="margin-bottom: 10px;">团队码 : <span id="teamCode">#ryjsbtkq23</span></p>
+                                <i id="copyBtn" class="uil uil-copy">复制团队码</i>
+
+                                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                                           aria-controls="home" aria-selected="true">About</a>
+                                    </li>
+
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="submit" class="profile-edit-btn" name="btnAddMore" id="editProfileBtn" value="Edit Profile" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="profile-work">
+                                <p>团队</p>
+                                <a href="" style="text-decoration: underline;">1班</a><br />
+                                <a href="">2班</a><br />
+
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="tab-content profile-tab" id="myTabContent">
+                                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>用户id</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>Kshiti123</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>姓名</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>CarryWood</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>邮箱</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>1221124124@gmail.com</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>电话</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>123 456 7890</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>从属</label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>SZU 软件工程学院</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 保存按钮 -->
+                    <button id="saveBtn" class="profile-edit-btn" style="display:none; margin-left: 600px;">保存</button>
+                </form>
+                <svg class="editorial" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                     viewBox="0 24 150 28" preserveAspectRatio="none">
+                    <defs>
+                        <path id="gentle-wave"
+                              d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"></path>
+                    </defs>
+                    <g class="parallax">
+                        <use xlink:href="#gentle-wave" x="50" y="0" fill="#afddf3"></use>
+                        <use xlink:href="#gentle-wave" x="50" y="3" fill="#6cb5f1"></use>
+                        <use xlink:href="#gentle-wave" x="50" y="6" fill="#3584ee"></use>
+                    </g>
+                </svg>
+            </div>
+        </div>
+
     </section>
 
 </body>
@@ -181,12 +211,64 @@
 <script src="./js/test-details.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.0/lib/darkmode-js.min.js"></script>
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var editBtn = document.getElementById('editProfileBtn');
+        var saveBtn = document.getElementById('saveBtn');
+        var profileContent = document.getElementById('myTabContent');
+
+        editBtn.addEventListener('click', function(evt) {
+            evt.preventDefault();
+            // 将所有的p元素变为输入框
+            var ps = profileContent.getElementsByTagName('p');
+            for (var i = ps.length - 1; i >= 0; i--) { // 使用倒序循环
+                var p = ps[i];
+                var input = document.createElement('input');
+                input.type = 'text';
+                input.value = p.textContent;
+                input.classList.add('message-input');
+                p.parentNode.replaceChild(input, p);
+            }
+
+            // 显示保存按钮
+            saveBtn.style.display = 'block';
+        });
+
+
+        saveBtn.addEventListener('click', function(evt) {
+            evt.preventDefault();
+            // 将所有的输入框变回p元素，并保存输入框中的文本
+            var inputs = profileContent.getElementsByTagName('input');
+            for (var i = inputs.length-1; i >=0; i--) {
+                var input = inputs[i];
+                var p = document.createElement('p');
+                p.textContent = input.value;
+                input.parentNode.replaceChild(p, input);
+            }
+
+            // 隐藏保存按钮
+            saveBtn.style.display = 'none';
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        var copyBtn = document.getElementById('copyBtn');
+        var teamCodeSpan = document.getElementById('teamCode');
+
+        copyBtn.addEventListener('click', function() {
+            // 使用navigator.clipboard.writeText方法复制文本
+            navigator.clipboard.writeText(teamCodeSpan.textContent).then(function() {
+                console.log('团队码已复制到剪贴板');
+            }).catch(function(err) {
+                console.error('复制失败: ', err);
+            });
+        });
+    });
+
 </script>
 <style>
     
     .emp-profile {
         padding: 3%;
-        margin-top: 0%;
+        margin-top: 3%;
         margin-bottom: 0%;
         border-radius: 0.5rem;
         background: #fff;
@@ -543,6 +625,67 @@
         margin-left: 20px;
         margin-top: 20px;
     }
+    ::selection {
+        background-color: salmon;
+        color: white
+    }
+
+    .parallax>use {
+        animation: move-forever 12s linear infinite
+    }
+
+    .parallax>use:nth-child(1) {
+        animation-delay: -2s
+    }
+
+    .parallax>use:nth-child(2) {
+        animation-delay: -2s;
+        animation-duration: 5s
+    }
+
+    .parallax>use:nth-child(3) {
+        animation-delay: -4s;
+        animation-duration: 3s
+    }
+
+    @keyframes move-forever {
+        0% {
+            transform: translate(-90px, 0%)
+        }
+
+        100% {
+            transform: translate(85px, 0%)
+        }
+    }
+    .message-input {
+        height: 30px;
+        width: 80%;
+        outline: none;
+        font-size: 1.07rem;
+        padding: 0 16px;
+        margin-left: -120px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+    .message-input:focus {
+        padding: 0 16px;
+        border: 2px solid #5372F0;
+    }
+
+    #copyBtn {
+        user-select: none;
+        border:none;
+    }
+    #copyBtn:hover {
+        outline: none;
+        background-color: #fff;
+    }
+    #copyBtn:active {
+        background-color: #5372F0;
+        color: white;
+    }
+
 </style>
 
 </html>
