@@ -239,6 +239,8 @@ body { font-family: Arial, sans-serif; }
 .pagination {
     margin-top: 30%;
     margin-left: 80%;
+    right: 3%;
+    bottom: 5%;
 }
 .members-admin {
     display: flex;
@@ -345,10 +347,6 @@ tr:nth-child(odd) {
 
 }
 
-.pagination{
-    right: 3%;
-    bottom: 5%;
-}
 button:hover{
     cursor: pointer;
 }

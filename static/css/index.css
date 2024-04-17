@@ -101,6 +101,7 @@
         flex-direction: row; /* 水平排列子项 */
         flex-wrap: wrap; /* 允许子项换行 */
         gap: 15px; /* 设置子项之间的间隔 */
+        padding-top: 70px;
     }
     .container {
         display: flex;

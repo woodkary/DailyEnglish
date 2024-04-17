@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<!-- Coding By CodingNepal - codingnepalweb.com -->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!----======== CSS ======== -->
+    <link rel="stylesheet" href="./css/navSidebar.css">
+    <link rel="stylesheet" href="../static/css/time-line.css">
+
+    <!----===== Iconscout CSS ===== -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="css/wu-hang-table.css">
+
+    <title>Admin Dashboard Panel</title>
+</head>
+
+<body>
+    <nav>
+        <div class="logo-name">
+            <!--        <div class="logo-image">
+            <img src="./image/little-edellweiss.regular.webp" alt="">
+        </div>-->
+
+            <span class="logo_name">DailyEnglish</span>
+        </div>
+
+        <div class="menu-items">
+            <ul class="nav-links">
+                <li><a href="index.html">
+                        <i class="uil uil-estate"></i>
+                        <span class="link-name">主页</span>
+                    </a></li>
+                <li><a href="issuePunch.html">
+                        <i class="uil uil-calendar-alt"></i>
+                        <span class="link-name">打卡发布</span>
+                    </a></li>
+                <li><a href="test-release.html">
+                        <i class="uil uil-calender"></i>
+                        <span class="link-name">考试发布</span>
+                    </a></li>
+                <li><a href="test-statistics.html">
+                        <i class="uil uil-chart"></i>
+                        <span class="link-name">考试情况</span>
+                    </a></li>
+                <li><a href="manage.html">
+                        <i class="uil uil-meh-alt"></i>
+                        <span class="link-name">成员管理</span>
+                    </a></li>
+                <li><a href="review.html">
+                        <i class="uil uil-message"></i>
+                        <span class="link-name">申请审核</span>
+                    </a></li>
+                <li><a href="#">
+                        <i class="uil uil-user"></i>
+                        <span class="link-name">个人中心</span>
+                    </a></li>
+            </ul>
+
+            <ul class="logout-mode">
+                <li><a href="#">
+                        <i class="uil uil-signout"></i>
+                        <span class="link-name">Logout</span>
+                    </a></li>
+
+                <li class="mode">
+                    <a href="#">
+                        <i class="uil uil-moon"></i>
+                        <span class="link-name">Dark Mode</span>
+                    </a>
+
+                    <div class="mode-toggle">
+                        <span class="switch"></span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="dashboard">
+        <div class="top">
+            <i class="uil uil-bars sidebar-toggle"></i>
+
+            <div class="search-box">
+                <i class="uil uil-search"></i>
+                <input type="text" placeholder="Search here...">
+            </div>
+
+            <img src="image/pikachu.jpg" alt="">
+        </div>
+
+        <div class="dash-content">
+            <div class="overview">
+                <div class="title">
+                    <i class="uil uil-tachometer-fast-alt"></i>
+                    <span class="text">Dashboard</span>
+                </div>
+
+                <div class="boxes">
+                    <div class="box box1" style="background-color: white;">
+                        <span class="text" style=" margin-right: auto;">今日打卡情况</span>
+                        <div id="main" style="width: 200px;height:180px;"></div>
+                    </div>
+                    <div class="box box2" style="background-color: white; height: 230px;">
+                        <span class="text" style=" margin-right: auto;">打卡进度</span>
+                        <div class="skill-box">
+
+                            <span class="title">团队1：</span>
+                            <div class="skill-bar">
+                                <span class="skill-per html">
+                                    <span class="skill-text">90%</span>
+                                </span>
+                            </div>
+                            <span class="title">团队2：</span>
+                            <div class="skill-bar">
+                                <span class="skill-per html">
+                                    <span class="skill-text">90%</span>
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="box box3" style="background-color: white;height: 230px;">
+                        <div class="text" style=" margin-right: auto;">最近通知</div>
+                        <div class="wu-hang-table" id="info-table" style="margin-top:5px">
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="activity">
+                <div class="title">
+                    <i class="uil uil-clock-three"></i>
+                    <span class="text">Recent Activity</span>
+                </div>
+                <div style="display: flex;">
+                    <div class="activity-data" style="background-color: white;display: inline-block;height: 390px;">
+                        <div class="text" style="margin-top: 20px;margin-left: 20px;">近期考试情况</div>
+                        <div id="main2" style="width: 650px;height:300px;"></div>
+                    </div>
+                    <div class="card" style="margin-left: 20px;">
+                        <div class="card-header border-0 pb-0" >
+                            <h4 class="card-title">考试安排</h4>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="DZ_W_TimeLine1" class="widget-timeline dz-scroll style-1 px-4 ms-2 py-2 my-4"
+                                style="height:300px;">
+                                <ul class="timeline">
+                                    <li>
+                                        <div class="timeline-badge primary"></div>
+                                        <a class="timeline-panel text-muted" href="#">
+                                            <span>2024/4/15</span>
+                                            <h6 class="mb-0">考试题型：<strong
+                                                    class="text-primary">选择、填空</strong>.</h6>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <div class="timeline-badge info">
+                                        </div>
+                                        <a class="timeline-panel text-muted" href="#">
+                                            <span>2024/4/16</span>
+                                            <h6 class="mb-0">考试题型：<strong
+                                                    class="text-info">选择</strong></h6>
+                                            <!-- <p class="mb-0">Quisque a consequat ante Sit...</p> -->
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <div class="timeline-badge danger">
+                                        </div>
+                                        <a class="timeline-panel text-muted" href="#">
+                                            <span>2024/4/17</span>
+                                            <h6 class="mb-0">考试题型：<strong
+                                                    class="text-warning">填空</strong></h6>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <div class="timeline-badge success">
+                                        </div>
+                                        <a class="timeline-panel text-muted" href="#">
+                                            <span>2024/4/18</span>
+                                            <h6 class="mb-0">考试题型：<strong
+                                                class="text-danger">填空</strong></h6>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="./js/navSidebar.js"></script>
+</body>
+<style>
+    .skill-box {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    .skill-box .title {
+        display: block;
+        font-size: 16px;
+        color: #333;
+        margin-top: 20px;
+    }
+
+    .skill-box .skill-bar {
+        height: 14px;
+        width: 100%;
+        border-radius: 6px;
+        margin-top: -15px;
+        background: rgba(0, 0, 0, 0.1);
+    }
+
+    .skill-bar .skill-per {
+        position: relative;
+        display: block;
+        height: 100%;
+        width: 90%;
+        border-radius: 6px;
+        background: #77cbf0;
+        animation: progress 0.4s ease-in-out forwards;
+        opacity: 0;
+    }
+
+    .skill-bar .skill-per .skill-text {  
+    position: absolute; /* 使用绝对定位 */  
+    top: 50%; /* 垂直居中 */  
+    right: 5px; /* 与进度条右边缘保持一定距离 */  
+    transform: translateY(-50%); /* 垂直居中调整 */  
+    color: white; /* 文本颜色 */  
+    font-size: 12px; /* 文本大小 */  
+}
+
+  
+    .skill-per.css {
+        width: 70%;
+        animation-delay: 0.1s;
+    }
+
+    .skill-per.javascript {
+        width: 50%;
+        animation-delay: 0.2s;
+    }
+
+    .skill-per.nodejs {
+        width: 30%;
+        animation-delay: 0.3s;
+    }
+
+    @keyframes progress {
+        0% {
+            width: 0;
+            opacity: 1;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+</style>
+<script type="text/javascript">
+
+    var chartDom = document.getElementById('main');
+    var myChart = echarts.init(chartDom);
+    var option;
+
+    option = {
+        tooltip: {
+            trigger: 'item'
+        },
+        legend: {
+            top: '5%',
+            left: 'center'
+        },
+        color: [
+            '#77cbf0', '#eaeaea',
+        ],
+        series: [
+            {
+                name: '打卡情况',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                avoidLabelOverlap: false,
+                padAngle: 5,
+                itemStyle: {
+                    borderRadius: 5
+                },
+                label: {
+                    show: false,
+                    position: 'center'
+                },
+                emphasis: { // 鼠标悬停时的高亮效果
+                    scale: true,
+                    itemStyle: {
+                        shadowOffsetX: 0,
+                        opacity: 0.8 // 高亮时的透明度
+                    }
+                },
+                center: ['50%', '60%'],//设置饼图的位置
+                data: [
+                    { value: 484, name: '已打卡' },
+                    { value: 300, name: '未打卡' }
+                ]
+            }
+        ]
+    };
+
+    option && myChart.setOption(option);
+</script>
+<script>
+    var chartDom2 = document.getElementById('main2');
+    var myChart2 = echarts.init(chartDom2);
+    var option2;
+
+    // There should not be negative values in rawData
+    const rawData = [
+        [100, 302, 301, 334, 390, 330, 320],
+        [320, 132, 101, 134, 90, 230, 210],
+        [220, 182, 191, 234, 290, 330, 310],
+        [150, 212, 201, 154, 190, 330, 410],
+        [820, 832, 901, 934, 1290, 1330, 1320]
+    ];
+    const totalData = [];
+    for (let i = 0; i < rawData[0].length; ++i) {
+        let sum = 0;
+        for (let j = 0; j < rawData.length; ++j) {
+            sum += rawData[j][i];
+        }
+        totalData.push(sum);
+    }
+    const grid = {
+        left: 50,
+        right: 50,
+        top: 50,
+        bottom: 20
+    };
+    const series = [
+        '未参与',
+        '不及格',
+        '及格',
+        '良好',
+        '优秀'
+    ].map((name, sid) => {
+        return {
+            name,
+            type: 'bar',
+            stack: 'total',
+            barWidth: '60%',
+            label: {
+                show: true,
+                formatter: (params) => Math.round(params.value * 1000) / 10 + '%'
+            },
+            data: rawData[sid].map((d, did) =>
+                totalData[did] <= 0 ? 0 : (d / totalData[did])
+            )
+        };
+    });
+    option2 = {
+        legend: {
+            selectedMode: false
+        },
+        grid,
+        yAxis: {
+            type: 'value'
+        },
+        xAxis: {
+            type: 'category',
+            data: ['4/15', '4/16', '4/17', '4/18', '4/19', '4/20', '4/21']
+        },
+        series
+    };
+
+    option2 && myChart2.setOption(option2);
+</script>
+<script src="./js/createTableRow.js"></script>
+
+<script>
+    // 模拟后端数据
+    const backendData = [
+        { message: 'Success message', time: '2024-04-09 10:00:00' },
+        { message: 'Error message', time: '2024-04-09 10:05:00' },
+        { message: 'Info message', time: '2024-04-09 10:10:00' },
+    ];
+
+    // 获取容器元素
+    const tableContainer = document.getElementById('info-table');
+
+    // 循环遍历数据，创建行，并将其添加到容器中
+    backendData.forEach(data => {
+        const row = createTableRow(data.message, data.time);
+        tableContainer.appendChild(row);
+    });
+</script>
+
+</html>

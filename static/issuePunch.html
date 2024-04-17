@@ -149,13 +149,15 @@
                         <p>每日单词预计：</p>
                         <input type="text" placeholder="单词数">
                     </div>
+                </ol>
+            </ol>
         </div>
 
         <div class="search-container">
-            <span class="blue-text">智能推荐</span>
-            <span>最新</span>
+            <span id="recommend-text" class="blue-text">智能推荐</span>
+            <span id="new-text">最新</span>
             <img src="./image/updown.png">
-            <span>最热</span>
+            <span id="hot-text">最热</span>
             <img src="./image/updown.png">
             <span class="blank"></span>
             <img src="./image/搜索图标.png" alt="Search" class="search-icon" style="border:0px">
@@ -278,6 +280,36 @@
         autoMatchOsTheme: true // default: true
     }
     new Darkmode(options).showWidget();
+
+    // 获取“智能推荐”和两个图片元素
+    const recommendText = document.getElementById('recommend-text');
+    const newText = document.getElementById('new-text');
+    const hotText = document.getElementById('hot-text');
+    const firstImage = document.querySelector('.search-container img:nth-of-type(1)');
+    const secondImage = document.querySelector('.search-container img:nth-of-type(2)');
+
+    // 添加点击事件监听器
+    recommendText.addEventListener('click', function() {
+        // 更新样式
+        recommendText.classList.add('blue-text');
+        newText.classList.remove('blue-text');
+        hotText.classList.remove('blue-text');
+    });
+
+    firstImage.addEventListener('click', function() {
+        // 更新样式
+        recommendText.classList.remove('blue-text');
+        newText.classList.add('blue-text');
+        hotText.classList.remove('blue-text');
+    });
+
+    secondImage.addEventListener('click', function() {
+        // 更新样式
+        recommendText.classList.remove('blue-text');
+        newText.classList.remove('blue-text');
+        hotText.classList.add('blue-text');
+    });
+
 </script>
 
 </html>

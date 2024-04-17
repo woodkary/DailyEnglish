@@ -97,7 +97,7 @@
 
         <div style="display: flex; justify-content: space-between;">
             <div class="left-col">
-                <div class="organization-name">组织名称: XYZ</div>
+                <div class="organization-name" id="team-name">组织名称: XYZ</div>
                 <div>
                     <button class="BlueButton MainButton RedButton MainButton" style="margin-right: 30px;margin-left: 20px; margin-top: 30px; font-size: 16px;">组织扩容</button>
                     <button class="RedButton MainButton" style="font-size: 16px;">删除成员</button>
@@ -112,8 +112,8 @@
 
                 </div>
                 <div class="members-admin">
-                    <div>当前成员：<span class="member-number">50</span>人</div>
-                    <div>当前管理员：<span class="manager-number">5</span>人</div>
+                    <div>当前成员：<span class="member-number" id="member-number">50</span>人</div>
+                    <div>当前管理员：<span class="manager-number" id="manager-number">5</span>人</div>
                 </div>
             </div>
         </div>
@@ -121,7 +121,7 @@
     <!--<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <line x1="0" y1="10" x2="60" y2="10" style="stroke:rgb(0,0,0);stroke-width:2;width"></line>
     </svg>-->
-    <table>
+<!--    <table>
         <thead>
         <tr>
             <th>昵称</th>
@@ -132,7 +132,7 @@
         </tr>
         </thead>
         <tbody>
-        <!-- 成员数据行 -->
+        &lt;!&ndash; 成员数据行 &ndash;&gt;
         <tr>
             <td>龙王</td>
             <td>2020-12-12</td>
@@ -246,9 +246,11 @@
             </td>
         </tr>
         </tbody>
-    </table>
+    </table>-->
+    <div id="table-container" class="table-container">
+    </div>
 
-    <div class="pagination">
+    <div class="pagination" id="pagination">
         <!-- 分页按钮 -->
         <button>&lt;</button>
         <button>1</button>
@@ -263,7 +265,21 @@
 <script src="./js/Navbar.js"></script>
 <script src="./js/sidebar.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.0/lib/darkmode-js.min.js"></script>
+<script src="./js/review.js"></script>
 <script>
-    new Darkmode().showWidget();
+    var options = {
+        bottom: '64px', // default: '32px'
+        right: 'unset', // default: '32px'
+        left: '32px', // default: 'unset'
+        time: '0.3s', // default: '0.3s'
+        mixColor: '#fff', // default: '#fff'
+        backgroundColor: '#fff',  // default: '#fff'
+        buttonColorDark: '#100f2c',  // default: '#100f2c'
+        buttonColorLight: '#fff', // default: '#fff'
+        saveInCookies: false, // default: true,
+        label: '', // default: ''
+        autoMatchOsTheme: true // default: true
+    }
+    new Darkmode(options).showWidget();
 </script>
 </html>

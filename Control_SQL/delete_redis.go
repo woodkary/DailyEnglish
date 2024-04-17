@@ -6,6 +6,17 @@ import (
 	"github.com/go-redis/redis" // 导入 redis 驱动
 )
 
+// DeleteUserFromTeamc 从 Redis 中删除团队成员
+func DeleteUserFromTeam(client *redis.Client, teamID string, username string) error {
+	// 删除团队成员
+	err := client.SRem(fmt.Sprintf("Team:%s:Members", teamID), username).Err()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // DeleteTeamInfoRedis 从 Redis 中删除团队信息，包括团队名、团队ID、团队成员的用户名和临近的考试ID
 func DeleteTeamInfo(client *redis.Client, teamID string) error {
 	// 删除团队名

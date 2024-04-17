@@ -2,6 +2,8 @@ package controlsql
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 )
 
 // BookInfo 结构体用于存储书籍信息
@@ -9,10 +11,13 @@ type Books struct {
 	Title      string
 	LearnerNum int
 	FinishNum  int
-	Type       int
+
 	Describe   string
 	ID         int
 	WordsNum   int
+	Grade      string
+	Difficulty string
+	Date       string
 }
 
 // CET4WordInfo 结构体用于存储 CET4 单词信息
@@ -56,9 +61,7 @@ type Punch struct {
 	}
 }
 
-// @TODO
-// func QueryTEAM_Punch(db *sql.DB, team string) (Punch, error) //查询团队打卡情况，传入团队名team（团队表的主键）
-// QueryUserInfo 查询用户信息
+// 1 QueryUserInfo 查询用户信息
 func QueryUser_Info(db *sql.DB) ([]UserInfo, error) {
 	rows, err := db.Query("SELECT * FROM user_info")
 	if err != nil {
@@ -77,7 +80,20 @@ func QueryUser_Info(db *sql.DB) ([]UserInfo, error) {
 	return userInfos, nil
 }
 
-// QueryBookInfo 查询书籍信息
+// 1.1
+func QueryUserContactInfo(db *sql.DB, username string) (string, string, error) {
+	var phone, email string
+	err := db.QueryRow("SELECT phone, email FROM user_info WHERE username = ?", username).Scan(&phone, &email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", "", fmt.Errorf("user with username %s not found", username)
+		}
+		return "", "", err
+	}
+	return phone, email, nil
+}
+
+// 2.1 QueryBooks 查询所有书籍
 func QueryBooks(db *sql.DB) ([]Books, error) {
 	rows, err := db.Query("SELECT * FROM books")
 	if err != nil {
@@ -88,7 +104,7 @@ func QueryBooks(db *sql.DB) ([]Books, error) {
 	var bookInfos []Books
 	for rows.Next() {
 		var bookInfo Books
-		if err := rows.Scan(&bookInfo.Title, &bookInfo.LearnerNum, &bookInfo.FinishNum, &bookInfo.Type, &bookInfo.Describe, &bookInfo.ID, &bookInfo.WordsNum); err != nil {
+		if err := rows.Scan(&bookInfo.Title, &bookInfo.LearnerNum, &bookInfo.FinishNum, &bookInfo.Describe, &bookInfo.ID, &bookInfo.WordsNum, &bookInfo.Grade, &bookInfo.Difficulty, &bookInfo.Date); err != nil {
 			return nil, err
 		}
 		bookInfos = append(bookInfos, bookInfo)
@@ -96,7 +112,39 @@ func QueryBooks(db *sql.DB) ([]Books, error) {
 	return bookInfos, nil
 }
 
-// QueryCET4WordInfo 查询 CET4 单词信息
+// 2.2QueryBooks 根据grade、difficulty和flag参数查询书籍，并根据标志参数排序
+func QueryBooksBy(db *sql.DB, grade, difficulty string, flag int) ([]Books, error) {
+	var query string
+	switch flag {
+	case 0:
+		query = "SELECT * FROM books WHERE grade = ? AND difficulty = ? ORDER BY date DESC"
+	case 1:
+		query = "SELECT * FROM books WHERE grade = ? AND difficulty = ? ORDER BY learner_num DESC"
+	default:
+		return nil, errors.New("invalid flag value")
+	}
+
+	rows, err := db.Query(query, grade, difficulty)
+	if err != nil {
+		return nil, fmt.Errorf("error querying books: %v", err)
+	}
+	defer rows.Close()
+
+	var books []Books
+	for rows.Next() {
+		var book Books
+		if err := rows.Scan(&book.Title, &book.LearnerNum, &book.FinishNum, &book.Describe, &book.ID, &book.WordsNum, &book.Grade, &book.Difficulty, &book.Date); err != nil {
+			return nil, fmt.Errorf("error scanning row: %v", err)
+		}
+		books = append(books, book)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating over rows: %v", err)
+	}
+	return books, nil
+}
+
+// 3 QueryCET4WordInfo 查询 CET4 单词信息
 func QueryCet4_dictionary(db *sql.DB) ([]Cet4_dictionary, error) {
 	rows, err := db.Query("SELECT * FROM cet4_dictionary")
 	if err != nil {
@@ -115,7 +163,7 @@ func QueryCet4_dictionary(db *sql.DB) ([]Cet4_dictionary, error) {
 	return cet4WordInfos, nil
 }
 
-// QueryMistakeInfo 查询错题信息
+// 4 QueryMistakeInfo 查询错题信息
 func QueryMistake(db *sql.DB) ([]Mistake, error) {
 	rows, err := db.Query("SELECT * FROM mistakes")
 	if err != nil {
@@ -134,7 +182,7 @@ func QueryMistake(db *sql.DB) ([]Mistake, error) {
 	return mistakeInfos, nil
 }
 
-// QueryNotebookInfo 查询单词收藏本信息
+// 5 QueryNotebookInfo 查询单词收藏本信息
 func QueryNotebook(db *sql.DB) ([]Notebook, error) {
 	rows, err := db.Query("SELECT * FROM notebook")
 	if err != nil {
@@ -153,7 +201,7 @@ func QueryNotebook(db *sql.DB) ([]Notebook, error) {
 	return notebookInfos, nil
 }
 
-// QueryUserStudyInfo 查询用户学习信息
+// 6 QueryUserStudyInfo 查询用户学习信息
 func QueryUser_Study(db *sql.DB) ([]User_Study, error) {
 	rows, err := db.Query("SELECT * FROM user_study")
 	if err != nil {
