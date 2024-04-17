@@ -84,13 +84,11 @@ func GetJoinedTeams(redisClient *redis.Client, username string) ([]string, error
 	if err != nil {
 		return nil, err
 	}
-
 	// 将团队名从 map 转换为 slice
 	var teamNames []string
-	for teamName := range teamNamesMap {
+	for _, teamName := range teamNamesMap {
 		teamNames = append(teamNames, teamName)
 	}
-
 	return teamNames, nil
 }
 

@@ -133,7 +133,7 @@ func main() {
 				"message": "用户不存在",
 			})
 		} else if controlsql.CheckUser(db, data.Username, data.Pwd) {
-			//teamName, err := controlsql.GetJoinedTeams(client, data.Username)
+			teamName, err := controlsql.GetJoinedTeams(client, data.Username)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{
 					"code":  "500",
@@ -141,7 +141,7 @@ func main() {
 				})
 				return
 			}
-			token, err := service.GenerateToken(data.Username, "每日背单词小组")
+			token, err := service.GenerateToken(data.Username, teamName[0])
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{
 					"code":  "500",
