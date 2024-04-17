@@ -145,6 +145,19 @@
         
         <button class="add-button">添加内容</button>
 
+        <div>
+
+            <table class="content-table">
+                <thead>
+                <tr>
+
+                </tr>
+                </thead>
+
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
     </section>
 
 </body>
@@ -153,6 +166,138 @@
 <script src="./js/test-details.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.0/lib/darkmode-js.min.js"></script>
 <script>
+    const data = [
+        { name: 'Domenic', classNumber: 10, phoneNumber: '1234567890' },
+        { name: 'John', classNumber: 11, phoneNumber: '1234567890' },
+        { name: 'Mary', classNumber: 12, phoneNumber: '1234567890' },
+        { name: 'Tom', classNumber: 13, phoneNumber: '1234567890' },
+        { name: 'Jane', classNumber: 14, phoneNumber: '1234567890' },
+        { name: 'Lisa', classNumber: 15, phoneNumber: '1234567890' },
+        { name: 'David', classNumber: 16, phoneNumber: '1234567890' },
+        { name: 'Emily', classNumber: 17, phoneNumber: '1234567890' },
+        { name: 'Kevin', classNumber: 18, phoneNumber: '1234567890' },
+        { name: 'Samantha', classNumber: 19, phoneNumber: '1234567890' },
+        { name: 'Alex', classNumber: 20, phoneNumber: '1234567890' },
+        { name: 'Karen', classNumber: 21, phoneNumber: '1234567890' },
+    ];
+    fetchDataToTable('http://localhost:8080/api/team_manage/exam_situation/exam_detail', 'POST', { exam_name: "我是傻逼" })
+    function getMapValue(data, responseData) {
+        for (let key in data) {
+            //遍历并寻找到值为列表的属性
+            let value = data[key];
+            if (Array.isArray(value)) {
+                //列表中的每一项都是map对象
+                for (let i = 0; i < value.length; i++) {
+                    responseData.push(value[i])
+                }
+            } else if (typeof value === 'object') {
+                getMapValue(value, responseData)
+            }
+        }
+    }
+    //需要制定url、'GET'或'POST'、请求数据,用Map类型表示
+    function fetchDataToTable(url, method, requestData) {
+        let responseData = []
+        method = method.toUpperCase();
+        fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+            body: method === 'GET' ? null : JSON.stringify(requestData)
+        }).then(response => response.json())
+            .then(data => {
+                getMapValue(data, responseData)
+                createTable(responseData);
+            }).catch(error => console.error(error));
+    }
+    let angleDirections=[];
+    function createTable(data) {
+        // 清空表格内容
+        document.getElementById('tableBody').innerHTML = '';
+        // 创建表头
+        const tableHead = document.querySelector('thead tr');
+        tableHead.innerHTML = '';
+        const headers = ['select'].concat(Object.keys(data[0]), ['delete']);
+        // 添加选择和删除列
+        for(let i=0;i<headers.length;i++){
+            angleDirections.push(true);
+        } // 初始化排序方向数组，减去操作列
+        headers.forEach((header, i) => {
+            const th = document.createElement('th');
+            if (header === 'select') {
+                // 创建全选复选框
+                const allSelectCheckbox = document.createElement('input');
+                allSelectCheckbox.type = 'checkbox';
+                allSelectCheckbox.addEventListener('change', function () {
+                    // 全选复选框变更事件
+                    const allCheckboxes = document.querySelectorAll('#tableBody tr td input[type="checkbox"]');
+                    allCheckboxes.forEach(checkbox => {
+                        checkbox.checked = this.checked;
+                    });
+                });
+                th.appendChild(allSelectCheckbox);
+            } else if (header === 'delete') {
+                th.textContent = '操作'; // 设置操作列的表头内容
+            } else {
+                th.textContent = header;
+                const sort = document.createElement("i");
+                sort.classList.add("uil", angleDirections[i] ? "uil-angle-up" : "uil-angle-down");
+                sort.addEventListener("click", () => {
+                    // 点击排序按钮时，重新排序数据并刷新表格
+                    data.sort((a, b) => {
+                        if (a[header] < b[header]) {
+                            return angleDirections[i] ? 1 : -1;
+                        } else if (a[header] > b[header]) {
+                            return angleDirections[i] ? -1 : 1;
+                        } else {
+                            return 0;
+                        }
+                    });
+                    let res=!angleDirections[i];
+                    for(let j=0;j<angleDirections.length;j++){
+                        angleDirections[j]=true;
+                    }
+                    angleDirections[i]=res; // 切换排序方向
+                    createTable(data);
+                });
+                th.appendChild(sort);
+            }
+            tableHead.appendChild(th);
+        });
+
+        // 创建表格行
+        data.forEach((item, rowIndex) => {
+            const row = document.createElement('tr');
+            headers.forEach((header, i) => {
+                const td = document.createElement('td');
+                if (header === 'select') {
+                    // 创建复选框
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    td.appendChild(checkbox);
+                } else if (header === 'delete') {
+                    // 创建删除按钮
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = '删除';
+                    deleteBtn.addEventListener('click', function () {
+                        // 删除按钮点击事件
+                        data.splice(rowIndex, 1); // 从数据中移除行
+                        createTable(data); // 重新创建表格
+                    });
+                    td.appendChild(deleteBtn);
+                } else {
+                    td.textContent = item[header]; // 设置单元格内容
+                }
+                row.appendChild(td);
+            });
+            document.getElementById('tableBody').appendChild(row);
+        });
+    }
+
+    createTable(data);
+
 </script>
 <style>
     .group {
@@ -226,7 +371,7 @@
 
     /* 选中的选项样式 */
     #category option:checked {
-        background-color: #6e93f7;
+        background-color: #3a7afe;
         /* 选中时的背景颜色 */
         color: #fff;
         /* 选中时的文字颜色 */
@@ -238,7 +383,7 @@
         display: flex; /* 使用Flexbox布局 */  
         align-items: center; /* 垂直居中子元素 */  
         border: none;  
-        background-color: #6e93f7;  
+        background-color: #3a7afe;  
         cursor: pointer;  
         padding: 5px; /* 为按钮内部添加一些间距 */  
         overflow: hidden; /* 确保内容不会溢出按钮 */
@@ -269,8 +414,9 @@
         cursor: pointer;  
         padding: 5px; /* 为按钮内部添加一些间距 */  
         overflow: hidden; /* 确保内容不会溢出按钮 */
-        border-radius: 5px;  
-        color: red;
+        border-radius: 5px;
+        background-color: #ff5f5f;
+        color: #f0f0f0;
         font-size: 16px;
         margin-left: 20px;
     }
@@ -284,11 +430,73 @@
         padding: 5px; /* 为按钮内部添加一些间距 */  
         overflow: hidden; /* 确保内容不会溢出按钮 */
         border-radius: 5px;  
-        background-color: #6e93f7;
+        background-color: #3a7afe;
         color: white;
         font-size: 16px;
         margin-left: 20px;
         margin-top: 20px;
+    }
+
+    .content-table {
+        border-collapse: collapse;/*合并边框*/
+        margin-top: 30px;
+        margin-left:20px;
+        font-size: 1em;
+        width:970px;
+        border-radius: 5px 5px 0 0;
+        overflow: hidden;
+        background-color: white;
+        /*box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);/*阴影*/
+    }
+
+    .content-table thead tr {
+        background-color: #3a7afe;
+        color: #ffffff;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .content-table th {
+        /*background-image: url('../static/image/updown.svg');*/
+        /* 设置背景图像 */
+        background-size: 16px;
+        /* 背景图像大小 */
+        background-repeat: no-repeat;
+        /* 不重复背景图像 */
+        background-position: right center;
+        /* 定位背景图像到单元格右侧中间 */
+        cursor: pointer;
+        /* 将鼠标光标改为手指形状，表示可以点击 */
+        /*颜色*/
+        color: #ffffff;
+    }
+
+    .content-table th,
+    .content-table td {
+        padding: 12px 15px;
+    }
+
+    .content-table tbody tr {
+        border-bottom: 1px solid #dddddd;
+        color: #3f3ba2;
+        text-align: center;
+    }
+
+    .content-table tbody tr:last-of-type {
+        border-bottom: 2px solid #3a7afe;
+        /*最后一行加粗*/
+    }
+
+    .name-cell a {
+        text-decoration: none;
+        /* 移除下划线 */
+        color: inherit;
+        /* 继承父元素的文字颜色 */
+    }
+
+
+    .name-cell a:hover {
+        color: #3a7afe;
     }
 
 
