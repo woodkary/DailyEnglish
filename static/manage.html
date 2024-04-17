@@ -88,14 +88,17 @@
 
         <div class="dash-content">
             <div class="filter-container"
-                style="margin-top: 40px;background: white;height: 150px;margin-left: 20px;border-radius: 15px;">
+                style="margin-top: 40px;background: white;max-height: 150px;margin-left: 20px;border-radius: 15px;">
                 <div class="filter-box" style="border-bottom: 1px solid #eeeeee;height: 60px;display:flex;">
                     <span
                         style="width:100%;margin-top: 10px; margin-left: 20px; font-size: 23px; color: #3a7afe; display: flex; align-items: center;">
                         <img src="./image/filter.svg" style="width: 24px;">
                         <span style="margin-right: auto;">筛选</span>
-                        <img src="./image/updown.svg"
-                            style="width: 24px; background-color: #3a7afe;margin-right: 20px;">
+                        <span class="toggle-filter">
+                            <i class="uil uil-angle-up" style="margin-right: 20px;"></i>
+                            <!--                            <img src="./image/updown.svg"
+                                style="width: 24px; background-color: #3a7afe;margin-right: 20px;">-->
+                        </span>
                     </span>
                 </div>
                 <div class="filter" style="display: flex; padding: 20px;">
@@ -110,28 +113,19 @@
                             </svg>
                             <input class="input" type="search" placeholder="Search" />
                         </div>
-
-                        <select name="category" id="category" style="height: 40px; margin-left: 30px;">
-                            <option value="category1">Category 1</option>
-                            <option value="category2">Category 2</option>
-                            <option value="category3">Category 3</option>
+                        
+                        
+                        <select name="category" id="category" style="height: 40px; margin-left: 75px;">
+                            <option value="category1">classNumber 1</option>
+                            <option value="category2">classNumber 2</option>
+                            <option value="category3">classNumber 3</option>
                         </select>
 
-                        <select name="category" id="category" style="height: 40px; margin-left: 30px;">
-                            <option value="category1">Category 1</option>
-                            <option value="category2">Category 2</option>
-                            <option value="category3">Category 3</option>
-                        </select>
 
-                        <select name="category" id="category" style="height: 40px; margin-left: 30px;">
-                            <option value="category1">Category 1</option>
-                            <option value="category2">Category 2</option>
-                            <option value="category3">Category 3</option>
-                        </select>
 
                         <button class="filter-button">
                             <img src="./image/search.svg" alt="Button Icon">
-                            <span>筛选</span>  
+                            <span>筛选</span>
                         </button>
 
                         <button class="remove-button">消除</button>
@@ -142,16 +136,16 @@
                 </div>
             </div>
         </div>
-        
-        <button class="add-button">添加内容</button>
+
+
 
         <div>
 
             <table class="content-table">
                 <thead>
-                <tr>
+                    <tr>
 
-                </tr>
+                    </tr>
                 </thead>
 
                 <tbody id="tableBody"></tbody>
@@ -212,7 +206,7 @@
                 createTable(responseData);
             }).catch(error => console.error(error));
     }
-    let angleDirections=[];
+    let angleDirections = [];
     function createTable(data) {
         // 清空表格内容
         document.getElementById('tableBody').innerHTML = '';
@@ -221,7 +215,7 @@
         tableHead.innerHTML = '';
         const headers = ['select'].concat(Object.keys(data[0]), ['delete']);
         // 添加选择和删除列
-        for(let i=0;i<headers.length;i++){
+        for (let i = 0; i < headers.length; i++) {
             angleDirections.push(true);
         } // 初始化排序方向数组，减去操作列
         headers.forEach((header, i) => {
@@ -230,9 +224,13 @@
                 // 创建全选复选框
                 const allSelectCheckbox = document.createElement('input');
                 allSelectCheckbox.type = 'checkbox';
+                allSelectCheckbox.classList.add('bigbox');
+
                 allSelectCheckbox.addEventListener('change', function () {
                     // 全选复选框变更事件
+
                     const allCheckboxes = document.querySelectorAll('#tableBody tr td input[type="checkbox"]');
+
                     allCheckboxes.forEach(checkbox => {
                         checkbox.checked = this.checked;
                     });
@@ -255,11 +253,11 @@
                             return 0;
                         }
                     });
-                    let res=!angleDirections[i];
-                    for(let j=0;j<angleDirections.length;j++){
-                        angleDirections[j]=true;
+                    let res = !angleDirections[i];
+                    for (let j = 0; j < angleDirections.length; j++) {
+                        angleDirections[j] = true;
                     }
-                    angleDirections[i]=res; // 切换排序方向
+                    angleDirections[i] = res; // 切换排序方向
                     createTable(data);
                 });
                 th.appendChild(sort);
@@ -276,11 +274,22 @@
                     // 创建复选框
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
+                    checkbox.classList.add('bigbox');
+
                     td.appendChild(checkbox);
                 } else if (header === 'delete') {
+
+
                     // 创建删除按钮
                     const deleteBtn = document.createElement('button');
-                    deleteBtn.textContent = '删除';
+                    deleteBtn.classList.add('delete-button'); // 添加自定义类名以便样式化
+                    // 添加垃圾桶图标
+                    const trashIcon = document.createElement('i');
+                    trashIcon.classList.add('far', 'fa-trash-alt'); // 使用 Font Awesome 图标
+                    deleteBtn.appendChild(trashIcon);
+
+                    // const deleteBtn = document.createElement('button');
+                    // deleteBtn.textContent = '删除';
                     deleteBtn.addEventListener('click', function () {
                         // 删除按钮点击事件
                         data.splice(rowIndex, 1); // 从数据中移除行
@@ -297,7 +306,33 @@
     }
 
     createTable(data);
+    //添加隐藏筛选框点击事件
+    document.addEventListener('DOMContentLoaded', function () {
+        // 获取点击的图标元素
+        var toggleFilter = document.querySelector('.toggle-filter');
 
+        // 获取 i 元素
+        var filterIcon = toggleFilter.querySelector('i');
+
+        // 获取需要隐藏和显示的 filter 容器
+        var filterContainer = document.querySelector('.filter');
+
+        // 添加点击事件
+        toggleFilter.addEventListener('click', function () {
+            // 切换 filter 容器的显示和隐藏
+            if (filterContainer.style.display === 'none') {
+                filterContainer.style.display = 'flex';
+                filterContainer.style.maxHeight = '1000px'; // 使用足够大的值来确保内容可以完全展开
+                filterIcon.classList.remove('uil-angle-down');
+                filterIcon.classList.add('uil-angle-up');
+            } else {
+                filterContainer.style.display = 'none';
+                filterContainer.style.maxHeight = '0'; // 隐藏内容
+                filterIcon.classList.remove('uil-angle-up');
+                filterIcon.classList.add('uil-angle-down');
+            }
+        });
+    });
 </script>
 <style>
     .group {
@@ -377,72 +412,103 @@
         /* 选中时的文字颜色 */
     }
 
-    .filter-button {  
+    .filter-button {
         height: 40px;
         width: 90px;
-        display: flex; /* 使用Flexbox布局 */  
-        align-items: center; /* 垂直居中子元素 */  
-        border: none;  
-        background-color: #3a7afe;  
-        cursor: pointer;  
-        padding: 5px; /* 为按钮内部添加一些间距 */  
-        overflow: hidden; /* 确保内容不会溢出按钮 */
-        border-radius: 5px;  
-        margin-left: 50px;
-    }  
-  
-    .filter-button img {  
-        width: 20px; /* 设置图片宽度 */  
-        height: 20px; /* 设置图片高度 */  
-        margin-right: 0; /* 图片和文本之间的间距 */  
-    }  
-  
-    .filter-button span {  
-        flex-grow: 1; /* 文本占据剩余空间 */  
-        text-align: center; /* 水平居中文本 */  
-        color: white; /* 文本颜色 */  
-        font-size: 16px; /* 文本大小 */  
-        margin-right: 5px; /* 图片和文本之间的间距 */
-        margin-left: -10px; 
-    }  
+        display: flex;
+        /* 使用Flexbox布局 */
+        align-items: center;
+        /* 垂直居中子元素 */
+        border: none;
+        background-color: #3a7afe;
+        cursor: pointer;
+        padding: 5px;
+        /* 为按钮内部添加一些间距 */
+        overflow: hidden;
+        /* 确保内容不会溢出按钮 */
+        border-radius: 5px;
+        margin-left: 155px;
+    }
 
-    .remove-button {  
+    .filter-button img {
+        width: 20px;
+        /* 设置图片宽度 */
+        height: 20px;
+        /* 设置图片高度 */
+        margin-right: 0;
+        /* 图片和文本之间的间距 */
+    }
+
+    .filter-button span {
+        flex-grow: 1;
+        /* 文本占据剩余空间 */
+        text-align: center;
+        /* 水平居中文本 */
+        color: white;
+        /* 文本颜色 */
+        font-size: 16px;
+        /* 文本大小 */
+        margin-right: 5px;
+        /* 图片和文本之间的间距 */
+        margin-left: -10px;
+    }
+
+    .remove-button {
         height: 40px;
         width: 90px;
-        text-align: center;  
-        border: none;   
-        cursor: pointer;  
-        padding: 5px; /* 为按钮内部添加一些间距 */  
-        overflow: hidden; /* 确保内容不会溢出按钮 */
+        text-align: center;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+        /* 为按钮内部添加一些间距 */
+        overflow: hidden;
+        /* 确保内容不会溢出按钮 */
         border-radius: 5px;
         background-color: #ff5f5f;
         color: #f0f0f0;
         font-size: 16px;
-        margin-left: 20px;
+        margin-left: 75px;
     }
 
-    .add-button {  
+    .add-button {
         height: 40px;
         width: 90px;
-        text-align: center;  
-        border: none;   
-        cursor: pointer;  
-        padding: 5px; /* 为按钮内部添加一些间距 */  
-        overflow: hidden; /* 确保内容不会溢出按钮 */
-        border-radius: 5px;  
+        display: flex;
+        /* 使用Flexbox布局 */
+        align-items: center;
+        /* 垂直居中子元素 */
+        border: none;
         background-color: #3a7afe;
+        cursor: pointer;
+        padding: 5px;
+        /* 为按钮内部添加一些间距 */
+        overflow: hidden;
+        /* 确保内容不会溢出按钮 */
+        border-radius: 5px;
+        margin-left: 55px;
+    }
+
+
+
+    .add-button span {
+        flex-grow: 1;
+        /* 文本占据剩余空间 */
+        text-align: center;
+        /* 水平居中文本 */
         color: white;
+        /* 文本颜色 */
         font-size: 16px;
-        margin-left: 20px;
-        margin-top: 20px;
+        /* 文本大小 */
+
     }
 
     .content-table {
-        border-collapse: collapse;/*合并边框*/
+        border-collapse: collapse;
+        /*合并边框*/
         margin-top: 30px;
-        margin-left:20px;
+        margin-left: 20px;
         font-size: 1em;
-        width:970px;
+        width: 970px;
         border-radius: 5px 5px 0 0;
         overflow: hidden;
         background-color: white;
@@ -499,7 +565,26 @@
         color: #3a7afe;
     }
 
+    /* 隐藏原始的复选框 */
+    .bigbox {
+        width: 16px;
+        height: 16px;
 
+    }
+    /* 调整图标大小 */
+.fa-trash-alt {
+    font-size: 20px; /* 将图标大小设置为 24 像素 */
+    color: red; 
+}
+
+/* 调整按钮大小 */
+.delete-button {
+    font-size: 20px; /* 将按钮文字大小设置为 20 像素 */
+    width: 30px; /* 将按钮宽度设置为 40 像素 */
+    height: 30px; /* 将按钮高度设置为 40 像素 */
+    border: 0;
+    background-color: #fff;
+}
 </style>
 
 </html>
