@@ -4,277 +4,580 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/test-statistics.css">
-    <link rel="stylesheet" href="./css/sidebar.css">
+    <!-- <link rel="stylesheet" href="./css/test-statistics.css"> -->
+    <!-- <link rel="stylesheet" href="./css/sidebar.css"> -->
     <link rel="stylesheet" href="./css/myNavbar.css">
     <title>考试情况</title>
-
+    <link rel="stylesheet" href="./css/navSidebar.css">
+    <link rel="stylesheet" href="./css/issuePunch.css">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 </head>
 <style>
-    /* 添加斑马条纹样式 */
-    .table-container {
-        display: table;
-        width: 100%;
-        table-layout: fixed; /* 固定表布局，确保单元格大小固定 */
 
-        .table-row {
-            display: table-row;
-            background-color: #f2f2f2;
-            height: 20px; /* 设置每行的高度 */
-
-        }
-
-        .table-row:nth-child(odd) {
-            background-color: #ffffff;
-        }
-
-        .table-cell {
-            display: table-cell;
-            padding: 8px;
-            text-align: center;
-        }
-
-        .actions-cell {
-            text-align: center;
-        }
-
-        .button {
-            cursor: pointer;
-            padding: 5px 20px;
-            border: 1px solid #ccc;
-            /*border-radius: 5%;*/
-            color: #333;
-            text-decoration: none;
-            /* display: inline-block;行内块元素 */
-            background-color: #f2f2f2;
-            /*不换行*/
-            white-space: nowrap;
-            /*设置超出部分隐藏*/
-            overflow: hidden;
-            text-align: center;
-        }
-
-        .button:hover {
-            background-color: #f0f0f0;
-        }
-    }
-    .darkmode--activated .table-container .table-cell {
-        color: #fff;
-    }
-    .darkmode--activated .table-container .actions-cell {
-        background-color: #333;
-    }
-    .darkmode--activated .table-container .button {
-        background-color: #333;
-        color: #fff;
-    }
-    .darkmode--activated .table-container .button:hover {
-        background-color: #444;
-    }
-    .darkmode--activated .table-container .table-row {
-        background-color: #333;
-    }
-   .darkmode--activated .table-container .table-row:nth-child(odd) {
-        background-color: #333;
-    }
 </style>
 
 <body>
-    <!-- Navigation bar -->
-    <div class="navbar">
-        <div class="navbar-left">
-            <img src="./image/little-edellweiss.regular.webp" class="brand-logo">
-        </div>
-        <div class="navbar-right">
-            <img src="./image/moon.svg" alt="夜间模式" id="moon" onclick="toggleMoon()" class="night-mode">
-            <button class="notifications">
-                <img src="./image/通知.svg">
-            </button>
+    <nav>
+        <div class="logo-name">
+            <!--        <div class="logo-image">
+            <img src="./image/little-edellweiss.regular.webp" alt="">
+        </div>-->
 
-            <div class="user-info">
-                <div>姓名</div>
-                <div>组织名称</div>
-            </div>
-            <img src="./image/pikachu.jpg" alt="头像" class="user-avatar">
-            <img src="./image/logout.svg" class="logout">
+            <span class="logo_name">DailyEnglish</span>
         </div>
-    </div>
-    <div class="sidebar-container">
-        <div class="sidebar">
-            <div>
-                <a href="./index.html">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" style="isolation: isolate"
-                        viewBox="64 64 896 896">
-                        <path
-                            d="M946.5 505L560.1 118.8l-25.9-25.9a31.5 31.5 0 0 0-44.4 0L77.5 505a63.9 63.9 0 0 0-18.8 46c.4 35.2 29.7 63.3 64.9 63.3h42.5V940h691.8V614.3h43.4c17.1 0 33.2-6.7 45.3-18.8a63.6 63.6 0 0 0 18.7-45.3c0-17-6.7-33.1-18.8-45.2zM568 868H456V664h112v204zm217.9-325.7V868H632V640c0-22.1-17.9-40-40-40H432c-22.1 0-40 17.9-40 40v228H238.1V542.3h-96l370-369.7 23.1 23.1L882 542.3h-96.1z">
-                        </path>
-                    </svg>
-                    主页
-                </a>
-            </div>
-            <button class="dropdown-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" style="isolation: isolate"
-                    viewBox="64 64 896 896">
-                    <path
-                        d="M928 160H96c-17.7 0-32 14.3-32 32v640c0 17.7 14.3 32 32 32h832c17.7 0 32-14.3 32-32V192c0-17.7-14.3-32-32-32zm-40 110.8V792H136V270.8l-27.6-21.5 39.3-50.5 42.8 33.3h643.1l42.8-33.3 39.3 50.5-27.7 21.5zM833.6 232L512 482 190.4 232l-42.8-33.3-39.3 50.5 27.6 21.5 341.6 265.6a55.99 55.99 0 0 0 68.7 0L888 270.8l27.6-21.5-39.3-50.5-42.7 33.2z">
-                    </path>
-                </svg>
-                任务发布
-                <i class="fa fa-caret-down"></i>
-            </button>
-            <div class="dropdown-container">
-                <a href="issuePunch.html">打卡发布</a>
-                <a href="test-release.html">考试发布</a>
-            </div>
-            <button class="dropdown-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">" viewBox="64 64
-                    896 896">
-                    <path
-                        d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z">
-                    </path>
-                </svg>
-                学习情况
-                <i class="fa fa-caret-down"></i>
-            </button>
-            <div class="dropdown-container">
-                <a href="test-statistics.html">考试情况</a>
-            </div>
-            <button class="dropdown-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" style="isolation: isolate"
-                    viewBox="64 64 896 896">" viewBox="64 64 896 896">
-                    <path
-                        d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z">
-                    </path>
-                </svg>
-                团队管理
-                <i class="fa fa-caret-down"></i>
-            </button>
-            <div class="dropdown-container">
-                <a href="manage.html">成员管理</a>
-                <a href="review.html">申请审核</a>
-            </div>
-            <a href="#contact">
-                <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">
-                    <path
-                        d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z">
-                    </path>
-                </svg>
-                个人中心
-            </a>
-        </div>
-    </div>
-    <h2 style="margin-left: 300px">学习情况 > 考试情况</h2>
-    <div class="membership">
-        <!-- <h2>这是页面模板</h2>
-    <p>这部分是页面的主要内容。</p> -->
-        <div class="organization-info">
 
-            <div style="display: flex; justify-content: space-between;">
-                <div class="left-col">
-                    <div class="organization-name"style="margin-left:-20px">春田花花幼稚园</div>
-                    <text class="exam" style="margin-left:-20px;">第一学期第二单元小测</text>
+        <div class="menu-items">
+            <ul class="nav-links">
+                <li><a href="index.html">
+                        <i class="uil uil-estate"></i>
+                        <span class="link-name">主页</span>
+                    </a></li>
+                <li><a href="issuePunch.html">
+                        <i class="uil uil-calendar-alt"></i>
+                        <span class="link-name">打卡发布</span>
+                    </a></li>
+                <li><a href="test-release.html">
+                        <i class="uil uil-calender"></i>
+                        <span class="link-name">考试发布</span>
+                    </a></li>
+                <li><a href="test-statistics.html">
+                        <i class="uil uil-chart"></i>
+                        <span class="link-name">考试情况</span>
+                    </a></li>
+                <li><a href="manage.html">
+                        <i class="uil uil-meh-alt"></i>
+                        <span class="link-name">成员管理</span>
+                    </a></li>
+                <li><a href="review.html">
+                        <i class="uil uil-message"></i>
+                        <span class="link-name">申请审核</span>
+                    </a></li>
+                <li><a href="#">
+                        <i class="uil uil-user"></i>
+                        <span class="link-name">个人中心</span>
+                    </a></li>
+            </ul>
+
+            <ul class="logout-mode">
+                <li><a href="#">
+                        <i class="uil uil-signout"></i>
+                        <span class="link-name">Logout</span>
+                    </a></li>
+
+                <li class="mode">
+                    <a href="#">
+                        <i class="uil uil-moon"></i>
+                        <span class="link-name">Dark Mode</span>
+                    </a>
+
+                    <div class="mode-toggle">
+                        <span class="switch"></span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <section class="dashboard">
+        <div class="top">
+            <i class="uil uil-bars sidebar-toggle"></i>
+
+            <div class="search-box">
+                <i class="uil uil-search"></i>
+                <input type="text" placeholder="Search here...">
+            </div>
+
+            <img src="image/pikachu.jpg" alt="">
+        </div>
+
+        <div class="dash-content">
+            <div class="filter-container"
+                style="margin-top: 40px;background: white;max-height: 150px;margin-left: 20px;border-radius: 15px;">
+                <div class="filter-box" style="border-bottom: 1px solid #eeeeee;height: 60px;display:flex;">
+                    <span
+                        style="width:100%;margin-top: 10px; margin-left: 20px; font-size: 23px; color: #3a7afe; display: flex; align-items: center;">
+                        <img src="./image/filter.svg" style="width: 24px;">
+                        <span style="margin-right: auto;">Filter</span>
+                        <span class="toggle-filter">
+                            <i class="uil uil-angle-up" style="margin-right: 20px;"></i>
+                            <!--                            <img src="./image/updown.svg"
+                                style="width: 24px; background-color: #3a7afe;margin-right: 20px;">-->
+                        </span>
+                    </span>
                 </div>
-                <div class="right-col">
-                    <div style="width: 100%; max-height: 20%">
-                        <div class="search-container" style="margin-right: 40px;">
-                            <input type="text" class="search-input" placeholder="搜索成员...">
-                            <img src="./image/搜索图标.png" alt="Search" class="search-icon">
+                <div class="filter" style="display: flex; padding: 20px;">
+                    <div class="container" style="display: flex;align-items: center;">
+                        <div class="group">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
+                                <g>
+                                    <path
+                                        d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z">
+                                    </path>
+                                </g>
+                            </svg>
+                            <input class="input" type="search" placeholder="Search" />
                         </div>
 
+                        <select name="category" id="category" style="height: 40px; margin-left: 30px;">
+                            <option value="category1">Category 1</option>
+                            <option value="category2">Category 2</option>
+                            <option value="category3">Category 3</option>
+                        </select>
+
+                        <select name="category" id="category" style="height: 40px; margin-left: 30px;">
+                            <option value="category1">Category 1</option>
+                            <option value="category2">Category 2</option>
+                            <option value="category3">Category 3</option>
+                        </select>
+
+                        <select name="category" id="category" style="height: 40px; margin-left: 30px;">
+                            <option value="category1">Category 1</option>
+                            <option value="category2">Category 2</option>
+                            <option value="category3">Category 3</option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+            <div style="display: flex; ">
+                <div class="chart-container">
+                    <div class="chart-title">6.16考试情况</div>
+                    <div id="main" style="width:400px;height:300px ;"> </div>
+                </div>
+                <div class="chart-container" style="width: 550px;">
+                    <div style="scale: 0.8; margin: -50px">
+                        <div style="height: 40px; margin-left: 160px;">
+                            <span class="chart-title"
+                                style="font-size: 25px; font-weight: 600; color: #3a7afe;">选择题号</span>
+                            <select name="category" id="category">
+                                <option value="category1">Category 1</option>
+                                <option value="category2">Category 2</option>
+                                <option value="category3">Category 3</option>
+                            </select>
+                        </div>
+                        <div id="choices" style="width: 600px;height:400px;"></div>
                     </div>
                 </div>
             </div>
-        </div>
-        <img src="./image/线条%201.png" alt="线条" style="margin-top: 2%; width: 100%">
-        <!--<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <line x1="0" y1="10" x2="60" y2="10" style="stroke:rgb(0,0,0);stroke-width:2;width"></line>
-    </svg>-->
-        <div id="table-container" class="table-container"></div>
 
-        <div class="pagination" id="pagination">
-            <!-- 分页按钮 -->
-            <button>&lt;</button>
-            <button>1</button>
-            <button>2</button>
-            <button>3</button>
-            <button>4</button>
-            <button>5</button>
-            <button>&gt;</button>
+            <div>
 
+                <table class="content-table">
+                    <thead>
+                        <tr>
+
+                        </tr>
+                    </thead>
+
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
         </div>
-    </div>
+    </section>
+
+
+
 </body>
 <script src="./js/Navbar.js"></script>
 <script src="./js/sidebar.js"></script>
 <script src="./js/test-statistics.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.0/lib/darkmode-js.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.0/lib/darkmode-js.min.js"></script> -->
 <script>
-    var options = {
-        bottom: '64px', // default: '32px'
-        right: 'unset', // default: '32px'
-        left: '32px', // default: 'unset'
-        time: '0.3s', // default: '0.3s'
-        mixColor: '#fff', // default: '#fff'
-        backgroundColor: '#fff',  // default: '#fff'
-        buttonColorDark: '#100f2c',  // default: '#100f2c'
-        buttonColorLight: '#fff', // default: '#fff'
-        saveInCookies: false, // default: true,
-        label: '', // default: ''
-        autoMatchOsTheme: true // default: true
-    }
-    new Darkmode(options).showWidget();
+    var chartDom = document.getElementById('main');
+    var myChart = echarts.init(chartDom);
+    var option;
 
-    // 模拟后端数据
-    const backendData = [
-        { nickname: 'John Doe', teamPermission: 'Admin', joinDate: '2023-01-01', totalCheckIns: 100 },
+    option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            top: '10%',
+            bottom: '10%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value',
+            boundaryGap: [0, 0.01]
+        },
+        yAxis: {
+            type: 'category',
+            data: ['F', 'E', 'D', 'C', 'B', 'A']
+        },
+        series: [
+            {
+                name: '6.16',
+                type: 'bar',
+                data: [1, 5, 12, 21, 14, 6],
+                itemStyle: {
+                    color: '#4e88fe'
+                }
+            }
+        ]
+    };
 
-    ];
+    option && myChart.setOption(option);
 
-    function generateTable(data) {
-        const container = document.getElementById('table-container');
-        container.innerHTML = ''; // 清空容器
 
-        // 生成表头
-        const headerRow = document.createElement('div');
-        headerRow.className = 'table-row';
-        const headers = ['昵称', '是否参加考试', '考试成绩', '错题数', '操作'];
-        headers.forEach(headerText => {
-            const headerCell = document.createElement('div');
-            headerCell.className = 'table-cell';
-            headerCell.textContent = headerText;
-            headerRow.appendChild(headerCell);
+    // 选择题统计图
+    var correctChoice = 'B'; // 正确选项的索引，假设 'B' 是正确选项
+    var choiceNum = [0.1, 0.2, 0.3, 0.4]; // 选择此选项的人数百分比
+    var examsNum = 100; // 考试人数
+    var colors = ['#4E88FE', '#EE6666']; // 定义颜色列表，i=0 时为错误选项颜色，i=1 时为正确选项颜色
+
+    var chartDom2 = document.getElementById('choices');
+    var myChart2 = echarts.init(chartDom2);
+    var option2;
+
+    option2 = {
+        tooltip: {
+            trigger: 'item',
+            formatter: function (params) {
+                // 计算选择该选项的人数
+                var num = choiceNum[params.dataIndex] * examsNum;
+                return params.name + ': ' + num.toFixed(0) + ' 人 (' + params.value.toFixed(1) + '%)';
+            }
+        },
+        xAxis: {
+            type: 'category',
+            data: ['A', 'B', 'C', 'D'],
+            /*axisLabel: {
+                fontSize: 16 // 设置横坐标轴标签字体大小
+            }*/
+        },
+        yAxis: {
+            type: 'value',
+            max: 100,
+            axisLabel: {
+                formatter: function (value) {
+                    return value + '%';
+                },
+                fontSize: 16 // 设置纵坐标轴标签字体大小
+            }
+        },
+        series: [
+            {
+                data: [
+                    {
+                        value: choiceNum[0] * 100,
+                        itemStyle: {
+                            color: colors[correctChoice === 'A' ? 1 : 0] // 如果 'A' 是正确选项，则使用 '#a90000'，否则使用 '#5470C6'
+                        }
+                    },
+                    {
+                        value: choiceNum[1] * 100,
+                        itemStyle: {
+                            color: colors[correctChoice === 'B' ? 1 : 0] // 如果 'B' 是正确选项，则使用 '#a90000'，否则使用 '#5470C6'
+                        }
+                    },
+                    {
+                        value: choiceNum[2] * 100,
+                        itemStyle: {
+                            color: colors[correctChoice === 'C' ? 1 : 0] // 如果 'C' 是正确选项，则使用 '#a90000'，否则使用 '#5470C6'
+                        }
+                    },
+                    {
+                        value: choiceNum[3] * 100,
+                        itemStyle: {
+                            color: colors[correctChoice === 'D' ? 1 : 0] // 如果 'D' 是正确选项，则使用 '#a90000'，否则使用 '#5470C6'
+                        }
+                    }
+                ],
+                type: 'bar'
+            }
+        ]
+    };
+
+    option2 && myChart2.setOption(option2);
+    //添加隐藏筛选框点击事件
+    document.addEventListener('DOMContentLoaded', function () {
+        // 获取点击的图标元素
+        var toggleFilter = document.querySelector('.toggle-filter');
+
+        // 获取 i 元素
+        var filterIcon = toggleFilter.querySelector('i');
+
+        // 获取需要隐藏和显示的 filter 容器
+        var filterContainer = document.querySelector('.filter');
+
+        // 添加点击事件
+        toggleFilter.addEventListener('click', function () {
+            // 切换 filter 容器的显示和隐藏
+            if (filterContainer.style.display === 'none') {
+                filterContainer.style.display = 'flex';
+                filterContainer.style.maxHeight = '1000px'; // 使用足够大的值来确保内容可以完全展开
+                filterIcon.classList.remove('uil-angle-down');
+                filterIcon.classList.add('uil-angle-up');
+            } else {
+                filterContainer.style.display = 'none';
+                filterContainer.style.maxHeight = '0'; // 隐藏内容
+                filterIcon.classList.remove('uil-angle-up');
+                filterIcon.classList.add('uil-angle-down');
+            }
         });
-        container.appendChild(headerRow);
+    });
 
-        // 生成行
-        data.forEach(item => {
-            const row = document.createElement('div');
-            row.className = 'table-row';
 
-            Object.keys(item).forEach(key => {
-                const cell = document.createElement('div');
-                cell.className = 'table-cell';
-                cell.textContent = item[key];
-                row.appendChild(cell);
-            });
-
-            // 添加操作单元格
-            const actionsCell = document.createElement('div');
-            actionsCell.className = 'table-cell actions-cell';
-            const detailBtn = document.createElement('span');
-            detailBtn.classList.add('button');
-            detailBtn.textContent = '详情';
-            detailBtn.onclick = () => console.log('详情 clicked');
-
-            actionsCell.appendChild(detailBtn);
-            row.appendChild(actionsCell);
-
-            container.appendChild(row);
-        });
-    }
-
-    // 初始化表格
-    generateTable(backendData.slice(0, 10)); // 限制每页最多10行
 </script>
+<script>
+    // 假设这是从后端获取的数据
+    const data = [
+        { rank: 1, name: 'Domenic', points: 10, progress: 1 },
+        { rank: 2, name: 'Drake', points: 9, progress: -1 },
+        { rank: 3, name: 'Drake1', points: 9, progress: 3 },
+        { rank: 4, name: 'Drake2', points: 11, progress: -5 },
+        { rank: 5, name: 'Drake3', points: 13, progress: 7 },
+        { rank: 6, name: 'Drake4', points: 17, progress: -6 },
+        { rank: 7, name: 'Drake5', points: 21, progress: -9 },
+        { rank: 8, name: 'Drake6', points: 25, progress: -12 }
+    ];
+    fetchDataToTable('http://localhost:8080/api/team_manage/exam_situation/exam_detail', 'POST', { exam_name: "我是傻逼" })
+    function getMapValue(data, responseData) {
+        for (let key in data) {
+            //遍历并寻找到值为列表的属性
+            let value = data[key];
+            if (Array.isArray(value)) {
+                //列表中的每一项都是map对象
+                for (let i = 0; i < value.length; i++) {
+                    responseData.push(value[i])
+                }
+            } else if (typeof value === 'object') {
+                getMapValue(value, responseData)
+            }
+        }
+    }
+    //需要制定url、'GET'或'POST'、请求数据,用Map类型表示
+    function fetchDataToTable(url, method, requestData) {
+        let responseData = []
+        method = method.toUpperCase();
+        fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+            body: method === 'GET' ? null : JSON.stringify(requestData)
+        }).then(response => response.json())
+            .then(data => {
+                getMapValue(data, responseData)
+                createTable(responseData);
+            }).catch(error => console.error(error));
+    }
+    let angleDirections=[];
+    function createTable(data) {
+        // 清空表格内容
+        document.getElementById('tableBody').innerHTML = '';
+        // 创建表头
+        const tableHead = document.querySelector('thead tr');
+        tableHead.innerHTML = '';
+        const headers = Object.keys(data[0]);
+        for(let i=0;i<headers.length;i++){
+            angleDirections.push(true);
+        }
+        headers.forEach((header,i) => {
+            const th = document.createElement('th');
+            th.textContent = header;
+            const sort=document.createElement("i");
+            sort.classList.add("uil",angleDirections[i]?"uil-angle-up":"uil-angle-down");
+            sort.addEventListener("click",()=>{
+                // 点击排序按钮时，重新排序数据并刷新表格
+                data.sort((a, b) => {
+                    if (a[header] < b[header]) {
+                        return angleDirections[i] ? 1 : -1;
+                    } else if (a[header] > b[header]) {
+                        return angleDirections[i] ? -1 : 1;
+                    } else {
+                        return 0;
+                    }
+                });
+                let res=!angleDirections[i];
+                for(let j=0;j<angleDirections.length;j++){
+                    angleDirections[j]=true;
+                }
+                angleDirections[i]=res;
+                createTable(data);
+            })
+            th.appendChild(sort);
+            tableHead.appendChild(th);
+        });
+
+        // 创建表格行
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            headers.forEach(header => {
+                const td = document.createElement('td');
+                td.textContent = item[header]; // 设置单元格内容
+                row.appendChild(td);
+            });
+            document.getElementById('tableBody').appendChild(row);
+        });
+    }
+    createTable(data);
+
+</script>
+<style>
+    .group {
+        display: flex;
+        line-height: 28px;
+        align-items: center;
+        position: relative;
+        max-width: 190px;
+
+        .input {
+            width: 100%;
+            height: 40px;
+            line-height: 28px;
+            padding: 0 1rem;
+            padding-left: 2.5rem;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            outline: none;
+            color: #89879f;
+            transition: 0.3s ease;
+            border-color: #d7dae3;
+        }
+
+        .input::placeholder {
+            color: #9e9ea7;
+        }
+
+        .input:focus,
+        input:hover {
+            outline: none;
+            border-color: #9dbdff;
+            background-color: #fff;
+        }
+
+        .icon {
+            position: relative;
+            left: 2rem;
+            width: 1rem;
+            height: 1rem;
+
+        }
+
+    }
+
+    #category {
+        height: 40px;
+        width: 150px;
+        margin-left: 20px;
+        font-size: 13px;
+        font-weight: 400;
+        padding: 8px;
+        border: 1px solid #d7dae3;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #7e7e7e;
+        outline: none;
+        /* 去除默认的聚焦边框 */
+    }
+
+    #category:hover,
+    #category:focus {
+        border-color: #9dbdff;
+        /* 鼠标悬停和聚焦时改变边框颜色 */
+    }
+
+    /* 鼠标悬停在选项上时的样式 */
+    #category option:hover {
+        background-color: #f0f0f0;
+        /* 悬停时的背景颜色 */
+    }
+
+    /* 选中的选项样式 */
+    #category option:checked {
+        background-color: #6e93f7;
+        /* 选中时的背景颜色 */
+        color: #fff;
+        /* 选中时的文字颜色 */
+    }
+
+    .chart-container {
+        margin-left: 20px;
+        margin-top: 20px;
+        width: 400px;
+        height: 330px;
+        background-color: white;
+        padding-top: 20px;
+        border-radius: 15px;
+    }
+
+    .chart-container .chart-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #3a7afe;
+        margin-left: 20px;
+    }
+
+    .content-table {
+        border-collapse: collapse;/*合并边框*/
+        margin-top: 30px;
+        margin-left:20px;
+        font-size: 1em;
+        width:970px;
+        border-radius: 5px 5px 0 0;
+        overflow: hidden;
+        background-color: white;
+        /*box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);/*阴影*/
+    }
+
+    .content-table thead tr {
+        background-color: #3a7afe;
+        color: #ffffff;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .content-table th {
+        /*background-image: url('../static/image/updown.svg');*/
+        /* 设置背景图像 */
+        background-size: 16px;
+        /* 背景图像大小 */
+        background-repeat: no-repeat;
+        /* 不重复背景图像 */
+        background-position: right center;
+        /* 定位背景图像到单元格右侧中间 */
+        cursor: pointer;
+        /* 将鼠标光标改为手指形状，表示可以点击 */
+        /*颜色*/
+        color: #ffffff;
+    }
+
+    .content-table th,
+    .content-table td {
+        padding: 12px 15px;
+    }
+
+    .content-table tbody tr {
+        border-bottom: 1px solid #dddddd;
+        color: #3f3ba2;
+        text-align: center;
+    }
+
+    .content-table tbody tr:last-of-type {
+        border-bottom: 2px solid #3a7afe;
+        /*最后一行加粗*/
+    }
+
+    .name-cell a {
+        text-decoration: none;
+        /* 移除下划线 */
+        color: inherit;
+        /* 继承父元素的文字颜色 */
+    }
+
+
+    .name-cell a:hover {
+        color: #3a7afe;
+    }
+</style>
 
 </html>
+<script src="./js/navSidebar.js"></script>

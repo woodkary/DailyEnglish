@@ -4,15 +4,15 @@
 		<image class="color" src="../../static/color.png"></image>  
 		<view class="logo"></view>
 		<view class="white-container1">  
-			<input class="search-box" type="text" placeholder="请输入账号">  
+			<input class="search-box" type="text" v-model="username" placeholder="请输入账号">
 		</view>  
 		<view class="white-container2">
-			<input class="search-box" type="text" placeholder="请输入密码">  
+			<input class="search-box" type="password" v-model="password" placeholder="请输入密码">
 		</view>
-		<button class="auto"></button>
-		<span class="auto1">自动登录</span>
+		<button class="auto" :class="{rememberUsr: remember}" @click="autoLogin"></button>
+		<span class="auto1" >自动登录</span>
 		<button class="forget">忘记密码？</button>
-		<button class="login-button">登录</button>
+		<button class="login-button" @click="login">登录</button>
 		<button class="register-button">注册</button>
 		<button class="button1"></button>
 		<span class="text">登录代表你同意用户协议、隐私政策和儿童隐私政策</span>
@@ -21,15 +21,70 @@
 
 <script>
 	export default {
-		data() {
-			return {
-				
-			}
-		},
-		methods: {
-			
-		}
-	}
+    data() {
+      return {
+        username: '',
+        password: '',
+        remember: false
+      }
+    },
+    beforeMount() {
+      //获取本地存储的用户名和密码
+      let username = uni.getStorageSync('username');
+      let password = uni.getStorageSync('password');
+      let remember = uni.getStorageSync('remember');
+      if (username && password && remember) {
+        this.username = username;
+        this.password = password;
+        this.remember = remember;
+      }
+    },
+    methods: {
+      autoLogin() {
+        this.remember = !this.remember;
+        console.log(this.remember);
+        console.log(this.username);
+        console.log(this.password);
+      },
+      login() {
+        // 登录逻辑
+        let username = this.username;
+        let password = this.password;
+        let remember = this.remember;
+        uni.request({
+          url: 'http://localhost:8080/api/users/login',
+          data: {
+            username: username,
+            password: password,
+            remember: remember
+          },
+          method: 'POST',
+          success: (res) => {
+            if(remember){
+              let token=res.data.token;
+              uni.setStorageSync('username');
+              uni.setStorageSync('password');
+              uni.setStorageSync('remember');
+              uni.setStorageSync('token', token);
+            }
+
+            uni.navigateTo({
+              //TODO: 跳转到首页，或处理其他逻辑
+              url: '/pages/index/index'
+            });
+          },
+          fail: (res) => {
+            //TODO: 处理登录失败逻辑
+            uni.showToast({
+              title: '登录失败',
+              icon: 'none'
+            });
+          }
+        });
+
+      }
+    }
+  }
 </script>
 
 <style>
@@ -112,6 +167,14 @@
 	z-index: 2; /* 设置z-index值，确保在color之上 */  
 	border-radius: 50%; /* 设置边框圆角 */
 	scale: 0.5;
+}
+.auto:active{
+    background-color: white; /* 设置背景颜色为白色 */
+    border: 1px solid black; /* 设置边框为1像素黑色实线 */
+}
+.rememberUsr{
+  background-color: white; /* 设置背景颜色为白色 */
+  border: 1px solid black; /* 设置边框为1像素黑色实线 */
 }
 
 .auto1{
