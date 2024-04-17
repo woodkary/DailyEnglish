@@ -112,13 +112,6 @@ func main() {
 	r.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login.html")
 	})
-<<<<<<< HEAD
-=======
-	// //登录界面验证header头部
-	// r.GET("/static/team_manager/login.html", func(c *gin.Context) {
-
-	// })
->>>>>>> d170fdcd45f4f8e7eabe98d95b32cf9949424e3f
 	//登录接口
 	r.POST("/api/team_manager/login", func(c *gin.Context) {
 		type logdata struct {
@@ -140,7 +133,7 @@ func main() {
 				"message": "用户不存在",
 			})
 		} else if controlsql.CheckUser(db, data.Username, data.Pwd) {
-			teamName, err := controlsql.GetJoinedTeams(client, data.Username)
+			//teamName, err := controlsql.GetJoinedTeams(client, data.Username)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{
 					"code":  "500",
@@ -148,8 +141,7 @@ func main() {
 				})
 				return
 			}
-			token, err := service.GenerateToken(data.Username, teamName[0])
-
+			token, err := service.GenerateToken(data.Username, "每日背单词小组")
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{
 					"code":  "500",

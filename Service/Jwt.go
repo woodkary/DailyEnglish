@@ -17,6 +17,7 @@ type UserClaims struct {
 func GenerateToken(userName string, teamName string) (string, error) {
 	claims := UserClaims{
 		UserName: userName,
+		TeamName: teamName,
 		StandardClaims: jwt.StandardClaims{
 			Issuer:    "DailyEnglish",
 			IssuedAt:  time.Now().Unix(), // token will be valid for 1 hour

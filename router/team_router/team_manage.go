@@ -4,6 +4,7 @@ import (
 	controlsql "DailyEnglish/Control_SQL"
 	service "DailyEnglish/Service"
 	"database/sql"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -30,8 +31,9 @@ func tokenAuthMiddleware() gin.HandlerFunc {
 
 		// 提取令牌
 		token := strings.TrimPrefix(authHeader, "Bearer ")
-
+		fmt.Println(token)
 		user, err := service.ParseToken(token)
+		fmt.Println(user)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, "令牌无效")
 			c.Abort()
@@ -179,6 +181,7 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		Item, err := controlsql.QueryTeamExams(client, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
+			return
 		}
 		// ExamInfo 结构体表示单个考试的信息
 		type ExamInfo struct {
@@ -217,10 +220,12 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(400, "请求参数错误")
+			return
 		}
 		examInfo, err := controlsql.GetExamInfoByExamName(client, request.ExamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
+			return
 		}
 		type UserResult struct {
 			Attend   string `json:"attend"`   // 考试参与情况
@@ -260,14 +265,17 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		Item1, err := controlsql.GetTeamMembersAttendance1(client, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
+			return
 		}
 		Item2, err := controlsql.GetTeamMembersAttendanceByDate(client, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
+			return
 		}
 		Item3, err := controlsql.GetTeamMembersAttendanceNum(client, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
+			return
 		}
 		type punchStatistic struct {
 			Name      string `json:"name"`
@@ -311,6 +319,7 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		Item, err := controlsql.GetTeamInfo(client, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
+			return
 		}
 		type Member struct {
 			Name     string `json:"name"`      // 成员姓名
@@ -365,10 +374,12 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(400, "请求参数错误")
+			return
 		}
 		Item, err := controlsql.GetTeamMembers(client, request.Teamname)
 		if err != nil {
 			c.JSON(500, "服务器错误")
+			return
 		}
 		type Member struct {
 			Name     string `json:"name"`      // 成员姓名
