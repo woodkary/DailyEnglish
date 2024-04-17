@@ -15,7 +15,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func main() {
+func main1() {
 
 	// 数据库连接信息
 	username := "mimahezhanghao1yang"
@@ -179,7 +179,7 @@ func main() {
 	}
 }
 
-func main2() {
+func main() {
 	// 数据库连接信息
 	username := "mimahezhanghao1yang"
 	password := "MIMAhezhanghao1yang"
