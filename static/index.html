@@ -9,7 +9,7 @@
 
     <!----======== CSS ======== -->
     <link rel="stylesheet" href="./css/navSidebar.css">
-    <link rel="stylesheet" href="../static/css/time-line.css">
+    <link rel="stylesheet" href="./css/time-line.css">
 
     <!----===== Iconscout CSS ===== -->
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
@@ -20,184 +20,180 @@
 </head>
 
 <body>
-<nav>
-    <div class="logo-name">
-        <!--        <div class="logo-image">
+    <nav>
+        <div class="logo-name">
+            <!--        <div class="logo-image">
         <img src="./image/little-edellweiss.regular.webp" alt="">
     </div>-->
 
-        <span class="logo_name">DailyEnglish</span>
-    </div>
-
-    <div class="menu-items">
-        <ul class="nav-links">
-            <li><a href="index.html">
-                <i class="uil uil-estate"></i>
-                <span class="link-name">主页</span>
-            </a></li>
-            <li><a href="issuePunch.html">
-                <i class="uil uil-calendar-alt"></i>
-                <span class="link-name">打卡发布</span>
-            </a></li>
-            <li><a href="test-release.html">
-                <i class="uil uil-calender"></i>
-                <span class="link-name">考试发布</span>
-            </a></li>
-            <li><a href="test-statistics.html">
-                <i class="uil uil-chart"></i>
-                <span class="link-name">考试情况</span>
-            </a></li>
-            <li><a href="manage.html">
-                <i class="uil uil-meh-alt"></i>
-                <span class="link-name">成员管理</span>
-            </a></li>
-            <li><a href="review.html">
-                <i class="uil uil-message"></i>
-                <span class="link-name">申请审核</span>
-            </a></li>
-            <li><a href="#">
-                <i class="uil uil-user"></i>
-                <span class="link-name">个人中心</span>
-            </a></li>
-        </ul>
-
-        <ul class="logout-mode">
-            <li><a href="#">
-                <i class="uil uil-signout"></i>
-                <span class="link-name">Logout</span>
-            </a></li>
-
-            <li class="mode">
-                <a href="#">
-                    <i class="uil uil-moon"></i>
-                    <span class="link-name">Dark Mode</span>
-                </a>
-
-                <div class="mode-toggle">
-                    <span class="switch"></span>
-                </div>
-            </li>
-        </ul>
-    </div>
-</nav>
-
-<section class="dashboard">
-    <div class="top">
-        <i class="uil uil-bars sidebar-toggle"></i>
-
-        <div class="search-box">
-            <i class="uil uil-search"></i>
-            <input type="text" placeholder="Search here...">
+            <span class="logo_name">DailyEnglish</span>
         </div>
 
-        <img src="image/pikachu.jpg" alt="">
-    </div>
+        <div class="menu-items">
+            <ul class="nav-links">
+                <li><a href="index.html">
+                        <i class="uil uil-estate"></i>
+                        <span class="link-name">主页</span>
+                    </a></li>
+                <li><a href="issuePunch.html">
+                        <i class="uil uil-calendar-alt"></i>
+                        <span class="link-name">打卡发布</span>
+                    </a></li>
+                <li><a href="test-release.html">
+                        <i class="uil uil-calender"></i>
+                        <span class="link-name">考试发布</span>
+                    </a></li>
+                <li><a href="test-statistics.html">
+                        <i class="uil uil-chart"></i>
+                        <span class="link-name">考试情况</span>
+                    </a></li>
+                <li><a href="manage.html">
+                        <i class="uil uil-meh-alt"></i>
+                        <span class="link-name">成员管理</span>
+                    </a></li>
+                <li><a href="review.html">
+                        <i class="uil uil-message"></i>
+                        <span class="link-name">申请审核</span>
+                    </a></li>
+                <li><a href="#">
+                        <i class="uil uil-user"></i>
+                        <span class="link-name">个人中心</span>
+                    </a></li>
+            </ul>
 
-    <div class="dash-content">
-        <div class="overview">
-            <div class="title">
-                <i class="uil uil-tachometer-fast-alt"></i>
-                <span class="text">Dashboard</span>
+            <ul class="logout-mode">
+                <li><a href="#">
+                        <i class="uil uil-signout"></i>
+                        <span class="link-name">Logout</span>
+                    </a></li>
+
+                <li class="mode">
+                    <a href="#">
+                        <i class="uil uil-moon"></i>
+                        <span class="link-name">Dark Mode</span>
+                    </a>
+
+                    <div class="mode-toggle">
+                        <span class="switch"></span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="dashboard">
+        <div class="top">
+            <i class="uil uil-bars sidebar-toggle"></i>
+
+            <div class="search-box">
+                <i class="uil uil-search"></i>
+                <input type="text" placeholder="Search here...">
             </div>
 
-            <div class="boxes">
-                <div class="box box1" style="background-color: white;">
-                    <span class="text" style=" margin-right: auto;">今日打卡情况</span>
-                    <div id="main" style="width: 200px;height:180px;"></div>
-                </div>
-                <div class="box box2" style="background-color: white; height: 230px;">
-                    <span class="text" style=" margin-right: auto;">打卡进度</span>
-                    <div class="skill-box">
+            <img src="image/pikachu.jpg" alt="">
+        </div>
 
-                        <span class="title">团队1：</span>
-                        <div class="skill-bar">
+        <div class="dash-content">
+            <div class="overview">
+                <div class="title">
+                    <i class="uil uil-tachometer-fast-alt"></i>
+                    <span class="text">Dashboard</span>
+                </div>
+
+                <div class="boxes">
+                    <div class="box box1" style="background-color: white;">
+                        <span class="text" style=" margin-right: auto;">今日打卡情况</span>
+                        <div id="main" style="width: 200px;height:180px;"></div>
+                    </div>
+                    <div class="box box2" style="background-color: white; height: 230px;">
+                        <span class="text" style=" margin-right: auto;">打卡进度</span>
+                        <div class="skill-box">
+
+                            <span class="title">团队1：</span>
+                            <div class="skill-bar">
                                 <span class="skill-per html">
                                     <span class="skill-text">90%</span>
                                 </span>
-                        </div>
-                        <span class="title">团队2：</span>
-                        <div class="skill-bar">
+                            </div>
+                            <span class="title">团队2：</span>
+                            <div class="skill-bar">
                                 <span class="skill-per html">
                                     <span class="skill-text">90%</span>
                                 </span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="box box3" style="background-color: white;height: 230px;">
+                        <div class="text" style=" margin-right: auto;">最近通知</div>
+                        <div class="wu-hang-table" id="info-table" style="margin-top:5px">
+
                         </div>
                     </div>
 
                 </div>
-                <div class="box box3" style="background-color: white;height: 230px;">
-                    <div class="text" style=" margin-right: auto;">最近通知</div>
-                    <div class="wu-hang-table" id="info-table" style="margin-top:5px">
-
-                    </div>
-                </div>
-
             </div>
-        </div>
 
-        <div class="activity">
-            <div class="title">
-                <i class="uil uil-clock-three"></i>
-                <span class="text">Recent Activity</span>
-            </div>
-            <div style="display: flex;">
-                <div class="activity-data" style="background-color: white;display: inline-block;height: 390px;">
-                    <div class="text" style="margin-top: 20px;margin-left: 20px;">近期考试情况</div>
-                    <div id="main2" style="width: 650px;height:300px;"></div>
+            <div class="activity">
+                <div class="title">
+                    <i class="uil uil-clock-three"></i>
+                    <span class="text">Recent Activity</span>
                 </div>
-                <div class="card" style="margin-left: 20px;">
-                    <div class="card-header border-0 pb-0" >
-                        <h4 class="card-title">考试安排</h4>
+                <div style="display: flex;">
+                    <div class="activity-data" style="background-color: white;display: inline-block;height: 390px;">
+                        <div class="text" style="margin-top: 20px;margin-left: 20px;">近期考试情况</div>
+                        <div id="main2" style="width: 650px;height:300px;"></div>
                     </div>
-                    <div class="card-body p-0">
-                        <div id="DZ_W_TimeLine1" class="widget-timeline dz-scroll style-1 px-4 ms-2 py-2 my-4"
-                             style="height:300px;">
-                            <ul class="timeline">
-                                <li>
-                                    <div class="timeline-badge primary"></div>
-                                    <a class="timeline-panel text-muted" href="#">
-                                        <span>2024/4/15</span>
-                                        <h6 class="mb-0">考试题型：<strong
-                                                class="text-primary">选择、填空</strong>.</h6>
-                                    </a>
-                                </li>
-                                <li>
-                                    <div class="timeline-badge info">
-                                    </div>
-                                    <a class="timeline-panel text-muted" href="#">
-                                        <span>2024/4/16</span>
-                                        <h6 class="mb-0">考试题型：<strong
-                                                class="text-info">选择</strong></h6>
-                                        <!-- <p class="mb-0">Quisque a consequat ante Sit...</p> -->
-                                    </a>
-                                </li>
-                                <li>
-                                    <div class="timeline-badge danger">
-                                    </div>
-                                    <a class="timeline-panel text-muted" href="#">
-                                        <span>2024/4/17</span>
-                                        <h6 class="mb-0">考试题型：<strong
-                                                class="text-warning">填空</strong></h6>
-                                    </a>
-                                </li>
-                                <li>
-                                    <div class="timeline-badge success">
-                                    </div>
-                                    <a class="timeline-panel text-muted" href="#">
-                                        <span>2024/4/18</span>
-                                        <h6 class="mb-0">考试题型：<strong
-                                                class="text-danger">填空</strong></h6>
-                                    </a>
-                                </li>
-                            </ul>
+                    <div class="card" style="margin-left: 20px;">
+                        <div class="card-header border-0 pb-0">
+                            <h4 class="card-title">考试安排</h4>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="DZ_W_TimeLine1" class="widget-timeline dz-scroll style-1 px-4 ms-2 py-2 my-4"
+                                style="height:300px;">
+                                <ul class="timeline">
+                                    <li>
+                                        <div class="timeline-badge primary"></div>
+                                        <a class="timeline-panel text-muted" href="#">
+                                            <span>2024/4/15</span>
+                                            <h6 class="mb-0">考试题型：<strong class="text-primary">选择、填空</strong>.</h6>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <div class="timeline-badge info">
+                                        </div>
+                                        <a class="timeline-panel text-muted" href="#">
+                                            <span>2024/4/16</span>
+                                            <h6 class="mb-0">考试题型：<strong class="text-info">选择</strong></h6>
+                                            <!-- <p class="mb-0">Quisque a consequat ante Sit...</p> -->
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <div class="timeline-badge danger">
+                                        </div>
+                                        <a class="timeline-panel text-muted" href="#">
+                                            <span>2024/4/17</span>
+                                            <h6 class="mb-0">考试题型：<strong class="text-warning">填空</strong></h6>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <div class="timeline-badge success">
+                                        </div>
+                                        <a class="timeline-panel text-muted" href="#">
+                                            <span>2024/4/18</span>
+                                            <h6 class="mb-0">考试题型：<strong class="text-danger">填空</strong></h6>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<script src="./js/navSidebar.js"></script>
+    <script src="./js/navSidebar.js"></script>
 </body>
 <style>
     .skill-box {
@@ -232,12 +228,18 @@
     }
 
     .skill-bar .skill-per .skill-text {
-        position: absolute; /* 使用绝对定位 */
-        top: 50%; /* 垂直居中 */
-        right: 5px; /* 与进度条右边缘保持一定距离 */
-        transform: translateY(-50%); /* 垂直居中调整 */
-        color: white; /* 文本颜色 */
-        font-size: 12px; /* 文本大小 */
+        position: absolute;
+        /* 使用绝对定位 */
+        top: 50%;
+        /* 垂直居中 */
+        right: 5px;
+        /* 与进度条右边缘保持一定距离 */
+        transform: translateY(-50%);
+        /* 垂直居中调整 */
+        color: white;
+        /* 文本颜色 */
+        font-size: 12px;
+        /* 文本大小 */
     }
 
 
