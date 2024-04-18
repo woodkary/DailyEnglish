@@ -283,6 +283,7 @@
             background-color: rgba(0, 0, 0, 0.1);
             transform: scale(0);
             animation: ripple-animation 1s cubic-bezier(0, 0, 0.2, 1);
+            pointer-events: none; /* 防止点击穿透 */
         }
         @keyframes ripple-animation {
             100% {
