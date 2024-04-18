@@ -4,6 +4,7 @@ import (
 	controlsql "DailyEnglish/Control_SQL"
 	service "DailyEnglish/Service"
 	"database/sql"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -15,24 +16,24 @@ import (
 func tokenAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
+		fmt.Println(authHeader)
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, "未提供令牌")
 			c.Abort()
 			return
 		}
-
-		// 检查头是否以"Bearer "开头
+		// 检查头是否以"Bearer"开头
 		if !strings.HasPrefix(authHeader, "Bearer ") {
 			c.JSON(http.StatusUnauthorized, "令牌格式错误")
 			c.Abort()
 			return
 		}
-
 		// 提取令牌
 		token := strings.TrimPrefix(authHeader, "Bearer ")
-
 		user, err := service.ParseToken(token)
+		fmt.Println(user, token)
 		if err != nil {
+			fmt.Println(err)
 			c.JSON(http.StatusUnauthorized, "令牌无效")
 			c.Abort()
 			return
@@ -179,6 +180,7 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		Item, err := controlsql.QueryTeamExams(client, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
+			return
 		}
 		// ExamInfo 结构体表示单个考试的信息
 		type ExamInfo struct {
@@ -217,10 +219,12 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(400, "请求参数错误")
+			return
 		}
 		examInfo, err := controlsql.GetExamInfoByExamName(client, request.ExamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
+			return
 		}
 		type UserResult struct {
 			Attend   string `json:"attend"`   // 考试参与情况
@@ -260,14 +264,17 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		Item1, err := controlsql.GetTeamMembersAttendance1(client, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
+			return
 		}
 		Item2, err := controlsql.GetTeamMembersAttendanceByDate(client, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
+			return
 		}
 		Item3, err := controlsql.GetTeamMembersAttendanceNum(client, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
+			return
 		}
 		type punchStatistic struct {
 			Name      string `json:"name"`
@@ -311,6 +318,7 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		Item, err := controlsql.GetTeamInfo(client, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
+			return
 		}
 		type Member struct {
 			Name     string `json:"name"`      // 成员姓名
@@ -365,10 +373,12 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(400, "请求参数错误")
+			return
 		}
 		Item, err := controlsql.GetTeamMembers(client, request.Teamname)
 		if err != nil {
 			c.JSON(500, "服务器错误")
+			return
 		}
 		type Member struct {
 			Name     string `json:"name"`      // 成员姓名
@@ -413,12 +423,13 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 	r.GET("/api/team_manage/request_manage/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
 		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
+		fmt.Println(userClaims.TeamName)
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
 		}
 
-		Item1, err := controlsql.QueryUnprocessedNotifications(client, userClaims.TeamName)
+		Item1, err := controlsql.GetTeamRequestsByFlag(client, userClaims.TeamName, "0")
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
@@ -445,13 +456,14 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		Response.Msg = "成功"
 		Response.ManagerNum = Item2.AdminCount
 		Response.MemberNum = Item2.TotalMembers
-		for _, notice := range Item1 {
-			if notice.Title == "加入申请" {
-				var request Request
-				request.LeaveMsg = notice.Content
-				request.Name = notice.ID
-			}
+		for _, r := range Item1 {
+			var request Request
+			request.Name = r.Username
+			request.Time = r.Time
+			request.LeaveMsg = r.Message
+			Response.Requests = append(Response.Requests, request)
 		}
+		c.JSON(200, Response)
 	})
 	//获取个人中心界面所需信息
 	r.GET("/api/team_manage/personal_center/data", tokenAuthMiddleware(), func(c *gin.Context) {
@@ -461,10 +473,12 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			c.JSON(500, "服务器错误")
 			return
 		}
+		fmt.Println(userClaims.UserName)
 		Item1, Item2, err := controlsql.GetUserInfoByEmailPwd(db, userClaims.UserName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
+		fmt.Println(Item1, Item2)
 		type User struct {
 			Name     string `json:"name"`  // 用户姓名
 			Team     string `json:"team"`  // 用户所属团队
@@ -517,25 +531,6 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		Response.Code = "200"
 		Response.Msg = "成功"
 		c.JSON(200, Response)
-	})
-	//删除成员
-	r.POST("/api/team_manage/member_manage/delete", func(c *gin.Context) {
-		type Request struct {
-			Username string `json:"username"` // 要删除的成员的用户名
-			Teamname string `json:"teamname"` // 团队名
-		}
-		var request Request
-		if err := c.ShouldBind(&request); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-		err := controlsql.DeleteUserFromTeam(client, request.Teamname, request.Username)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-		}
-		c.JSON(200, "删除成功")
 	})
 	//团队管理员选择打卡发布页面信息
 	r.POST("/api/team_manage/task_daily/deliver_punch", func(c *gin.Context) {

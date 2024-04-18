@@ -75,13 +75,13 @@
         }
       }
     },
+    "uniStatistics": {
+      "enable": false
+    },
     "statusbar": {
       "immersed": "supportedDevice",
       "style": "dark",
       "background": "#F8F8F8"
-    },
-    "uniStatistics": {
-      "enable": false
     },
     "allowsInlineMediaPlayback": true,
     "safearea": {

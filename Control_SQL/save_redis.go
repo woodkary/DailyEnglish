@@ -10,7 +10,7 @@ import (
 	_ "github.com/go-sql-driver/mysql" // 导入 MySQL 驱动
 )
 
-type Team struct {
+type Team struct { //hash存储
 	Name           string // 团队名
 	ID             int    // 团队ID
 	TotalMembers   int    // 团队总人数
@@ -20,7 +20,7 @@ type Team struct {
 	Members []Member // 团队成员列表
 }
 
-type Member struct {
+type Member struct { //hash
 	Username       string // 成员用户名
 	JoinDate       string // 加入团队日期
 	AttendanceDays int    // 打卡天数
@@ -29,7 +29,7 @@ type Member struct {
 	AttendanceNum  int    //打卡单词数量
 }
 
-type AttendanceRecord struct {
+type AttendanceRecord struct { //hash
 	Date             string         // 日期
 	TeamName         string         // 团队名
 	AttendanceCount  int            // 打卡人数
@@ -37,15 +37,16 @@ type AttendanceRecord struct {
 	AttendanceRate   float64        // 打卡率
 }
 
-type TeamRequest struct {
+type TeamRequest struct { //list  根据团队名和id查
+	Flag     string // 0加入申请 1管理员申请
 	TeamName string // 团队名
-	flag     string // 0加入申请 1管理员申请
+
 	Username string // 申请者用户名
 	Time     string // 申请时间
 	Message  string // 申请留言内容
 }
 
-type Notification struct {
+type Notification struct { //zset 集合 根据团队名和flag查
 	ID       string // 通知ID
 	flag     string //已处理标志，0未处理1已经处理
 	Title    string // 通知标题
@@ -54,14 +55,14 @@ type Notification struct {
 	TeamName string // 通知团队名
 }
 
-type ExamResult struct {
+type ExamResult struct { //键值对的字符串string
 	TeamName string // 团队名
 	ExamName string
 	Scores   map[string]int // 成员分数，键为用户名，值为分数
 	Rankings map[string]int // 成员排名，键为用户名，值为排名
 }
 
-type ExamInfo struct {
+type ExamInfo struct { //hash
 	ID            int            // 考试ID
 	date          string         //日期
 	Name          string         // 考试名称
@@ -108,8 +109,9 @@ func InsertData(client *redis.Client) error {
 
 	// 保存团队申请信息
 	teamRequest := TeamRequest{
+		Flag:     "0",
 		TeamName: "每日背单词小组",
-		flag:     "0",
+
 		Username: "小橙",
 		Time:     "2024-04-10",
 		Message:  "I want to join the team.",
@@ -121,7 +123,7 @@ func InsertData(client *redis.Client) error {
 	// 保存团队申请信息
 	teamRequest2 := TeamRequest{
 		TeamName: "每日背单词小组",
-		flag:     "0",
+		Flag:     "0",
 		Username: "小绿",
 		Time:     "2023-04-10",
 		Message:  "I want to join the team.",
@@ -133,7 +135,7 @@ func InsertData(client *redis.Client) error {
 	// 保存团队申请信息
 	teamRequest3 := TeamRequest{
 		TeamName: "每日背单词小组",
-		flag:     "1",
+		Flag:     "1",
 		Username: "小红",
 		Time:     "2024-04-10",
 		Message:  "我要当管理.",
@@ -145,7 +147,7 @@ func InsertData(client *redis.Client) error {
 	// 保存团队申请信息
 	teamRequest4 := TeamRequest{
 		TeamName: "每日背单词小组",
-		flag:     "1",
+		Flag:     "1",
 		Username: "小橙",
 		Time:     "2024-04-10",
 		Message:  "我也要当管理",
@@ -157,7 +159,7 @@ func InsertData(client *redis.Client) error {
 	// 保存团队申请信息
 	teamRequest5 := TeamRequest{
 		TeamName: "每日背单词小组",
-		flag:     "1",
+		Flag:     "1",
 		Username: "张三",
 		Time:     "2024-05-10",
 		Message:  "我不当普通成员",
@@ -169,7 +171,7 @@ func InsertData(client *redis.Client) error {
 	// 保存团队申请信息
 	teamRequest6 := TeamRequest{
 		TeamName: "每日背单词小组",
-		flag:     "0",
+		Flag:     "0",
 		Username: "小橙",
 		Time:     "2024-04-10",
 		Message:  "我要进部",
@@ -180,8 +182,9 @@ func InsertData(client *redis.Client) error {
 	}
 	// 保存团队申请信息
 	teamRequest7 := TeamRequest{
+		Flag:     "0",
 		TeamName: "每日背单词小组",
-		flag:     "0",
+
 		Username: "李四",
 		Time:     "2024-09-10",
 		Message:  "让我进去",
@@ -444,6 +447,7 @@ func SaveAttendanceRecord(client *redis.Client, record AttendanceRecord) error {
 	return nil
 }
 
+// 保存团队申请信息（0加入/1管理员申请）
 // 保存团队申请信息（0加入/1管理员申请）
 func SaveTeamRequest(client *redis.Client, request TeamRequest) error {
 	// 将 TeamRequest 结构体转换为 JSON 格式

@@ -84,13 +84,11 @@ func GetJoinedTeams(redisClient *redis.Client, username string) ([]string, error
 	if err != nil {
 		return nil, err
 	}
-
 	// 将团队名从 map 转换为 slice
 	var teamNames []string
-	for teamName := range teamNamesMap {
+	for _, teamName := range teamNamesMap {
 		teamNames = append(teamNames, teamName)
 	}
-
 	return teamNames, nil
 }
 
@@ -531,7 +529,7 @@ func GetTeamAdmins(client *redis.Client, teamName string) ([]string, error) {
 
 // 12. 通过团队名和flag（0加入/1管理员）查询该团队申请信息
 
-func GetTeamRequestsByFlag(client *redis.Client, teamName string, flag string) ([]TeamRequest, error) {
+func GetTeamRequestsByFlag(client *redis.Client, teamName string, Flag string) ([]TeamRequest, error) {
 	// 从 Redis 中根据团队名和标志获取数据
 	val, err := client.Get(teamName).Bytes()
 	if err != nil {
@@ -548,7 +546,7 @@ func GetTeamRequestsByFlag(client *redis.Client, teamName string, flag string) (
 	// 根据标志筛选出符合条件的 TeamRequest
 	var filteredRequests []TeamRequest
 	for _, req := range requests {
-		if req.flag == flag {
+		if req.Flag == Flag {
 			filteredRequests = append(filteredRequests, req)
 		}
 	}
