@@ -14,7 +14,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func main() {
+func main1() {
 
 	// 数据库连接信息
 	username := "mimahezhanghao1yang"
@@ -111,10 +111,6 @@ func main() {
 	r.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login.html")
 	})
-	// //登录界面验证header头部
-	// r.GET("/static/team_manager/login.html", func(c *gin.Context) {
-
-	// })
 	//登录接口
 	r.POST("/api/team_manager/login", func(c *gin.Context) {
 		type logdata struct {
@@ -148,7 +144,6 @@ func main() {
 				return
 			}
 			token, err := service.GenerateToken(data.Username, teamName[0])
-
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{
 					"code":  "500",
@@ -181,7 +176,7 @@ func main() {
 	}
 }
 
-func main2() {
+func main() {
 	// 数据库连接信息
 	username := "mimahezhanghao1yang"
 	password := "MIMAhezhanghao1yang"

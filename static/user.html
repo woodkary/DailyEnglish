@@ -53,7 +53,7 @@
                         <i class="uil uil-message"></i>
                         <span class="link-name">申请审核</span>
                     </a></li>
-                <li><a href="#">
+                <li><a href="user.html">
                         <i class="uil uil-user"></i>
                         <span class="link-name">个人中心</span>
                     </a></li>
@@ -96,7 +96,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="profile-img">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52y5aInsxSm31CvHOFHWujqUx_wWTS9iM6s7BAm21oEN_RiGoog"
+                                <img src="image/pikachu.jpg"
                                      alt="" />
                                 <div class="file btn btn-lg btn-primary">
                                     修改头像
@@ -112,7 +112,9 @@
                                 <h6>
                                     SZU 软工学院
                                 </h6>
-                                <p class="proile-rating">团队码 : <span>#ryjsbtkq23</span></p>
+                                <p class="profile-rating" style="margin-bottom: 10px;">团队码 : <span id="teamCode">#ryjsbtkq23</span></p>
+                                <i id="copyBtn" class="uil uil-copy">复制团队码</i>
+
                                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                                     <li class="nav-item">
                                         <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
@@ -129,9 +131,9 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="profile-work">
-                                <p>团队</p>
-                                <a href="" style="text-decoration: underline;">1班</a><br />
-                                <a href="">2班</a><br />
+                                <p></p>
+                                <a href="" style="text-decoration: underline;"></a><br />
+                                <a href=""></a><br />
 
                             </div>
                         </div>
@@ -184,7 +186,7 @@
                         </div>
                     </div>
                     <!-- 保存按钮 -->
-                    <button id="saveBtn" class="save-btn" style="display:none;">保存</button>
+                    <button id="saveBtn" class="profile-edit-btn" style="display:none; margin-left: 600px;">保存</button>
                 </form>
                 <svg class="editorial" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                      viewBox="0 24 150 28" preserveAspectRatio="none">
@@ -204,8 +206,8 @@
     </section>
 
 </body>
-<script src="./js/Navbar.js"></script>
-<script src="./js/sidebar.js"></script>
+
+<script src="./js/navSidebar.js"></script>
 <script src="./js/test-details.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.0/lib/darkmode-js.min.js"></script>
 <script>
@@ -223,6 +225,7 @@
                 var input = document.createElement('input');
                 input.type = 'text';
                 input.value = p.textContent;
+                input.classList.add('message-input');
                 p.parentNode.replaceChild(input, p);
             }
 
@@ -246,6 +249,20 @@
             saveBtn.style.display = 'none';
         });
     });
+    document.addEventListener('DOMContentLoaded', function() {
+        var copyBtn = document.getElementById('copyBtn');
+        var teamCodeSpan = document.getElementById('teamCode');
+
+        copyBtn.addEventListener('click', function() {
+            // 使用navigator.clipboard.writeText方法复制文本
+            navigator.clipboard.writeText(teamCodeSpan.textContent).then(function() {
+                console.log('团队码已复制到剪贴板');
+            }).catch(function(err) {
+                console.error('复制失败: ', err);
+            });
+        });
+    });
+
 </script>
 <style>
     
@@ -608,6 +625,67 @@
         margin-left: 20px;
         margin-top: 20px;
     }
-</style>
+    ::selection {
+        background-color: salmon;
+        color: white
+    }
 
+    .parallax>use {
+        animation: move-forever 12s linear infinite
+    }
+
+    .parallax>use:nth-child(1) {
+        animation-delay: -2s
+    }
+
+    .parallax>use:nth-child(2) {
+        animation-delay: -2s;
+        animation-duration: 5s
+    }
+
+    .parallax>use:nth-child(3) {
+        animation-delay: -4s;
+        animation-duration: 3s
+    }
+
+    @keyframes move-forever {
+        0% {
+            transform: translate(-90px, 0%)
+        }
+
+        100% {
+            transform: translate(85px, 0%)
+        }
+    }
+    .message-input {
+        height: 30px;
+        width: 80%;
+        outline: none;
+        font-size: 1.07rem;
+        padding: 0 16px;
+        margin-left: -120px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+    .message-input:focus {
+        padding: 0 16px;
+        border: 2px solid #5372F0;
+    }
+
+    #copyBtn {
+        user-select: none;
+        border:none;
+    }
+    #copyBtn:hover {
+        outline: none;
+        background-color: #fff;
+    }
+    #copyBtn:active {
+        background-color: #5372F0;
+        color: white;
+    }
+
+</style>
+<script src="./js/navSidebar.js"></script>
 </html>
