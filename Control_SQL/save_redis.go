@@ -10,6 +10,11 @@ import (
 	_ "github.com/go-sql-driver/mysql" // 导入 MySQL 驱动
 )
 
+type Myteams struct {
+	Username string
+	Teams    []string
+}
+
 type Team struct { //hash存储
 	Name           string // 团队名
 	ID             int    // 团队ID
@@ -74,25 +79,15 @@ type ExamInfo struct { //hash
 }
 
 func InsertData(client *redis.Client) error {
-	// 保存团队信息
-	team := Team{
-		Name:           "每日背单词小组",
-		ID:             9,
-		TotalMembers:   5,
-		AdminCount:     1,
-		RecentExamDate: "2024-04-10",
-		Members: []Member{
-			{Username: "小明", JoinDate: "2024-01-01", AttendanceDays: 90, IsAdmin: true, AttendanceRate: "90%", AttendanceNum: 500},
-			{Username: "小红", JoinDate: "2024-01-15", AttendanceDays: 85, IsAdmin: false, AttendanceRate: "85%", AttendanceNum: 480},
-			{Username: "小蓝", JoinDate: "2024-02-01", AttendanceDays: 80, IsAdmin: false, AttendanceRate: "80%", AttendanceNum: 450},
-			{Username: "张三", JoinDate: "2024-02-15", AttendanceDays: 75, IsAdmin: false, AttendanceRate: "75%", AttendanceNum: 430},
-			{Username: "李四", JoinDate: "2024-03-01", AttendanceDays: 70, IsAdmin: false, AttendanceRate: "70%", AttendanceNum: 400},
-		},
+	// 创建小明的团队信息
+
+	xiaomingTeams := &Myteams{
+		Username: "小明",
+		Teams:    []string{"每日背单词小组", "TeamA", "TeamB", "TeamC"},
 	}
-	err := SaveTeam(client, team)
-	if err != nil {
-		return err
-	}
+
+	// 保存小明的团队信息到 Redis
+	err := savemyteams(client, xiaomingTeams)
 
 	// 保存打卡信息
 	attendanceRecord := AttendanceRecord{
@@ -348,6 +343,23 @@ func InsertData(client *redis.Client) error {
 	return nil
 }
 
+// 函数用于保存 Myteamseam 结构体到 Redis 数据库
+func savemyteams(redisClient *redis.Client, team *Myteams) error {
+	// 将 Myteamseam 结构体转换为 JSON 字符串
+	jsonData, err := json.Marshal(team)
+	if err != nil {
+		return err
+	}
+
+	// 保存 JSON 字符串到 Redis
+	err = redisClient.Set(team.Username, jsonData, 0).Err()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // 保存每个用户所加入的若干团队
 func RecordTeamJoin(redisClient *redis.Client, username string, teamNames []string) error {
 	// 使用 Redis 的 Hash 数据结构存储每个用户名加入的团队名
@@ -391,7 +403,7 @@ func SaveTeam(client *redis.Client, team Team) error {
 }
 
 // 新用户加入：
-// 根据团队名和用户名，将用户加入团队中，并更新团队成员信息和成绩信息
+// (1)根据团队名和用户名，将用户加入团队中，并更新团队成员信息和成绩信息
 func AddMemberToTeam(client *redis.Client, teamName string, member Member) error {
 	// 构建团队成员在 Redis 中的键名
 	memberKey := "team:" + teamName + ":member:" + member.Username
@@ -420,6 +432,33 @@ func AddMemberToTeam(client *redis.Client, teamName string, member Member) error
 		if err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+// (2)函数用于将团队名添加到指定用户名的 Teams 数组中
+func Addmyteams(client *redis.Client, username, teamName string) error {
+	// 从 Redis 获取指定用户名的团队信息
+	val, err := client.Get(username).Result()
+	if err != nil {
+		return err
+	}
+
+	// 解析 JSON 数据到 Myteamseam 结构体
+	var userTeams Myteams
+	err = json.Unmarshal([]byte(val), &userTeams)
+	if err != nil {
+		return err
+	}
+
+	// 将团队名添加到 Teams 数组中
+	userTeams.Teams = append(userTeams.Teams, teamName)
+
+	// 保存更新后的团队信息到 Redis
+	err = savemyteams(client, &userTeams)
+	if err != nil {
+		return err
 	}
 
 	return nil
