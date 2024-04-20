@@ -4,8 +4,6 @@ import (
 	controlsql "DailyEnglish/Control_SQL"
 	service "DailyEnglish/Service"
 	teamrouter "DailyEnglish/router/team_router"
-
-	service "DailyEnglish/Service"
 	"database/sql"
 	"fmt"
 	"log"
@@ -139,6 +137,9 @@ func main() {
 			})
 		} else if controlsql.CheckUser(db, data.Username, data.Pwd) {
 			teamName, err := controlsql.GetJoinedTeams(client, data.Username)
+			//输出所有teamname
+			fmt.Println("teamName:", teamName)
+
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{
 					"code":  "500",
