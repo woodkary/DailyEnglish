@@ -114,6 +114,7 @@
                                 </h6>
                                 <p class="profile-rating" style="margin-bottom: 10px;">团队码 : <span id="teamCode">#ryjsbtkq23</span></p>
                                 <i id="copyBtn" class="uil uil-copy">复制团队码</i>
+                                <i id="generateBtn" class="uil uil-pen" style="margin-left: 20px;">生成新团队码</i>
 
                                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                                     <li class="nav-item">
@@ -252,6 +253,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         var copyBtn = document.getElementById('copyBtn');
         var teamCodeSpan = document.getElementById('teamCode');
+        var generateBtn = document.getElementById('generateBtn');
 
         copyBtn.addEventListener('click', function() {
             // 使用navigator.clipboard.writeText方法复制文本
@@ -261,7 +263,48 @@
                 console.error('复制失败: ', err);
             });
         });
+        generateBtn.addEventListener('click', function() {
+            teamCodeSpan.textContent = getNewCode(localStorage.getItem("codeAndExpiry"));
+        });
+
+        let teamIsRegistered =true;//假设团队已注册
+        let teamCode = getInvitationCode();
+        if(teamIsRegistered){
+            document.getElementById("teamCode").textContent = teamCode;
+        }else {
+            document.getElementById("teamCode").textContent = "团队未注册";
+        }
     });
+    // Toggling invitation code generation
+    function generateInvitationCode(){
+        let code = "#";
+        const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for (let i = 0; i < 10; i++) {
+            code += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return code;
+    }
+    function getInvitationCode(){
+        let codeAndExpiry = localStorage.getItem("codeAndExpiry");
+        if(codeAndExpiry){
+            let codeAndExpiryObj = JSON.parse(codeAndExpiry);
+            let now = new Date().getTime();
+            if(now < codeAndExpiryObj.expiry){
+                return codeAndExpiryObj.code;
+            }
+        }
+        getNewCode(codeAndExpiry);
+    }
+    function getNewCode(codeAndExpiry){
+        let newCode = generateInvitationCode();
+        codeAndExpiry = {
+            code: newCode,
+            expiry: new Date().getTime() + 1000*60*5 //  5 minutes
+        };
+        localStorage.setItem("codeAndExpiry", JSON.stringify(codeAndExpiry));
+        return newCode;
+    }
+
 
 </script>
 <style>
