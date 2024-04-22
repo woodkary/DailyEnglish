@@ -13,11 +13,28 @@
 <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<!-- ====== Fontawesome CDN Link ====== -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+
+<!-- ====== CSS ====== -->
+<link rel="stylesheet" href="./css/Toast.css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!------ Include the above in your HEAD tag ---------->
 
 <body>
+    <!-- Toast遮罩层 -->
+    <div id="overlay" class="overlay"></div>
+    <!-- Toast弹出框 -->
+    <div class="Toast2" id="toast" style="
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    display:none;">
+        <i class="fa-solid fa-xmark close" id="toastClose"></i>
+        在这里填入内容
+    </div>
     <nav>
         <div class="logo-name">
             <!--        <div class="logo-image">
@@ -202,6 +219,8 @@
                                                         </div>
                                                     </div>
                                                 </card>
+                                                <!-- 以下是展示Toast的按钮-->
+                                                <button class="btn btn-primary" id="showToast">显示Toast</button>
                                             </div>
 
                                         </div>
@@ -277,6 +296,7 @@
             let teamcode = groupInfo.querySelector('.teamcode');
             teamcode.querySelector('span').textContent = code;
         });
+        toggleToast();
     });
     document.addEventListener('DOMContentLoaded', function () {
         var editBtn = document.getElementById('editProfileBtn');
@@ -376,6 +396,26 @@
         codeMap[teamname] = { code: newCode, expiry: new Date(new Date().getTime() + 1000*60*5) }; // 5分钟后过期
         localStorage.setItem('codeMap', JSON.stringify(codeMap));
         return newCode;
+    }
+
+    function toggleToast(){
+        let toast = document.getElementById('toast');
+        let overlay = document.getElementById('overlay');
+        let showToastBtn = document.getElementById('showToast');
+        let toastClose=document.getElementById('toastClose');
+        showToastBtn.addEventListener('click', function () {
+            overlay.style.display = 'block';
+            toast.style.display = 'block';
+            /*//两秒后自动关闭toast
+            setTimeout(() => {
+                toast.style.display = 'none';
+                overlay.style.display = 'none';
+            }, 2000);*/
+        });
+        toastClose.addEventListener('click', function () {
+            toast.style.display = 'none';
+            overlay.style.display = 'none';
+        });
     }
 
 
@@ -883,6 +923,36 @@
     .group-peopleAmount{
         color: #818182;
         font-size: 16px;
+    }
+    :root{
+        --toast-background-color: #fff;
+    }
+    body.dark{
+        --toast-background-color: #222;
+    }
+    .Toast2{
+        border: 1px solid #ddd;
+        border-radius: 2%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),
+        4px 0 4px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        background-color: var(--toast-background-color);
+        display: flex;
+        transition: all 0.5s ease;
+        width:400px;
+        height:400px;
+        z-index: 1001;
+    }
+    /* 遮罩层样式 */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* 半透明背景 */
+        display: none; /* 默认不显示 */
+        z-index: 1000; /* 确保在页面内容的上方 */
     }
 </style>
 <script src="./js/navSidebar.js"></script>
