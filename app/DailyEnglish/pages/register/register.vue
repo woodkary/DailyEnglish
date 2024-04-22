@@ -15,7 +15,8 @@
 		</view>
 		<view class="white-container" :style="{ marginTop: '8rem' , width:'10rem'}" id="3">
 			<input class="search-box" type="text" placeholder="请输入验证码">
-		</view>
+		</view
+		<button class="verifi-button">获取验证码</button>
 		<view class="white-container" :style="{ marginTop: '12rem' }" id="4">
 			<input class="search-box" type="text" placeholder="请输入密码">
 		</view>
@@ -186,5 +187,29 @@
 		top: 42.3rem;
 		left: 4.5rem;
 		font-size: 20rpx;
+	}
+	.verifi-button{
+		background-color: blue;
+		/* 设置背景颜色为白色 */
+		border: none;
+		/* 设置边框为1像素黑色实线 */
+		color: white;
+		position: absolute;
+		/* 绝对定位以覆盖在图片之上 */
+		top: 26rem;
+		left: 14rem;
+		height: 2rem;
+		background-color: blue;
+		text-align: center;
+		color: white;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		vertical-align: middle;
+		z-index: 2;
+		/* 设置z-index值，确保在color之上 */
+		cursor: pointer;
+		border-radius: 20rpx;
+		line-height: 2rem;
 	}
 </style>
