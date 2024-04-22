@@ -40,7 +40,6 @@ type AttendanceRecord struct { //hash
 type TeamRequest struct { //list  根据团队名和id查
 	Flag     string // 0加入申请 1管理员申请
 	TeamName string // 团队名
-
 	Username string // 申请者用户名
 	Time     string // 申请时间
 	Message  string // 申请留言内容
