@@ -56,7 +56,7 @@
 						choices: ['1', '选项B', '选项C', '选项D']
 					},
 					{
-						word: 'abandon',
+						word: 'abandon2',
 						phonetic: '[ə\'bændən]',
 						choices: ['1', '选项B', '选项C', '选项D']
 					},
@@ -98,25 +98,27 @@
 				}
 			},
 			selectChoice(index) {
-				this.selectedChoice = this.choices[index];
+				let selectedChoice = this.questions[this.currentQuestionIndex].choices[index];
 				// 检查选中的答案是否正确
-				if (this.selectedChoice === this.realAnswer) {
+				if (selectedChoice === this.realAnswer[this.currentQuestionIndex]) {
 					// 正确答案的逻辑
+          let index=this.currentQuestionIndex++; // 切换到下一题
 					this.$nextTick(() => {
-						this.showCorrectAnswer(this.realAnswer);
+						this.showCorrectAnswer(this.realAnswer[index]);
 					});
-					this.unlockSlice();
+          this.unlockSlice();
 				} else {
+          let currIndex=this.currentQuestionIndex;
 					// 错误答案的逻辑
 					this.$nextTick(() => {
 						this.showIncorrectAnswer(index);
-						this.showCorrectAnswer(this.realAnswer);
+						this.showCorrectAnswer(this.realAnswer[currIndex]);
 					});
 				}
 			},
 			showCorrectAnswer(answer) {
 				// 找到正确答案的索引
-				const correctIndex = this.choices.indexOf(answer);
+				const correctIndex = this.questions[this.currentQuestionIndex].choices.indexOf(answer);
 				// 应用正确答案的样式
 				const correctButton = this.$refs[`option${correctIndex}`];
 				if (correctButton) {
@@ -139,8 +141,9 @@
 			getClass(index) {
 				// 根据选中状态和答案正确与否返回相应的样式类
 				if (this.selectedChoice) {
-					if (this.choices[index] === this.selectedChoice) {
-						return this.choices[index] === this.realAnswer ? 'correct' : 'incorrect';
+          console.log(this.currentQuestionIndex);
+					if (this.questions[this.currentQuestionIndex].choices[index] === this.selectedChoice) {
+						return this.questions[this.currentQuestionIndex].choices[index] === this.realAnswer ? 'correct' : 'incorrect';
 					}
 				}
 				return '';
@@ -148,9 +151,9 @@
 			unlockSlice() {
 				// 解锁下一题
 				this.updateProgressBar();
-				this.selectedChoice = '';
+				/*this.selectedChoice = '';*/
 				this.$nextTick(() => {
-					this.resetButtonStyle(); //重置按钮样式
+					/*this.resetButtonStyle(); //重置按钮样式*/
 				});
 
 			},

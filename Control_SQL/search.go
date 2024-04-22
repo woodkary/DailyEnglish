@@ -78,18 +78,22 @@ func GetTeamMembers(client *redis.Client, teamName string) ([]Member, error) {
 }
 
 // 2.1 根据用户名查询该用户加入的所有团队
-func GetJoinedTeams(redisClient *redis.Client, username string) ([]string, error) {
-	// 使用 HGetAll 命令获取指定用户名加入的所有团队名
-	teamNamesMap, err := redisClient.HGetAll("user_teams:" + username).Result()
+func GetJoinedTeams(client *redis.Client, username string) ([]string, error) {
+	// 从 Redis 获取指定用户名的团队信息
+	val, err := client.Get(username).Result()
 	if err != nil {
 		return nil, err
 	}
-	// 将团队名从 map 转换为 slice
-	var teamNames []string
-	for _, teamName := range teamNamesMap {
-		teamNames = append(teamNames, teamName)
+
+	// 解析 JSON 数据到 Myteamseam 结构体
+	var userTeams Myteams
+	err = json.Unmarshal([]byte(val), &userTeams)
+	if err != nil {
+		return nil, err
 	}
-	return teamNames, nil
+
+	// 返回团队数组
+	return userTeams.Teams, nil
 }
 
 // 2.2 【团队管理个人中心】根据用户名查询邮箱和密码
