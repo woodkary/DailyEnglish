@@ -2,7 +2,7 @@
 
 import (
 	controlsql "DailyEnglish/Control_SQL"
-	service "DailyEnglish/Service"
+	service "DailyEnglish/services"
 	"database/sql"
 	"fmt"
 	"net/http"
@@ -44,6 +44,7 @@ func tokenAuthMiddleware() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
 func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 	//主页数据
 	r.GET("/api/team_manage/index/data", tokenAuthMiddleware(), func(c *gin.Context) {
