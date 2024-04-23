@@ -2,8 +2,6 @@ package main
 
 import (
 	controlsql "DailyEnglish/Control_SQL"
-	teamrouter "DailyEnglish/router/team_router"
-	userrouter "DailyEnglish/router/user_router"
 	"database/sql"
 	"fmt"
 	"log"
@@ -59,10 +57,9 @@ func main() {
 
 	//数据库测试
 	// 调用 insertData 函数插入测试数据
-
+	//controlsql.InsertData(client)
 	//controlsql.InsertUserInfo(db, "小明", "10086", "12344", "123456@qq.com", 2024000123, 19, 1, "2024-04-01")
 	//数据库测试
-
 	r := gin.Default()
 	r.Static("static/team_manager", "./static")
 	// r.Static("static/team_manager/css", "./static/css")

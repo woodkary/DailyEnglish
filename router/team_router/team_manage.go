@@ -221,7 +221,7 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			return
 		}
 
-		examInfo, err := controlsql.GetExamInfoByExamName(client, "Exam1")
+		examInfo, err := controlsql.GetExamInfoByName(client, "Exam1")
 		fmt.Println(examInfo)
 		fmt.Println("AverageScore", examInfo.AverageScore)
 		fmt.Println("PassRate", examInfo.PassRate)
