@@ -467,7 +467,7 @@ func GetExamInfoByName(client *redis.Client, examName string) (*ExamInfo, error)
 }
 
 // 9. 通过日期查询当天所有考试信息
-func GetExamsByDate(client *redis.Client, date string) ([]ExamInfo, error)
+func GetExamsByDate(client *redis.Client, date string) ([]ExamInfo, error) { return nil, nil }
 
 // 10. 通过用户名查询该用户是否团队管理员
 func IsUserTeamAdmin(client *redis.Client, username string) (bool, error) {
