@@ -180,7 +180,7 @@ function generateInvitationCode() {
 function getInvitationCode(teamname) {
     let codeMap = JSON.parse(localStorage.getItem('codeMap'));
     let codeAndExpiry = codeMap[teamname];
-    if (codeAndExpiry === null) {
+    if (codeAndExpiry == null) {
         let code = generateInvitationCode();
         let expiry = new Date();
         expiry.setDate(expiry.getTime() + 1000*60*5); // 设置5分钟后过期
