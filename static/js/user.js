@@ -1,9 +1,22 @@
+const toast = document.querySelector(".toast")
+closeIcon = document.querySelector(".close")
+progress = document.querySelector(".progress");
+
 window.onload=function(){
     console.log('这里什么都没有，骗你的，哈哈哈！');
+    closeIcon.addEventListener("click", () => {
+        toast.classList.remove("active");
+
+        setTimeout(() => {
+            progress.classList.remove("active");
+        }, 300);
+
+        clearTimeout(timer1);
+    });
     initializeCodeMap();
-    toggleToast();
-    initializeInput();
     initializeTeamCode();
+    initializeInput();
+    /*toggleToast();*/
 }
 //先放入一个map存储所有的code和过期时间
 function initializeCodeMap () {
@@ -63,26 +76,96 @@ function initializeInput () {
 
 function initializeTeamCode () {
     let copyBtns = document.querySelectorAll('.copyBtn');
-    copyBtns.forEach(copyBtn => {
+    for(let i=0;i<copyBtns.length;i++) {
+        let copyBtn = copyBtns[i];
         copyBtn.addEventListener('click', () => {
             let code = copyBtn.parentNode.querySelector('span').textContent;
             navigator.clipboard.writeText(code).then(r => { // 复制成功
-                copyBtn.textContent = 'Copied!';
-                setTimeout(() => {
-                    copyBtn.textContent = '复制团队码';
-                }, 500);
+                console.log('复制成功');
+                let title=toast.querySelector('.text-1');
+                let message=toast.querySelector('.text-2');
+                title.textContent='复制成功';
+                message.textContent='邀请码已复制到剪贴板，请妥善保管！';
+
+                if(toast.classList.contains("active")){
+                    toast.classList.remove("active");
+                    progress.classList.remove("active");
+                    clearTimeout(timer1);
+                    setTimeout(() => {
+                        toast.classList.add("active");
+                        progress.classList.add("active");
+                        timer1 = setTimeout(() => {
+                            progress.style.width = "100%";
+                            let title=toast.querySelector('.text-1');
+                            let message=toast.querySelector('.text-2');
+                            title.textContent='';
+                            message.textContent='';
+                            toast.classList.remove("active");
+                            progress.classList.remove("active");
+                        },5000)
+                    },300);
+                }else{
+                    toast.classList.add("active");
+                    progress.classList.add("active");
+                    timer1 = setTimeout(() => {
+                        progress.style.width = "100%";
+                        let title=toast.querySelector('.text-1');
+                        let message=toast.querySelector('.text-2');
+                        title.textContent='';
+                        message.textContent='';
+                        toast.classList.remove("active");
+                        progress.classList.remove("active");
+                    },5000);
+                }
+
+
             });
         });
-    });
+    }
     let generateBtns = document.querySelectorAll('.generateBtn');
-    generateBtns.forEach(generateBtn => {
+    for(let i=0;i<generateBtns.length;i++) {
+        let generateBtn = generateBtns[i];
         generateBtn.addEventListener('click', () => {
-            let teamname = generateBtn.parentNode.parentNode.querySelector('.group-name').textContent;
+            let teamname = generateBtn.parentNode.parentNode.parentNode.querySelector('.group-name').textContent;
             let newCode = generateTeamCode(teamname);
-            let code = generateBtn.parentNode.querySelector('.teamcode').querySelector('span');
+            let code = generateBtn.parentNode.querySelector('span');
             code.textContent = newCode;
-        });
-    });
+            let title=toast.querySelector('.text-1');
+            let message=toast.querySelector('.text-2');
+            title.textContent='重置邀请码成功';
+            message.textContent='邀请码已重置,请妥善保存';
+            if(toast.classList.contains("active")){
+                toast.classList.remove("active");
+                progress.classList.remove("active");
+                clearTimeout(timer1);
+                setTimeout(() => {
+                    toast.classList.add("active");
+                    progress.classList.add("active");
+                    timer1 = setTimeout(() => {
+                        progress.style.width = "100%";
+                        let title=toast.querySelector('.text-1');
+                        let message=toast.querySelector('.text-2');
+                        title.textContent='';
+                        message.textContent='';
+                        toast.classList.remove("active");
+                        progress.classList.remove("active");
+                    },5000)
+                },300);
+            }else{
+                toast.classList.add("active");
+                progress.classList.add("active");
+                timer1 = setTimeout(() => {
+                    progress.style.width = "100%";
+                    let title=toast.querySelector('.text-1');
+                    let message=toast.querySelector('.text-2');
+                    title.textContent='';
+                    message.textContent='';
+                    toast.classList.remove("active");
+                    progress.classList.remove("active");
+                },5000);
+            }
+        })
+    }
 }
 // Toggling invitation code generation
 

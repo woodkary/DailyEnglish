@@ -10,24 +10,36 @@
 </head>
 <link rel="stylesheet" href="./css/navSidebar.css">
 <link rel="stylesheet" href="./css/issuePunch.css">
+<link rel="stylesheet" href="./css/Toast.css">
 <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <!-- ====== Fontawesome CDN Link ====== -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
-
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!------ Include the above in your HEAD tag ---------->
-
 <body>
-<!-- Toast遮罩层 -->
+<!-- Toast遮罩层
 <div id="overlay" class="overlay"></div>
-<!-- Toast弹出框 -->
+&lt;!&ndash; Toast弹出框 &ndash;&gt;
 <div class="Toast2" id="toast" style="position: fixed;top: 50%;left: 50%;transform: translate(-50%, -50%);display:none;">
     <i class="fa-solid fa-xmark close" id="toastClose"></i>
     在这里填入内容
-</div>
+</div>-->
+    <div class="toast">
+        <div class="toast-content">
+            <i class="fas fa-solid fa-check check"></i>
+
+            <div class="message">
+                <span class="text text-1"></span>
+                <span class="text text-2"></span>
+            </div>
+        </div>
+        <i class="fa-solid fa-xmark close"></i>
+
+        <div class="progress"></div>
+    </div>
     <nav>
         <div class="logo-name">
             <!--        <div class="logo-image">
@@ -189,9 +201,10 @@
                                                         <div class="group-code">
                                                             <p class="teamcode">团队码 :
                                                                 <span class="col-md-6">#ryjsbtkq23</span>
+                                                                <i class="uil uil-copy copyBtn"></i>
+                                                                <i class="uil uil-redo generateBtn"></i>
                                                             </p>
-                                                            <i class="uil uil-copy copyBtn">复制团队码</i>
-                                                            <i class="uil uil-redo generateBtn">生成新团队码</i>
+
                                                         </div>
                                                     </div>
                                                 </card>
@@ -206,9 +219,10 @@
                                                         <div class="group-code">
                                                             <p class="teamcode">团队码 :
                                                                 <span class="col-md-6">#ryjsbtkq23</span>
+                                                                <i class="uil uil-copy copyBtn"></i>
+                                                                <i class="uil uil-redo generateBtn"></i>
                                                             </p>
-                                                            <i class="uil uil-copy copyBtn">复制团队码</i>
-                                                            <i class="uil uil-redo generateBtn">生成新团队码</i>
+
                                                         </div>
                                                     </div>
                                                 </card>
@@ -269,10 +283,9 @@
     </section>
 
 </body>
-
-<script src="./js/navSidebar.js"></script>
 <script src="./js/test-details.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.0/lib/darkmode-js.min.js"></script>
+<script src="./js/user.js"></script>
 <script>
 
 </script>
@@ -811,8 +824,18 @@
         display: none; /* 默认不显示 */
         z-index: 1000; /* 确保在页面内容的上方 */
     }
+    .copyBtn{
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none;    /* Firefox */
+        -ms-user-select: none;     /* IE10+/Edge */
+        user-select: none;         /* Standard */
+    }
+    .generateBtn{
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none;    /* Firefox */
+        -ms-user-select: none;     /* IE10+/Edge */
+        user-select: none;         /* Standard */
+    }
 </style>
 <script src="./js/navSidebar.js"></script>
-<script src="./js/user.js"></script>
-
 </html>
