@@ -23,7 +23,7 @@
       "path" : "pages/user/user",
       "style" : {
         "enablePullDownRefresh" : false,
-        "navigationBarTitleText" : ""
+        "navigationBarTitleText" : "个人中心"
       }
     },
     {
@@ -81,6 +81,14 @@
         "enablePullDownRefresh" : false,
         "navigationBarTitleText" : ""
       }
+    },
+    {
+    	"path" : "pages/personal-information/personal-information",
+    	"style" : 
+    	{
+    		"navigationBarTitleText" : "",
+    		"enablePullDownRefresh" : false
+    	}
     }
     
   ],
@@ -117,7 +125,11 @@
       {
         "pagePath" : "pages/register/register",
         "text" : "注册"
-      }
+      },
+	  {
+		  "pagePath": "pages/user/user",
+		  "text": "个人中心"
+	  }
     ]
   },
   // "iconPath": "static/tabbar/user.png",

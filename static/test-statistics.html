@@ -53,7 +53,7 @@
                         <i class="uil uil-message"></i>
                         <span class="link-name">申请审核</span>
                     </a></li>
-                <li><a href="#">
+                <li><a href="user.html">
                         <i class="uil uil-user"></i>
                         <span class="link-name">个人中心</span>
                     </a></li>
@@ -119,22 +119,35 @@
                         </div>
 
                         <select name="category" id="category" style="height: 40px; margin-left: 30px;">
+                            <option value="" disabled selected>选择考试</option> <!-- 默认占位文本 -->
+
+                            <option value="category1">6.16</option>
+                            <option value="category2">6.15</option>
+                            <option value="category3">6.14</option>
+                        </select>
+
+                        <select name="category" id="category" style="height: 40px; margin-left: 30px;">
+                            <option value="" disabled selected >选择班级</option> <!-- 默认占位文本 -->
                             <option value="category1">Category 1</option>
                             <option value="category2">Category 2</option>
                             <option value="category3">Category 3</option>
                         </select>
 
-                        <select name="category" id="category" style="height: 40px; margin-left: 30px;">
+                        <!-- <select name="category" id="category" style="height: 40px; margin-left: 30px;">
                             <option value="category1">Category 1</option>
                             <option value="category2">Category 2</option>
                             <option value="category3">Category 3</option>
-                        </select>
+                        </select> -->
 
-                        <select name="category" id="category" style="height: 40px; margin-left: 30px;">
-                            <option value="category1">Category 1</option>
-                            <option value="category2">Category 2</option>
-                            <option value="category3">Category 3</option>
-                        </select>
+                        <button class="filter-button">
+                            <img src="./image/search.svg" alt="Button Icon">
+                            <span>筛选</span>
+                        </button>
+
+                        <button class="remove-button">消除</button>
+
+                        <button class="remove-button" style="background-color: coral;">导出</button>
+
                     </div>
 
                 </div>
@@ -148,8 +161,10 @@
                     <div style="scale: 0.8; margin: -50px">
                         <div style="height: 40px; margin-left: 160px;">
                             <span class="chart-title"
-                                style="font-size: 25px; font-weight: 600; color: #3a7afe;">选择题号</span>
+                                style="font-size: 25px; font-weight: 600; color: #3a7afe;">题目分析</span>
                             <select name="category" id="category">
+                                <option value="" disabled selected>选择题号</option> <!-- 默认占位文本 -->
+
                                 <option value="category1">Category 1</option>
                                 <option value="category2">Category 2</option>
                                 <option value="category3">Category 3</option>
@@ -420,6 +435,26 @@
     }
     createTable(data);
 
+    /*以下是下拉框的实现*/
+    document.addEventListener('DOMContentLoaded', function() {
+    var selectElement = document.getElementById('category');
+
+    // 监听下拉菜单的更改事件
+    selectElement.addEventListener('change', function() {
+        if (this.value === 'default') {
+            this.selectedIndex = -1; // 取消选择默认选项
+        }
+    });
+
+    // 监听表单的提交事件，防止提交默认选项
+    selectElement.form.addEventListener('submit', function(event) {
+        if (selectElement.selectedIndex === -1) {
+            event.preventDefault(); // 阻止表单提交
+            alert('请选择一个类别');
+        }
+    });
+});
+
 </script>
 <style>
     .group {
@@ -576,6 +611,63 @@
 
     .name-cell a:hover {
         color: #3a7afe;
+    }
+    .filter-button {
+        height: 40px;
+        width: 90px;
+        display: flex;
+        /* 使用Flexbox布局 */
+        align-items: center;
+        /* 垂直居中子元素 */
+        border: none;
+        background-color: #3a7afe;
+        cursor: pointer;
+        padding: 5px;
+        /* 为按钮内部添加一些间距 */
+        overflow: hidden;
+        /* 确保内容不会溢出按钮 */
+        border-radius: 5px;
+        margin-left: 45px;
+    }
+
+    .filter-button img {
+        width: 20px;
+        /* 设置图片宽度 */
+        height: 20px;
+        /* 设置图片高度 */
+        margin-right: 0;
+        /* 图片和文本之间的间距 */
+    }
+
+    .filter-button span {
+        flex-grow: 1;
+        /* 文本占据剩余空间 */
+        text-align: center;
+        /* 水平居中文本 */
+        color: white;
+        /* 文本颜色 */
+        font-size: 16px;
+        /* 文本大小 */
+        margin-right: 5px;
+        /* 图片和文本之间的间距 */
+        margin-left: -10px;
+    }
+
+    .remove-button {
+        height: 40px;
+        width: 90px;
+        text-align: center;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+        /* 为按钮内部添加一些间距 */
+        overflow: hidden;
+        /* 确保内容不会溢出按钮 */
+        border-radius: 5px;
+        background-color: #ff5f5f;
+        color: #f0f0f0;
+        font-size: 16px;
+        margin-left: 10px;
     }
 </style>
 

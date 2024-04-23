@@ -1,3 +1,37 @@
+window.onload = function () {
+    // 点击波纹效果
+    const rippleContainer = document.querySelector('body');
+    console.log(rippleContainer);
+
+    rippleContainer.addEventListener('click', function(e) {
+        const circle = document.createElement('div');
+        /*circle.style.zIndex=100;*/
+        //排除按钮、链接、输入框、图片
+        if(e.target.tagName === 'BUTTON' || e.target.tagName === 'A'|| e.target.tagName === 'INPUT'|| e.target.tagName === 'IMG'){
+            return;
+        }
+        circle.classList.add('ripple-effect');
+
+        // 设置波纹效果的大小
+        /*const diameter = Math.max(rippleContainer.clientWidth, rippleContainer.clientHeight);*/
+        const diameter = 50;
+        circle.style.width = circle.style.height = `${diameter}px`;
+
+        // 根据点击位置设置波纹效果的位置
+        const rect = rippleContainer.getBoundingClientRect();
+        circle.style.top = `${e.clientY - rect.top - diameter / 2}px`;
+        circle.style.left = `${e.clientX - rect.left - diameter / 2}px`;
+
+        rippleContainer.appendChild(circle);
+
+        // 波纹动画结束后删除元素
+        circle.addEventListener('animationend', function() {
+            circle.classList.remove('ripple-effect');
+            circle.remove();
+        });
+    });
+}
+
 function login(event) {
     event.preventDefault();
     var username = document.getElementById("username").value;
@@ -26,7 +60,7 @@ function login(event) {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer' + token
+                    'Authorization': 'Bearer ' + token
                 }
             }).then(response => {
                 console.log(response);
@@ -55,6 +89,5 @@ function login(event) {
     }).then(error => {
         console.log(error);
     })
-
 
 }
