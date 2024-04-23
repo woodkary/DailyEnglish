@@ -435,11 +435,11 @@ func GetExamInfoByName(client *redis.Client, examName string) (*ExamInfo, error)
 	}
 
 	// 解析考试信息
-	examInfo.Name = examInfoMap["name"]
-	examInfo.date = examInfoMap["date"]
-	examInfo.QuestionCount, _ = strconv.Atoi(examInfoMap["question_count"])
-	examInfo.AverageScore, _ = strconv.ParseFloat(examInfoMap["average_score"], 64)
-	examInfo.PassRate, _ = strconv.ParseFloat(examInfoMap["pass_rate"], 64)
+	examInfo.Name = examInfoMap["Dame"]
+	examInfo.Date = examInfoMap["Date"]
+	examInfo.QuestionCount, _ = strconv.Atoi(examInfoMap["Question_count"])
+	examInfo.AverageScore, _ = strconv.ParseFloat(examInfoMap["Average_score"], 64)
+	examInfo.PassRate, _ = strconv.ParseFloat(examInfoMap["Pass_rate"], 64)
 
 	// 查询前六名成员信息
 	topSixMap, err := client.HGetAll("exam_info:" + strconv.Itoa(examID) + ":top_six").Result()

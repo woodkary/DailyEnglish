@@ -235,7 +235,7 @@ func InsertData(client *redis.Client) error {
 	// 保存考试信息
 	examInfo1 := ExamInfo{
 		ID:            1,
-		date:          "2024-04-10",
+		Date:          "2024-04-10",
 		Name:          "Exam1",
 		QuestionCount: 5,
 		Questions:     []string{"Question 1", "Question 2", "Question 3", "Question 4", "Question 5"},
@@ -245,7 +245,7 @@ func InsertData(client *redis.Client) error {
 	}
 	examInfo2 := ExamInfo{
 		ID:            2,
-		date:          "2024-02-10",
+		Date:          "2024-02-10",
 		Name:          "Exam2",
 		QuestionCount: 5,
 		Questions:     []string{"Question 1", "Question 2", "Question 3", "Question 4", "Question 5"},
@@ -255,7 +255,7 @@ func InsertData(client *redis.Client) error {
 	}
 	examInfo3 := ExamInfo{
 		ID:            3,
-		date:          "2024-03-10",
+		Date:          "2024-03-10",
 		Name:          "Exam3",
 		QuestionCount: 5,
 		Questions:     []string{"Question 1", "Question 2", "Question 3", "Question 4", "Question 5"},
