@@ -429,7 +429,7 @@ func GetExamInfoByName(client *redis.Client, examName string) (*ExamInfo, error)
 	examInfo := ExamInfo{
 		ID: examID,
 	}
-	examInfoMap, err := client.HGetAll("exam_info:" + strconv.Itoa(examID)).Result()
+	examInfoMap, err := client.HGetAll("exam_info:" + examInfo.Name).Result()
 	if err != nil {
 		return nil, err
 	}
