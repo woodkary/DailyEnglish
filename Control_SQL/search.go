@@ -416,73 +416,54 @@ func QueryUnprocessedNotifications(client *redis.Client, teamName string) ([]Not
 	return unprocessedNotifications, nil
 }
 
-// 8. 通过考试名获取考试id，然后再通过id获取该场考试信息
-func GetExamInfoByExamName(client *redis.Client, examName string) (ExamInfo, error) {
-	// 查询考试id
-	examIDStr, err := client.Get("exam_id:" + examName).Result()
+// 8. 通过考试名获取考试
+
+func GetExamInfoByName(client *redis.Client, examName string) (*ExamInfo, error) {
+	// 查询考试ID
+	examID, err := client.Get("exam_name:" + examName).Int()
 	if err != nil {
-		return ExamInfo{}, err
+		return nil, err
 	}
 
-	examID, err := strconv.Atoi(examIDStr)
+	// 查询考试信息
+	examInfo := ExamInfo{
+		ID: examID,
+	}
+	examInfoMap, err := client.HGetAll("exam_info:" + strconv.Itoa(examID)).Result()
 	if err != nil {
-		return ExamInfo{}, err
+		return nil, err
 	}
 
-	// 使用考试id查询考试信息
-	// 使用 Key 格式为 "exam_info:{examID}" 进行查询
-	examInfo, err := client.HGetAll("exam_info:" + strconv.Itoa(examID)).Result()
-	if err != nil {
-		return ExamInfo{}, err
-	}
+	// 解析考试信息
+	examInfo.Name = examInfoMap["name"]
+	examInfo.date = examInfoMap["date"]
+	examInfo.QuestionCount, _ = strconv.Atoi(examInfoMap["question_count"])
+	examInfo.AverageScore, _ = strconv.ParseFloat(examInfoMap["average_score"], 64)
+	examInfo.PassRate, _ = strconv.ParseFloat(examInfoMap["pass_rate"], 64)
 
-	// 解析考试信息并返回
-	questionCount, err := strconv.Atoi(examInfo["question_count"])
+	// 查询前六名成员信息
+	topSixMap, err := client.HGetAll("exam_info:" + strconv.Itoa(examID) + ":top_six").Result()
 	if err != nil {
-		return ExamInfo{}, err
+		return nil, err
 	}
-	averageScore, err := strconv.ParseFloat(examInfo["average_score"], 64)
-	if err != nil {
-		return ExamInfo{}, err
-	}
-	passRate, err := strconv.ParseFloat(examInfo["pass_rate"], 64)
-	if err != nil {
-		return ExamInfo{}, err
-	}
-
-	exam := ExamInfo{
-		ID:            examID,
-		Name:          examInfo["name"],
-		QuestionCount: questionCount,
-		AverageScore:  averageScore,
-		PassRate:      passRate,
-		TopSix:        make(map[string]int),
-		Questions:     []string{},
-	}
-
-	// 查询前十名成员信息
-	topSixMembers, err := client.HGetAll("exam_info:" + strconv.Itoa(examID) + ":top_six").Result()
-	if err != nil {
-		return ExamInfo{}, err
-	}
-	for username, score := range topSixMembers {
-		scoreInt, err := strconv.Atoi(score)
-		if err != nil {
-			return ExamInfo{}, err
-		}
-		exam.TopSix[username] = scoreInt
+	examInfo.TopSix = make(map[string]int)
+	for username, scoreStr := range topSixMap {
+		score, _ := strconv.Atoi(scoreStr)
+		examInfo.TopSix[username] = score
 	}
 
 	// 查询试题内容
-	questions, err := client.HGetAll("exam_info:" + strconv.Itoa(examID) + ":questions").Result()
+	questionsMap, err := client.HGetAll("exam_info:" + strconv.Itoa(examID) + ":questions").Result()
 	if err != nil {
-		return ExamInfo{}, err
+		return nil, err
 	}
-	for _, question := range questions {
-		exam.Questions = append(exam.Questions, question)
+	examInfo.Questions = make([]string, len(questionsMap))
+	for i, question := range questionsMap {
+		index, _ := strconv.Atoi(i)
+		examInfo.Questions[index] = question
 	}
 
-	return exam, nil
+	return &examInfo, nil
 }
 
 // 9. 通过日期查询当天所有考试信息
@@ -497,7 +478,7 @@ func GetExamsByDate(client *redis.Client, date string) ([]ExamInfo, error) {
 	// 查询每场考试的信息并返回
 	var exams []ExamInfo
 	for _, examID := range examIDs {
-		exam, err := GetExamInfoByExamName(client, examID)
+		exam, err := GetExamInfoByName(client, examID)
 		if err != nil {
 			return nil, err
 		}
