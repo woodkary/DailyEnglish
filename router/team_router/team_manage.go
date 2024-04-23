@@ -220,8 +220,18 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			c.JSON(400, "请求参数错误")
 			return
 		}
-		fmt.Print(request.ExamName)
+
 		examInfo, err := controlsql.GetExamInfoByExamName(client, "Exam1")
+		fmt.Println(examInfo)
+		fmt.Println("AverageScore", examInfo.AverageScore)
+		fmt.Println("PassRate", examInfo.PassRate)
+		fmt.Println("QuestionCount", examInfo.QuestionCount)
+		fmt.Println("ID", examInfo.ID)
+		fmt.Println("Name", examInfo.Name)
+		fmt.Println("TopSix", examInfo.TopSix)
+		//fmt.Println("TotalScore",examInfo.TotalScore)
+		//fmt.Println("TotalUser",examInfo.TotalUser)
+
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			log.Panic(err)
