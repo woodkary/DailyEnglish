@@ -1,3 +1,49 @@
+let switchCtn = document.querySelector("#switch-cnt");
+let switchC1 = document.querySelector("#switch-c1");
+let switchC2 = document.querySelector("#switch-c2");
+let switchCircle = document.querySelectorAll(".switch_circle");
+let switchBtn = document.querySelectorAll(".switch-btn");
+let aContainer = document.querySelector("#a-container");
+let bContainer = document.querySelector("#b-container");
+let allButtons = document.querySelectorAll(".submit");
+
+let getButtons = (e) => e.preventDefault()
+let changeForm = (e) => {
+    // 修改类名
+    switchCtn.classList.add("is-gx");
+    setTimeout(function () {
+        switchCtn.classList.remove("is-gx");
+    }, 1500)
+    switchCtn.classList.toggle("is-txr");
+    switchCircle[0].classList.toggle("is-txr");
+    switchCircle[1].classList.toggle("is-txr");
+
+    switchC1.classList.toggle("is-hidden");
+    switchC2.classList.toggle("is-hidden");
+    aContainer.classList.toggle("is-txl");
+    bContainer.classList.toggle("is-txl");
+    bContainer.classList.toggle("is-z");
+}
+// 点击切换
+let shell = (e) => {
+    for (let i = 0; i < allButtons.length; i++)
+        allButtons[i].addEventListener("click", getButtons);
+    for (let i = 0; i < switchBtn.length; i++)
+        switchBtn[i].addEventListener("click", changeForm)
+}
+const toast = document.querySelector(".toast")
+closeIcon = document.querySelector(".close")
+progress = document.querySelector(".progress");
+window.addEventListener("load", shell);
+let timer1;
+
+closeIcon.addEventListener("click", function () {
+    toast.classList.remove("active");
+    progress.classList.remove("active");
+    clearTimeout(timer1);
+    changeForm(new Event('click'));
+});
+
 window.onload = function () {
     // 点击波纹效果
     const rippleContainer = document.querySelector('body');
@@ -90,4 +136,45 @@ function login(event) {
         console.log(error);
     })
 
+}
+function register(event) {
+    event.preventDefault();
+    let username = document.getElementById("username-register").value;
+    let email = document.getElementById("email-register").value;
+    let password = document.getElementById("password-register").value;
+    fetch('http://localhost:8080/api/team_manager/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            username: username,
+            email: email,
+            password: password
+        })
+    }).then(response => {
+        console.log(response);
+        if(response.status==200){
+            console.log("注册成功");
+            let title=toast.querySelector('.text-1');
+            let message=toast.querySelector('.text-2');
+            title.textContent='提示';
+            message.textContent='注册成功!';
+            toast.classList.add("active");
+            progress.classList.add("active");
+            timer1 = setTimeout(() => {
+                progress.style.width = "100%";
+                let title=toast.querySelector('.text-1');
+                let message=toast.querySelector('.text-2');
+                title.textContent='';
+                message.textContent='';
+                toast.classList.remove("active");
+                progress.classList.remove("active");
+            },5000)
+        }else{
+            console.log("注册失败");
+            alert("注册失败");
+        }
+
+    })
 }
