@@ -299,13 +299,15 @@ func SaveExamResult(client *redis.Client, examResult ExamResult) error {
 // 保存考试内容
 func SaveExamInfo(client *redis.Client, examInfo ExamInfo) error {
 	// 使用哈希数据结构保存考试信息
-	_, err := client.HMSet("exam_info:"+strconv.Itoa(examInfo.ID), map[string]interface{}{
+	_, err := client.HMSet("exam_info:"+examInfo.Name, map[string]interface{}{
 		"date":           examInfo.date,
 		"name":           examInfo.Name,
 		"question_count": examInfo.QuestionCount,
 		"average_score":  examInfo.AverageScore,
 		"pass_rate":      examInfo.PassRate,
 	}).Result()
+	client.Set("exam_name:"+examInfo.Name, examInfo.ID, 0)
+
 	if err != nil {
 		return err
 	}
