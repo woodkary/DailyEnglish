@@ -15,6 +15,7 @@
 		</view>
 		<view class="white-container" :style="{ marginTop: '8rem' , width:'10rem'}" id="3">
 			<input class="search-box" type="text" placeholder="请输入验证码">
+		</view>
 		<button class="verifi-button">获取验证码</button>
 		<view class="white-container" :style="{ marginTop: '12rem' }" id="4">
 			<input class="search-box" type="text" placeholder="请输入密码">
@@ -24,6 +25,7 @@
 		</view>
 		<button class="login-button">注册</button>
 		<button class="button1"></button>
+		<span class="text">已有账号？点此登录</span>
 	</view>
 </template>
 
@@ -150,6 +152,8 @@
 		position: absolute;
 		/* 绝对定位以覆盖在图片之上 */
 		top: 38rem;
+		left: 3rem;
+		width: 18rem;
 		height: 3rem;
 		font-size: 35rpx;
 		z-index: 2;
@@ -163,6 +167,7 @@
 		z-index: 2;
 		color: white;
 		top: 42.3rem;
+		left: 9rem;
 		font-size: 20rpx;
 	}
 	.verifi-button{
