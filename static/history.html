@@ -1,80 +1,206 @@
 <!DOCTYPE html>
-<html lang="zh">
+<!-- Coding By CodingNepal - codingnepalweb.com -->
+<html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>记录表</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!----======== CSS ======== -->
+  <link rel="stylesheet" href="./css/navSidebar.css">
+  <link rel="stylesheet" href="../static/css/time-line.css">
+
+  <!----===== Iconscout CSS ===== -->
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
+  <link rel="stylesheet" href="css/wu-hang-table.css">
+
+  <title>Admin Dashboard Panel</title>
 </head>
-<link rel="stylesheet" href="./css/history.css">
+
 <body>
+  <nav>
+    <div class="logo-name">
+      <!--        <div class="logo-image">
+            <img src="./image/little-edellweiss.regular.webp" alt="">
+        </div>-->
 
-<!-- Navigation bar -->
-    <div class="navbar">
-        <div class="navbar-left">
-            <img src="./image/little-edellweiss.regular.webp"  class="brand-logo">
-        </div>
-        <div class="navbar-right">
-            <img src="./image/moon.svg" alt="夜间模式" id="moon" onclick="toggleMoon()" class="night-mode">
-            <button class="notifications">
-                <img src="./image/通知.svg" >
-            </button>
-
-            <div class="user-info">
-                <div>姓名</div>
-                <div>组织名称</div>
-            </div>
-            <img src="./image/pikachu.jpg" alt="头像" class="user-avatar">
-            <img src="./image/logout.svg" class="logout">
-        </div>
+      <span class="logo_name">DailyEnglish</span>
     </div>
 
+    <div class="menu-items">
+      <ul class="nav-links">
+        <li><a href="index.html">
+            <i class="uil uil-estate"></i>
+            <span class="link-name">主页</span>
+          </a></li>
+        <li><a href="issuePunch.html">
+            <i class="uil uil-calendar-alt"></i>
+            <span class="link-name">打卡发布</span>
+          </a></li>
+        <li><a href="test-release.html">
+            <i class="uil uil-calender"></i>
+            <span class="link-name">考试发布</span>
+          </a></li>
+        <li><a href="test-statistics.html">
+            <i class="uil uil-chart"></i>
+            <span class="link-name">考试情况</span>
+          </a></li>
+        <li><a href="manage.html">
+            <i class="uil uil-meh-alt"></i>
+            <span class="link-name">成员管理</span>
+          </a></li>
+        <li><a href="review.html">
+            <i class="uil uil-message"></i>
+            <span class="link-name">申请审核</span>
+          </a></li>
+        <li><a href="user.html">
+            <i class="uil uil-user"></i>
+            <span class="link-name">个人中心</span>
+          </a></li>
+      </ul>
 
-<div class="container">
-    <div class="page-title">发布历史</div>
-    <div class="left-section">
-        <!--全部历史页面的url-->
-        <!--<a href="allHistory.html" class="all-history-link">全部历史</a>-->
-      <div class="notepad">
-        <div class="notepad-header">打卡记录</div>
-        <table>
-          <!-- 各种打卡记录内容... -->
-            <thead>
-            <tr>
-                <th >打卡词汇</th>
-                <th >打卡日期</th>
-                <th >打卡单词</th>
-                <th >完成人数</th>
-            </tr>
-            </thead>
-            <tbody id="cardData">
-            <!-- 这里放入表格的内容 -->
-            </tbody>
-        </table>
+      <ul class="logout-mode">
+        <li><a href="#">
+            <i class="uil uil-signout"></i>
+            <span class="link-name">Logout</span>
+          </a></li>
+
+        <li class="mode">
+          <a href="#">
+            <i class="uil uil-moon"></i>
+            <span class="link-name">Dark Mode</span>
+          </a>
+
+          <div class="mode-toggle">
+            <span class="switch"></span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="dashboard">
+    <div class="top">
+      <i class="uil uil-bars sidebar-toggle"></i>
+
+      <div class="search-box">
+        <i class="uil uil-search"></i>
+        <input type="text" placeholder="Search here...">
+      </div>
+
+      <img src="image/pikachu.jpg" alt="">
+    </div>
+
+    <div class="dash-content">
+      <!-- Tab links -->
+      <div class="tab-container">
+        <button class="tablinks top-left" onclick="openTab('历次考试')">
+          <img src="./image/努力加班.png" class="button-icon">
+          <span class="button-text">历史考试</span>
+        </button>
+        <button class="tablinks bottom-left" onclick="openTab('考试发布')">考试发布</button>
+        <img src="./image/class.svg" alt="中间图片" class="center-image">
+        <button class="tablinks top-right" onclick="openTab('学生成绩')">学生成绩</button>
+        <button class="tablinks bottom-right" onclick="openTab('考试安排')">考试安排</button>
+        <div class="border"></div> <!-- 新增一个元素用于边框 -->
+
+      </div>
+
+
+      <!-- Tab content -->
+      <div id="历次考试" class="tabcontent">
+
+      </div>
+
+      <div id="考试发布" class="tabcontent">
+
+      </div>
+
+      <div id="学生成绩" class="tabcontent">
+
+      </div>
+
+      <div id="考试安排" class="tabcontent">
       </div>
     </div>
-    <div class="right-section">
-      <div class="notepad">
-        <div class="notepad-header">作答记录</div>
-        <table>
-          <!-- 各种作答记录内容... -->
-            <thead>
-            <tr>
-                <th>考试日期</th>
-                <th>考试范围</th>
-                <th>平均分数</th>
-                <th>考试人数</th>
-            </tr>
-            </thead>
-            <tbody id="examData">
-            <!-- 这里放入表格的内容 -->
-            </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+  </section>
 
 </body>
-<script src="./js/history.js"></script>
-<script src="./js/Navbar.js"></script>
+
+<style>
+  .tab-container {
+    position: relative;
+    margin-top: 20px;
+    height: 460px;
+    background-color: antiquewhite;
+  }
+
+  .tablinks {
+    position: absolute;
+    z-index: 1;
+    background-color: white;
+    width: 400px;
+    height: 200px;
+    border: 1px solid black;
+    border-radius: 5%;
+  }
+
+  .top-left {
+    top: 20px;
+    left: 60px;
+
+  }
+
+  .bottom-left {
+    bottom: 20px;
+    left: 60px;
+  }
+
+  .top-right {
+    top: 20px;
+    right: 60px;
+  }
+
+  .bottom-right {
+    bottom: 20px;
+    right: 60px;
+  }
+
+  .center-image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    width: 260px;
+    /* 调整图片的宽度 */
+    /*圆形图片*/
+    border-radius: 50%;
+    border: 1px solid black;
+  }
+
+  .border {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 1px solid black;
+    /* 设置边框样式 */
+    box-sizing: border-box;
+    /* 确保边框在容器内部 */
+    pointer-events: none;
+    /* 防止边框遮挡按钮的点击 */
+    z-index: 2;
+    /* 确保边框位于按钮上方 */
+  }
+  
+  .button-icon {
+    width: 200px;
+    height: 190px;
+    margin-left :-60px;
+    z-index: -1;
+  }
+</style>
+
 </html>
