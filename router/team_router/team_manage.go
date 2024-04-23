@@ -229,6 +229,7 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		fmt.Println("ID", examInfo.ID)
 		fmt.Println("Name", examInfo.Name)
 		fmt.Println("TopSix", examInfo.TopSix)
+		fmt.Println(examInfo.Questions)
 		//fmt.Println("TotalScore",examInfo.TotalScore)
 		//fmt.Println("TotalUser",examInfo.TotalUser)
 
