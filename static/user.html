@@ -16,25 +16,18 @@
 <!-- ====== Fontawesome CDN Link ====== -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
 
-<!-- ====== CSS ====== -->
-<link rel="stylesheet" href="./css/Toast.css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!------ Include the above in your HEAD tag ---------->
 
 <body>
-    <!-- Toast遮罩层 -->
-    <div id="overlay" class="overlay"></div>
-    <!-- Toast弹出框 -->
-    <div class="Toast2" id="toast" style="
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    display:none;">
-        <i class="fa-solid fa-xmark close" id="toastClose"></i>
-        在这里填入内容
-    </div>
+<!-- Toast遮罩层 -->
+<div id="overlay" class="overlay"></div>
+<!-- Toast弹出框 -->
+<div class="Toast2" id="toast" style="position: fixed;top: 50%;left: 50%;transform: translate(-50%, -50%);display:none;">
+    <i class="fa-solid fa-xmark close" id="toastClose"></i>
+    在这里填入内容
+</div>
     <nav>
         <div class="logo-name">
             <!--        <div class="logo-image">
@@ -222,7 +215,6 @@
                                                 <!-- 以下是展示Toast的按钮-->
                                                 <button class="btn btn-primary" id="showToast">显示Toast</button>
                                             </div>
-
                                         </div>
                                     </div>
                                     <script>
@@ -931,6 +923,7 @@
         --toast-background-color: #222;
     }
     .Toast2{
+        position: fixed;
         border: 1px solid #ddd;
         border-radius: 2%;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),
@@ -945,7 +938,7 @@
     }
     /* 遮罩层样式 */
     .overlay {
-        position: fixed;
+        position: absolute;
         top: 0;
         left: 0;
         width: 100%;
