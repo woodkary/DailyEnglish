@@ -418,19 +418,76 @@ func QueryUnprocessedNotifications(client *redis.Client, teamName string) ([]Not
 
 // 8. 通过考试名获取考试id，然后再通过id获取该场考试信息
 func GetExamInfoByExamName(client *redis.Client, examName string) (ExamInfo, error) {
-	var examInfo ExamInfo
-
-	// Get the ExamInfo data from Redis using the examName as key
-	result, err := client.Get(examName).Result()
+	// Query exam ID by exam name
+	examID, err := client.Get("exam_name_to_id:" + examName).Int()
 	if err != nil {
-		return examInfo, err
+		return ExamInfo{}, err
 	}
 
-	// Unmarshal the retrieved data into ExamInfo struct
-	err = json.Unmarshal([]byte(result), &examInfo)
+	// Query exam info using the retrieved exam ID
+	examInfo, err := GetExamInfoByID(client, examID)
 	if err != nil {
-		return examInfo, err
+		return ExamInfo{}, err
 	}
+
+	return examInfo, nil
+}
+func GetExamInfoByID(client *redis.Client, examID int) (ExamInfo, error) {
+	// Retrieve exam info from the hash set
+	examInfoMap, err := client.HGetAll("exam_info:" + strconv.Itoa(examID)).Result()
+	if err != nil {
+		return ExamInfo{}, err
+	}
+
+	// Parse exam info
+	examInfo := ExamInfo{
+		ID:            examID,
+		date:          examInfoMap["date"],
+		Name:          examInfoMap["name"],
+		QuestionCount: 0,
+		AverageScore:  0.0,
+		PassRate:      0.0,
+		TopSix:        make(map[string]int),
+	}
+
+	// Convert and assign question count, average score, and pass rate
+	questionCount, err := strconv.Atoi(examInfoMap["question_count"])
+	if err != nil {
+		return ExamInfo{}, err
+	}
+	examInfo.QuestionCount = questionCount
+
+	averageScore, err := strconv.ParseFloat(examInfoMap["average_score"], 64)
+	if err != nil {
+		return ExamInfo{}, err
+	}
+	examInfo.AverageScore = averageScore
+
+	passRate, err := strconv.ParseFloat(examInfoMap["pass_rate"], 64)
+	if err != nil {
+		return ExamInfo{}, err
+	}
+	examInfo.PassRate = passRate
+
+	// Retrieve top six members
+	topSixMembers, err := client.HGetAll("exam_info:" + strconv.Itoa(examID) + ":top_six").Result()
+	if err != nil {
+		return ExamInfo{}, err
+	}
+	for username, scoreStr := range topSixMembers {
+		score, err := strconv.Atoi(scoreStr)
+		if err != nil {
+			return ExamInfo{}, err
+		}
+		examInfo.TopSix[username] = score
+	}
+
+	// Retrieve questions
+	questions, err := client.HVals("exam_info:" + strconv.Itoa(examID) + ":questions").Result()
+	if err != nil {
+		return ExamInfo{}, err
+	}
+	examInfo.Questions = questions
 
 	return examInfo, nil
 }
