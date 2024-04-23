@@ -441,6 +441,7 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		}
 
 		Item1, err := controlsql.GetTeamRequestsByFlag(client, userClaims.TeamName, "0")
+
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
