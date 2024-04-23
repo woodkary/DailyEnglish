@@ -221,7 +221,7 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			return
 		}
 		fmt.Print(request.ExamName)
-		examInfo, err := controlsql.GetExamInfoByExamName(client, "Exam1")
+		examInfo, err := controlsql.GetExamInfoByName(client, "Exam1")
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			log.Panic(err)

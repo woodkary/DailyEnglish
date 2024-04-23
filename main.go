@@ -4,7 +4,9 @@ import (
 	controlsql "DailyEnglish/Control_SQL"
 	"database/sql"
 	"fmt"
+	"log"
 
+	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -55,8 +57,25 @@ func main() {
 
 	//数据库测试
 	// 调用 insertData 函数插入测试数据
-	controlsql.InsertData(client)
+	//controlsql.InsertData(client)
 	//controlsql.InsertUserInfo(db, "小明", "10086", "12344", "123456@qq.com", 2024000123, 19, 1, "2024-04-01")
 	//数据库测试
+	r := gin.Default()
+	r.Static("static/team_manager", "./static")
+	// r.Static("static/team_manager/css", "./static/css")
+	// r.Static("static/team_manager/js", "./static/js")
+	//r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html", "./static/404.html")
+	// r.LoadHTMLGlob("./static/*.html")
 
+	userrouter.User_manager(r, client, db)
+	teamrouter.Team_manager(r, client, db)
+	r.Run(":8080")
+
+	users, err := controlsql.QueryUserInfo(db)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for i := 0; i < len(users); i++ {
+		fmt.Println(users[i])
+	}
 }
