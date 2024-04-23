@@ -5,6 +5,7 @@ import (
 	service "DailyEnglish/services"
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -16,7 +17,6 @@ import (
 func tokenAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
-		fmt.Println(authHeader)
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, "未提供令牌")
 			c.Abort()
@@ -31,9 +31,7 @@ func tokenAuthMiddleware() gin.HandlerFunc {
 		// 提取令牌
 		token := strings.TrimPrefix(authHeader, "Bearer ")
 		user, err := service.ParseToken(token)
-		fmt.Println(user, token)
 		if err != nil {
-			fmt.Println(err)
 			c.JSON(http.StatusUnauthorized, "令牌无效")
 			c.Abort()
 			return
@@ -222,9 +220,11 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			c.JSON(400, "请求参数错误")
 			return
 		}
-		examInfo, err := controlsql.GetExamInfoByExamName(client, request.ExamName)
+		fmt.Print(request.ExamName)
+		examInfo, err := controlsql.GetExamInfoByName(client, "Exam1")
 		if err != nil {
 			c.JSON(500, "服务器错误")
+			log.Panic(err)
 			return
 		}
 		type UserResult struct {
@@ -424,7 +424,6 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 	r.GET("/api/team_manage/request_manage/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
 		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
-		fmt.Println(userClaims.TeamName)
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
@@ -474,12 +473,10 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			c.JSON(500, "服务器错误")
 			return
 		}
-		fmt.Println(userClaims.UserName)
 		Item1, Item2, err := controlsql.GetUserInfoByEmailPwd(db, userClaims.UserName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
-		fmt.Println(Item1, Item2)
 		type User struct {
 			Name     string `json:"name"`  // 用户姓名
 			Team     string `json:"team"`  // 用户所属团队
