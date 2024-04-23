@@ -14,7 +14,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func main1() {
+func main() {
 
 	// 数据库连接信息
 	username := "mimahezhanghao1yang"
@@ -133,8 +133,6 @@ func main1() {
 			})
 		} else if controlsql.CheckUser(db, data.Username, data.Pwd) {
 			teamName, err := controlsql.GetJoinedTeams(client, data.Username)
-			//输出所有teamname
-			fmt.Println("teamName:", teamName)
 
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{
@@ -176,7 +174,7 @@ func main1() {
 	}
 }
 
-func main() {
+func main1() {
 	// 数据库连接信息
 	username := "mimahezhanghao1yang"
 	password := "MIMAhezhanghao1yang"
