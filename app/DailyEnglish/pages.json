@@ -54,6 +54,13 @@
         "navigationBarTitleText" : ""
       }
     },
+	{
+	  "path" : "pages/Welcome/Welcome",
+	  "style" : {
+	    "enablePullDownRefresh" : false,
+	    "navigationBarTitleText" : ""
+	  }
+	},
     {
       "path" : "pages/Loading/Loading",
       "style" : {
@@ -75,6 +82,7 @@
         "navigationBarTitleText" : ""
       }
     }
+    
   ],
   "globalStyle" : {
     "navigationBarTextStyle" : "black",

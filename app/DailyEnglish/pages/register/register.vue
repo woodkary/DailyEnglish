@@ -15,7 +15,7 @@
 		</view>
 		<view class="white-container" :style="{ marginTop: '8rem' , width:'10rem'}" id="3">
 			<input class="search-box" type="text" placeholder="请输入验证码">
-		</view
+		</view>
 		<button class="verifi-button">获取验证码</button>
 		<view class="white-container" :style="{ marginTop: '12rem' }" id="4">
 			<input class="search-box" type="text" placeholder="请输入密码">
