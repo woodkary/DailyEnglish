@@ -47,12 +47,12 @@ func User_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 	})
 
 	r.GET("/api/team_manager/login", func(c *gin.Context) {
-		c.File("/static/team_manager/login.html")
+		c.File("/static/team_manager/login&register.html")
 	})
 
 	//重定向至登录页面
 	r.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login.html")
+		c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login&register.html")
 	})
 	//登录接口
 	r.POST("/api/team_manager/login", func(c *gin.Context) {
