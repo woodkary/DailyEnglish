@@ -153,4 +153,5 @@ func User_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			})
 		}
 	})
+
 }
