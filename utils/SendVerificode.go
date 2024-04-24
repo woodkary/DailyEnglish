@@ -4,7 +4,10 @@ import (
 	"bytes"
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"html/template"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/k3a/html2text"
@@ -27,34 +30,70 @@ func FormatEmail(email string) string {
 	return strings.ToLower(strings.TrimSpace(email))
 }
 
-// SendVerificationCode 发送验证码至指定邮箱
-func SendVerificationCode(email string, code string, templatePath string, config Config) error {
+// SendCode 只发送验证码
+func SendCode(email string, code string, config Config) error {
 	from := config.EmailFrom
 	smtpPass := config.SmtpPass
 	smtpUser := config.SmtpUser
-	to := email
+	to := FormatEmail(email)
+	smtpHost := config.SmtpHost
+	smtpPort := config.SmtpPort
+
+	m := gomail.NewMessage()
+	m.SetHeader("From", from)
+	m.SetHeader("To", to)
+	m.SetHeader("Subject", "Verification Code")
+	m.SetBody("text/html", code)
+
+	d := gomail.NewDialer(smtpHost, smtpPort, smtpUser, smtpPass)
+	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
+
+	// 发送邮件
+	if err := d.DialAndSend(m); err != nil {
+		return errors.New("could not send email")
+	}
+	return nil
+}
+
+// SendVerificationCode 发送验证码至指定邮箱
+func SendVerificationCode(email string, code string, config Config) error {
+	from := config.EmailFrom
+	smtpPass := config.SmtpPass
+	smtpUser := config.SmtpUser
+	to := FormatEmail(email)
 	smtpHost := config.SmtpHost
 	smtpPort := config.SmtpPort
 
 	var body bytes.Buffer
-
 	templateData := struct {
 		Code string
 	}{
 		Code: code,
 	}
 
-	template, err := template.ParseFiles(templatePath)
+	var paths []string
+	err := filepath.Walk("./utils/SendVerificode", func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			paths = append(paths, path)
+		}
+		return nil
+	})
+
 	if err != nil {
-		return errors.New("could not parse template")
+		fmt.Print("could not read template directory")
 	}
 
-	template.Execute(&body, templateData)
+	template, err := template.ParseFiles(paths...)
+	if err != nil {
+		fmt.Print("could not parse template")
+	}
+
+	template.ExecuteTemplate(&body, "email-temp.html", &templateData)
 	htmlString := body.String()
 	prem, _ := premailer.NewPremailerFromString(htmlString, nil)
 	htmlInline, err := prem.Transform()
 	if err != nil {
-		return errors.New("could not transform HTML")
+		fmt.Print("could not inline css")
 	}
 
 	m := gomail.NewMessage()
