@@ -43,7 +43,7 @@ func tokenAuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
+func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 	//主页数据
 	r.GET("/api/team_manage/index/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		// 定义JSON响应的结构体

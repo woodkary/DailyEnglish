@@ -70,8 +70,8 @@ func main() {
 	//r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html", "./static/404.html")
 	// r.LoadHTMLGlob("./static/*.html")
 
-	userrouter.User_manager(r, client, db)
-	teamrouter.Team_manager(r, client, db)
+	userrouter.InitUserRouter(r, client, db)
+	teamrouter.InitTeamRouter(r, client, db)
 	r.Run(":8080")
 
 	users, err := controlsql.QueryUserInfo(db)
