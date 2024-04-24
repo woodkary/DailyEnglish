@@ -32,14 +32,6 @@ func main() {
 	}
 	defer db.Close()
 
-	// 检查数据库连接是否成功
-	err = db.Ping()
-	if err != nil {
-		panic("Failed to connect to the database")
-	}
-
-	fmt.Println("Successfully connected to the database")
-
 	// Redis连接
 	client := redis.NewClient(&redis.Options{
 		Addr:     "r-bp1jdmrszl1yd6xxdipd.redis.rds.aliyuncs.com:6379", // Redis服务器地址
@@ -50,20 +42,15 @@ func main() {
 	defer client.Close()
 
 	// 检查连接是否成功
-	pong, err := client.Ping().Result()
-	if err != nil {
-		fmt.Println("连接Redis失败:", err)
-	} else {
-		fmt.Println("连接Redis成功:", pong)
-	}
+	client.Ping().Result()
 
 	//数据库测试
 
-	teamName := "每日背单词小组"
+	//teamName := "每日背单词小组"
 
-	controlsql.QueryTeamExams(client, teamName)
+	controlsql.GetUsernameByEmail(db, "1234567@qq.com")
 
-	//controlsql.InsertUserInfo(db, "小明", "10086", "12344", "123456@qq.com", 2024000123, 19, 1, "2024-04-01")
+	//controlsql.InsertUserInfo(db, "小明", "10086", "12344", "1234567@qq.com", 2024000123, 19, 1, "2024-04-01")
 	//数据库测试
 
 	r := gin.Default()
