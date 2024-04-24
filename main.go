@@ -1,7 +1,7 @@
 package main
 
 import (
-	controlsql "DailyEnglish/Control_SQL"
+	controlsql "DailyEnglish/db"
 	teamrouter "DailyEnglish/router/team_router"
 	userrouter "DailyEnglish/router/user_router"
 	"database/sql"

@@ -1,7 +1,7 @@
 ﻿package teamrouter
 
 import (
-	controlsql "DailyEnglish/Control_SQL"
+	controlsql "DailyEnglish/db"
 	service "DailyEnglish/services"
 	"database/sql"
 	"fmt"

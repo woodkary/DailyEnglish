@@ -1,7 +1,7 @@
 package userrouter
 
 import (
-	controlsql "DailyEnglish/Control_SQL"
+	controlsql "DailyEnglish/db"
 	service "DailyEnglish/services"
 	"DailyEnglish/utils"
 	"database/sql"
