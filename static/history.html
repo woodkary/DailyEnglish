@@ -100,10 +100,19 @@
           <img src="./image/努力加班.png" class="button-icon">
           <span class="button-text">历史考试</span>
         </button>
-        <button class="tablinks bottom-left" onclick="openTab('考试发布')">考试发布</button>
+        <button class="tablinks bottom-left" onclick="openTab('考试发布')">
+            <img src="./image/工作.png" class="button-icon" style="margin-left:-110px;">
+            <span class="button-text">考试发布</span>
+        </button>
         <img src="./image/class.svg" alt="中间图片" class="center-image">
-        <button class="tablinks top-right" onclick="openTab('学生成绩')">学生成绩</button>
-        <button class="tablinks bottom-right" onclick="openTab('考试安排')">考试安排</button>
+        <button class="tablinks top-right" onclick="openTab('学生成绩')">
+            <span class="button-text">学生成绩</span>
+            <img src="./image/合作.png" class="button-icon" style="margin-left:100px;">
+        </button>
+        <button class="tablinks bottom-right" onclick="openTab('考试安排')">
+            <span class="button-text">考试安排</span>
+            <img src="./image/敲代码.png" class="button-icon" style="margin-left:100px;scale: 0.85;">
+        </button>
         <div class="border"></div> <!-- 新增一个元素用于边框 -->
 
       </div>
@@ -147,25 +156,66 @@
     border-radius: 5%;
   }
 
+
   .top-left {
     top: 20px;
     left: 60px;
 
+  }
+  .top-left .button-text {
+      position: absolute;
+      top: 50%;
+      left: 70%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-weight: bold;
+      color: black;
   }
 
   .bottom-left {
     bottom: 20px;
     left: 60px;
   }
+  .bottom-left .button-text {
+      position: absolute;
+      top: 50%;
+      left: 70%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-weight: bold;
+      color: black;
+  }
 
   .top-right {
     top: 20px;
     right: 60px;
   }
+  .top-right .button-text {
+      position: absolute;
+      top: 50%;
+      right: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-weight: bold;
+      color: black;
+  }
 
   .bottom-right {
     bottom: 20px;
     right: 60px;
+  }
+  .bottom-right .button-text {
+      position: absolute;
+      top: 50%;
+      right: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-weight: bold;
+      color: black;
   }
 
   .center-image {
@@ -198,7 +248,8 @@
   .button-icon {
     width: 200px;
     height: 190px;
-    margin-left :-60px;
+    margin-left :-100px;
+    background: white;
     z-index: -1;
   }
 </style>

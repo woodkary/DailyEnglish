@@ -4,6 +4,8 @@ progress = document.querySelector(".progress");
 
 window.onload=function(){
     console.log('这里什么都没有，骗你的，哈哈哈！');
+    let aboutSpan=document.querySelector('.tabs').querySelector('#about');
+    aboutSpan.dispatchEvent(new Event('click'));
     closeIcon.addEventListener("click", () => {
         toast.classList.remove("active");
 
@@ -85,7 +87,7 @@ function initializeTeamCode () {
                 let title=toast.querySelector('.text-1');
                 let message=toast.querySelector('.text-2');
                 title.textContent='复制成功';
-                message.textContent='邀请码已复制到剪贴板，请妥善保管！';
+                message.textContent='邀请码已复制到剪贴板！';
 
                 if(toast.classList.contains("active")){
                     toast.classList.remove("active");
@@ -133,7 +135,7 @@ function initializeTeamCode () {
             let title=toast.querySelector('.text-1');
             let message=toast.querySelector('.text-2');
             title.textContent='重置邀请码成功';
-            message.textContent='邀请码已重置,请妥善保存';
+            message.textContent='邀请码已重置';
             if(toast.classList.contains("active")){
                 toast.classList.remove("active");
                 progress.classList.remove("active");
