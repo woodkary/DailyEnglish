@@ -11,3 +11,13 @@ func RandomString(n int) string {
 	}
 	return string(result)
 }
+
+//生成6位随机数字串
+func Random6code() string {
+	const letters = "123456"
+	result := make([]byte, 6)
+	for i := range result {
+		result[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(result)
+}

@@ -117,6 +117,24 @@ func GetUserInfoByEmailPwd(db *sql.DB, username string) (string, string, error) 
 	return email, pwd, nil
 }
 
+// 根据邮箱查询用户名，如果不存在则返回错误，如果存在则返回用户名
+func GetUsernameByEmail(db *sql.DB, email string) bool {
+	// 准备查询语句
+	query := "SELECT username FROM user_info WHERE email = ?"
+	// 执行查询操作
+	row := db.QueryRow(query, email)
+	// 从查询结果中获取用户名
+	var username string
+	err := row.Scan(&username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false
+		}
+		return false
+	}
+	return true
+}
+
 // 2.3 【团队管理个人中心】根据用户名和团队名查询团队权限
 func GetIsAdminByTeamAndUsername(team Team, username string) (bool, error) {
 	// 遍历团队成员列表
