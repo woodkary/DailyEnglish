@@ -28,7 +28,7 @@ func FormatEmail(email string) string {
 }
 
 // SendVerificationCode 发送验证码至指定邮箱
-func SendVerificationCode(email string, code string, config Config) error {
+func SendVerificationCode(email string, code string, templatePath string, config Config) error {
 	from := config.EmailFrom
 	smtpPass := config.SmtpPass
 	smtpUser := config.SmtpUser
@@ -44,7 +44,7 @@ func SendVerificationCode(email string, code string, config Config) error {
 		Code: code,
 	}
 
-	template, err := template.ParseFiles("static/email-verify.html")
+	template, err := template.ParseFiles(templatePath)
 	if err != nil {
 		return errors.New("could not parse template")
 	}
