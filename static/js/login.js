@@ -100,8 +100,8 @@ function login(event) {
             localStorage.setItem("token", data.token);
             let token = data.token;
             console.log(token);
-            let url = 'http://localhost:8080/api/team_manage/personal_center/data';
-            fetch(url, {
+           /* let url = 'http://localhost:8080/api/team_manage/personal_center/data';*/
+/*            fetch(url, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ function login(event) {
                 }
             }).catch(error => {
                 console.log(error);
-            })
+            })*/
             /*window.location.href = 'http://localhost:8080/api/team_manager/index';*/
             window.location.href = 'user.html';//跳转到主页,为了能展示，先暂存
         } else {

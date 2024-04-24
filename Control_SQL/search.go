@@ -126,23 +126,20 @@ func GetJoinedTeams(client *redis.Client, username string) ([]string, error) {
 
 // 2.2 【团队管理个人中心】根据用户名查询邮箱和密码
 
-func GetUserInfoByEmailPwd(db *sql.DB, username string) (string, string, error) {
+func GetUserInfoByEmailPwd(db *sql.DB, username string) (string, string, string, error) {
 	// 准备查询语句
-	query := "SELECT email, pwd FROM user_info WHERE username = ?"
+	query := "SELECT email, pwd, phone FROM user_info WHERE username = ?"
 	// 执行查询操作
 	row := db.QueryRow(query, username)
 
 	// 从查询结果中获取邮箱和密码
-	var email, pwd string
-	err := row.Scan(&email, &pwd)
+	var email, pwd, phone string
+	err := row.Scan(&email, &pwd, &phone)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return "", "", fmt.Errorf("user not found")
-		}
-		return "", "", fmt.Errorf("error getting user info: %v", err)
+		return "", "", "", fmt.Errorf("error getting user info: %v", err)
 	}
 
-	return email, pwd, nil
+	return email, pwd, phone, nil
 }
 
 // 2.3 【团队管理个人中心】根据用户名和团队名查询团队权限

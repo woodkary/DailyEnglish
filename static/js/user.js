@@ -2,6 +2,34 @@ const toast = document.querySelector(".toast")
 closeIcon = document.querySelector(".close")
 progress = document.querySelector(".progress");
 
+let allTeams = [];
+//TODO 在team选项卡打开时，把allTeam的内容更新上去
+
+function getPersonalInfo(){
+    let token=localStorage.getItem('token');
+    fetch('http://localhost:8080/api/team_manage/personal_center/data',{
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer '+token
+        }
+    })
+   .then(response => response.json())
+   .then(data => {
+        console.log(data);
+        let nameP = document.getElementById('name');
+        let emailP = document.getElementById('email');
+        let phoneP = document.getElementById('phone');
+        nameP.textContent = data.user.name;
+        emailP.textContent = data.user.email;
+        phoneP.textContent = data.user.phone;
+        data.user.teams.forEach(team => {
+            //假设每个团队10人，这里可以根据实际情况调整
+            //TODO 如果后端更新了查人数，就要用team来查，而不是用10
+            allTeams.push({team:team,num:10});
+        })
+    })
+}
+
 window.onload=function(){
     console.log('这里什么都没有，骗你的，哈哈哈！');
     let aboutSpan=document.querySelector('.tabs').querySelector('#about');
