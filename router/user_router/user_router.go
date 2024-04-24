@@ -15,36 +15,14 @@ import (
 
 func User_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 
-	//注册接口
-	r.POST("/api/team_manager/register", func(c *gin.Context) {
-		type regdata struct {
-			Username string `json:"username"`
-			Pwd      string `json:"pwd"`
-			Email    string `json:"email"`
-		}
-		var data regdata
-		if err := c.ShouldBind(&data); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
-				"msg":  err.Error(),
-			})
-			return
-		}
-		if controlsql.SearchUserByUsername(db, data.Username) {
-			//TODO
-			//验证码还妹搞
-			if controlsql.InsertUser(db, data.Username, data.Pwd, data.Email) != nil {
-				c.JSON(http.StatusOK, gin.H{
-					"code": "200",
-					"msg":  "注册成功",
-				})
-			} else {
-				c.JSON(http.StatusConflict, gin.H{
-					"code": "409",
-					"msg":  "用户已注册",
-				})
-			}
-		}
+	//注册&登录页面
+	r.GET("/api/team_manager/login", func(c *gin.Context) {
+		c.File("/static/team_manager/login&register.html")
+	})
+
+	//重定向至注册&登录页面
+	r.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login&register.html")
 	})
 
 	// 发送验证码接口
@@ -96,14 +74,41 @@ func User_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		})
 	})
 
-	//登录页面
-	r.GET("/api/team_manager/login", func(c *gin.Context) {
-		c.File("/static/team_manager/login&register.html")
-	})
+	//注册接口
+	r.POST("/api/team_manager/register", func(c *gin.Context) {
+		type regdata struct {
+			Username string `json:"username"`
+			Pwd      string `json:"pwd"`
+			Email    string `json:"email"`
+		}
+		var data regdata
+		if err := c.ShouldBind(&data); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+		if !controlsql.SearchUserByUsername(db, data.Username) {
+			//验证码由前端完成判定
 
-	//重定向至登录页面
-	r.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusTemporaryRedirect, "/static/team_manager/login&register.html")
+			if controlsql.InsertUser(db, data.Username, data.Pwd, data.Email) != nil {
+				c.JSON(http.StatusOK, gin.H{
+					"code": "200",
+					"msg":  "注册成功",
+				})
+			} else {
+				c.JSON(http.StatusConflict, gin.H{
+					"code": "500",
+					"msg":  "服务器内部错误",
+				})
+			}
+		} else {
+			c.JSON(http.StatusConflict, gin.H{
+				"code": "409",
+				"msg":  "用户名已被注册",
+			})
+		}
 	})
 
 	//登录接口
