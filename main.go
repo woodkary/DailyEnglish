@@ -58,7 +58,10 @@ func main() {
 	}
 
 	//数据库测试
-	// 调用 insertData 函数插入测试数据
+
+	teamName := "每日背单词小组"
+
+	controlsql.QueryTeamExams(client, teamName)
 
 	//controlsql.InsertUserInfo(db, "小明", "10086", "12344", "123456@qq.com", 2024000123, 19, 1, "2024-04-01")
 	//数据库测试

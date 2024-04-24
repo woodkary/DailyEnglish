@@ -198,7 +198,7 @@ func GetTeamAttendanceByTeamName(client *redis.Client, teamName string) (Attenda
 	return attendanceRecord, nil
 }
 
-// 3.1 查询团队成员的打卡情况
+// 3.1 查询团队成员的打卡情况  （测试成功）
 func GetTeamMembersAttendance1(client *redis.Client, teamName string) (map[string]Member, error) {
 	// 获取团队成员信息的键名
 	memberKeys, err := client.Keys("team:" + teamName + ":member:*").Result()
@@ -227,41 +227,52 @@ func GetTeamMembersAttendance1(client *redis.Client, teamName string) (map[strin
 		// 将成员信息存入map
 		teamMembersAttendance[member.Username] = member
 	}
-
+	// 打印团队成员的打卡情况
+	fmt.Println("Team Members Attendance:")
+	for username, member := range teamMembersAttendance {
+		fmt.Printf("Username: %s\n", username)
+		fmt.Printf("Join Date: %s\n", member.JoinDate)
+		fmt.Printf("Attendance Days: %d\n", member.AttendanceDays)
+		fmt.Printf("Is Admin: %t\n", member.IsAdmin)
+		fmt.Printf("Attendance Rate: %s\n", member.AttendanceRate)
+	}
 	return teamMembersAttendance, nil
 }
 
-// 3.2 查询当前日期的团队成员的打卡情况
+// 3.2 查询当前日期的团队成员的打卡情况  （已测试成功）
 func GetTeamMembersAttendanceByDate(client *redis.Client, teamName string) (map[string]int, error) {
 	// 获取当前日期
-	currentDate := time.Now().Format("2006-01-02")
+	currentDate := "2024-04-10"
+	// 构建哈希键模式
+	pattern := "attendance:" + currentDate + ":team:" + teamName + ":member:*"
 
-	// 获取团队成员信息的键名
-	memberKeys, err := client.Keys("team:" + teamName + ":member:*").Result()
+	// 从 Redis 中获取符合模式的所有键
+	keys, err := client.Keys(pattern).Result()
 	if err != nil {
 		return nil, err
 	}
 
-	// 初始化团队成员打卡情况的map
-	teamMembersAttendance := make(map[string]int)
+	// 初始化结果映射
+	membersAttendance := make(map[string]int)
 
-	// 遍历每个成员的键名，获取成员的打卡情况
-	for _, key := range memberKeys {
-		// 从Redis中获取成员的打卡情况
-		memberAttendance, err := client.HGet(key, currentDate).Result()
+	// 遍历符合模式的键并获取相应的值
+	for _, key := range keys {
+		// 获取用户名
+		username := strings.TrimPrefix(key, "attendance:"+currentDate+":team:"+teamName+":member:")
+		// 获取打卡情况
+		wordCount, err := client.HGet(key, "word_count").Int()
 		if err != nil {
 			return nil, err
 		}
-
-		// 解析成员的打卡情况，如果打卡则为1，否则为0
-		attendance, _ := strconv.Atoi(memberAttendance)
-
-		// 将成员的打卡情况存入map
-		memberUsername := strings.TrimPrefix(key, "team:"+teamName+":member:")
-		teamMembersAttendance[memberUsername] = attendance
+		// 将用户名及其对应的打卡情况添加到结果映射中
+		membersAttendance[username] = wordCount
 	}
-
-	return teamMembersAttendance, nil
+	// 输出结果映射
+	fmt.Println("Members Attendance:")
+	for username, wordCount := range membersAttendance {
+		fmt.Printf("%s: %d\n", username, wordCount)
+	}
+	return membersAttendance, nil
 }
 
 // 3.3// 根据团队名查找所有成员的打卡单词数量//返回一个 map，其中键是成员的用户名，值是对应的打卡单词数量
@@ -396,7 +407,14 @@ func QueryTeamExams(client *redis.Client, teamName string) ([]map[string]string,
 		dateJ, _ := time.Parse("2006-01-02", examInfos[j]["Date"])
 		return dateI.Before(dateJ)
 	})
-
+	// 打印考试信息
+	fmt.Println("Team Exams:")
+	for _, exam := range examInfos {
+		fmt.Printf("Name: %s\n", exam["Name"])
+		fmt.Printf("Date: %s\n", exam["Date"])
+		fmt.Printf("Average Score: %s\n", exam["AverageScore"])
+		fmt.Printf("Pass Rate: %s\n", exam["PassRate"])
+	}
 	return examInfos, nil
 }
 
