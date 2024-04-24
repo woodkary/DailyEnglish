@@ -39,7 +39,7 @@ func User_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			return
 		}
 		// 验证邮箱是否已注册
-		if !controlsql.GetUsernameByEmail(db, data.Email) {
+		if controlsql.GetUsernameByEmail(db, data.Email) {
 			c.JSON(http.StatusConflict, gin.H{
 				"code": "409",
 				"msg":  "邮箱已注册",
