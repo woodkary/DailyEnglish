@@ -60,6 +60,7 @@ func InitUserRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		// 生成验证码
 		Vcode := utils.RandomNcode(6)
 		// 发送验证码
+		//err := utils.SendCode(data.Email, Vcode, config)
 		err := utils.SendVerificationCode(data.Email, Vcode, config)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
