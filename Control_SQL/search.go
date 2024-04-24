@@ -56,6 +56,9 @@ func GetTeamInfo(client *redis.Client, teamName string) (Team, error) {
 		return Team{}, err
 	}
 
+	// 输出团队信息
+	fmt.Println("团队信息：", team)
+
 	return team, nil
 }
 
@@ -257,7 +260,7 @@ func GetTeamMembersAttendanceByDate(client *redis.Client, teamName string) (map[
 	return membersAttendance, nil
 }
 
-// 3.3// 根据团队名查找所有成员的打卡单词数量//返回一个 map，其中键是成员的用户名，值是对应的打卡单词数量
+// 3.3// 根据团队名查找所有成员的打卡单词数量//返回一个 map，其中键是成员的用户名，值是对应的打卡单词数量（测试成功）
 func GetTeamMembersAttendanceNum(client *redis.Client, teamName string) (map[string]int, error) {
 	// 获取团队成员信息的键名
 	memberKeys, err := client.Keys("team:" + teamName + ":member:*").Result()
@@ -283,7 +286,7 @@ func GetTeamMembersAttendanceNum(client *redis.Client, teamName string) (map[str
 		memberUsername := strings.TrimPrefix(key, "team:"+teamName+":member:")
 		teamMembersAttendanceNum[memberUsername] = attendanceNum
 	}
-
+	fmt.Println("团队成员打卡单词数量：", teamMembersAttendanceNum)
 	return teamMembersAttendanceNum, nil
 }
 
@@ -343,61 +346,58 @@ func GetTeamExamResult(client *redis.Client, teamName string, examName string) (
 	return examResult, nil
 }
 
-// 5.2根据团队名查询该团队所有考试的考试名称、考试日期、平均分、通过率，并按照考试日期排序
+// 5.2根据团队名查询该团队所有考试的考试名称，再通过考试名称查询相应考试日期、平均分、通过率，并按照考试日期排序（测试成功）
 func QueryTeamExams(client *redis.Client, teamName string) ([]map[string]string, error) {
-	// 获取所有考试的键名
-	keys, err := client.Keys("exam_info:*").Result()
+	// 查询该团队参加的所有考试名称
+	examNames, err := client.Keys("exam_result:" + teamName + ":*").Result()
 	if err != nil {
 		return nil, err
 	}
 
-	// 保存结果的切片
-	var examInfos []map[string]string
-
-	// 遍历所有考试键名，提取考试信息
-	for _, key := range keys {
-		examInfo, err := client.HGetAll(key).Result()
+	// 查询每场考试的详细信息
+	var exams []map[string]string
+	for _, examKey := range examNames {
+		// 提取考试名称
+		examName := strings.TrimPrefix(examKey, "exam_result:"+teamName+":")
+		// 查询考试详细信息
+		examInfo, err := GetExamInfoByName(client, examName)
 		if err != nil {
 			return nil, err
 		}
 
-		// 检查考试是否属于指定团队
-		if examInfo["team_name"] == teamName {
-			// 转换通过率为百分比形式
-			passRate, err := strconv.ParseFloat(examInfo["pass_rate"], 64)
-			if err != nil {
-				return nil, err
-			}
-			passRateStr := strconv.FormatFloat(passRate*100, 'f', 2, 64) + "%"
-
-			// 构建考试信息的映射
-			exam := map[string]string{
-				"Name":         examInfo["name"],
-				"Date":         examInfo["date"],
-				"AverageScore": examInfo["average_score"],
-				"PassRate":     passRateStr,
-			}
-
-			// 将考试信息添加到结果切片中
-			examInfos = append(examInfos, exam)
+		// 将 ExamInfo 转换为 map[string]string
+		examMap := map[string]string{
+			"ID":            strconv.Itoa(examInfo.ID),
+			"Date":          examInfo.Date,
+			"Name":          examInfo.Name,
+			"QuestionCount": strconv.Itoa(examInfo.QuestionCount),
+			"AverageScore":  strconv.FormatFloat(examInfo.AverageScore, 'f', -1, 64),
+			"PassRate":      strconv.FormatFloat(examInfo.PassRate, 'f', -1, 64),
 		}
-	}
 
-	// 按照考试日期排序
-	sort.Slice(examInfos, func(i, j int) bool {
-		dateI, _ := time.Parse("2006-01-02", examInfos[i]["Date"])
-		dateJ, _ := time.Parse("2006-01-02", examInfos[j]["Date"])
-		return dateI.Before(dateJ)
-	})
-	// 打印考试信息
-	fmt.Println("Team Exams:")
-	for _, exam := range examInfos {
-		fmt.Printf("Name: %s\n", exam["Name"])
-		fmt.Printf("Date: %s\n", exam["Date"])
-		fmt.Printf("Average Score: %s\n", exam["AverageScore"])
-		fmt.Printf("Pass Rate: %s\n", exam["PassRate"])
+		// 将 TopSix 转换为 map[string]string
+		topSixMap := make(map[string]string)
+		for username, score := range examInfo.TopSix {
+			topSixMap[username] = strconv.Itoa(score)
+		}
+		examMap["TopSix"] = fmt.Sprintf("%v", topSixMap)
+
+		// 将 Questions 转换为 map[string]string
+		questionsMap := make(map[string]string)
+		for i, question := range examInfo.Questions {
+			questionsMap[strconv.Itoa(i)] = question
+		}
+		examMap["Questions"] = fmt.Sprintf("%v", questionsMap)
+
+		exams = append(exams, examMap)
 	}
-	return examInfos, nil
+	// 按日期升序排序
+	sort.Slice(exams, func(i, j int) bool {
+		date1, _ := time.Parse("2006-01-02", exams[i]["Date"])
+		date2, _ := time.Parse("2006-01-02", exams[j]["Date"])
+		return date1.Before(date2)
+	})
+	return exams, nil
 }
 
 // 7. 通过团队名查询该团队的通知信息
@@ -434,8 +434,7 @@ func QueryUnprocessedNotifications(client *redis.Client, teamName string) ([]Not
 	return unprocessedNotifications, nil
 }
 
-// 8. 通过考试名获取考试
-
+// 8. 通过考试名获取考试  （测试成功）
 func GetExamInfoByName(client *redis.Client, examName string) (*ExamInfo, error) {
 	// 查询考试ID
 	examID, err := client.Get("exam_name:" + examName).Int()

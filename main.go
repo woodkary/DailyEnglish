@@ -43,7 +43,7 @@ func main() {
 
 	//数据库测试
 	//teamName := "每日背单词小组"
-	controlsql.GetUsernameByEmail(db, "1234567@qq.com")
+	controlsql.GetTeamInfo(client, "每日背单词小组")
 	//controlsql.InsertUserInfo(db, "小明", "10086", "12344", "1234567@qq.com", 2024000123, 19, 1, "2024-04-01")
 
 	r := gin.Default()
