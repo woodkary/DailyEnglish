@@ -48,11 +48,9 @@ func main() {
 
 	r := gin.Default()
 	r.Static("static/team_manager", "./static")
-	r.LoadHTMLFiles("./static/email_verify.html")
 	// r.Static("static/team_manager/css", "./static/css")
 	// r.Static("static/team_manager/js", "./static/js")
-	//r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html", "./static/404.html")
-	// r.LoadHTMLGlob("./static/*.html")
+	// r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html", "./static/404.html")
 
 	userrouter.InitUserRouter(r, client, db)
 	teamrouter.InitTeamRouter(r, client, db)

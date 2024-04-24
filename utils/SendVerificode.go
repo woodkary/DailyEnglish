@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/k3a/html2text"
@@ -51,11 +53,10 @@ func SendCode(email string, code string, config Config) error {
 		return errors.New("could not send email")
 	}
 	return nil
-
 }
 
 // SendVerificationCode 发送验证码至指定邮箱
-func SendVerificationCode(email string, code string, templatePath string, config Config) error {
+func SendVerificationCode(email string, code string, config Config) error {
 	from := config.EmailFrom
 	smtpPass := config.SmtpPass
 	smtpUser := config.SmtpUser
@@ -64,19 +65,30 @@ func SendVerificationCode(email string, code string, templatePath string, config
 	smtpPort := config.SmtpPort
 
 	var body bytes.Buffer
-
 	templateData := struct {
 		Code string
 	}{
 		Code: code,
 	}
 
-	template, err := template.ParseFiles(templatePath)
+	var paths []string
+	err := filepath.Walk("./utils/SendVerificode", func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			paths = append(paths, path)
+		}
+		return nil
+	})
+
+	if err != nil {
+		fmt.Print("could not read template directory")
+	}
+
+	template, err := template.ParseFiles(paths...)
 	if err != nil {
 		fmt.Print("could not parse template")
 	}
 
-	template.Execute(&body, templateData)
+	template.ExecuteTemplate(&body, "email-temp.html", &templateData)
 	htmlString := body.String()
 	prem, _ := premailer.NewPremailerFromString(htmlString, nil)
 	htmlInline, err := prem.Transform()
