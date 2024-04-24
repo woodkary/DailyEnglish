@@ -38,20 +38,13 @@ func main() {
 		Password: "MIMAhezhanghao1yang",                                // Redis服务器密码
 		DB:       255,                                                  // 使用的Redis数据库编号
 	})
-
+	client.Ping().Result()
 	defer client.Close()
 
-	// 检查连接是否成功
-	client.Ping().Result()
-
 	//数据库测试
-
 	//teamName := "每日背单词小组"
-
 	controlsql.GetUsernameByEmail(db, "1234567@qq.com")
-
 	//controlsql.InsertUserInfo(db, "小明", "10086", "12344", "1234567@qq.com", 2024000123, 19, 1, "2024-04-01")
-	//数据库测试
 
 	r := gin.Default()
 	r.Static("static/team_manager", "./static")

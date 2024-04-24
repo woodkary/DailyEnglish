@@ -12,10 +12,10 @@ func RandomString(n int) string {
 	return string(result)
 }
 
-//生成6位随机数字串
-func Random6code() string {
-	const letters = "123456"
-	result := make([]byte, 6)
+//生成随机数字串
+func RandomNcode(n int) string {
+	const letters = "1234567890"
+	result := make([]byte, n)
 	for i := range result {
 		result[i] = letters[rand.Intn(len(letters))]
 	}

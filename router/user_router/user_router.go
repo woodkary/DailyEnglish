@@ -13,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func User_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
+func InitUserRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 
 	//注册&登录页面
 	r.GET("/api/team_manager/login", func(c *gin.Context) {
@@ -28,10 +28,12 @@ func User_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 	// 发送验证码接口
 	r.POST("/api/team_manager/send_code", func(c *gin.Context) {
 		// 解析 JSON 数据
-		var data struct {
+		type response struct {
 			Email string `json:"email"`
 		}
+		var data response
 		if err := c.ShouldBindJSON(&data); err != nil {
+			fmt.Print(err)
 			c.JSON(http.StatusBadRequest, gin.H{
 				"code": "400",
 				"msg":  "请求参数错误",
@@ -56,7 +58,7 @@ func User_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			SmtpPass:  "bmqdkfqwluctbefh",
 		}
 		// 生成验证码
-		Vcode := utils.Random6code()
+		Vcode := utils.RandomNcode(6)
 		// 发送验证码
 		err := utils.SendVerificationCode(data.Email, Vcode, config)
 		if err != nil {
@@ -91,8 +93,13 @@ func User_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		}
 		if !controlsql.SearchUserByUsername(db, data.Username) {
 			//验证码由前端完成判定
+			DefaultID := 2021111111 //默认ID
+			Key := "DailyEnglish"   //密钥
+			cryptoPwd := service.AesEncrypt(data.Pwd, Key)
+			//获取系统当前日期
+			RegisterDate := utils.GetCurrentDate()
 
-			if controlsql.InsertUser(db, data.Username, data.Pwd, data.Email) != nil {
+			if controlsql.InsertUserInfo(db, data.Username, "10086", cryptoPwd, data.Email, DefaultID, 18, 0, RegisterDate) != nil {
 				c.JSON(http.StatusOK, gin.H{
 					"code": "200",
 					"msg":  "注册成功",
