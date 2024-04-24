@@ -100,13 +100,13 @@ func InitUserRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			//获取系统当前日期
 			RegisterDate := utils.GetCurrentDate()
 
-			if controlsql.InsertUserInfo(db, data.Username, "10086", cryptoPwd, data.Email, DefaultID, 18, 0, RegisterDate) != nil {
+			if controlsql.InsertUserInfo(db, data.Username, "10086", cryptoPwd, data.Email, DefaultID, 18, 0, RegisterDate) == nil {
 				c.JSON(http.StatusOK, gin.H{
 					"code": "200",
 					"msg":  "注册成功",
 				})
 			} else {
-				c.JSON(http.StatusConflict, gin.H{
+				c.JSON(http.StatusInternalServerError, gin.H{
 					"code": "500",
 					"msg":  "服务器内部错误",
 				})
