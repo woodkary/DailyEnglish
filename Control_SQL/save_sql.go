@@ -14,10 +14,7 @@ func InsertUserInfo(db *sql.DB, username, phone, pwd, email string, id, age, sex
 	query := "INSERT INTO user_info (username, id, phone, pwd, email, age, sex, register_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 	// 执行插入操作
 	_, err := db.Exec(query, username, id, phone, pwd, email, age, sex, registerDate)
-	if err != nil {
-		return fmt.Errorf("error inserting user info: %v", err)
-	}
-	return nil
+	return err
 }
 
 // InsertBookInfo 向书籍表插入书籍数据
