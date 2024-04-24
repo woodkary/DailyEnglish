@@ -490,11 +490,12 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			c.JSON(500, "服务器错误")
 		}
 		type User struct {
-			Name     string `json:"name"`  // 用户姓名
-			Team     string `json:"team"`  // 用户所属团队
-			Right    string `json:"right"` // 用户权限
-			Email    string `json:"email"` // 用户邮箱
-			Password string `json:"pwd"`   //用户密码
+			Name string `json:"name"` // 用户姓名
+			// 用户所属全部团队
+			Teams    []string `json:"teams"`
+			Right    string   `json:"right"` // 用户权限
+			Email    string   `json:"email"` // 用户邮箱
+			Password string   `json:"pwd"`   //用户密码
 		}
 		// Response 定义了响应的信息
 		type Response struct {
@@ -506,7 +507,11 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		response.User.Email = Item1
 		response.User.Password = Item2
 		response.User.Name = userClaims.UserName
-		response.User.Team = userClaims.TeamName
+		response.User.Teams, err = controlsql.GetJoinedTeams(client, userClaims.UserName)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+		}
+
 		response.Code = "200"
 		response.Msg = "成功"
 		c.JSON(200, response)
