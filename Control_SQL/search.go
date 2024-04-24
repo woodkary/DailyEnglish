@@ -56,6 +56,33 @@ func GetTeamInfo(client *redis.Client, teamName string) (Team, error) {
 		return Team{}, err
 	}
 
+	// 获取团队成员信息的键名
+	memberKeys, err := client.Keys("team:" + teamName + ":member:*").Result()
+	if err != nil {
+		return Team{}, err
+	}
+
+	// 遍历每个成员的键名，获取成员信息并添加到团队成员列表中
+	for _, key := range memberKeys {
+		// 从 Redis 中获取成员信息
+		memberJSON, err := client.HGetAll(key).Result()
+		if err != nil {
+			return Team{}, err
+		}
+
+		// 解析 JSON 格式的成员信息
+		var member Member
+		member.Username = strings.TrimPrefix(key, "team:"+teamName+":member:")
+		member.JoinDate = memberJSON["join_date"]
+		member.AttendanceDays, _ = strconv.Atoi(memberJSON["attendance_days"])
+		member.IsAdmin, _ = strconv.ParseBool(memberJSON["is_admin"])
+		member.AttendanceRate = memberJSON["attendance_rate"]
+		member.AttendanceNum, _ = strconv.Atoi(memberJSON["attendance_num"])
+
+		// 添加成员到团队成员列表中
+		team.Members = append(team.Members, member)
+	}
+
 	// 输出团队信息
 	fmt.Println("团队信息：", team)
 

@@ -94,8 +94,8 @@ func InitUserRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		}
 		if !controlsql.SearchUserByUsername(db, data.Username) {
 			//验证码由前端完成判定
-			DefaultID := 2021111111 //默认ID
-			Key := "DailyEnglish"   //密钥
+			DefaultID := 2021111111   //默认ID
+			Key := "Daily_-English#$" //密钥
 			cryptoPwd := service.AesEncrypt(data.Pwd, Key)
 			//获取系统当前日期
 			RegisterDate := utils.GetCurrentDate()
@@ -133,7 +133,7 @@ func InitUserRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			})
 			return
 		}
-
+		fmt.Println("username:", data.Username, " password:", data.Pwd)
 		if !controlsql.SearchUserByUsername(db, data.Username) {
 			c.JSON(http.StatusForbidden, gin.H{
 				"code": "403",
