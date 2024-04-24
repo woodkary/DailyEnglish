@@ -158,7 +158,7 @@ function register(event) {
     let username = document.getElementById("username-register").value;
     let email = document.getElementById("email-register").value;
     let password = document.getElementById("password-register").value;
-    let passwordRetype = document.getElementById("password-retype-register").value;
+    let passwordRetype = document.getElementById("password-register-retype").value;
     if (password !== passwordRetype) {
         //TODO 不应使用toast，应使用文本提示
         toggleToast("提示","两次密码输入不一致");
@@ -266,7 +266,7 @@ function checkEmail(email) {
 }
 
 let initialVerifyCodeInput = "";
-let verifyCodeInput = document.getElementById("verify-code-register");
+let verifyCodeInput = document.getElementById("verification-code-register");
 verifyCodeInput.addEventListener("focus", function () {
     initialVerifyCodeInput = verifyCodeInput.value;
 });
@@ -277,7 +277,7 @@ verifyCodeInput.addEventListener("blur", function () {
             toggleToast("提示","验证码错误");
         }else{
             let passwordInput = document.getElementById("password-register");
-            let passwordRetypeInput = document.getElementById("password-retype-register");
+            let passwordRetypeInput = document.getElementById("password-register-retype");
             let registerBtn = document.getElementById("register-btn");
             passwordInput.style.display = "block";
             passwordRetypeInput.style.display = "block";

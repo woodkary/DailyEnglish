@@ -28,8 +28,13 @@ func InsertUser(db *sql.DB, username string, pwd string, email string) error {
 // CheckUser 检查用户名和密码是否匹配，匹配则返回true，不匹配则返回false
 func CheckUser(db *sql.DB, username string, pwd string) bool {
 	var count int
+	// Key := "Daily_-English#$" //密钥
+	// pwd = services.AesEncrypt(pwd, Key)
+	fmt.Println("CheckUser pwd:", pwd)
 	err := db.QueryRow("SELECT COUNT(*) FROM user_info WHERE username = ? AND pwd = ?", username, pwd).Scan(&count)
 	if err != nil || count != 1 {
+		fmt.Println("CheckUser error:", err)
+		fmt.Println("CheckUser count:", count)
 		return false
 	}
 	return true
