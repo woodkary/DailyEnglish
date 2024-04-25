@@ -40,6 +40,46 @@
 
         <div class="progress"></div>
     </div>
+    <div class="modal">
+        <article class="modal-container">
+            <header class="modal-container-header">
+                <h1 class="modal-container-title">
+
+                    创建一个团队
+                </h1>
+                <button class="icon-button">
+                    <svg t="1713943520685" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                        xmlns="http://www.w3.org/2000/svg" p-id="912" width="20" height="20">
+                        <path
+                            d="M512 412.416L860.416 64 960 163.584 611.584 512 960 860.416 860.416 960 512 611.584 163.584 960 64 860.416 412.416 512 64 163.584 163.584 64 512 412.416z"
+                            p-id="913" fill="#ffffff"></path>
+                    </svg>
+                </button>
+            </header>
+            <section class="modal-container-body">
+                <div class="coolinput">
+                    <label for="input" class="text">团队名*:</label>
+                    <input type="text" placeholder="输入团体名..." teamName="input" class="input">
+                </div>
+                <div class="coolinput">
+                    <label for="input" class="text">人数:</label>
+                    <input type="number" list="amount-opt" class="input" amount="amount" placeholder="选择或输入人数">
+                    <datalist id="amount-opt">
+                        <option value="20">
+                        <option value="30">
+                        <option value="40">
+                        <option value="50">
+                    </datalist>
+                    <span class="tip" style="margin-top: 18px;font-size: 0.8rem;color:#ef4565;display: none;">*人数至少为5</span>
+                </div>
+
+            </section>
+            <footer class="modal-container-footer">
+                <button class="button cancel">取消</button>
+                <button class="button accept">创建</button>
+            </footer>
+        </article>
+    </div>
     <nav>
         <div class="logo-name">
             <!--        <div class="logo-image">
@@ -226,6 +266,8 @@
                                                         </div>
                                                     </div>
                                                 </card>
+                                                <button id="openModalButton">modal按钮</button>
+                                               
                                             </div>
                                         </div>
                                     </div>
@@ -285,7 +327,51 @@
 <script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.0/lib/darkmode-js.min.js"></script>
 <script src="./js/navSidebar.js"></script>
 <script src="./js/user.js"></script>
+<script>
+    const openModalButton = document.getElementById('openModalButton');
+    openModalButton.addEventListener('click', () => {
+        modal.style.display = 'flex';
+    });
 
+    const modal = document.querySelector('.modal');
+    const modalClose = document.querySelector('.icon-button');
+    const modalAccept = document.querySelector('.button.accept');
+    const modalDecline = document.querySelector('.button.cancel');
+
+    function hideModal() {
+        modal.style.display = 'none';
+    }
+
+    modalClose.addEventListener('click', hideModal);
+    modalDecline.addEventListener('click', hideModal);
+
+    document.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    //以下是表单验证
+    const teamName = document.querySelector('.input[teamName]');
+    const amount = document.querySelector('.input[amount]');
+    
+    modalAccept.addEventListener('click', () => {
+        let isValid = true;
+        if(teamName.value.trim() === '') {
+            teamName.style.borderColor = '#e55d50';
+            isValid = false;
+        } else {
+            teamName.style.borderColor = '#818CF8';
+        }
+        if(amount.value<5){
+            amount.style.borderColor = '#e55d50';
+            modal.querySelector('.tip').style.display = 'block';
+            isValid = false;
+        } else {
+            amount.style.borderColor = '#818CF8';
+        }
+    });
+</script>
 <style>
     .emp-profile {
         padding: 3%;
@@ -833,6 +919,137 @@
         -moz-user-select: none;    /* Firefox */
         -ms-user-select: none;     /* IE10+/Edge */
         user-select: none;         /* Standard */
+    }
+
+    .modal {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-container {
+        background-color: #fff;
+        border-radius: 16px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-container-header {
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        height: 45px;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #4070f4;
+    }
+
+    .modal-container-title {
+        padding: 20px 32px;
+        font-size: 20px;
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .icon-button {
+        height: 45px;
+        width: 45px;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+    .modal-container-body {
+        height: 200px;
+        width: 270px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modal-container-footer {
+        padding: 20px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        border-top: 1px solid #ddd;
+        gap: 12px;
+        position: relative;
+    }
+
+    .modal-container-footer:after {
+        content: "";
+        display: block;
+        position: absolute;
+        top: -51px;
+        left: 24px;
+        right: 24px;
+        height: 50px;
+        flex-shrink: 0;
+        /* background-image: linear-gradient(to top, rgba(255, 255, 255, 0.75), transparent); */
+        pointer-events: none;
+    }
+
+    .button.cancel,
+    .button.accept {
+        padding: 8px 16px;
+        font-size: 16px;
+        outline: none;
+        border: none;
+
+        color: #fff;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .button.cancel {
+        background-color: #ef4565;
+    }
+
+    .button.accept {
+        background-color: #265cf0;
+    }
+
+
+    .coolinput {
+        display: flex;
+        flex-direction: column;
+        width: fit-content;
+        position: static;
+        max-width: 240px;
+        margin-left: 20px;
+        margin-top: 20px;
+    }
+
+    .coolinput label {
+        font-size: 0.75rem;
+        color: rgb(118, 129, 231);
+        font-weight: 700;
+        position: relative;
+        top: 0.5rem;
+        margin: 0 0 0 7px;
+        padding: 0 3px;
+        background: #ffffff;
+        width: fit-content;
+    }
+
+    .coolinput input.input {
+        padding: 11px 10px;
+        font-size: 1rem;
+        border: 2px #818CF8 solid;
+        border-radius: 5px;
+        background: #ffffff;
+    }
+
+    .coolinput input.input:focus {
+        outline: none;
     }
 </style>
 </html>
