@@ -98,47 +98,70 @@
       <div class="tab-container">
         <button class="tablinks top-left" onclick="openTab('历次考试')">
           <img src="./image/努力加班.png" class="button-icon">
-          <span class="button-text">历史考试</span>
+          <span class="button-text">历次考试</span>
         </button>
         <button class="tablinks bottom-left" onclick="openTab('考试发布')">
-            <img src="./image/工作.png" class="button-icon" style="margin-left:-110px;">
-            <span class="button-text">考试发布</span>
+          <img src="./image/工作.png" class="button-icon" style="margin-left:-110px;">
+          <span class="button-text">考试发布</span>
         </button>
         <img src="./image/class.svg" alt="中间图片" class="center-image">
         <button class="tablinks top-right" onclick="openTab('学生成绩')">
-            <span class="button-text">学生成绩</span>
-            <img src="./image/合作.png" class="button-icon" style="margin-left:100px;">
+          <span class="button-text">学生成绩</span>
+          <img src="./image/合作.png" class="button-icon" style="margin-left:100px;">
         </button>
         <button class="tablinks bottom-right" onclick="openTab('考试安排')">
-            <span class="button-text">考试安排</span>
-            <img src="./image/敲代码.png" class="button-icon" style="margin-left:100px;scale: 0.85;">
+          <span class="button-text">考试安排</span>
+          <img src="./image/敲代码.png" class="button-icon" style="margin-left:100px;scale: 0.85;">
         </button>
         <div class="border"></div> <!-- 新增一个元素用于边框 -->
 
       </div>
 
-
       <!-- Tab content -->
-      <div id="历次考试" class="tabcontent">
+      <!-- <div class="tab-content" >
+        <div id="历次考试" class="tabcontent">
+          <h3>历次考试内容</h3>
+          <p>这是历次考试的内容。</p>
+        </div>
 
-      </div>
+        <div id="考试发布" class="tabcontent">
 
-      <div id="考试发布" class="tabcontent">
+        </div>
 
-      </div>
+        <div id="学生成绩" class="tabcontent">
 
-      <div id="学生成绩" class="tabcontent">
+        </div>
 
-      </div>
-
-      <div id="考试安排" class="tabcontent">
-      </div>
+        <div id="考试安排" class="tabcontent">
+        </div>
+      </div> -->
     </div>
   </section>
 
 </body>
+<script>
+  // function openTab(tabName) {
+  //   // 隐藏所有标签页内容
+  //   var tabcontents = document.getElementsByClassName("tabcontent");
+  //   for (var i = 0; i < tabcontents.length; i++) {
+  //     tabcontents[i].style.display = "none";
+  //   }
 
+  //   // 取消所有按钮的选中状态
+  //   var tablinks = document.getElementsByClassName("tablinks");
+  //   for (var i = 0; i < tablinks.length; i++) {
+  //     tablinks[i].classList.remove("active");
+  //   }
+
+  //   // 显示选中的标签页内容
+  //   document.getElementById(tabName).style.display = "block";
+
+  //   // 将选中的按钮设为选中状态
+  //   event.currentTarget.classList.add("active");
+  // }
+</script>
 <style>
+
   .tab-container {
     position: relative;
     margin-top: 20px;
@@ -156,66 +179,86 @@
     border-radius: 5%;
   }
 
+  /* .tab-content {
+    position: absolute;
+    display: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .tabcontent{
+      display: none;
+      z-index: 12;
+      background-color: white;
+    }
+  } */
 
   .top-left {
     top: 20px;
     left: 60px;
 
   }
+
   .top-left .button-text {
-      position: absolute;
-      top: 50%;
-      left: 70%;
-      transform: translate(-50%, -50%);
-      font-size: 20px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      font-weight: bold;
-      color: black;
+    position: absolute;
+    top: 50%;
+    left: 70%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    color: black;
   }
 
   .bottom-left {
     bottom: 20px;
     left: 60px;
   }
+
   .bottom-left .button-text {
-      position: absolute;
-      top: 50%;
-      left: 70%;
-      transform: translate(-50%, -50%);
-      font-size: 20px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      font-weight: bold;
-      color: black;
+    position: absolute;
+    top: 50%;
+    left: 70%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    color: black;
   }
 
   .top-right {
     top: 20px;
     right: 60px;
   }
+
   .top-right .button-text {
-      position: absolute;
-      top: 50%;
-      right: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 20px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      font-weight: bold;
-      color: black;
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    color: black;
   }
 
   .bottom-right {
     bottom: 20px;
     right: 60px;
   }
+
   .bottom-right .button-text {
-      position: absolute;
-      top: 50%;
-      right: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 20px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      font-weight: bold;
-      color: black;
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    color: black;
   }
 
   .center-image {
@@ -244,11 +287,11 @@
     z-index: 2;
     /* 确保边框位于按钮上方 */
   }
-  
+
   .button-icon {
     width: 200px;
     height: 190px;
-    margin-left :-100px;
+    margin-left: -100px;
     background: white;
     z-index: -1;
   }
