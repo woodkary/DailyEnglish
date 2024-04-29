@@ -8,7 +8,6 @@
 			<text class="progress-text">{{ current }}/{{questions.length}}</text>
 			<view class="progress-container">
 				<view class="progress-bar" :style="{ width:progress + '%' }"></view>
-				<view class="progress-bar" :style="{ width:progress + '%'}"></view>
 			</view>
 
 			<image class="back-icon" src="../../static/back.svg" @click="handleBack"></image>
@@ -23,13 +22,9 @@
 				:key="index"	:class="getClass(index)" 
 				@click="selectChoice(index)">{{ choice }}</button>
 			</view>
-			 <view class="button-group">
-			    <button class="option" v-for="(choice, index) in questions[currentQuestionIndex].choices" :key="index" :ref="'option' + index" :class="getClass(index)" @click="selectChoice(index)">
-			      {{ choice }}
-			    </button>
-			  </view>
 
 
+			<view class="jump-group" @click="handleJump">
 				<text class="link">加入生词本</text>
 				<image class="jump-icon" src="../../static/jump.svg" />
 
@@ -47,13 +42,13 @@
 				progress: 1, // 进度条的初始值
 				current: 1, // 当前进度
 				currentQuestionIndex:0,
-				currentQuestionIndex: 0,
 
 				questions: [
 					// 题目和选项
 					{
 						word: 'abandon',
 						phonetic: '[ə\'bændən]',
+						choices: ['1', '2', '2', '放弃']
 					},
 					{
 						word: 'abandon',
@@ -69,11 +64,9 @@
 				], // 这里可以根据需要修改选项内容
 				selectedChoice: '', // 用于存储用户选择的答案
 				realAnswer:[
-				realAnswer: [
 					'放弃', '选项B', '选项C' // 正确答案
 				],
 				
-
 			}
 		},
 		methods: {
@@ -82,14 +75,26 @@
 				this.$router.back();
 				// 例如：uni.navigateBack();
 			},
+			handleJump() {
+				// 处理跳转链接点击事件
+				uni.switchTab({
+					url: '../Vocab/Vocab'
+				}) //跳转到生词本页面，注意此处暂时用了switchTab，因为跳转到生词本页面后，需要刷新页面，所以用了switchTab
+				//后面会讲到如何刷新页面，记得改啊！！！！！！11
+				//todo:refresh the page
 			},
 			updateProgressBar() {
+				// 处理按钮点击事件
 				// 使得进度条增加1
 				this.updateProgress(this.progress + 1);
 			},
 			updateProgress(value) {
 				// 更新进度条的方法，value 是 0 到 100 之间的数值
+				if (value >= 0 && value <= 100) {
+					this.progress = value;
+					this.current = value;
 				} else {
+					console.error('进度值必须在 0 到 100 之间');
 				}
 			},
 			selectChoice(index) {
@@ -110,16 +115,6 @@
 						this.showCorrectAnswer(this.realAnswer[currIndex]);
 					});
 				}
-			    const selectedChoice = this.questions[this.currentQuestionIndex].choices[index];
-			    // Check if the selected choice is correct
-			    if (selectedChoice === this.realAnswer[this.currentQuestionIndex]) {
-			        // Correct answer logic
-			        this.showCorrectAnswer(index);
-			        this.unlockSlice();
-			    } else {
-			        // Incorrect answer logic
-			        this.showIncorrectAnswer(index);
-			    }
 			},
 			showCorrectAnswer(answer) {
 				// 找到正确答案的索引
@@ -130,12 +125,6 @@
 					correctButton.classList.add('correct');
 				}
 
-			showCorrectAnswer(index) {
-			    // Apply correct answer style
-			    const correctButton = this.$refs[`option${index}`];
-			    if (correctButton) {
-			        correctButton.classList.add('correct');
-			    }
 			},
 			showIncorrectAnswer(index) {
 				// 应用错误答案的样式
@@ -143,13 +132,7 @@
 				if (incorrectButton) {
 					incorrectButton.classList.add('incorrect');
 				}
-			    // Apply incorrect answer style
-			    const incorrectButton = this.$refs[`option${index}`];
-			    if (incorrectButton) {
-			        incorrectButton.classList.add('incorrect');
-			    }
 			},
-
 			preventSelect(event) {
 				// 阻止长按事件的默认行为
 				event.preventDefault();
@@ -158,10 +141,9 @@
 			getClass(index) {
 				// 根据选中状态和答案正确与否返回相应的样式类
 				if (this.selectedChoice) {
+          console.log(this.currentQuestionIndex);
 					if (this.questions[this.currentQuestionIndex].choices[index] === this.selectedChoice) {
 						return this.questions[this.currentQuestionIndex].choices[index] === this.realAnswer ? 'correct' : 'incorrect';
-						return this.questions[this.currentQuestionIndex].choices[index] === this.realAnswer ? 'correct' :
-							'incorrect';
 					}
 				}
 				return '';
