@@ -11,15 +11,20 @@
 				</view>
 				<view class="white-container2">
 					<span>密码</span>
-					<input class="search-box" type="password" v-model="password" placeholder="请输入密码">
-					<a href="forgot-password.html" class="forgot-password-link">忘记密码?</a>
+          <view class="password-container">
+            <input class="search-box" type="password" v-model="password" placeholder="请输入密码">
+            <img ref="errorIcon" class="error-icon" src="../../static/errorCross.svg">
+          </view>
+					<view class="forgot-password-link">忘记密码?</view>
 
 				</view>
 				<button class="login-button" @click="login">登录</button>
 				<!-- 	<button class="register-button">注册</button><button class="forget">忘记密码？</button>
 				<button class="button1"></button>
 				<span class="text">登录代表你同意用户协议、隐私政策和儿童隐私政策</span> -->
-				<span class="text">have no account?<a>click here</a></span>
+				<span class="text">have no account?
+        <router-link to="../register/register">click here</router-link>
+        </span>
 			</view>
 		</view>
 	</view>
@@ -67,21 +72,36 @@
 					},
 					method: 'POST',
 					success: (res) => {
-						if (remember) {
-							let token = res.data.token;
-							uni.setStorageSync('username');
-							uni.setStorageSync('password');
-							uni.setStorageSync('remember');
-							uni.setStorageSync('token', token);
-						}
+            if(res.statusCode == 200){
+              if (remember) {
+                let token = res.data.token;
+                uni.setStorageSync('username');
+                uni.setStorageSync('password');
+                uni.setStorageSync('remember');
+                uni.setStorageSync('token', token);
+              }
 
-						uni.navigateTo({
-							//TODO: 跳转到首页，或处理其他逻辑
-							url: '/pages/index/index'
-						});
+              uni.navigateTo({
+                //TODO: 跳转到首页，或处理其他逻辑
+                url: '/pages/index/index'
+              });
+            }else{
+              this.$refs.errorIcon.style.opacity=1;
+              setTimeout(() => {
+                this.$refs.errorIcon.style.opacity = 0;
+              },2000);
+              uni.showToast({
+                title: res.data.message,
+                icon: 'none'
+              });
+            }
 					},
 					fail: (res) => {
 						//TODO: 处理登录失败逻辑
+            this.$refs.errorIcon.style.opacity=1;
+            setTimeout(() => {
+              this.$refs.errorIcon.style.opacity=0;
+            }, 2000);
 						uni.showToast({
 							title: '登录失败',
 							icon: 'none'
@@ -182,6 +202,15 @@
 		font-size: 1rem;
 	    margin-left: 16rem; /* 添加一些左边距 */
 	}
+  .error-icon {
+    position: absolute; /* 绝对定位 */
+    bottom: 200rpx;
+    right: -60rpx; /* 距离输入框左侧的距离 */
+    font-size: 16px; /* 图标大小 */
+    transform: scale(0.15); /* 缩放 */
+    transition: opacity 0.2s ease-in-out; /* 添加过渡效果 */
+    opacity: 0; /* 初始不显示 */
+  }
 	
 
 	.login-button {
@@ -202,5 +231,12 @@
 	}
 	.text a{
 		color: #6b7f73;
+	}
+	
+	input,
+	input::placeholder {
+	  font-size: 32rpx;
+	  font-family: Arial, sans-serif;
+    padding-left: 32rpx;
 	}
 </style>
