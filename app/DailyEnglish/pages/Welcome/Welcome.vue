@@ -265,7 +265,7 @@
 	.tab-bar-container {
 		background-color: white;
 		position: sticky;
-		top: 50px;
+		top: 47px;
 		/* 顶部导航栏的高度 */
 		z-index: 1000;
 		/* 确保在最顶层 */
@@ -316,7 +316,7 @@
 	.button-row {
 		position: sticky;
 		background-color: white;
-		top: 100px;
+		top: 90px;
 		/* 顶部导航栏和选项卡的高度 */
 		z-index: 1000;
 		/* 确保在最顶层 */
