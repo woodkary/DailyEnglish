@@ -1,249 +1,283 @@
 <template>
 	<view>
-		<image class="background" src="../../static/background.png"></image>
-		<image class="color" src="../../static/color.png"></image>  
-		<view class="logo"></view>
-		<view class="white-container1">  
-			<input class="search-box" type="text" v-model="username" placeholder="请输入账号">
-		</view>  
-		<view class="white-container2">
-			<input class="search-box" type="password" v-model="password" placeholder="请输入密码">
+		<view class="all-container">
+			<image class="background" src="../../static/login1.svg"></image>
+
+			<view class="container">
+				<span1>Sign In</span1>
+				<view class="white-container1">
+					<span>账号</span>
+					<input id="username" class="search-box" type="text" v-model="username" placeholder="请输入账号">
+				</view>
+				<view class="white-container2">
+					<span>密码</span>
+          <view class="password-container">
+            <input id="password" class="search-box" type="password" v-model="password" placeholder="请输入密码">
+            <img ref="errorIcon" class="error-icon" src="../../static/errorCross.svg">
+          </view>
+					<view class="forgot-password-link">忘记密码?</view>
+
+				</view>
+				<button class="login-button" @click="login">登录</button>
+				<!-- 	<button class="register-button">注册</button><button class="forget">忘记密码？</button>
+				<button class="button1"></button>
+				<span class="text">登录代表你同意用户协议、隐私政策和儿童隐私政策</span> -->
+				<span class="text">have no account?
+        <router-link to="../register/register">click here</router-link>
+        </span>
+			</view>
 		</view>
-		<button class="auto" :class="{rememberUsr: remember}" @click="autoLogin"></button>
-		<span class="auto1" >自动登录</span>
-		<button class="forget">忘记密码？</button>
-		<button class="login-button" @click="login">登录</button>
-		<button class="register-button">注册</button>
-		<button class="button1"></button>
-		<span class="text">登录代表你同意用户协议、隐私政策和儿童隐私政策</span>
 	</view>
+
 </template>
 
 <script>
 	export default {
-    data() {
-      return {
-        username: '',
-        password: '',
-        remember: false
-      }
-    },
-    beforeMount() {
-      //获取本地存储的用户名和密码
-      let username = uni.getStorageSync('username');
-      let password = uni.getStorageSync('password');
-      let remember = uni.getStorageSync('remember');
-      if (username && password && remember) {
-        this.username = username;
-        this.password = password;
-        this.remember = remember;
-      }
-    },
-    methods: {
-      autoLogin() {
-        this.remember = !this.remember;
-        console.log(this.remember);
-        console.log(this.username);
-        console.log(this.password);
-      },
-      login() {
-        // 登录逻辑
-        let username = this.username;
-        let password = this.password;
-        let remember = this.remember;
-        uni.request({
-          url: 'http://localhost:8080/api/users/login',
-          data: {
-            username: username,
-            password: password,
-            remember: remember
-          },
-          method: 'POST',
-          success: (res) => {
-            if(remember){
-              let token=res.data.token;
-              uni.setStorageSync('username');
-              uni.setStorageSync('password');
-              uni.setStorageSync('remember');
-              uni.setStorageSync('token', token);
+		data() {
+			return {
+				username: '',
+				password: '',
+				remember: false
+			}
+		},
+		beforeMount() {
+			//获取本地存储的用户名和密码
+			let username = uni.getStorageSync('username');
+			let password = uni.getStorageSync('password');
+			let remember = uni.getStorageSync('remember');
+			if (username && password && remember) {
+				this.username = username;
+				this.password = password;
+				this.remember = remember;
+			}
+		},
+		methods: {
+			autoLogin() {
+				this.remember = !this.remember;
+				console.log(this.remember);
+				console.log(this.username);
+				console.log(this.password);
+			},
+			login() {
+        let flag=true;
+				// 登录逻辑
+				let username = this.username;
+        if(!username){
+          this.$nextTick(() => {
+            let usernameInput = document.getElementById('username');
+            usernameInput.classList.add('inputActive');
+            setTimeout(() => {
+              usernameInput.classList.remove('inputActive');
+            }, 2000);
+          });
+          flag=false;
+        }
+				let password = this.password;
+        if(!password){
+          this.$nextTick(() => {
+            let passwordInput = document.getElementById('password');
+            passwordInput.classList.add('inputActive');
+            setTimeout(() => {
+              passwordInput.classList.remove('inputActive');
+            }, 2000);
+          });
+          flag=false;
+        }
+        if(!flag){
+          return;
+        }
+				let remember = this.remember;
+				uni.request({
+					url: 'http://localhost:8080/api/users/login',
+					data: {
+						username: username,
+						password: password,
+						remember: remember
+					},
+					method: 'POST',
+					success: (res) => {
+            if(res.statusCode == 200){
+              if (remember) {
+                let token = res.data.token;
+                uni.setStorageSync('username');
+                uni.setStorageSync('password');
+                uni.setStorageSync('remember');
+                uni.setStorageSync('token', token);
+              }
+
+              uni.navigateTo({
+                //TODO: 跳转到首页，或处理其他逻辑
+                url: '/pages/index/index'
+              });
+            }else if(res.statusCode == 400){//用户名或密码错误
+              let usernameInput = document.getElementById('username');
+              usernameInput.classList.add('inputActive');
+              setTimeout(() => {
+                usernameInput.classList.remove('inputActive');
+              }, 2000);
+              let passwordInput = document.getElementById('password');
+              passwordInput.classList.add('inputActive');
+              setTimeout(() => {
+                passwordInput.classList.remove('inputActive');
+              }, 2000);
+              uni.showToast({
+                title: '用户名或密码错误',
+                icon: 'none'
+              });
             }
+					},
+					fail: (res) => {
+						//TODO: 处理登录失败逻辑
+            /*this.$refs.errorIcon.style.opacity=1;
+            setTimeout(() => {
+              this.$refs.errorIcon.style.opacity=0;
+            }, 2000);*/
+						uni.showToast({
+							title: '登录失败',
+							icon: 'none'
+						});
+					}
+				});
 
-            uni.navigateTo({
-              //TODO: 跳转到首页，或处理其他逻辑
-              url: '/pages/index/index'
-            });
-          },
-          fail: (res) => {
-            //TODO: 处理登录失败逻辑
-            uni.showToast({
-              title: '登录失败',
-              icon: 'none'
-            });
-          }
-        });
-
-      }
-    }
-  }
+			}
+		}
+	}
 </script>
 
 <style>
-.background {  
-	width: 100vw;
-    height: 100vh; /* 高度等于视口高度 */  
-}  
-.color{
-	width: 100vw;
-	height: 100vh; /* 高度等于视口高度 */  
-		position: absolute; /* 绝对定位以覆盖整个容器 */  
-		top: 0;  
-		left: 0;  
-		z-index: 1; /* 设置较低的z-index值 */ 
-		opacity: 0.9;
-}
+	.all-container {
+		height: 100%;
+		width: 100%;
+		background-color: #fed8c3;
+		position: absolute;
+	}
 
-.logo {  
-	width: 10rem; /* 设置白色框的宽度 */  
-	height: 10rem; /* 设置白色框的高度 */  
-	background-color: white; /* 设置背景颜色为白色 */  
-	border: 1px solid black; /* 设置边框为1像素的黑色实线 */  
-	position: absolute; /* 绝对定位以覆盖在图片之上 */  
-	top:15rem; 
-	left: 12rem;  
-	transform: translate(-50%, -50%); /* 将框居中 */  
-	z-index: 2; /* 设置最高的z-index值，确保在color之上 */  
-}  
+	.background {
+		background-color: transparent;
+		margin-top: 3rem;
+		margin-left: 3rem;
+	}
 
-.white-container1 {    
-	width: 20rem; /* 设置容器的宽度 */    
-	height: 2rem; /* 设置容器的高度，根据需要调整 */    
-	background-color: white; /* 设置背景颜色为白色 */    
-	border: 1px solid black; /* 设置边框为1像素黑色实线 */    
-	position: absolute; /* 绝对定位以覆盖在图片之上 */    
-	top: 22rem; /* 顶部距离视口50% */  
-	left: 2rem; /* 左边距离视口50% */   
-	z-index: 2; /* 设置z-index值，确保在color之上 */  
-	display: flex; /* 设置为弹性布局 */  
-	align-items: center; /* 垂直居中 */  
-	justify-content: center; /* 水平居中 */  
-	border-radius: 10px; /* 设置边框圆角 */
-	opacity: 0.65;
-}  
+	.container {
+		background-color: #ffffff;
+		width: 100%;
+		margin-top: 2rem;
+		height: 60%;
+		/*上边圆角*/
+		border-top-left-radius: 2rem;
+		border-top-right-radius: 2rem;
+		display: flex;
+		flex-direction: column;
+	}
 
-.white-container2 {    
-	width: 20rem; /* 设置容器的宽度 */    
-	height: 2rem; /* 设置容器的高度，根据需要调整 */    
-	background-color: white; /* 设置背景颜色为白色 */    
-	border: 1px solid black; /* 设置边框为1像素黑色实线 */    
-	position: absolute; /* 绝对定位以覆盖在图片之上 */    
-	top: 27rem; /* 顶部距离视口50% */  
-	left: 2rem; /* 左边距离视口50% */   
-	z-index: 2; /* 设置z-index值，确保在color之上 */  
-	display: flex; /* 设置为弹性布局 */  
-	align-items: center; /* 垂直居中 */  
-	justify-content: center; /* 水平居中 */  
-	border-radius: 10px; /* 设置边框圆角 */
-	opacity: 0.65;
-} 
-  
-.search-box {    
-	width: 100%; /* 设置搜索框宽度为容器的80% */    
-	height: 2rem; /* 设置搜索框高度 */       
-	border-radius: 10px; /* 设置边框圆角 */    
-	border: none; /* 设置边框颜色 */    
-	font-size: 0.8rem; /* 设置字体大小 */  
-	outline: none; /* 移除默认轮廓 */  
-	margin-left: 1rem ;
-}  
+	.container span1 {
+		margin-top: 5%;
+		font-size: 2.7rem;
+		margin-left: 8%;
+		font-weight: 500;
+	}
 
-.auto{
-	width: 50rpx;
-	height: 50rpx;
-	background: transparent; /* 设置背景颜色为白色 */
-	border: 1px solid white; /* 设置边框为1像素黑色实线 */    
-	position: absolute; /* 绝对定位以覆盖在图片之上 */    
-	top: 31rem; 
-	left: 2rem;   
-	z-index: 2; /* 设置z-index值，确保在color之上 */  
-	border-radius: 50%; /* 设置边框圆角 */
-	scale: 0.5;
-}
-.auto:active{
-    background-color: white; /* 设置背景颜色为白色 */
-    border: 1px solid black; /* 设置边框为1像素黑色实线 */
-}
-.rememberUsr{
-  background-color: white; /* 设置背景颜色为白色 */
-  border: 1px solid black; /* 设置边框为1像素黑色实线 */
-}
+	@font-face {
+		font-family: '仓耳渔阳体';
+		src: url('../../static/TsangerYuYangT_W05_W05.ttf') format('truetype');
+		/* 如果有其他格式，也可以添加其他src */
+	}
 
-.auto1{
-	position: absolute;
-	z-index: 2;
-	color: white;
-	top: 31.3rem;
-	left: 4rem;
-	font-size: 25rpx;
-}
+	.white-container1 {
+		margin-top: 2rem;
+	}
 
-.forget{
-	background: transparent; /* 设置背景颜色为白色 */
-	border: none; /* 设置边框为1像素黑色实线 */    
-	color: white;
-	position: absolute; /* 绝对定位以覆盖在图片之上 */    
-	top: 30.8rem; 
-	left: 17rem;   
-	font-size: 25rpx;
-	z-index: 2; /* 设置z-index值，确保在color之上 */  
-	cursor: pointer;
-}
+	.white-container1 span {
+		margin-left: 2.4rem;
+		color: #838383;
+	}
 
-.login-button{
-	background-color: #75C2FD; /* 设置背景颜色为白色 */
-	border: none; /* 设置边框为1像素黑色实线 */    
-	color: white;
-	position: absolute; /* 绝对定位以覆盖在图片之上 */    
-	top: 35rem; 
-	left: 4rem;
-	width: 15rem;
-	height: 3rem;
-	font-size: 35rpx;
-	z-index: 2; /* 设置z-index值，确保在color之上 */  
-	cursor: pointer;
-	border-radius: 20rpx;
-}
+	.white-container1 input {
+		width: 86%;
+		height: 3.3rem;
+		border-radius: 4rem;
+		background-color: #f0f3f1;
+		margin-left: 1.4rem;
+		margin-top: 0.4rem;
+	}
 
-.register-button{
-	background: transparent; /* 设置背景颜色为白色 */
-	border: none; /* 设置边框为1像素黑色实线 */    
-	color: white;
-	position: absolute; /* 绝对定位以覆盖在图片之上 */    
-	top: 39rem; 
-	left: 10rem;   
-	font-size: 25rpx;
-	z-index: 2; /* 设置z-index值，确保在color之上 */  
-	cursor: pointer;
-}
+	.white-container1 input:hover {
+		background-color: #eff0ef;
+	}
 
-.button1{
-	width: 50rpx;
-	height: 50rpx;
-	background: transparent; /* 设置背景颜色为白色 */
-	border: 1px solid white; /* 设置边框为1像素黑色实线 */    
-	position: absolute; /* 绝对定位以覆盖在图片之上 */    
-	top: 42rem; 
-	left: 3rem;   
-	z-index: 2; /* 设置z-index值，确保在color之上 */  
-	border-radius: 50%; /* 设置边框圆角 */
-	scale: 0.5;
-}
+	.white-container2 {
+		margin-top: 1rem;
+	}
 
-.text{
-	position: absolute;
-	z-index: 2;
-	color: white;
-	top: 42.3rem;
-	left: 4.5rem;
-	font-size: 20rpx;
-}
+	.white-container2 span {
+		margin-left: 2.4rem;
+		color: #838383;
+	}
+
+	.white-container2 input {
+		width: 86%;
+		height: 3.3rem;
+		border-radius: 4rem;
+		background-color: #f0f3f1;
+		margin-left: 1.4rem;
+		margin-top: 0.4rem;
+	}
+
+	.white-container2 input:hover {
+		background-color: #eff0ef;
+	}
+	.forgot-password-link {
+	    color: #f57b56; /* 蓝色字体 */
+	    text-decoration: none; /* 去除下划线 */
+		font-size: 1rem;
+	    margin-left: 16rem; /* 添加一些左边距 */
+	}
+  .password-container {
+    display: flex;
+  }
+  .error-icon {
+    position: fixed;
+    right: -10%;
+    bottom: 17.5%;
+    font-size: 16px; /* 图标大小 */
+    transform: scale(0.15); /* 缩放 */
+    transition: opacity 0.2s ease-in-out; /* 添加过渡效果 */
+    opacity: 0; /* 初始不显示 */
+  }
+	
+
+	.login-button {
+		background-color: #44564a;
+		margin-top: 2.7rem;
+		color: white;
+		width: 76%;
+		height: 3.3rem;
+		border-radius: 4rem;
+		text-align: center;
+		/*文本垂直居中 */
+		line-height: 3.3rem;
+	}
+	.text{
+		margin-top: 1rem;
+		margin-left: 6.4rem;
+		color: #636363;
+	}
+	.text a{
+		color: #6b7f73;
+	}
+	
+	input,
+	input::placeholder {
+	  font-size: 32rpx;
+	  font-family: Arial, sans-serif;
+    padding-left: 32rpx;
+	}
+
+  .search-box {
+    transition: all 0.3s ease-in-out;
+  }
+
+  .inputActive {
+    border: 1px solid #e74c3c;
+  }
 </style>
