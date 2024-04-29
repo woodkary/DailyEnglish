@@ -1,31 +1,34 @@
 <template>
 	<view>
-		<image class="background" src="../../static/background.png"></image>
-		<image class="color" src="../../static/color.png"></image>
-		<view class="logo-container">
-			<image class="r_logo1" src="../../static/r_logo1.png"></image>
-			<image class="r_logo2" src="../../static/r_logo2.png"></image>
-			<image class="r_logo3" src="../../static/r_logo3.png"></image>
+
+		<view class="background">
+			<span class="span1"><span class="sign">Sign</span><br>Up</span>
+			<image class="pic" src="../../static/register1.svg"></image>
 		</view>
-		<view class="white-container" :style="{ marginTop: '0rem' }" id="1">
-			<input class="search-box" type="text" placeholder="请输入账号">
+		<view class="input-container" id="1">
+			<span>昵称</span>
+			<input class="input" type="text" placeholder="请输入昵称">
 		</view>
-		<view class="white-container" :style="{ marginTop: '4rem' }" id="2">
-			<input class="search-box" type="text" placeholder="请输入邮箱">
+		<view class="input-container" id="2">
+			<span>邮箱</span>
+			<input class="input" type="text" placeholder="请输入邮箱">
+			<button class="vtBtn">发送验证码</button>
 		</view>
-		<view class="white-container" :style="{ marginTop: '8rem' , width:'10rem'}" id="3">
-			<input class="search-box" type="text" placeholder="请输入验证码">
+
+		<view class="input-container" id="3">
+			<span style="left:2rem;">验证码</span>
+			<input class="input" type="text" placeholder="请输入验证码">
 		</view>
-		<button class="verifi-button">获取验证码</button>
-		<view class="white-container" :style="{ marginTop: '12rem' }" id="4">
-			<input class="search-box" type="text" placeholder="请输入密码">
+
+		<view class="input-container" id="4">
+			<span>密码</span>
+			<input class="input" type="password" placeholder="请输入密码">
 		</view>
-		<view class="white-container" :style="{ marginTop: '16rem' }" id="5">
-			<input class="search-box" type="text" placeholder="再次输入密码">
+		<view class="input-container" id="5">
+			<input class="input" type="password" placeholder="再次输入密码">
 		</view>
 		<button class="login-button">注册</button>
-		<button class="button1"></button>
-		<span class="text">已有账号？点此登录</span>
+		<span class="text">Already have  account?<a>click here to login</a></span>
 	</view>
 </template>
 
@@ -44,154 +47,117 @@
 
 <style>
 	.background {
-		width: 100vw;
-		height: 100vh;
-		/* 高度等于视口高度 */
-		position: absolute;
+		height: 14rem;
+		background-color: #fed8c3;
+		border-bottom-left-radius: 15%;
+		border-bottom-right-radius: 15%;
 	}
 
-	.color {
-		width: 100vw;
-		height: 100vh;
-		/* 高度等于视口高度 */
-		position: absolute;
-		/* 绝对定位以覆盖整个容器 */
-		top: 0;
-		left: 0;
-		z-index: 1;
-		/* 设置较低的z-index值 */
-		opacity: 0.9;
+	.pic {
+		margin-left: 8rem;
+		top: 2rem;
+		width: 14rem;
+		transform: scaleX(-1);
 	}
 
-	.logo-container {
+	.span1 {
 		position: absolute;
-		top: 266rpx;
-		/* 您希望的对齐位置 */
-		left: 74rpx;
+		margin-top: 25%;
+		font-size: 2.7rem;
+		margin-left: 6%;
+		font-weight: 600;
+		color: white;
+		display: block;
+		/* 让 <span> 元素变成块级元素 */
+		text-align: right;
+		/* 文本向右对齐 */
+	}
+
+	.sign {
+		font-size: 3.2rem;
+	}
+
+	.input-container {
+		margin-top: 1.5rem;
 		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		/* 如果您希望图标左对齐 */
-	}
-
-	.r_logo1 {
-		left: 0rpx;
-		top: 0rpx;
-		width: 400rpx;
-		height: 80rpx;
-		z-index: 2;
-	}
-
-	.r_logo2 {
-		left: 0rpx;
-		top: 70rpx;
-		width: 350rpx;
-		height: 68rpx;
-		z-index: 2;
-	}
-
-	.r_logo3 {
-		left: 440rpx;
-		top: -48rpx;
-		width: 146rpx;
-		height: 112rpx;
-		z-index: 2;
-	}
-
-	.white-container {
-		width: 19.5rem;
-		/* 设置容器的宽度 */
-		height: 2rem;
-		/* 设置容器的高度，根据需要调整 */
-		background-color: white;
-		/* 设置背景颜色为白色 */
-		border: 1px solid black;
-		/* 设置边框为1像素黑色实线 */
-		position: absolute;
-		/* 绝对定位以覆盖在图片之上 */
-		top: 18rem;
-		/* 顶部距离视口50% */
-		left: 2rem;
-
-		/* 左边距离视口50% */
-		z-index: 2;
-		/* 设置z-index值，确保在color之上 */
-		display: flex;
-		/* 设置为弹性布局 */
 		align-items: center;
-		/* 垂直居中 */
-		justify-content: center;
-		/* 水平居中 */
-		border-radius: 10px;
-		/* 设置边框圆角 */
-		opacity: 0.65;
 	}
 
-	.search-box {
-		width: 100%;
-		/* 设置搜索框宽度为容器的80% */
-		height: 2rem;
-		/* 设置搜索框高度 */
-		border-radius: 10px;
-		/* 设置边框圆角 */
+	.input-container input {
+		width: 86%;
+		height: 3.3rem;
+		border-radius: 0.7rem;
+		background-color: #f0f3f1;
+		margin-left: 1.4rem;
+		margin-top: 0.4rem;
+	}
+
+	.input-container {
+		position: relative;
+		display: flex;
+		margin-top: 1.5rem;
+		height: 3.3rem;
+		width: 95%;
+	}
+
+	.input-container input {
+		padding-left: 4rem;
+		padding-right: 6rem;
+		background-color: transparent;
+		border: 1px solid #c4c7ce;
+		/*输入的字大小*/
+		font-size: 1.1rem;
+
+	}
+
+	.vtBtn {
+		position: absolute;
+		right: 1rem;
+		background-color: transparent;
+		white-space: nowrap;
+		border-radius: 0%;
+		height: 3.3rem;
+		width: 6rem;
+		top: 6%;
+		line-height: 3.3rem;
+		font-size: 1rem;
+		/* 将行高设置为按钮的高度，实现垂直居中 */
+		box-shadow: -0.1rem 0 0 #e3e5e7;
+		/* 使用盒子阴影模拟左边框 */
+
+	}
+
+	.vtBtn::after {
 		border: none;
-		/* 设置边框颜色 */
-		font-size: 0.8rem;
-		/* 设置字体大小 */
-		outline: none;
-		/* 移除默认轮廓 */
-		margin-left: 1rem;
+
+	}
+
+
+	.input-container span {
+		position: absolute;
+		left: 2.2rem;
+		top: 35%;
+		color: #212121;
+		font-size: 1rem;
 	}
 
 	.login-button {
-		background-color: #75C2FD;
-		/* 设置背景颜色为白色 */
-		border: none;
-		/* 设置边框为1像素黑色实线 */
-		color: white;
-		position: absolute;
-		/* 绝对定位以覆盖在图片之上 */
-		top: 38rem;
-		left: 3rem;
+		margin-top: 2.2rem;
 		width: 18rem;
 		height: 3rem;
 		font-size: 35rpx;
-		z-index: 2;
-		/* 设置z-index值，确保在color之上 */
-		cursor: pointer;
-		border-radius: 20rpx;
+		font-weight: bold;
+		color:white;
+		background-color: #ff9b28;
+		
 	}
 
 	.text {
-		position: absolute;
-		z-index: 2;
-		color: white;
-		top: 42.3rem;
-		left: 9rem;
-		font-size: 20rpx;
+		color: #636363;
+		font-size: 27rpx;
+		margin-left: 4rem;
 	}
-	.verifi-button{
-		background-color: blue;
-		/* 设置背景颜色为白色 */
-		border: none;
-		/* 设置边框为1像素黑色实线 */
-		color: white;
-		position: absolute;
-		/* 绝对定位以覆盖在图片之上 */
-		top: 26rem;
-		left: 14rem;
-		height: 2rem;
-		background-color: blue;
-		text-align: center;
-		color: white;
-		border: none;
-		border-radius: 5px;
-		cursor: pointer;
-		vertical-align: middle;
-		z-index: 2;
-		/* 设置z-index值，确保在color之上 */
-		cursor: pointer;
-		border-radius: 20rpx;
-		line-height: 2rem;
+	.text a{
+		color: #f9b732;
 	}
 </style>
