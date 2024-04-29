@@ -11,7 +11,7 @@
 		</view>
 		<view class="input-container" id="2">
 			<span>邮箱</span>
-			<input class="input" type="text" placeholder="请输入邮箱">
+			<input class="input" ref="email" @keyup.enter="checkEmail" @change="checkEmail" v-model="email" type="text" placeholder="请输入邮箱">
 			<button class="vtBtn">发送验证码</button>
 		</view>
 
@@ -36,11 +36,21 @@
 	export default {
 		data() {
 			return {
-
+        email: '',
+        code: '',
+        password: ''
 			}
 		},
 		methods: {
-
+      checkEmail() {
+        let regex = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+        if (!regex.test(this.email)) {
+          this.$refs.email.classList.add('inputActive');
+          setTimeout(() => {
+            this.$refs.email.classList.remove('inputActive');
+          }, 2000);
+        }
+      },
 		}
 	}
 </script>
@@ -160,4 +170,8 @@
 	.text a{
 		color: #f9b732;
 	}
+
+  .inputActive {
+    border: 1px solid #e74c3c;
+  }
 </style>
