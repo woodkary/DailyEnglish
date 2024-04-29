@@ -7,12 +7,12 @@
 				<span1>Sign In</span1>
 				<view class="white-container1">
 					<span>账号</span>
-					<input class="search-box" type="text" v-model="username" placeholder="请输入账号">
+					<input id="username" class="search-box" type="text" v-model="username" placeholder="请输入账号">
 				</view>
 				<view class="white-container2">
 					<span>密码</span>
           <view class="password-container">
-            <input class="search-box" type="password" v-model="password" placeholder="请输入密码">
+            <input id="password" class="search-box" type="password" v-model="password" placeholder="请输入密码">
             <img ref="errorIcon" class="error-icon" src="../../static/errorCross.svg">
           </view>
 					<view class="forgot-password-link">忘记密码?</view>
@@ -59,9 +59,33 @@
 				console.log(this.password);
 			},
 			login() {
+        let flag=true;
 				// 登录逻辑
 				let username = this.username;
+        if(!username){
+          this.$nextTick(() => {
+            let usernameInput = document.getElementById('username');
+            usernameInput.classList.add('inputActive');
+            setTimeout(() => {
+              usernameInput.classList.remove('inputActive');
+            }, 2000);
+          });
+          flag=false;
+        }
 				let password = this.password;
+        if(!password){
+          this.$nextTick(() => {
+            let passwordInput = document.getElementById('password');
+            passwordInput.classList.add('inputActive');
+            setTimeout(() => {
+              passwordInput.classList.remove('inputActive');
+            }, 2000);
+          });
+          flag=false;
+        }
+        if(!flag){
+          return;
+        }
 				let remember = this.remember;
 				uni.request({
 					url: 'http://localhost:8080/api/users/login',
@@ -85,23 +109,29 @@
                 //TODO: 跳转到首页，或处理其他逻辑
                 url: '/pages/index/index'
               });
-            }else{
-              this.$refs.errorIcon.style.opacity=1;
+            }else if(res.statusCode == 400){//用户名或密码错误
+              let usernameInput = document.getElementById('username');
+              usernameInput.classList.add('inputActive');
               setTimeout(() => {
-                this.$refs.errorIcon.style.opacity = 0;
-              },2000);
+                usernameInput.classList.remove('inputActive');
+              }, 2000);
+              let passwordInput = document.getElementById('password');
+              passwordInput.classList.add('inputActive');
+              setTimeout(() => {
+                passwordInput.classList.remove('inputActive');
+              }, 2000);
               uni.showToast({
-                title: res.data.message,
+                title: '用户名或密码错误',
                 icon: 'none'
               });
             }
 					},
 					fail: (res) => {
 						//TODO: 处理登录失败逻辑
-            this.$refs.errorIcon.style.opacity=1;
+            /*this.$refs.errorIcon.style.opacity=1;
             setTimeout(() => {
               this.$refs.errorIcon.style.opacity=0;
-            }, 2000);
+            }, 2000);*/
 						uni.showToast({
 							title: '登录失败',
 							icon: 'none'
@@ -202,10 +232,13 @@
 		font-size: 1rem;
 	    margin-left: 16rem; /* 添加一些左边距 */
 	}
+  .password-container {
+    display: flex;
+  }
   .error-icon {
-    position: absolute; /* 绝对定位 */
-    bottom: 200rpx;
-    right: -60rpx; /* 距离输入框左侧的距离 */
+    position: fixed;
+    right: -10%;
+    bottom: 17.5%;
     font-size: 16px; /* 图标大小 */
     transform: scale(0.15); /* 缩放 */
     transition: opacity 0.2s ease-in-out; /* 添加过渡效果 */
@@ -239,4 +272,12 @@
 	  font-family: Arial, sans-serif;
     padding-left: 32rpx;
 	}
+
+  .search-box {
+    transition: all 0.3s ease-in-out;
+  }
+
+  .inputActive {
+    border: 1px solid #e74c3c;
+  }
 </style>
