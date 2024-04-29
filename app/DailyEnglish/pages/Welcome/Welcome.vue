@@ -2,7 +2,7 @@
 	<view>
 
 		<view class="topbar">
-			<span class="host-title">开始您的打卡计划</span>
+			<span class="host-title">选择您的打卡计划</span>
 			<span class="skip-container">
 				<a href="" class="skip">跳过</a>
 			</span>
