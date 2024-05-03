@@ -1,104 +1,220 @@
+<!--
+ * @Date: 2024-04-04 14:28:51
+-->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
-	<style>
-		* {
-			margin: 0;
-			padding: 0;
-		}
-
-		body {
-			background: white;
-		}
-
-		.container {
-			border: 1px solid grey;
-			margin: 1rem;
-		}
-
-		[data-tab-info] {
-			display: none;
-		}
-
-		.active[data-tab-info] {
-			display: block;
-		}
-
-		.tab-content {
-			margin-top: 1rem;
-			padding-left: 1rem;
-			font-size: 20px;
-			font-family: sans-serif;
-			font-weight: bold;
-			color: rgb(0, 0, 0);
-		}
-
-		.tabs {
-			border-bottom: 1px solid grey;
-			background-color: rgb(16, 153, 9);
-			font-size: 25px;
-			color: rgb(0, 0, 0);
-			display: flex;
-			margin: 0;
-		}
-
-		.tabs span {
-			background: rgb(16, 153, 9);
-			padding: 10px;
-			border: 1px solid rgb(255, 255, 255);
-		}
-
-		.tabs span:hover {
-			background: rgb(55, 219, 46);
-			cursor: pointer;
-			color: black;
-		}
-	</style>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Calendar</title>
+	<link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-	<!-- Body Container -->
-	<div class="container">
-	
-		<!-- Tabs Detail -->
-		<div class="tabs">
-			<span data-tab-value="#tab_1">About</span>
-			<span data-tab-value="#tab_2">Team</span>
-		</div>
+	<section class="calendar">
+		<h1>August 2015</h1>
+		<form action="#">
+			<label class="weekday">Mo</label>
+			<label class="weekday">Tu</label>
+			<label class="weekday">We</label>
+			<label class="weekday">Th</label>
+			<label class="weekday">Fr</label>
+			<label class="weekday">Sa</label>
+			<label class="weekday">Su</label>
 
-		<!-- Tab content -->
-		<div class="tab-content">
-			<div class="tabs__tab active" id="tab_1" data-tab-info>
-				<p>Welcome to GeeksforGeek.</p>
+			<!-- 36 times loop -->
+			<label class="day" data-day="0" class="invalid">
+				<input type="text" class="appointment" required="true" data-date="{day: -4}"
+					placeholder="What would you like to do?">
+				<span>-4</span>
+				<em></em>
+			</label>
+			<!-- Repeat for other days -->
+			<!-- ...... -->
 
-			</div>
-			<div class="tabs__tab" id="tab_2" data-tab-info>
-				<p>Hello Everyone.</p>
+			<div class="clearfix"></div>
+		</form>
+	</section>
 
-			</div>
-			
-		</div>
-	</div>
-	<script type="text/javascript">
-	
-		// function to get each tab details
-		const tabs = document.querySelectorAll('[data-tab-value]')
-		const tabInfos = document.querySelectorAll('[data-tab-info]')
-
-		tabs.forEach(tab => {
-			tab.addEventListener('click', () => {
-				const target = document
-					.querySelector(tab.dataset.tabValue);
-				tabInfos.forEach(tabInfo => {
-					tabInfo.classList.remove('active')
-				})
-				target.classList.add('active');
-			})
-		})
-	</script>
 </body>
+<style>
+	/* CSS Variables */
+	:root {
+		--background-color: #fcee6d;
+		--element-highlight: var(--background-color);
+		--calendar-color: #29323f;
+		--day-pill-size: 25px;
+		--pill-margin: 8px;
+	}
+
+	/* Global Styles */
+	html {
+		position: relative;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+	}
+
+	body {
+		background-color: #c1b261;
+		/* Adjusted color due to lack of SCSS functions */
+	}
+
+	/* Calendar Section */
+	section.calendar {
+		background-color: var(--calendar-color);
+		font-family: 'Dosis', sans-serif;
+		color: #fff;
+		width: 290px;
+		padding: 45px;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translateY(-50%) translateX(-50%);
+		box-shadow: 5px 10px 20px rgba(0, 0, 0, .6);
+		border-radius: 5px;
+	}
+
+	section.calendar h1 {
+		text-align: center;
+		color: var(--element-highlight);
+		margin: 0 0 30px 0;
+	}
+
+	/* Calendar Form */
+	section.calendar form {
+		position: relative;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		align-items: flex-start;
+		align-content: flex-start;
+		margin: 0;
+		padding: 0;
+	}
+
+	section.calendar form label.weekday {
+		display: inline-block;
+		width: var(--day-pill-size);
+		margin: var(--pill-margin);
+		text-align: center;
+		color: #999;
+	}
+
+	section.calendar form label.day {
+		display: inline-block;
+		width: var(--day-pill-size);
+		margin: var(--pill-margin);
+	}
+
+	section.calendar form label.day span {
+		display: inline-block;
+		width: var(--day-pill-size);
+		height: var(--day-pill-size);
+		line-height: var(--day-pill-size);
+		margin: -2px 0 0 -2px;
+		border-radius: 50%;
+		border: 2px solid var(--calendar-color);
+		text-align: center;
+		transition: all .2s linear;
+		cursor: pointer;
+	}
+
+	section.calendar form label.day span:hover {
+		border-color: #2a3543;
+		/* Adjusted color due to lack of SCSS functions */
+	}
+
+	section.calendar form label.day em {
+		display: inline-block;
+		position: absolute;
+		border-radius: 50%;
+		border-color: var(--calendar-color);
+		width: 3px;
+		height: 3px;
+		background-color: #1c242f;
+		/* Adjusted color due to lack of SCSS functions */
+		margin-left: 11px;
+		margin-top: 2px;
+		opacity: 0;
+		transition: all .2s linear;
+	}
+
+	section.calendar form label.day input[type=text] {
+		border: 0;
+		opacity: 0;
+		position: absolute;
+		margin-top: 40px;
+		left: -45px;
+		width: 380px;
+		height: 1px;
+		padding: 0;
+		outline: none;
+		font-size: 16px;
+		transition: height .2s linear, opacity .2s linear, color .02s linear;
+		color: #fff;
+	}
+
+	section.calendar form label.day input[type=text]:focus {
+		opacity: 1;
+		height: 35px;
+		padding: 10px 40px;
+		left: -45px;
+		width: 300px;
+		color: var(--calendar-color);
+	}
+
+	section.calendar form label.day input[type=text]:focus+span {
+		color: var(--element-highlight);
+		border-color: var(--element-highlight);
+		background: var(--element-highlight);
+		color: var(--calendar-color);
+		font-weight: bold;
+		margin-bottom: 65px;
+	}
+
+	section.calendar form label.day input[type=text]:focus~em {
+		border-radius: 0;
+		border: 5px solid transparent;
+		background: transparent;
+		border-bottom-color: rgba(255, 255, 255, 1);
+		margin-top: -62px;
+		margin-left: 7px;
+		width: 0;
+		height: 0;
+		display: inline-block;
+		opacity: 1;
+	}
+
+	section.calendar form label.day input[type=text]:valid~em {
+		display: inline-block;
+		opacity: 1;
+	}
+
+	section.calendar form label.day.invalid {
+		opacity: 0;
+		width: var(--day-pill-size);
+		height: var(--day-pill-size);
+	}
+
+	section.calendar form label.day.invalid span,
+	section.calendar form label.day.invalid input[type=text] {
+		display: none;
+	}
+
+	div.clearfix {
+		clear: both;
+	}
+
+	div.hidden {
+		display: none;
+	}
+</style>
 
 </html>
