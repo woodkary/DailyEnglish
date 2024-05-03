@@ -89,6 +89,22 @@
     		"navigationBarTitleText" : "",
     		"enablePullDownRefresh" : false
     	}
+    },
+    {
+    	"path" : "pages/home/home",
+    	"style" : 
+    	{
+    		"navigationBarTitleText" : "",
+    		"enablePullDownRefresh" : false
+    	}
+    },
+    {
+    	"path" : "pages/Calendar/Calendar",
+    	"style" : 
+    	{
+    		"navigationBarTitleText" : "",
+    		"enablePullDownRefresh" : false
+    	}
     }
     
   ],
