@@ -22,10 +22,10 @@
 				</view>
 				<view class="day">
 					<view class="date-item" v-for="(date, index) in dates" :key="index" :class="{
+                      'clickable': date.hasExam,
 				              'sunday': date.dayOfWeek === 0,
-				              'saturday': date.dayOfWeek === 6,
-				              'clickable': date.hasExam
-				            }">
+				              'saturday': date.dayOfWeek === 6
+				            }" @click="handleClick(date)">
 						{{ date.value }}
 					</view>
 				</view>
@@ -41,17 +41,32 @@
 				year: 2024,
 				month: 5,
 				dates: [], // 存储当前月份的日期
-				examMsg: {
-					examDate: '2024-5-1',
-					examScore: 100
-				}
+        // 考试信息
+				examMsg: new Set([
+					'2024-5-1',
+					'2024-5-13',
+					'2024-5-22',
+					'2024-5-29'
+				]) // 存储当前月份的考试日期
 			}
 		},
 
-		mounted() {
+		beforeMount() {
 			this.generateDates();
 		},
 		methods: {
+      //TODO 发送网络请求获取考试信息
+      requestExamMsg(){
+
+      },
+      handleClick(date) {
+        if(date.hasExam){
+          console.log('考试日期：', date.value);
+          console.log('考试分数：', this.examMsg[date.value]);
+          //TODO 跳转到考试页面
+        }
+
+      },
 			generateDates() {
 				const firstDay = new Date(this.year, this.month - 1, 1); // 获取当前月份的第一天
 				const firstDayOfWeek = firstDay.getDay(); // 获取当前月份的第一天是星期几
@@ -69,7 +84,6 @@
 
 					});
 				}
-
 				// 添加日期
 				for (let i = 1; i <= totalDays; i++) {
 					const dayOfWeek = (firstDayOfWeek + i - 1) % 7; // 计算当前日期对应的星期几（0 表示星期日，1 表示星期一，以此类推）
@@ -77,7 +91,7 @@
 					this.dates.push({
 						value: i,
 						dayOfWeek: dayOfWeek,
-						hasExam: dateStr === this.examMsg.examDate
+						hasExam: this.examMsg.has(dateStr) // 判断当前日期是否有考试
 					});
 				}
 			}
@@ -151,7 +165,7 @@
 		font-size: 40rpx;
 	}
 
-	.date-item .clickable {
+	.clickable {
 		color: red;
 	}
 
