@@ -62,8 +62,7 @@
       handleClick(date) {
         if(date.hasExam){
           console.log('考试日期：', date.value);
-          console.log('考试分数：', this.examMsg[date.value]);
-          //TODO 跳转到考试页面
+          //TODO 跳转到考试页面及其他操作
         }
 
       },
