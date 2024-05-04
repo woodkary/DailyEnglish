@@ -38,12 +38,12 @@
 			<view class="examMsg">
 				<text class="title">{{ chosenMonth }}月{{ chosenDay }}日</text>
 				<view class="card-container">
-					<view class="card" v-if="getChosenDateFromDates()" id="daka">
+					<view class="card" v-if="getChosenDateFromDates()==1" id="daka">
 						<image src="../../static/not-done.svg"></image>
 						<text class="title">打卡计划:</text>
 						<text class="state">未完成</text>
 					</view>
-          <view v-else>
+          <view v-else-if="getChosenDateFromDates()==0">
             <view  class="card" id="daka">
               <image src="../../static/done.svg"></image>
               <text class="title">打卡计划:</text>
@@ -59,6 +59,11 @@
                 {{ word.meanings.prep!=null?'prep.':'' }} {{ word.meanings.adv }}
               </span>
             </view>
+          </view>
+          <view class="card" v-else id="daka">
+            <image src="../../static/not-done.svg"></image>
+            <text class="title">打卡计划:</text>
+            <text class="state">已过期</text>
           </view>
 					<!-- <view class="card" id="exam">
 					<image src="../../static/todo.svg"></image>
@@ -123,7 +128,9 @@
       getChosenDateFromDates(){
         let date=new Date(this.chosenYear,this.chosenMonth-1,this.chosenDay);
         let diffDays=Math.floor((new Date()-date)/(24*60*60*1000));
-        return diffDays>=0&&diffDays<32?this.punchMsg>>diffDays&1:false;
+        if(diffDays>=0&&diffDays<32)
+          return this.punchMsg>>diffDays&1;
+        return -1;
       },
       subMonth() {
         this.month--;
