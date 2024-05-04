@@ -63,7 +63,7 @@
           <view class="card" v-else id="daka">
             <image src="../../static/not-done.svg"></image>
             <text class="title">打卡计划:</text>
-            <text class="state">已过期</text>
+            <text class="state">已过期或未设置</text>
           </view>
 					<!-- <view class="card" id="exam">
 					<image src="../../static/todo.svg"></image>
