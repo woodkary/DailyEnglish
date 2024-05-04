@@ -5,11 +5,11 @@
 		<view>
 			<view class="calendar">
 				<view class="head">
-					<text class="date">2024年5月</text>
-					<button class="last">
+					<text class="date">{{ year }}年{{ month }}月</text>
+					<button class="last" @click="subMonth">
 						<!-- 					<image src="../../static/last.png"></image> -->
 					</button>
-					<button class="next">
+					<button class="next" @click="addMonth">
 						<!-- 					<image src="../../static/next.png"></image> -->
 					</button>
 				</view>
@@ -29,20 +29,21 @@
 				              'saturday': date.dayOfWeek === 6
 				            }" @click="handleClick(date)">
 						{{ date.value }}
+            <span class="badge" v-if="date.hasExam"></span>
 					</view>
 				</view>
 			</view>
 		</view>
 		<view>
 			<view class="examMsg">
-				<text class="title">5月4日</text>
+				<text class="title">{{ chosenMonth }}月{{ chosenDay }}日</text>
 				<view class="card-container">
-					<view class="card" id="daka">
-						<image src="../../static/done.svg"></image>
+					<view class="card" v-if="getChosenDateFromDates()" id="daka">
+						<image src="../../static/not-done.svg"></image>
 						<text class="title">打卡计划:</text>
 						<text class="state">未完成</text>
 					</view>
-					<view class="card" id="daka">
+					<view v-else class="card" id="daka">
 						<image src="../../static/done.svg"></image>
 						<text class="title">打卡计划:</text>
 						<text class="state">已完成</text>
@@ -67,12 +68,13 @@
 				month: 5,
 				dates: [], // 存储当前月份的日期
 				// 考试信息
-				examMsg: new Set([
-					'2024-5-1',
-					'2024-5-13',
-					'2024-5-22',
-					'2024-5-29'
-				]) // 存储当前月份的考试日期
+				punchMsg: 63398853,
+        //0000 0011 1100 0111 0110 0011 1100 0101,
+        //存储前32天打卡信息，
+        //每一位表示一天，0表示未打卡，1表示已打卡
+        chosenYear: 2024, // 选中的年份
+        chosenMonth: 5, // 选中的月份
+        chosenDay: 4, // 选中的日期
 			}
 		},
 
@@ -84,7 +86,35 @@
 			requestExamMsg() {
 
 			},
+      getChosenDateFromDates(){
+        let date=new Date(this.chosenYear,this.chosenMonth-1,this.chosenDay);
+        let diffDays=Math.floor((new Date()-date)/(24*60*60*1000));
+        return diffDays>=0&&diffDays<32?this.punchMsg>>diffDays&1:false;
+      },
+      subMonth() {
+        this.month--;
+        if (this.month < 1) {
+          this.month = 12;
+          this.year--;
+        }
+        this.generateDates();
+      },
+      addMonth() {
+        this.month++;
+        if (this.month > 12) {
+          this.month = 1;
+          this.year++;
+        }
+        this.generateDates();
+      },
 			handleClick(date) {
+        let year=date.date.getFullYear();
+        let month=date.date.getMonth()+1;
+        let day=date.date.getDate();
+        console.log(year,month,day);
+        this.chosenYear=year;
+        this.chosenMonth=month;
+        this.chosenDay=day;
 				if (date.hasExam) {
 					console.log('考试日期：', date.value);
 					//TODO 跳转到考试页面及其他操作
@@ -101,7 +131,9 @@
 
 				// 添加空白日期（用于填充第一天之前的空白）
 				for (let i = 0; i < firstDayOfWeek; i++) {
+          let date=new Date()-i*24*60*60*1000;
 					this.dates.push({
+            date:date,
 						value: '',
 						dayOfWeek: '',
 						hasExam: false
@@ -110,12 +142,17 @@
 				}
 				// 添加日期
 				for (let i = 1; i <= totalDays; i++) {
-					const dayOfWeek = (firstDayOfWeek + i - 1) % 7; // 计算当前日期对应的星期几（0 表示星期日，1 表示星期一，以此类推）
-					const dateStr = `${this.year}-${this.month}-${i}`;
+					let dayOfWeek = (firstDayOfWeek + i - 1) % 7; // 计算当前日期对应的星期几（0 表示星期日，1 表示星期一，以此类推）
+          let date=new Date(this.year, this.month-1, i);
+          let today=new Date();
+          //计算当前日期与今天的差值，并判断是否有考试
+          let diffDays=Math.floor((today-date)/(24*60*60*1000));
+          let hasExam=diffDays>=0&&diffDays<32?this.punchMsg>>diffDays&1:false;
 					this.dates.push({
+            date:date,
 						value: i,
 						dayOfWeek: dayOfWeek,
-						hasExam: this.examMsg.has(dateStr) // 判断当前日期是否有考试
+						hasExam: hasExam // 判断当前日期是否有考试
 					});
 				}
 			}
@@ -298,4 +335,25 @@
 		margin-top: 40rpx;
 		font-size:35rpx;
 	}
+  .badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: red;
+    /* 使用伪元素创建圆点 */
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: inherit;
+      transform: translate(-50%, -50%);
+    }
+  }
 </style>
