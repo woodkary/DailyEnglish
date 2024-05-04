@@ -119,7 +119,7 @@
 					console.log('考试日期：', date.value);
 					//TODO 跳转到考试页面及其他操作
 				}
-
+        //TODO 从后端获取当天打卡的所有单词
 			},
 			generateDates() {
 				const firstDay = new Date(this.year, this.month - 1, 1); // 获取当前月份的第一天
