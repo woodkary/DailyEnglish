@@ -6,11 +6,11 @@
 			<view class="calendar">
 				<view class="head">
 					<text class="date">{{ year }}年{{ month }}月</text>
-					<button class="last" @click="subMonth">
-						<!-- 					<image src="../../static/last.png"></image> -->
+					<button class="last-or-next" @click="subMonth">
+						<image class="icon" src="../../static/last.svg"></image>
 					</button>
-					<button class="next" @click="addMonth">
-						<!-- 					<image src="../../static/next.png"></image> -->
+					<button class="last-or-next" @click="addMonth">
+						<image class="icon" src="../../static/next.svg"></image>
 					</button>
 				</view>
 				<view class="week">
@@ -43,11 +43,23 @@
 						<text class="title">打卡计划:</text>
 						<text class="state">未完成</text>
 					</view>
-					<view v-else class="card" id="daka">
-						<image src="../../static/done.svg"></image>
-						<text class="title">打卡计划:</text>
-						<text class="state">已完成</text>
-					</view>
+          <view v-else>
+            <view  class="card" id="daka">
+              <image src="../../static/done.svg"></image>
+              <text class="title">打卡计划:</text>
+              <text class="state">已完成</text>
+            </view>
+            <view class="words">
+              <!--todo 为这个span添加样式-->
+              <span v-for="(word, index) in punchWords" :key="index">{{ word.word }}：
+                {{ word.meanings.verb!=null?'v.':'' }}{{ word.meanings.verb }}
+                {{word.meanings.noun!=null?'n.':'' }} {{ word.meanings.noun }}
+                {{ word.meanings.adj!=null?'adj.':'' }} {{ word.meanings.adj }}
+                {{ word.meanings.adv!=null?'adv.':'' }} {{ word.meanings.prep }}
+                {{ word.meanings.prep!=null?'prep.':'' }} {{ word.meanings.adv }}
+              </span>
+            </view>
+          </view>
 					<!-- <view class="card" id="exam">
 					<image src="../../static/todo.svg"></image>
 					<text class="time">9:40</text>
@@ -75,6 +87,27 @@
         chosenYear: 2024, // 选中的年份
         chosenMonth: 5, // 选中的月份
         chosenDay: 4, // 选中的日期
+        punchWords: [{
+          word: "refuse",
+          meanings: {
+            verb: "拒绝,谢绝",
+            noun: "废物",
+            adj: "扔掉的，无用的",
+            adv: null,
+            prep: null,
+           }
+          },
+          {
+            word: "objective",
+            meanings: {
+              verb: null,
+              noun: "目的，目标，<语法>宾格，物镜",
+              adj: "客观的，<语法>宾格的，真实的，目标的",
+              adv: null,
+              prep: null,
+             }
+          }
+        ]
 			}
 		},
 
@@ -86,6 +119,7 @@
 			requestExamMsg() {
 
 			},
+      //判断是否有未完成的打卡计划
       getChosenDateFromDates(){
         let date=new Date(this.chosenYear,this.chosenMonth-1,this.chosenDay);
         let diffDays=Math.floor((new Date()-date)/(24*60*60*1000));
@@ -116,10 +150,13 @@
         this.chosenMonth=month;
         this.chosenDay=day;
 				if (date.hasExam) {
-					console.log('考试日期：', date.value);
+					console.log('未完成打卡计划日期：', date.value);
 					//TODO 跳转到考试页面及其他操作
-				}
-        //TODO 从后端获取当天打卡的所有单词
+				}else{
+          console.log('已完成打卡计划日期：', date.value);
+          //TODO 从后端获取当天打卡的所有单词
+        }
+
 			},
 			generateDates() {
 				const firstDay = new Date(this.year, this.month - 1, 1); // 获取当前月份的第一天
@@ -355,5 +392,17 @@
       background-color: inherit;
       transform: translate(-50%, -50%);
     }
+  }
+  .last-or-next {
+    background-color: transparent;
+    border: none;
+    outline: none;
+
+  }
+  .icon {
+    margin-top: 20rpx;
+    width: 60rpx;
+    height: 60rpx;
+    filter: invert(1);
   }
 </style>
