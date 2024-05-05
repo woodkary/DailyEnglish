@@ -83,7 +83,7 @@
 		data() {
 			return {
         //最后一次打卡的日期
-        lastPunchDate: new Date(2024,5,4),
+        lastPunchDate: new Date(2024,4,4),
 				year: 2024,
 				month: 5,
 				dates: [], // 存储当前月份的日期
