@@ -6,7 +6,7 @@
 			<view class="calendar">
 				<view class="head">
 					<text class="date">{{ year }}年{{ month }}月</text>
-					<button class="last-or-next" @click="subMonth">
+					<button class="last-or-next" @click="subMonth" style="margin-left:180rpx;">
 						<image class="icon" src="../../static/last.svg"></image>
 					</button>
 					<button class="last-or-next" @click="addMonth">
@@ -29,12 +29,12 @@
 				              'saturday': date.dayOfWeek === 6
 				            }" @click="handleClick(date)">
 						{{ date.value }}
-            <span class="badge" v-if="date.hasExam"></span>
+            <!-- <span class="badge" v-if="date.hasExam"></span> -->
 					</view>
 				</view>
 			</view>
 		</view>
-		<view>
+		
 			<view class="examMsg">
 				<text class="title">{{ chosenMonth }}月{{ chosenDay }}日</text>
 				<view class="card-container">
@@ -73,7 +73,7 @@
 				</view> -->
 				</view>
 			</view>
-		</view>
+		
 	</view>
 </template>
 
@@ -250,6 +250,11 @@
 		font-size: 60rpx;
 		font-weight: 500;
 		color: #fff;
+		/*不换行*/
+		white-space: nowrap;
+	}
+	.head .date {
+		white-space: nowrap;
 	}
 
 	.week {
@@ -304,9 +309,10 @@
 
 	.clickable {
 		color: black;
-		/* border: 1px solid red; */
-		/* border-radius: 50%; */
+		/* border: 1px solid red;
+		border-radius: 50%; */
 		z-index: 1;
+		
 	}
 
 	.clickable::before {
@@ -330,11 +336,11 @@
 
 	.examMsg {
 		background-color: #fff;
-		position: absolute;
-		top: 880rpx;
+		position: absolute; 
+		top: 980rpx;
 		/* 初始位置 */
 		width: 100%;
-		height: calc(100vh - 900rpx);
+		/* height: calc(100vh - 100rpx); */
 		/* 设置高度 */
 		justify-content: space-between;
 		/* 使图片和文本之间有空间 */
@@ -391,7 +397,7 @@
 		margin-top: 40rpx;
 		font-size:35rpx;
 	}
-  .badge {
+ /* .badge {
     position: absolute;
     top: 0;
     right: 0;
@@ -399,29 +405,26 @@
     height: 16px;
     border-radius: 50%;
     background-color: red;
-    /* 使用伪元素创建圆点 */
-    &::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background-color: inherit;
-      transform: translate(-50%, -50%);
-    }
-  }
+  } */
   .last-or-next {
     background-color: transparent;
     border: none;
     outline: none;
-
   }
   .icon {
     margin-top: 20rpx;
     width: 60rpx;
     height: 60rpx;
     filter: invert(1);
+  }
+  .words{
+	  font-size: 40rpx;
+  }
+  .words span{
+    display: block;
+    margin-left: 40rpx;
+    margin-top: 20rpx;
+	white-space: nowrap;
+	border-bottom: 1px solid #d7d7d7;
   }
 </style>
