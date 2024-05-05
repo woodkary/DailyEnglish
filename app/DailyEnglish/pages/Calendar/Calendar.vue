@@ -24,7 +24,8 @@
 				</view>
 				<view class="day">
 					<view class="date-item" v-for="(date, index) in dates" :key="index" :class="{
-                      'clickable': date.hasExam,
+                      'clickable': date.hasExam===1,
+                      'not-this-month': date.hasExam===-1,
 				              'sunday': date.dayOfWeek === 0,
 				              'saturday': date.dayOfWeek === 6
 				            }" @click="handleClick(date)">
@@ -178,40 +179,51 @@
 
 			},
 			generateDates() {
-				const firstDay = new Date(this.year, this.month - 1, 1); // 获取当前月份的第一天
-				const firstDayOfWeek = firstDay.getDay(); // 获取当前月份的第一天是星期几
-				const totalDays = new Date(this.year, this.month, 0).getDate(); // 获取当前月份的总天数
+        const firstDay = new Date(this.year, this.month - 1, 1); // 获取当前月份的第一天
+        const firstDayOfWeek = firstDay.getDay(); // 获取当前月份的第一天是星期几
+        const totalDays = new Date(this.year, this.month, 0).getDate(); // 获取当前月份的总天数
 
-				// 初始化日期数组
-				this.dates = [];
+        // 初始化日期数组
+        this.dates = [];
 
-				// 添加空白日期（用于填充第一天之前的空白）
-				for (let i = 0; i < firstDayOfWeek; i++) {
-          let date=new Date()-i*24*60*60*1000;
-					this.dates.push({
-            date:date,
-						value: '',
-						dayOfWeek: '',
-						hasExam: false
+        // 添加空白日期（用于填充第一天之前的空白）
+        for (let i = firstDayOfWeek-1; i>=0; i--) {
+          let date = new Date(firstDay - (i+1) * 24 * 60 * 60 * 1000);
+          let day = date.getDate();
+          this.dates.push({
+            date: date,
+            value: day,
+            dayOfWeek: '',
+            hasExam: -1
 
-					});
-				}
-				// 添加日期
-				for (let i = 1; i <= totalDays; i++) {
-					let dayOfWeek = (firstDayOfWeek + i - 1) % 7; // 计算当前日期对应的星期几（0 表示星期日，1 表示星期一，以此类推）
-          let date=new Date(this.year, this.month-1, i);
-          let today=new Date();
+          });
+        }
+        // 添加日期
+        for (let i = 1; i <= totalDays; i++) {
+          let dayOfWeek = (firstDayOfWeek + i - 1) % 7; // 计算当前日期对应的星期几（0 表示星期日，1 表示星期一，以此类推）
+          let date = new Date(this.year, this.month - 1, i);
+          let today = new Date();
           //计算当前日期与今天的差值，并判断是否有考试
-          let diffDays=Math.floor((today-date)/(24*60*60*1000));
-          let hasExam=diffDays>=0&&diffDays<32?this.punchMsg>>diffDays&1:false;
-					this.dates.push({
-            date:date,
-						value: i,
-						dayOfWeek: dayOfWeek,
-						hasExam: hasExam // 判断当前日期是否有考试
-					});
-				}
-			}
+          let diffDays = Math.floor((today - date) / (24 * 60 * 60 * 1000));
+          let hasExam = diffDays >= 0 && diffDays < 32 ? this.punchMsg >> diffDays & 1 : false;
+          this.dates.push({
+            date: date,
+            value: i,
+            dayOfWeek: dayOfWeek,
+            hasExam: hasExam // 判断当前日期是否有考试
+          });
+        }
+        //添加空白日期（用于填充最后一天之后的空白）
+        for (let i = 0; i < 7 - (totalDays + firstDayOfWeek) % 7; i++) {
+          let tempDate=new Date(this.year,this.month,i+1);
+          this.dates.push({
+            date: tempDate,
+            value: tempDate.getDate(),
+            dayOfWeek: '',
+            hasExam: -1
+          });
+        }
+      }
 		},
 	}
 </script>
@@ -306,6 +318,9 @@
 
 		position: relative;
 	}
+  .not-this-month{
+    color: #d7d7d7;
+  }
 
 	.clickable {
 		color: black;
