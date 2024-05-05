@@ -124,6 +124,18 @@
 			requestExamMsg() {
 
 			},
+     //todo 使用该函数计算某一月份需要占据日历表多少行
+      getCalendarRows(year, month) {
+        // 创建一个日期对象，设置为该月的第一天
+        const firstDay = new Date(year, month - 1, 1);
+        // 获取该月的第一天是星期几（0表示周日，1表示周一，依此类推）
+        const firstDayOfWeek = firstDay.getDay();
+        // 获取该月的天数
+        const daysInMonth = new Date(year, month, 0).getDate();
+        // 计算该月日历所需的行数
+        // 如果第一天是周日，或者该月的天数加上第一天的星期数大于28（保证至少需要4行），则需要5行
+        return (firstDayOfWeek === 0 || (daysInMonth + firstDayOfWeek > 28)) ? 5 : 4;
+      },
       //判断是否有未完成的打卡计划
       getChosenDateFromDates(){
         let date=new Date(this.chosenYear,this.chosenMonth-1,this.chosenDay);
