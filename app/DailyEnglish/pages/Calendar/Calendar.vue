@@ -141,11 +141,15 @@
       },
       //判断是否有未完成的打卡计划
       getChosenDateFromDates(){
-        let date=new Date(this.chosenYear,this.chosenMonth-1,this.chosenDay);
-        let diffDays=Math.floor((this.lastPunchDate-date)/(24*60*60*1000));
-        if(diffDays>=0&&diffDays<32)
-          return this.punchMsg>>diffDays&1;
-        return -1;
+        let dateIndex=(new Date(this.chosenYear,this.chosenMonth-1,this.chosenDay)-this.dates[0].date)/(1000*60*60*24);//计算当前日期与第一个日期的差值
+        dateIndex=Math.floor(dateIndex);   //取整
+        if(dateIndex<0||dateIndex>=this.dates.length){
+          return -1;
+        }
+        if(this.dates[dateIndex].expired){
+          return -1;
+        }
+        return this.dates[dateIndex].hasExam;
       },
       subMonth() {
         if(new Date().getMonth()-this.month>0){
@@ -212,12 +216,14 @@
           let today = this.lastPunchDate;
           //计算当前日期与今天的差值，并判断是否有考试
           let diffDays = Math.floor((today - date) / (24 * 60 * 60 * 1000));
-          let hasExam = diffDays >= 0 && diffDays < 32 ? this.punchMsg >> diffDays & 1 : false;
+          let expired = diffDays >= 32||diffDays<0;
+          let hasExam = !expired ? this.punchMsg >> diffDays & 1 : false;
           this.dates.push({
             date: date,
             value: i,
             dayOfWeek: dayOfWeek,
-            hasExam: hasExam // 判断当前日期是否有考试
+            hasExam: hasExam, // 判断当前日期是否有考试
+            expired: expired //判断当前日期是否过期
           });
         }
         //添加空白日期（用于填充最后一天之后的空白）
