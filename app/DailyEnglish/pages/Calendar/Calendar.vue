@@ -82,6 +82,8 @@
 	export default {
 		data() {
 			return {
+        //最后一次打卡的日期
+        lastPunchDate: new Date(2024,5,4),
 				year: 2024,
 				month: 5,
 				dates: [], // 存储当前月份的日期
@@ -140,7 +142,7 @@
       //判断是否有未完成的打卡计划
       getChosenDateFromDates(){
         let date=new Date(this.chosenYear,this.chosenMonth-1,this.chosenDay);
-        let diffDays=Math.floor((new Date()-date)/(24*60*60*1000));
+        let diffDays=Math.floor((this.lastPunchDate-date)/(24*60*60*1000));
         if(diffDays>=0&&diffDays<32)
           return this.punchMsg>>diffDays&1;
         return -1;
@@ -201,14 +203,13 @@
             value: day,
             dayOfWeek: '',
             hasExam: -1
-
           });
         }
         // 添加日期
         for (let i = 1; i <= totalDays; i++) {
           let dayOfWeek = (firstDayOfWeek + i - 1) % 7; // 计算当前日期对应的星期几（0 表示星期日，1 表示星期一，以此类推）
           let date = new Date(this.year, this.month - 1, i);
-          let today = new Date();
+          let today = this.lastPunchDate;
           //计算当前日期与今天的差值，并判断是否有考试
           let diffDays = Math.floor((today - date) / (24 * 60 * 60 * 1000));
           let hasExam = diffDays >= 0 && diffDays < 32 ? this.punchMsg >> diffDays & 1 : false;
