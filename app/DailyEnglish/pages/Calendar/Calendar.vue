@@ -146,6 +146,9 @@
         return -1;
       },
       subMonth() {
+        if(new Date().getMonth()-this.month>0){
+          return;//不能往前翻超过两个月
+        }
         this.month--;
         if (this.month < 1) {
           this.month = 12;
@@ -154,6 +157,9 @@
         this.generateDates();
       },
       addMonth() {
+        if(this.month-new Date().getMonth()>2){
+          return;//不能往后翻超过两个月
+        }
         this.month++;
         if (this.month > 12) {
           this.month = 1;
