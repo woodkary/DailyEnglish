@@ -2,9 +2,6 @@
 	<view class="container">
 		<image class="back-icon" src="../../static/back.svg"></image>
 		<view class="edit">
-			<view class="title">
-				<text>修改个人信息</text>
-			</view>
 			<image class="photo" src="../../static/logo.png"></image>
 			<view class="items">
 				<view class="item" id="username">
@@ -65,22 +62,61 @@
 		/*距离左侧20px */
 		cursor: pointer;
 		/*鼠标移上去显示小手 */
-
 	}
 
 	.edit {
 		position: absolute;
-		margin-top: 80rpx;
-		width:100%;
+		top: 80px;
+		/* border: 1rpx solid black; */
+		width: 100%;
+		height:1400rpx;
 	}
-	.tilte {
-		font-size:40rpx;
-		
-	}
+
 	.photo {
+		width: 280rpx;
+		height:280rpx;
+		top:80rpx;
+		left: 240rpx;
+		border-radius: 50%;
+		box-shadow: 0px 10px 25px rgb(0, 0, 0, 0.2);
+	}
+	.items {
+		width: 100%;
+		margin-top: 180rpx;
+		/* border: 1rpx solid black; */
+		display: flex;
+		flex-direction: column;
+	}
+	.item {
+		width: 100%;
+		display: flex; 
+		justify-content: space-between; /* 内容左右分布 */
+		padding: 45rpx 20rpx ; /* 上下左右边距 */
+		font-size:40rpx;
+		border-bottom: 1rpx solid #e3e3e3;
+		/* gap: 20rpx; /* 间距 */
+	}
+	
+	.item text {
+		flex-shrink: 0; /* 防止text收缩 */
+		margin-left: 50rpx;
+		color:#b2b2b2;
+		font-weight:500;
+	}
+	.item input ,
+	.item span{
 		width: 200rpx;
-		height: 200rpx;
-		margin-left: 50%;
-		margin-top: 40rpx;
+		margin-right: 70rpx;
+		flex-grow: 1; /* 让input或span占据剩余空间 */
+		text-align: right; /* 文本右对齐 */
+		font-weight: 500;
+		color:black;
+	}
+	.item input {
+		border: none;
+		font-size: 40rpx;
+	}
+	.item :last-child{
+		border-bottom: none;
 	}
 </style>
