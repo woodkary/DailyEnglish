@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<!-- Coding By CodingNepal - codingnepalweb.com -->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!----======== CSS ======== -->
+    <link rel="stylesheet" href="./css/navSidebar.css">
+    <link rel="stylesheet" href="../static/css/time-line.css">
+
+    <!----===== Iconscout CSS ===== -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="css/wu-hang-table.css">
+
+    <title>Admin Dashboard Panel</title>
+</head>
+
+<body>
+    <nav>
+        <div class="logo-name">
+            <!--        <div class="logo-image">
+            <img src="./image/little-edellweiss.regular.webp" alt="">
+        </div>-->
+
+            <span class="logo_name">DailyEnglish</span>
+        </div>
+
+        <div class="menu-items">
+            <ul class="nav-links">
+                <li><a href="index.html">
+                        <i class="uil uil-estate"></i>
+                        <span class="link-name">主页</span>
+                    </a></li>
+                <li><a href="issuePunch.html">
+                        <i class="uil uil-calendar-alt"></i>
+                        <span class="link-name">打卡发布</span>
+                    </a></li>
+                <li><a href="test-release.html">
+                        <i class="uil uil-calender"></i>
+                        <span class="link-name">考试发布</span>
+                    </a></li>
+                <li><a href="test-statistics.html">
+                        <i class="uil uil-chart"></i>
+                        <span class="link-name">考试情况</span>
+                    </a></li>
+                <li><a href="manage.html">
+                        <i class="uil uil-meh-alt"></i>
+                        <span class="link-name">成员管理</span>
+                    </a></li>
+                <li><a href="review.html">
+                        <i class="uil uil-message"></i>
+                        <span class="link-name">申请审核</span>
+                    </a></li>
+                <li><a href="user.html">
+                        <i class="uil uil-user"></i>
+                        <span class="link-name">个人中心</span>
+                    </a></li>
+            </ul>
+
+            <ul class="logout-mode">
+                <li><a href="#">
+                        <i class="uil uil-signout"></i>
+                        <span class="link-name">Logout</span>
+                    </a></li>
+
+                <li class="mode">
+                    <a href="#">
+                        <i class="uil uil-moon"></i>
+                        <span class="link-name">Dark Mode</span>
+                    </a>
+
+                    <div class="mode-toggle">
+                        <span class="switch"></span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="dashboard">
+        <div class="top">
+            <i class="uil uil-bars sidebar-toggle"></i>
+
+            <div class="search-box">
+                <i class="uil uil-search"></i>
+                <input type="text" placeholder="Search here...">
+            </div>
+
+            <img src="image/pikachu.jpg" alt="">
+        </div>
+
+        <div class="dash-content">
+            <div class="calendar-Container">
+                <div class="head">
+                    <button class="prev" onclick="moveDate('prev')">
+                        <i class="uil uil-angle-left"></i>
+                    </button>
+                    <div class="date">
+                        <h1 id="month">May</h1>
+                    </div>
+                    <button class="next" onclick="moveDate('next')">
+                        <i class="uil uil-angle-right"></i>
+                    </button>
+                    <button class="today" onclick="moveDate('today')">Today</button>
+                </div>
+                <div class="content">
+                    <div class="calendar">
+                        <div class="weekdays">
+                            <week id="Su">Su</week>
+                            <week>Mo</week>
+                            <week>Tu</week>
+                            <week>We</week>
+                            <week>Th</week>
+                            <week>Fr</week>
+                            <week id="Sa">Sa</week>
+                        </div>
+                        <div class="days">
+                            <!-- 42 times loop -->
+                            <div class="day">
+                                <span class="day-number">1</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="event">
+                        <h1>5月2日</h1>
+                        <card>123</card>
+                        <button class="addEvent" >add event</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+<style>
+    .calendar-Container {
+        position: relative;
+        margin-top: 20px;
+        height: 460px;
+        background-color: transparent;
+        border: 1px solid #a1a2a4;
+        z-index: 0;
+        background-image: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+
+    }
+
+    .head {
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        height: 60px;
+        /* background-color: white; */
+        color: rgb(247, 96, 41);
+        border-bottom: 0.1px solid #8f725a;
+    }
+
+    .head button {
+        background-color: transparent;
+        border: none;
+        color: #ff924e;
+        cursor: pointer;
+    }
+
+    .head button:focus {
+        outline: none;
+    }
+
+    .date h1 {
+        font-size: 24px;
+        margin: 0;
+        font-weight:500;
+    }
+
+    .prev {
+        margin-left: 20px;
+        margin-right: 4px;
+        font-size: 30px;
+        width: 40px;
+        height: 40px;
+
+    }
+
+    .next {
+        margin-left: 4px;
+        font-size: 30px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .today {
+        margin-left: auto;
+        background-color: #e68042;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    
+    .content {
+        display: flex;
+    }
+    .calendar{
+        width: 70%;
+        height:100%;
+        /* background-color: #fde8d5; */
+    }
+    .event{
+        width: 30%;
+        height:400px;
+        border-left: 1px solid #8f725a;
+        /* background-color: #faebdd; */
+    }
+    .weekdays {
+        display: flex;
+        /* background-color: #ffffff; */
+        color: #565656;
+        border-bottom: 1px solid #29323f;
+        height: 60px;
+        font-size:19px;
+    }
+    week{
+        margin-left:72px;
+        margin-top: 20px;
+    }
+    #Su{
+        margin-left:40px
+    }
+    #Su, #Sa{
+        color: #fe5c59;
+    }
+    .days {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 10px 20px;
+        /* background-color: #ffffff; */
+        color: black;
+        font-size:19px;
+    }
+    .day {
+        width: 12%;
+        height: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+    }
+</style>
+
+</html>
