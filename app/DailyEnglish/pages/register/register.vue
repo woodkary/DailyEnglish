@@ -94,14 +94,17 @@
             }else if(data.code==409) {//邮箱已注册
               uni.showToast({
                 title: '邮箱已注册',
+                icon: 'error'
               });
             }else if(data.code==400){//请求参数错误
               uni.showToast({
                 title: '请求参数错误',
+                icon: 'error'
               });
             }else{
               uni.showToast({
                 title: '发送失败',
+                icon: 'error'
               });
             }
           },
@@ -109,6 +112,7 @@
             console.log(res);
             uni.showToast({
               title: '发送失败',
+              icon: 'error'
             });
           }
         });
@@ -149,6 +153,7 @@
           }, 2000);
           uni.showToast({
             title: '两次输入的密码不一致',
+            icon: 'error'
           });
           return false;
         }
@@ -176,6 +181,7 @@
             if(res.statusCode === 200){
               uni.showToast({
                 title: '注册成功',
+                icon: 'success'
               });
               setTimeout(() => {
                 uni.navigateBack();
@@ -183,14 +189,17 @@
             }else if(data.code==409) {//用户名已注册
               uni.showToast({
                 title: '用户名已注册',
+                icon: 'error'
               });
             }else if(data.code==400){//请求参数错误
               uni.showToast({
                 title: '请求参数错误',
+                icon: 'error'
               });
             }else{
               uni.showToast({
                 title: '注册失败',
+                icon: 'error'
               });
             }
           },
@@ -198,6 +207,7 @@
             console.log(res);
             uni.showToast({
               title: '注册失败',
+              icon: 'error'
             });
           }
         });

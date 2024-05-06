@@ -86,15 +86,21 @@
     	"path" : "pages/personal-information/personal-information",
     	"style" : 
     	{
-    		"navigationBarTitleText" : "",
-    		"enablePullDownRefresh" : false
+    		"navigationBarTitleText" : "用户信息",
+    		"enablePullDownRefresh" : false,
+			"app-plus": {
+				"titleNView": {
+					"autoBackButton": false
+				}
+			}
+			
     	}
     },
     {
     	"path" : "pages/home/home",
     	"style" : 
     	{
-    		"navigationBarTitleText" : "",
+    		"navigationBarTitleText" : "首页",
     		"enablePullDownRefresh" : false
     	}
     },
