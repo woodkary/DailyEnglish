@@ -77,8 +77,9 @@ function generateDates(){
     for (let i = 1; i <= totalDays; i++) {
         dates.push(new Date(year, month - 1, i));
     }
+
     // 填充下个月的日期
-    for (let i = 0; i < 7 - (totalDays + firstDayOfWeek) % 7; i++) {
+    for (let i = 0; dates.length<42; i++) {
         dates.push(new Date(year,month,i+1));
     }
     return dates;
