@@ -20,13 +20,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!------ Include the above in your HEAD tag ---------->
 <body>
-<!-- Toast遮罩层
-<div id="overlay" class="overlay"></div>
-&lt;!&ndash; Toast弹出框 &ndash;&gt;
-<div class="Toast2" id="toast" style="position: fixed;top: 50%;left: 50%;transform: translate(-50%, -50%);display:none;">
-    <i class="fa-solid fa-xmark close" id="toastClose"></i>
-    在这里填入内容
-</div>-->
+
     <div class="toast">
         <div class="toast-content">
             <i class="fas fa-solid fa-check check"></i>
@@ -70,7 +64,7 @@
                         <option value="40">
                         <option value="50">
                     </datalist>
-                    <span class="tip" style="margin-top: 18px;font-size: 0.8rem;color:#ef4565;display: none;">*人数至少为5</span>
+                    <span class="tip" style="margin-top: 8px;font-size: 0.8rem;color:#ef4565;display: none;">*人数至少为5</span>
                 </div>
 
             </section>
@@ -266,7 +260,7 @@
                                                         </div>
                                                     </div>
                                                 </card>
-                                                <button id="openModalButton">modal按钮</button>
+                                                <button id="openModalButton">添加新团队</button>
                                                
                                             </div>
                                         </div>
@@ -373,6 +367,10 @@
     });
 </script>
 <style>
+    body{
+        overflow-x: hidden;
+        overflow-y: hidden;
+    }
     .emp-profile {
         padding: 3%;
         margin-top: 3%;
@@ -1051,5 +1049,6 @@
     .coolinput input.input:focus {
         outline: none;
     }
+    
 </style>
 </html>
