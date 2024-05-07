@@ -42,9 +42,9 @@
             <i class="uil uil-calendar-alt"></i>
             <span class="link-name">打卡发布</span>
           </a></li>
-        <li><a href="test-release.html">
+        <li><a href="history.html">
             <i class="uil uil-calender"></i>
-            <span class="link-name">考试发布</span>
+            <span class="link-name">考试相关</span>
           </a></li>
         <li><a href="test-statistics.html">
             <i class="uil uil-chart"></i>
@@ -53,10 +53,6 @@
         <li><a href="manage.html">
             <i class="uil uil-meh-alt"></i>
             <span class="link-name">成员管理</span>
-          </a></li>
-        <li><a href="review.html">
-            <i class="uil uil-message"></i>
-            <span class="link-name">申请审核</span>
           </a></li>
         <li><a href="user.html">
             <i class="uil uil-user"></i>
@@ -162,6 +158,30 @@
   //   // 将选中的按钮设为选中状态
   //   event.currentTarget.classList.add("active");
   // }
+  function openTab(arg){
+      console.log(arg);
+      switch(arg){
+          case "历次考试":
+              console.log("历次考试");
+              window.location.href = "calendar.html";
+              break;
+
+          case "考试发布"://todo 需要改样式的页面
+              console.log("考试发布");
+              window.location.href = "issuePunch.html";
+              break;
+
+          case "学生成绩":
+              console.log("学生成绩");
+              window.location.href = "test-statistics.html";
+              break;
+
+          case "考试安排"://todo 没有这个页面
+              console.log("考试安排");
+              window.location.href = "test-schedule.html";
+              break;
+      }
+  }
 </script>
 <style>
 
