@@ -1,16 +1,6 @@
 /* Import Google font - Poppins */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
-}
-body {
-    height: 100vh;
-    background: #4070f4;
-}
-body,
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css");
 .paginationContainer,
 .button,
 .links,
@@ -20,9 +10,10 @@ body,
     justify-content: center;
 }
 .paginationContainer {
-    padding: 20px;
+    font-family: "Poppins", sans-serif;
+    padding: 20px;/*高的根源*/
     border-radius: 8px;
-    column-gap: 12px;
+    column-gap: 12px;/*列间距*/
     background: #fff;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
 }
@@ -38,9 +29,9 @@ body,
 }
 .button,
 .link {
-    height: 45px;
-    width: 45px;
-    font-size: 20px;
+    height: 30px;
+    width: 30px;
+    font-size: 15px;
     color: #666666;
     background-color: #f2f2f2;
     border-radius: 6px;

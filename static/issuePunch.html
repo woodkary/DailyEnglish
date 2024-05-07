@@ -3,313 +3,322 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>打卡发布</title>
-</head>
-<style>
-    .darkmode--activated .circle-btn {
-        background-color: brown;
-        color: red;
-    }
+    <title>考试发布</title>
 
-    .darkmode--activated .search-container img {
-        filter: invert(1);
-    }
-</style>
-<link rel="stylesheet" href="./css/sidebar.css">
-<link rel="stylesheet" href="./css/myNavbar.css">
-<link rel="stylesheet" href="./css/issuePunch.css">
+
+    <!----======== CSS ======== -->
+    <link rel="stylesheet" href="./css/navSidebar.css">
+    <link rel="stylesheet" href="./css/pagination.css" />
+    <!----===== Iconscout CSS ===== -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <title>Admin Dashboard Panel</title>
+    
+
+</head>
 
 <body>
-    <div class="navbar">
-        <div class="navbar-left">
-            <img src="./image/little-edellweiss.regular.webp" class="brand-logo">
+    <nav>
+        <div class="logo-name">
+            <span class="logo_name">DailyEnglish</span>
         </div>
-        <div class="navbar-right">
-            <img src="./image/moon.svg" alt="夜间模式" id="moon" onclick="toggleMoon()" class="night-mode">
-            <button class="notifications">
-                <img src="./image/通知.svg">
-            </button>
 
-            <div class="user-info">
-                <div>姓名</div>
-                <div>组织名称</div>
-            </div>
-            <img src="./image/pikachu.jpg" alt="头像" class="user-avatar">
-            <img src="./image/logout.svg" class="logout">
-        </div>
-    </div>
+        <div class="menu-items">
+            <ul class="nav-links">
+                <li><a href="index.html">
+                        <i class="uil uil-estate"></i>
+                        <span class="link-name">主页</span>
+                    </a></li>
+                <li><a href="issuePunch.html">
+                        <i class="uil uil-calendar-alt"></i>
+                        <span class="link-name">打卡发布</span>
+                    </a></li>
+                <li><a href="test-release.html">
+                        <i class="uil uil-calender"></i>
+                        <span class="link-name">考试发布</span>
+                    </a></li>
+                <li><a href="test-statistics.html">
+                        <i class="uil uil-chart"></i>
+                        <span class="link-name">考试情况</span>
+                    </a></li>
+                <li><a href="manage.html">
+                        <i class="uil uil-meh-alt"></i>
+                        <span class="link-name">成员管理</span>
+                    </a></li>
+                <li><a href="review.html">
+                        <i class="uil uil-message"></i>
+                        <span class="link-name">申请审核</span>
+                    </a></li>
+                <li><a href="user.html">
+                        <i class="uil uil-user"></i>
+                        <span class="link-name">个人中心</span>
+                    </a></li>
+            </ul>
 
-    <div class="sidebar-container">
-        <div class="sidebar">
-            <div>
-                <a href="./index.html">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" style="isolation: isolate"
-                        viewBox="64 64 896 896">
-                        <path
-                            d="M946.5 505L560.1 118.8l-25.9-25.9a31.5 31.5 0 0 0-44.4 0L77.5 505a63.9 63.9 0 0 0-18.8 46c.4 35.2 29.7 63.3 64.9 63.3h42.5V940h691.8V614.3h43.4c17.1 0 33.2-6.7 45.3-18.8a63.6 63.6 0 0 0 18.7-45.3c0-17-6.7-33.1-18.8-45.2zM568 868H456V664h112v204zm217.9-325.7V868H632V640c0-22.1-17.9-40-40-40H432c-22.1 0-40 17.9-40 40v228H238.1V542.3h-96l370-369.7 23.1 23.1L882 542.3h-96.1z">
-                        </path>
-                    </svg>
-                    主页
-                </a>
-            </div>
-            <button class="dropdown-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" style="isolation: isolate"
-                    viewBox="64 64 896 896">
-                    <path
-                        d="M928 160H96c-17.7 0-32 14.3-32 32v640c0 17.7 14.3 32 32 32h832c17.7 0 32-14.3 32-32V192c0-17.7-14.3-32-32-32zm-40 110.8V792H136V270.8l-27.6-21.5 39.3-50.5 42.8 33.3h643.1l42.8-33.3 39.3 50.5-27.7 21.5zM833.6 232L512 482 190.4 232l-42.8-33.3-39.3 50.5 27.6 21.5 341.6 265.6a55.99 55.99 0 0 0 68.7 0L888 270.8l27.6-21.5-39.3-50.5-42.7 33.2z">
-                    </path>
-                </svg>
-                任务发布
-                <i class="fa fa-caret-down"></i>
-            </button>
-            <div class="dropdown-container">
-                <a href="issuePunch.html">打卡发布</a>
-                <a href="test-release.html">考试发布</a>
-            </div>
-            <button class="dropdown-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">" viewBox="64 64
-                    896 896">
-                    <path
-                        d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z">
-                    </path>
-                </svg>
-                学习情况
-                <i class="fa fa-caret-down"></i>
-            </button>
-            <div class="dropdown-container">
-                <a href="test-statistics.html">考试情况</a>
-            </div>
-            <button class="dropdown-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">" viewBox="64 64
-                    896 896">
-                    <path
-                        d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z">
-                    </path>
-                </svg>
-                团队管理
-                <i class="fa fa-caret-down"></i>
-            </button>
-            <div class="dropdown-container">
-                <a href="manage.html">成员管理</a>
-                <a href="review.html">申请审核</a>
-            </div>
-            <a href="#contact">
-                <svg xmlns="http://www.w3.org/2000/svg" class="svg-icon fill" viewBox="64 64 896 896">
-                    <path
-                        d="M858.5 763.6a374 374 0 0 0-80.6-119.5 375.63 375.63 0 0 0-119.5-80.6c-.4-.2-.8-.3-1.2-.5C719.5 518 760 444.7 760 362c0-137-111-248-248-248S264 225 264 362c0 82.7 40.5 156 102.8 201.1-.4.2-.8.3-1.2.5-44.8 18.9-85 46-119.5 80.6a375.63 375.63 0 0 0-80.6 119.5A371.7 371.7 0 0 0 136 901.8a8 8 0 0 0 8 8.2h60c4.4 0 7.9-3.5 8-7.8 2-77.2 33-149.5 87.8-204.3 56.7-56.7 132-87.9 212.2-87.9s155.5 31.2 212.2 87.9C779 752.7 810 825 812 902.2c.1 4.4 3.6 7.8 8 7.8h60a8 8 0 0 0 8-8.2c-1-47.8-10.9-94.3-29.5-138.2zM512 534c-45.9 0-89.1-17.9-121.6-50.4S340 407.9 340 362c0-45.9 17.9-89.1 50.4-121.6S466.1 190 512 190s89.1 17.9 121.6 50.4S684 316.1 684 362c0 45.9-17.9 89.1-50.4 121.6S557.9 534 512 534z">
-                    </path>
-                </svg>
-                个人中心
-            </a>
-        </div>
-    </div>
+            <ul class="logout-mode">
+                <li><a href="#">
+                        <i class="uil uil-signout"></i>
+                        <span class="link-name">Logout</span>
+                    </a></li>
 
-    <div style="margin-left:350px">
-        <h2>任务发布 > 打卡发布</h2>
-        <div class="detail-selection">
-            <ol>
-                <li>
-                    <span class="gray">年级：</span>
-                    <ul class="horizontal-list">
-                        <li onclick="changeColor(this)">一年级</li>
-                        <li onclick="changeColor(this)">二年级</li>
-                        <li onclick="changeColor(this)">三年级</li>
-                        <li onclick="changeColor(this)">四年级</li>
-                        <li onclick="changeColor(this)">五年级</li>
-                        <li onclick="changeColor(this)">六年级</li>
-                        <li onclick="changeColor(this)">初一</li>
-                        <li onclick="changeColor(this)">初二</li>
-                        <li onclick="changeColor(this)">初三</li>
-                        <li onclick="changeColor(this)">高一</li>
-                        <li onclick="changeColor(this)">高二</li>
-                        <li onclick="changeColor(this)">高三</li>
-                        <li onclick="changeColor(this)">大一</li>
-                        <li onclick="changeColor(this)">大二</li>
-                        <li onclick="changeColor(this)">大三</li>
-                        <li onclick="changeColor(this)">大四</li>
-                    </ul>
-                </li>
-                <span><br></span>
-                <li>
-                    <span class="gray">难度：</span>
-                    <ul class="horizontal-list">
-                        <li onclick="changeColor(this)">简单</li>
-                        <li onclick="changeColor(this)">中档</li>
-                        <li onclick="changeColor(this)">困难</li>
-                        <li onclick="changeColor(this)">竞赛</li>
-                    </ul>
-                </li>
-                <ol>
-                    <div class="inline-block">
-                        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-                        <p>打卡时长预计：</p>
-                        <input type="text" placeholder="输入天数">
-                        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        </p>
-                        <p>每日单词预计：</p>
-                        <input type="text" placeholder="单词数">
+                <li class="mode">
+                    <a href="#">
+                        <i class="uil uil-moon"></i>
+                        <span class="link-name">Dark Mode</span>
+                    </a>
+
+                    <div class="mode-toggle">
+                        <span class="switch"></span>
                     </div>
-                </ol>
-            </ol>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="dashboard">
+        <div class="top">
+            <i class="uil uil-bars sidebar-toggle"></i>
+
+            <div class="search-box">
+                <i class="uil uil-search"></i>
+                <input type="text" placeholder="Search here...">
+            </div>
+
+            <img src="image/pikachu.jpg" alt="">
         </div>
 
-        <div class="search-container">
-            <span id="recommend-text" class="blue-text">智能推荐</span>
-            <span id="new-text">最新</span>
-            <img src="./image/updown.png">
-            <span id="hot-text">最热</span>
-            <img src="./image/updown.png">
-            <span class="blank"></span>
-            <img src="./image/搜索图标.png" alt="Search" class="search-icon" style="border:0px">
-            <input type="text" class="search-input" placeholder="智能查找">
-            
-        </div>
+        <div class="dash-content">
+            <div class="calendar-Container"><!-- 不知道怎么取名字了 -->
+
+                <div class="select-head">
+                    <span>考试发布</span>
+                </div>
+                <div class="select">
+
+                    <select name="category" id="category">
+                        <option value="" disabled selected>当前班级：1</option> <!-- 默认占位文本 -->
+
+                        <option value="category1">6.16</option>
+                        <option value="category2">6.15</option>
+                        <option value="category3">6.14</option>
+                    </select>
+
+                    <select name="category" id="category">
+                        <option value="" disabled selected>当前考试日期：5月2</option> <!-- 默认占位文本 -->
+                        <option value="category1">Category 1</option>
+                        <option value="category2">Category 2</option>
+                        <option value="category3">Category 3</option>
+                    </select>
+
+                    <button class="publish-button">
+                        <img src="./image/search.svg" alt="Button Icon">
+                        <span>发布</span>
+                    </button>
 
 
-        <div class="book-container" id="book1">
-            <img src="./image/cet4.png">
-            <h3 class="book-name">四级词汇</h3>
-            <div class="book-info">
-                <div class="num">
-                    <span class="prefix">选取次数:</span>
-                    <span class="book-static">114</span>
-                </div>
-                <div class="num">
-                    <span class="prefix">单词数目:</span>
-                    <span class="book-static">3500</span>
                 </div>
 
-            </div>
-            <div class="operation">
-                <img src="./image/download.png">
-                <span>下载</span>
-                <div class="circle-btn" id="btn1" onclick="toggleActive(this)"></div>
-                <span>选择</span>
-            </div>
-        </div>
-        <div class="book-container" id="book2">
-            <img src="./image/cet6.jpg">
-            <h3 class="book-name">六级词汇</h3>
-            <div class="book-info">
-                <div class="num">
-                    <span class="prefix">选取次数:</span>
-                    <span class="book-static">114</span>
-                </div>
-                <div class="num">
-                    <span class="prefix">单词数目:</span>
-                    <span class="book-static">6000</span>
+
+
+                <div class="search-container">
+                    <table class="content-table">
+                        <thead>
+                            <tr>
+                                <th style="width:60px">选择</th>
+                                <th style="width:120px">题型</th>
+                                <th>题目</th>
+                                <th style="width:80px;">难度</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tableBody">
+                            <tr>
+                                <td><input type="checkbox" name="checkbox" value="1"></td>
+                                <td>单选题</td>
+                                <td>What is the capital of China?</td>
+                                <td>简单</td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" name="checkbox" value="2"></td>
+                                <td>单选题</td>
+                                <td>How many province in China?</td>
+                                <td>简单</td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" name="checkbox" value="3"></td>
+                                <td>判断题</td>
+                                <td>Is BJ the capital of China?</td>
+                                <td>简单</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
-            </div>
-            <div class="operation">
-                <img src="./image/download.png">
-                <span>下载</span>
-                <div class="circle-btn" id="btn2" onclick="toggleActive(this)"></div>
-                <span>选择</span>
-            </div>
-        </div>
-
-        <div class="book-container" id="book3">
-            <img src="./image/postgraduate.webp">
-            <h3 class="book-name">考研词汇</h3>
-            <div class="book-info">
-                <div class="num">
-                    <span class="prefix">选取次数:</span>
-                    <span class="book-static">114</span>
+                <div class="paginationContainer" style="height:40px;width:370px;margin-left:auto;margin-top:20px;box-shadow:none;">
+                    <div class="startBtns" style="flex-direction: row; display: flex; column-gap: 10px;"></div>
+                    <div class="links" id="pagination">
+                    </div>
+                    <div class="endBtns" style="flex-direction: row; display: flex; column-gap: 10px;"></div>
                 </div>
-                <div class="num">
-                    <span class="prefix">单词数目:</span>
-                    <span class="book-static">9000</span>
-                </div>
-
-            </div>
-            <div class="operation">
-                <img src="./image/download.png">
-                <span>下载</span>
-                <div class="circle-btn" id="btn3" onclick="toggleActive(this)"></div>
-                <span>选择</span>
             </div>
         </div>
+    </section>
 
 
-    </div>
-
-
-    <script>
-        function changeColor(element) {
-            var lis = element.parentElement.getElementsByTagName("li");
-            for (var i = 0; i < lis.length; i++) {
-                lis[i].style.color = "black";
-            }
-            element.style.color = "blue";
-        }
-
-        // /同心圆按钮/ 
-        function toggleActive(button) {
-            button.classList.toggle('active');
-        }
-        document.querySelectorAll('.circle-btn').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                // 移除所有按钮的激活状态
-                document.querySelectorAll('.circle-btn').forEach(function (btn) {
-                    btn.classList.remove('active');
-                });
-                // 添加激活状态到当前点击的按钮
-                this.classList.add('active');
-            });
-        });
-
-
-    </script>
-</body>
-<script src="./js/Navbar.js"></script>
-<script src="./js/sidebar.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.0/lib/darkmode-js.min.js"></script>
+</body> 
+<script src="./js/pagination.js" defer></script>
 <script>
-    var options = {
-        bottom: '64px', // default: '32px'
-        right: 'unset', // default: '32px'
-        left: '32px', // default: 'unset'
-        time: '0.3s', // default: '0.3s'
-        mixColor: '#fff', // default: '#fff'
-        backgroundColor: '#fff',  // default: '#fff'
-        buttonColorDark: '#100f2c',  // default: '#100f2c'
-        buttonColorLight: '#fff', // default: '#fff'
-        saveInCookies: false, // default: true,
-        label: '', // default: ''
-        autoMatchOsTheme: true // default: true
-    }
-    new Darkmode(options).showWidget();
+  
 
-    // 获取“智能推荐”和两个图片元素
-    const recommendText = document.getElementById('recommend-text');
-    const newText = document.getElementById('new-text');
-    const hotText = document.getElementById('hot-text');
-    const firstImage = document.querySelector('.search-container img:nth-of-type(1)');
-    const secondImage = document.querySelector('.search-container img:nth-of-type(2)');
-
-    // 添加点击事件监听器
-    recommendText.addEventListener('click', function() {
-        // 更新样式
-        recommendText.classList.add('blue-text');
-        newText.classList.remove('blue-text');
-        hotText.classList.remove('blue-text');
-    });
-
-    firstImage.addEventListener('click', function() {
-        // 更新样式
-        recommendText.classList.remove('blue-text');
-        newText.classList.add('blue-text');
-        hotText.classList.remove('blue-text');
-    });
-
-    secondImage.addEventListener('click', function() {
-        // 更新样式
-        recommendText.classList.remove('blue-text');
-        newText.classList.remove('blue-text');
-        hotText.classList.add('blue-text');
-    });
 
 </script>
+<style>
+    body {
+        overflow-x: hidden;
+    }
+
+    .calendar-Container {
+        position: relative;
+        margin-top: 20px;
+        padding: 20px;
+        height: 460px;
+        /* background-color: salmon; */
+    }
+
+    .select {
+        display: flex;
+        padding: 20px;
+        border-bottom: 1px solid #f0f0f0;
+        background-color: white;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    .select-head {
+        width: 100%;
+        color: #3a7afe;
+        font-size: 23px;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #3a7afe;
+        background-color: white;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .select-head span {
+        margin-left: 20px;
+    }
+
+    #category {
+        height: 40px;
+        width: auto;
+        margin-left: 20px;
+        font-size: 14px;
+        font-weight: 400;
+        padding: 8px;
+        border: 1px solid #d7dae3;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #7e7e7e;
+        outline: none;
+    }
+
+    #category:hover,
+    #category:focus {
+        border-color: #9dbdff;
+    }
+
+    /* 鼠标悬停在选项上时的样式 */
+    #category option:hover {
+        background-color: #f0f0f0;
+    }
+
+    /* 选中的选项样式 */
+    #category option:checked {
+        background-color: #6e93f7;
+        color: #fff;
+    }
+
+    .publish-button {
+        height: 40px;
+        width: 90px;
+        display: flex;
+        align-items: center;
+        /*水平居中*/
+        justify-content: center;
+        border: none;
+        background-color: #3a7afe;
+        cursor: pointer;
+        padding: 5px;
+        /* 为按钮内部添加一些间距 */
+        overflow: hidden;
+        /* 确保内容不会溢出按钮 */
+        border-radius: 5px;
+        margin-left: 45px;
+    }
+
+    .publish-button img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .publish-button span {
+        flex-grow: 1;
+        text-align: center;
+        color: white;
+        font-size: 16px;
+    }
+
+    .search-container {
+        display: flex;
+        /* background-color: white; */
+        border-radius: 10px;
+        margin-top: 20px;
+    }
+
+    .content-table {
+        /*合并边框*/
+        font-size: 1em;
+        width: 970px;
+        border-radius:10px 10px 0 0;
+        overflow: hidden;
+        border-collapse: collapse;
+
+        /* background-color: white; */
+    }
+
+    .content-table thead tr {
+        background-color: #3a7afe;
+        color: #ffffff;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .content-table th{
+        line-height: 10px; 
+    }
+
+    .content-table th,
+    .content-table td {
+        padding: 15px 13px;
+    }
+
+    .content-table tbody{
+        background-color: white;
+    }
+
+    .content-table tbody tr {
+        border-bottom: 1px solid #dddddd;
+        color: #3f3ba2;
+        text-align: center;
+        overflow: hidden;
+    }
+
+    .content-table tbody tr:last-of-type {
+        border-bottom: 2px solid #3a7afe;
+        /*最后一行加粗*/
+    }
+</style>
 
 </html>
