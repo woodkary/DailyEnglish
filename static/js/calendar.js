@@ -1,5 +1,6 @@
-let year = 2024,
-    month = 5;
+let todaysDate = new Date();
+let year = todaysDate.getFullYear(),
+    month = todaysDate.getMonth() + 1;
 let dates = generateDates();
 let date_Exam_Map={};
 renderCalendar(dates);
