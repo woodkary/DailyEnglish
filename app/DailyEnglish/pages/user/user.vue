@@ -1,7 +1,7 @@
 <template>
 	<view>
-		<view class="personal-information">
-			<image class="head" src="../../static/pikachu.jpg"></image> 
+		<view class="personal-information" >
+			<image class="head" src="../../static/pikachu.jpg" @click="GotoPersonal_information"></image> 
 			<span class="username">user</span>
 		</view>
 		 <view class="container1">
@@ -18,7 +18,7 @@
 			 	<span class="words3">连续打卡天数</span>
 			 </view>
 		 </view>
-		 <view class="container2">
+		 <view class="container2" @click="goToCalendar">
 			 <image class="calendar" src="../../static/calendar.png"></image>
 			 <span class="word2">我的日历</span>
 			 <image class="right" src="../../static/right.png"></image>
@@ -49,7 +49,17 @@
 			}
 		},
 		methods: {
-			
+			goToCalendar() {
+			    // 使用 uniapp 提供的路由跳转方法进行跳转
+			    uni.navigateTo({
+			      url: '../Calendar/Calendar'
+			    });
+			  },
+			  GotoPersonal_information(){
+				  uni.navigateTo({
+				    url: '../personal-information/personal-information'
+				  });
+			  }
 		}
 	}
 </script>

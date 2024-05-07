@@ -24,10 +24,12 @@
 				</view>
 				<view class="day">
 					<view class="date-item" v-for="(date, index) in dates" :key="index" :class="{
-                      'clickable': date.hasExam===1,
+                      'not_finish': date.hasExam===1,
+					  'finish': date.hasExam===0,
                       'not-this-month': date.hasExam===-1,
 				              'sunday': date.dayOfWeek === 0,
-				              'saturday': date.dayOfWeek === 6
+				              'saturday': date.dayOfWeek === 6,
+							  'selected': date === selectedDate
 				            }" @click="handleClick(date)">
 						{{ date.value }}
             <!-- <span class="badge" v-if="date.hasExam"></span> -->
@@ -40,9 +42,10 @@
 				<text class="title">{{ chosenMonth }}月{{ chosenDay }}日</text>
 				<view class="card-container">
 					<view class="card" v-if="getChosenDateFromDates()==1" id="daka">
-						<image src="../../static/not-done.svg"></image>
+						<image src="../../static/not-done.svg" style="margin-left: 48rpx;"></image>
 						<text class="title">打卡计划:</text>
 						<text class="state">未完成</text>
+						<button @click="sign_again">补签</button>
 					</view>
           <view v-else-if="getChosenDateFromDates()==0">
             <view  class="card" id="daka">
@@ -87,6 +90,7 @@
 				year: 2024,
 				month: 5,
 				dates: [], // 存储当前月份的日期
+				selectedDate: null,//当前选择的日期
 				// 考试信息
 				punchMsg: 63398853,
         //0000 0011 1100 0111 0110 0011 1100 0101,
@@ -178,6 +182,7 @@
         let month=date.date.getMonth()+1;
         let day=date.date.getDate();
         console.log(year,month,day);
+		this.selectedDate = date;
         this.chosenYear=year;
         this.chosenMonth=month;
         this.chosenDay=day;
@@ -236,7 +241,12 @@
             hasExam: -1
           });
         }
-      }
+      },
+	  sign_again(){
+		  uni.switchTab({
+		    url: '../Examination/Examination'
+		  });
+	  }
 		},
 	}
 </script>
@@ -335,7 +345,7 @@
     color: #d7d7d7;
   }
 
-	.clickable {
+	.not_finish {
 		color: black;
 		/* border: 1px solid red;
 		border-radius: 50%; */
@@ -343,15 +353,15 @@
 		
 	}
 
-	.clickable::before {
+	.not_finish::before {
 		content: '';
 		position: absolute;
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-		width: 90%;
+		width: 70%;
 		/* 调整圆圈的大小 */
-		height: 90%;
+		height: 70%;
 		border-radius: 50%;
 		background-color: #f1f4fb;
 		/* 设置圆圈的颜色 */
@@ -361,7 +371,48 @@
 		/* 设置透明度，以便可以看到下方的数字 */
 
 	}
+	.selected::after{
+		 content: '';
+		    position: absolute;
+		    top: 50%;
+		    left: 50%;
+		    transform: translate(-50%, -50%);
+		    width: 90%;
+		    height: 90%;
+		    border: 2px solid;
+			border-color: #293eff;
+		    border-radius: 50%;
+		    box-sizing: border-box;
+		    pointer-events: none; /* 防止阻碍点击事件 */
+		    z-index: -2;
+	}
+	
+	.finish {
+		color: aliceblue;
+		/* border: 1px solid red;
+		border-radius: 50%; */
+		z-index: 1;
+		
+	}
 
+	.finish::before {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 70%;
+		/* 调整圆圈的大小 */
+		height: 70%;
+		border-radius: 50%;
+		background-color: 	#0055ff;
+		/* 设置圆圈的颜色 */
+		z-index: -1;
+		/* 将圆圈置于日期数字下方 */
+		 opacity: 0.5; 
+		/* 设置透明度，以便可以看到下方的数字 */
+
+	}
 	.examMsg {
 		background-color: #fff;
 		position: absolute; 
@@ -378,7 +429,7 @@
 
 	.examMsg .title {
 		margin-left: 30rpx;
-		margin-top: 40rpx;
+		
 		font-size: 40rpx;
 		font-weight: 550;
 	}
@@ -398,6 +449,9 @@
 		margin-bottom: 40rpx;
 		margin-left: 5%;
 		height: 140rpx;
+
+		  align-items: center; /* 垂直居中 */
+		  justify-content: center; /* 水平居中 */
 		/* 		  box-shadow: 0 4px 4px rgba(192, 192, 192, 0.2), 4px 0 4px rgba(191, 191, 191, 0.2); */
 		/* box-shadow: 10px 10px 25px rgb(0, 0, 0, 0.1); */
 	}
@@ -405,9 +459,13 @@
 	.examMsg .card image {
 		width: 70rpx;
 		height: 70rpx;
-		margin-left: 60rpx;
-		margin-top: 40rpx;
 	}
+	
+	.examMsg .card button {
+		background-color: #144de4;
+		color: aliceblue;
+	}
+	
 
 	#daka {
 		background-color: #f1f4fb;
@@ -415,14 +473,14 @@
 
 	#daka .title {
 		margin-left: 40rpx;
-		margin-top: 40rpx;
+		
 		font-size: 35rpx;
 		font-weight: 500;
 	}
 
 	#daka .state {
 		margin-left: 40rpx;
-		margin-top: 40rpx;
+		
 		font-size:35rpx;
 	}
  /* .badge {
