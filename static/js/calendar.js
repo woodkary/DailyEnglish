@@ -1,6 +1,6 @@
-let year=2024,
-    month=5;
-let dates=generateDates();
+let year = 2024,
+    month = 5;
+let dates = generateDates();
 renderCalendar(dates);
 setMonth();
 function renderCalendar(dates) {
@@ -8,8 +8,8 @@ function renderCalendar(dates) {
     calendarDays.innerHTML = ''; // 清空容器，准备重新渲染
     let week;
 
-    dates.forEach((date,index) => {
-        if(index%7===0){
+    dates.forEach((date, index) => {
+        if (index % 7 === 0) {
             week = document.createElement('div'); // 创建一个 div 元素作为一周
             week.className = 'week'; // 设置类名
             calendarDays.appendChild(week); // 将周添加到日历的 days 容器中
@@ -17,7 +17,7 @@ function renderCalendar(dates) {
         const dayDiv = document.createElement('div'); // 创建一个 div 元素
         dayDiv.className = 'day'; // 设置类名
         // 判断是否为本月的日期
-        if(date.getMonth() !== month-1){
+        if (date.getMonth() !== month - 1) {
             dayDiv.classList.add('notThisMonth'); // 设置类名为 notThisMonth
         }
 
@@ -29,8 +29,8 @@ function renderCalendar(dates) {
         week.appendChild(dayDiv); // 将 dayDiv 添加到日历的 days 容器中
     });
 }
-function getMonthString(month){
-    switch(month){
+function getMonthString(month) {
+    switch (month) {
         case 1:
             return 'January';
         case 2:
@@ -57,11 +57,11 @@ function getMonthString(month){
             return 'December';
     }
 }
-function setMonth(){
-    let monthText=document.querySelector('#month');
-    monthText.textContent=getMonthString(month);
+function setMonth() {
+    let monthText = document.querySelector('#month');
+    monthText.textContent = getMonthString(month);
 }
-function generateDates(){
+function generateDates() {
     let dates; // 存储当前月份的日期
     const firstDay = new Date(year, month - 1, 1); // 获取当前月份的第一天
     const firstDayOfWeek = firstDay.getDay(); // 获取当前月份的第一天是星期几
@@ -70,8 +70,8 @@ function generateDates(){
     // 初始化日期数组
     dates = [];
     // 填充上个月的日期
-    for (let i = firstDayOfWeek-1; i>=0; i--) {
-        dates.push(new Date(firstDay - (i+1) * 24 * 60 * 60 * 1000));
+    for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+        dates.push(new Date(firstDay - (i + 1) * 24 * 60 * 60 * 1000));
     }
     // 填充本月的日期
     for (let i = 1; i <= totalDays; i++) {
@@ -79,8 +79,8 @@ function generateDates(){
     }
 
     // 填充下个月的日期
-    for (let i = 0; dates.length<42; i++) {
-        dates.push(new Date(year,month,i+1));
+    for (let i = 0; dates.length < 35; i++) {
+        dates.push(new Date(year, month, i + 1));
     }
     return dates;
 }
@@ -99,8 +99,8 @@ function moveDate(direction) {
         } else {
             month++;
         }
-    //跳到今天所在的年份和月份
-    }else{
+        //跳到今天所在的年份和月份
+    } else {
         let today = new Date();
         year = today.getFullYear();
         month = today.getMonth() + 1;
