@@ -1,6 +1,8 @@
-let year = 2024,
-    month = 5;
+let todaysDate = new Date();
+let year = todaysDate.getFullYear(),
+    month = todaysDate.getMonth() + 1;
 let dates = generateDates();
+let date_Exam_Map={};
 renderCalendar(dates);
 setMonth();
 function renderCalendar(dates) {
@@ -15,6 +17,58 @@ function renderCalendar(dates) {
             calendarDays.appendChild(week); // 将周添加到日历的 days 容器中
         }
         const dayDiv = document.createElement('div'); // 创建一个 div 元素
+        dayDiv.addEventListener('click', () => {
+            let eventDiv=document.querySelector('.event');
+            eventDiv.innerHTML='';
+            // 清空之前的考试信息
+            let dateH1=document.createElement('h1');
+            // 设置日期标题
+            dateH1.textContent=date.toLocaleDateString();
+            eventDiv.appendChild(dateH1);
+            // 点击日期时，获取日期对应的考试信息并渲染到页面
+            let exams = date_Exam_Map[date];
+            if(exams){
+                for(let i=0;i<exams.length;i++) {
+                    // 创建一个 card 元素作为考试信息的容器
+                    let cardDiv = document.createElement('div');
+                    cardDiv.className = 'card';
+                    eventDiv.appendChild(cardDiv);
+                    //创建一个标记
+                    let image=document.createElement('img');
+                    image.src='./image/done.svg';
+                    image.id='finish';
+                    cardDiv.appendChild(image);
+                    // 创建一个 p 元素作为考试团队名称
+                    let teamP = document.createElement('p');
+                    teamP.textContent = exams[i].team_name;
+                    teamP.className = 'team';
+                    cardDiv.appendChild(teamP);
+                    // 创建一个 p 元素作为考试时间
+                    let timeP = document.createElement('p');
+                    timeP.textContent = exams[i].time;
+                    timeP.className = 'time';
+                    cardDiv.appendChild(timeP);
+                    //创建跳转按钮
+                    let jumpBtn=document.createElement('button');
+                    jumpBtn.className='toDetail';
+                    let jumpSvg=document.createElement('img');
+                    jumpSvg.src='./image/jump.svg';
+                    jumpSvg.alt='Jump';
+                    jumpBtn.appendChild(jumpSvg);
+                    cardDiv.appendChild(jumpBtn);
+                    jumpBtn.addEventListener('click',()=>{
+                        window.location.href='./test-statistics.html?date='+date.toLocaleDateString();
+                    });
+                }
+                //创建加考试按钮
+                let addBtn=document.createElement('button');
+                addBtn.className='addEvent';
+                addBtn.textContent='add event';
+                eventDiv.appendChild(addBtn);
+            }else{
+                fetchExamData(date);
+            }
+        });
         dayDiv.className = 'day'; // 设置类名
         // 判断是否为本月的日期
         if (date.getMonth() !== month - 1) {
@@ -108,4 +162,143 @@ function moveDate(direction) {
     dates = generateDates();
     renderCalendar(dates);
     setMonth();
+}
+function examFactory(name,team_name,time,full_score,average_score,pass_rate){
+    return {
+        name: name,
+        team_name: team_name,
+        time: time,
+        full_score: full_score,
+        average_score: average_score,
+        pass_rate: pass_rate
+    };
+}
+function fetchExamData(date){
+    fetch('http://localhost:8080/api/team_manage/exam_situation/exams_of_date', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        },
+        body: JSON.stringify({
+            date: date
+        })
+    }).then(response  =>{
+        if(response.ok){
+            return response.json();
+        }else{
+            renderDefaultExamData(date);
+        }
+    }).then(data => {
+        let exams = data.exams;
+        let exam_list = [];
+        for(let i=0;i<exams.length;i++){
+            let exam = examFactory(exams[i].name,exams[i].team_name,exams[i].time,exams[i].full_score,exams[i].average_score,exams[i].pass_rate);
+            exam_list.push(exam);
+        }
+        date_Exam_Map[date] = exam_list;
+        renderExamData(date);
+    }).catch(error => {
+        renderDefaultExamData(date);
+    });
+}
+function renderExamData(date){
+    let eventDiv=document.querySelector('.event');
+    eventDiv.innerHTML='';
+    // 清空之前的考试信息
+    let dateH1=document.createElement('h1');
+    // 设置日期标题
+    dateH1.textContent=date.toLocaleDateString();
+    eventDiv.appendChild(dateH1);
+    // 点击日期时，获取日期对应的考试信息并渲染到页面
+    let exams = date_Exam_Map[date];
+    for(let i=0;i<exams.length;i++) {
+        // 创建一个 card 元素作为考试信息的容器
+        let cardDiv = document.createElement('div');
+        cardDiv.className = 'card';
+        eventDiv.appendChild(cardDiv);
+        // 创建一个标记
+        let image = document.createElement('img');
+        image.src = './image/done.svg';
+        image.id = 'finish';
+        cardDiv.appendChild(image);
+        // 创建一个 p 元素作为考试团队名称
+        let teamP = document.createElement('p');
+        teamP.className = 'team';
+        teamP.textContent = exams[i].team_name;
+        cardDiv.appendChild(teamP);
+        // 创建一个 p 元素作为考试时间
+        let timeP = document.createElement('p');
+        timeP.className = 'time';
+        timeP.textContent = exams[i].time;
+        cardDiv.appendChild(timeP);
+        //创建跳转按钮
+        let jumpBtn=document.createElement('button');
+        jumpBtn.className='toDetail';
+        let jumpSvg=document.createElement('img');
+        jumpSvg.src='./image/jump.svg';
+        jumpSvg.alt='Jump';
+        jumpBtn.appendChild(jumpSvg);
+        cardDiv.appendChild(jumpBtn);
+        jumpBtn.addEventListener('click',()=>{
+            window.location.href='./test-statistics.html?date='+date.toLocaleDateString();
+        });
+    }
+    //创建加考试按钮
+    let addBtn=document.createElement('button');
+    addBtn.className='addEvent';
+    addBtn.textContent='add event';
+    eventDiv.appendChild(addBtn);
+}
+function renderDefaultExamData(date){
+    let eventDiv=document.querySelector('.event');
+    eventDiv.innerHTML='';
+    // 清空之前的考试信息
+    let dateH1=document.createElement('h1');
+    // 设置日期标题
+    dateH1.textContent=date.toLocaleDateString();
+    eventDiv.appendChild(dateH1);
+    // 点击日期时，获取日期对应的考试信息并渲染到页面
+    let exams = [
+        examFactory('考试1','团队1','10:00-12:00',100,80,90),
+        examFactory('考试2','团队2','14:00-16:00',100,85,95),
+        examFactory('考试3','团队3','16:00-18:00',100,90,95)
+    ];
+    for(let i=0;i<exams.length;i++) {
+        // 创建一个 card 元素作为考试信息的容器
+        let cardDiv = document.createElement('div');
+        cardDiv.className = 'card';
+        eventDiv.appendChild(cardDiv);
+        // 创建一个标记
+        let image = document.createElement('img');
+        image.src = './image/done.svg';
+        image.id = 'finish';
+        cardDiv.appendChild(image);
+        // 创建一个 p 元素作为考试团队名称
+        let teamP = document.createElement('p');
+        teamP.textContent = exams[i].team_name;
+        teamP.className = 'team';
+        cardDiv.appendChild(teamP);
+        // 创建一个 p 元素作为考试时间
+        let timeP = document.createElement('p');
+        timeP.textContent = exams[i].time;
+        timeP.className = 'time';
+        cardDiv.appendChild(timeP);
+        //创建跳转按钮
+        let jumpBtn = document.createElement('button');
+        jumpBtn.className = 'toDetail';
+        let jumpSvg = document.createElement('img');
+        jumpSvg.src = './image/jump.svg';
+        jumpSvg.alt = 'Jump';
+        jumpBtn.appendChild(jumpSvg);
+        cardDiv.appendChild(jumpBtn);
+        jumpBtn.addEventListener('click', () => {
+            window.location.href = './test-statistics.html?date=' + date.toLocaleDateString();
+        });
+    }
+    // 创建加考试按钮
+    let addBtn = document.createElement('button');
+    addBtn.className = 'addEvent';
+    addBtn.textContent = 'add event';
+    eventDiv.appendChild(addBtn);
 }

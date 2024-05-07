@@ -8,8 +8,7 @@
 			<view class="progress-bar" :style="{ width:progress + '%' }"></view>
 		</view>
 		<image class="back-icon" src="../../static/back.svg" @click="handleBack"></image>
-		<swiper class="question-container" :easing-function="'linear'" :duration="250" @change="swiperChange"    >
-
+		<swiper class="question-container" :options="swiperOptions" :easing-function="'linear'" :duration="250" @before-change="swiperChange"    >
 			<swiper-item v-for="(question, index) in questions" :key="index">
 				<view class="text-info">
 					<text class="word">{{ question.word }}</text>
@@ -52,6 +51,12 @@
 	export default {
 		data() {
 			return {
+        swiperOptions: {
+          // 其他配置...
+          allowTouchMove: true, // 允许触摸滑动
+          preventClicksPropagation: true, // 阻止点击事件冒泡
+          // 其他 Swiper 配置...
+        },
 				progress: 1, // 进度条的初始值
 				current: 1, // 当前进度
 				currentQuestionIndex: 0,
@@ -109,7 +114,7 @@
 					} else if (current < this.currentQuestionIndex) {
 						// 右滑，防止切换
 						// 可以使用swiper的scrollTo方法回到原来的位置
-						this.$refsswiper.scrollTo(this.currentQuestionIndex, 0, false);
+						this.$refs.swiper.scrollTo(this.currentQuestionIndex, 0, false);
 					}
 				}
 			},
@@ -128,15 +133,16 @@
 				}
 			},
 			selectChoice(index) {
+        console.log(index);
 				let selectedChoice = this.questions[this.currentQuestionIndex].choices[index];
 				// 检查选中的答案是否正确
 				if (selectedChoice === this.realAnswer[this.currentQuestionIndex]) {
 					// 正确答案的逻辑
-					let index = this.currentQuestionIndex++; // 切换到下一题
-					this.currentQuestionIndex++; // 先增加索引
+					let nextIndex = this.currentQuestionIndex++; // 切换到下一题
+					/*this.currentQuestionIndex++; // 先增加索引*/
 					this.updateProgressBar(); // 更新进度条
 					this.$nextTick(() => {
-						this.showCorrectAnswer(this.realAnswer[index]);
+						this.showCorrectAnswer(this.realAnswer[nextIndex]);
 					});
 
 				} else {
