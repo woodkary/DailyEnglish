@@ -97,3 +97,29 @@ func SearchExamInfoByTeamIDAndDate(db *sql.DB, teamID int, date string) ([]ExamI
 
 	return examInfos, nil
 }
+
+// 3 根据exam_id查询exam_score数据表里的exam_score字段
+func SearchExamScoreByExamID(db *sql.DB, examID int) (string, error) {
+	var examScore string
+
+	// 查询数据库以获取考试成绩
+	err := db.QueryRow("SELECT exam_score FROM exam_score WHERE exam_id = ?", examID).Scan(&examScore)
+	if err != nil {
+		return "", err
+	}
+
+	return examScore, nil
+}
+
+// 4 根据exam_id查询exam_info数据表里的quetion_num
+func SearchQuestionNumByExamID(db *sql.DB, examID int) (int, error) {
+	var questionNum int
+
+	// 查询数据库以获取题目数量
+	err := db.QueryRow("SELECT question_num FROM exam_info WHERE exam_id = ?", examID).Scan(&questionNum)
+	if err != nil {
+		return 0, err
+	}
+
+	return questionNum, nil
+}
