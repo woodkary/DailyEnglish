@@ -344,35 +344,44 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			c.JSON(500, "服务器错误")
 			return
 		}
-		Item1, Item2, Item3, err := controlsql.GetUserInfoByEmailPwd(db, userClaims.UserName)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-		}
-		type User struct {
-			Name string `json:"name"` // 用户姓名
-			// 用户所属全部团队
-			Teams    []string `json:"teams"`
-			Right    string   `json:"right"` // 用户权限
-			Email    string   `json:"email"` // 用户邮箱
-			Password string   `json:"pwd"`   //用户密码
-			Phone    string   `json:"phone"` // 用户手机号
+
+		type Team struct {
+			TeamName  string `json:"team_name"`  // 团队名
+			TeamID    int    `json:"team_id"`    // 团队ID
+			MemberNum int    `json:"member_num"` // 成员数量
 		}
 		// Response 定义了响应的信息
 		type Response struct {
-			Code string `json:"code"` // 状态码
-			Msg  string `json:"msg"`  // 消息
-			User User   `json:"user"` // 用户信息
+			Code     string `json:"code"`     // 状态码
+			Msg      string `json:"msg"`      // 消息
+			Name     string `json:"name"`     // 用户名
+			Phone    string `json:"phone"`    // 手机号
+			Partment string `json:"partment"` // 部门
+			Email    string `json:"email"`    // 邮箱
+			Team     []Team `json:"team"`     // 团队列表
 		}
 		var response Response
-		response.User.Email = Item1
-		response.User.Password = Item2
-		response.User.Phone = Item3
-		response.User.Name = userClaims.UserName
-		response.User.Teams, err = controlsql.GetJoinedTeams(db, userClaims.UserName)
+		// 查询用户信息
+		ManageInfo, err := controlsql.SearchManagerInfoByManagerID(db, userClaims.UserID)
 		if err != nil {
 			c.JSON(500, "服务器错误")
+			return
 		}
-
+		response.Name = ManageInfo.ManagerName
+		response.Phone = ManageInfo.ManagerPhone
+		response.Partment = ManageInfo.ManagerPartment
+		response.Email = ManageInfo.ManagerEmail
+		// 查询团队信息
+		for _, teamID := range userClaims.TeamID {
+			var team Team
+			team.TeamID = teamID
+			team.TeamName, team.MemberNum, err = controlsql.SearchTeamInfoByTeamID(db, teamID)
+			if err != nil {
+				c.JSON(500, "服务器错误")
+				return
+			}
+			response.Team = append(response.Team, team)
+		}
 		response.Code = "200"
 		response.Msg = "成功"
 		c.JSON(200, response)
