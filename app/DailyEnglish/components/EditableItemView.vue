@@ -74,6 +74,7 @@ export default {
 		text-align: right; /* 文本右对齐 */
 		font-weight: 5000;
 		color:black;
+		z-index: -1;
 	}
 	.item input {
 		border: none;
@@ -113,6 +114,7 @@ export default {
          flex-direction: column;
          width: fit-content;
          position: static;
+		 z-index: 2;
      }
  
      .coolinput label {
@@ -121,7 +123,7 @@ export default {
          font-weight: 700;
          position: relative;
          top: 0.5rem;
-         margin: 0 0 0 7px;
+         margin: 0 0 0 14px;
          padding: 0 3px;
          background: #ffffff;
          width: fit-content;
