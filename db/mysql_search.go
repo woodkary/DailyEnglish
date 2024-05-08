@@ -1,8 +1,14 @@
 package DB
 
-import "database/sql"
+import (
+	"database/sql"
+<<<<<<< HEAD
+=======
+	_ "strconv"
+>>>>>>> 6a49dd6aba4738c9ef094d144c20bae63a1034d2
+)
 
-//1根据manager_id查所有team_id和team_name
+// 1根据manager_id查所有team_id和team_name
 func SearchTeamInfoByManagerID(db *sql.DB, managerID int) ([]string, []string, error) {
 	var teamIDs []string
 	var teamNames []string
@@ -33,20 +39,57 @@ func SearchTeamInfoByManagerID(db *sql.DB, managerID int) ([]string, []string, e
 	return teamIDs, teamNames, nil
 }
 
-//2根据team_id查询该团队所有的exam_id,exam_name,exam_date
+<<<<<<< HEAD
+// 2.1根据team_id查询该团队所有的exam_id,exam_name,exam_date
 // ExamInfo 结构体用于存储考试信息
 type ExamInfo struct {
 	ExamID   int
 	ExamName string
 	ExamDate string
 }
+=======
+// 2根据team_id查询该团队所有的exam_id,exam_name,exam_date
+func SearchExamsByTeamID(db *sql.DB, teamID int) ([]int, []string, []string, error) {
+	var examIDs []int
+	var examNames []string
+	var examDates []string
+>>>>>>> 6a49dd6aba4738c9ef094d144c20bae63a1034d2
 
-// SearchExamInfoByTeamID 根据团队ID查询考试信息
-func SearchExamInfoByTeamID(db *sql.DB, teamID int) ([]ExamInfo, error) {
+	// 查询数据库以获取团队的考试信息
+	rows, err := db.Query("SELECT exam_id, exam_name, exam_date FROM exam_info WHERE team_id = ?", teamID)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	defer rows.Close()
+
+	// 遍历结果集并收集考试信息
+	for rows.Next() {
+		var examID int
+		var examName string
+		var examDate string
+		if err := rows.Scan(&examID, &examName, &examDate); err != nil {
+			return nil, nil, nil, err
+		}
+		examIDs = append(examIDs, examID)
+		examNames = append(examNames, examName)
+		examDates = append(examDates, examDate)
+	}
+
+	// 检查遍历过程中是否出错
+	if err := rows.Err(); err != nil {
+		return nil, nil, nil, err
+	}
+
+	return examIDs, examNames, examDates, nil
+}
+
+<<<<<<< HEAD
+// 2.1SearchExamInfoByTeamIDAndDate 根据团队ID和日期查询考试信息
+func SearchExamInfoByTeamIDAndDate(db *sql.DB, teamID int, date string) ([]ExamInfo, error) {
 	var examInfos []ExamInfo
 
 	// 查询数据库以获取考试信息
-	rows, err := db.Query("SELECT exam_id, exam_name, exam_date FROM exam_info WHERE team_id = ?", teamID)
+	rows, err := db.Query("SELECT exam_id, exam_name, exam_date FROM exam_info WHERE team_id = ? AND exam_date = ?", teamID, date)
 	if err != nil {
 		return nil, err
 	}
@@ -67,6 +110,36 @@ func SearchExamInfoByTeamID(db *sql.DB, teamID int) ([]ExamInfo, error) {
 	}
 
 	return examInfos, nil
+=======
+type ExamDetail struct {
+	ID             string       `json:"exam_id"`          // 考试ID
+	Name           string       `json:"exam_name"`        // 考试名称
+	UserLevels     []int        `json:"user_levels"`      // 用户等级
+	QuestionDetail [][5]int     `json:"question_details"` // 考试题目详情
+	UserResult     []UserResult `json:"user_result"`      // 考试参与人员得分情况
 }
 
-//3
+type UserResult struct {
+	Attend   string `json:"attend"`   // 考试参与情况
+	Username string `json:"username"` // 用户名
+	Score    string `json:"score"`    // 得分
+	FailNum  string `json:"fail_num"` // 错题数量
+	Progress string `json:"progress"` // 进步分数 (相距上次)
+}
+
+// 3根据exam_id查询exam_detail
+func SearchExamInfoByExamID(db *sql.DB, examID string) ExamDetail {
+	return ExamDetail{}
+}
+
+// 4根据exam_id查询题目数量
+func SearchQuestionNumByExamID(db *sql.DB, examID string) int {
+	return 0
+}
+
+// 5根据exam_id和question_id查询题目详情
+// 题目详情包括正确答案，选A人数，选B人数，选C人数，选D人数
+func SearchQuestionDetailByExamIDAndQuestionID(db *sql.DB, examID string, questionID int) [5]int {
+	return [5]int{}
+>>>>>>> 6a49dd6aba4738c9ef094d144c20bae63a1034d2
+}
