@@ -2,10 +2,7 @@ package DB
 
 import (
 	"database/sql"
-<<<<<<< HEAD
-=======
 	_ "strconv"
->>>>>>> 6a49dd6aba4738c9ef094d144c20bae63a1034d2
 )
 
 // 1根据manager_id查所有team_id和team_name
@@ -39,7 +36,6 @@ func SearchTeamInfoByManagerID(db *sql.DB, managerID int) ([]string, []string, e
 	return teamIDs, teamNames, nil
 }
 
-<<<<<<< HEAD
 // 2.1根据team_id查询该团队所有的exam_id,exam_name,exam_date
 // ExamInfo 结构体用于存储考试信息
 type ExamInfo struct {
@@ -47,13 +43,12 @@ type ExamInfo struct {
 	ExamName string
 	ExamDate string
 }
-=======
+
 // 2根据team_id查询该团队所有的exam_id,exam_name,exam_date
 func SearchExamsByTeamID(db *sql.DB, teamID int) ([]int, []string, []string, error) {
 	var examIDs []int
 	var examNames []string
 	var examDates []string
->>>>>>> 6a49dd6aba4738c9ef094d144c20bae63a1034d2
 
 	// 查询数据库以获取团队的考试信息
 	rows, err := db.Query("SELECT exam_id, exam_name, exam_date FROM exam_info WHERE team_id = ?", teamID)
@@ -83,7 +78,6 @@ func SearchExamsByTeamID(db *sql.DB, teamID int) ([]int, []string, []string, err
 	return examIDs, examNames, examDates, nil
 }
 
-<<<<<<< HEAD
 // 2.1SearchExamInfoByTeamIDAndDate 根据团队ID和日期查询考试信息
 func SearchExamInfoByTeamIDAndDate(db *sql.DB, teamID int, date string) ([]ExamInfo, error) {
 	var examInfos []ExamInfo
@@ -110,7 +104,8 @@ func SearchExamInfoByTeamIDAndDate(db *sql.DB, teamID int, date string) ([]ExamI
 	}
 
 	return examInfos, nil
-=======
+}
+
 type ExamDetail struct {
 	ID             string       `json:"exam_id"`          // 考试ID
 	Name           string       `json:"exam_name"`        // 考试名称
@@ -141,5 +136,4 @@ func SearchQuestionNumByExamID(db *sql.DB, examID string) int {
 // 题目详情包括正确答案，选A人数，选B人数，选C人数，选D人数
 func SearchQuestionDetailByExamIDAndQuestionID(db *sql.DB, examID string, questionID int) [5]int {
 	return [5]int{}
->>>>>>> 6a49dd6aba4738c9ef094d144c20bae63a1034d2
 }
