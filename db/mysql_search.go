@@ -257,6 +257,7 @@ func DeleteUserTeamByUserIDAndTeamID(db *sql.DB, userID int, teamID int) error {
 }
 
 // 9 根据考试ID和团队ID和userID查询用户名，得分，进步
+
 func SearchClosestExamByTeamIDAndExamID(db *sql.DB, teamID, userID, examID int) (string, int, int, error) {
 	var username string
 	var score int
@@ -266,7 +267,9 @@ func SearchClosestExamByTeamIDAndExamID(db *sql.DB, teamID, userID, examID int) 
 	var flag int
 	// 查询数据库以获取考试排名
 	err := db.QueryRow("SELECT exam_rank FROM user-exam_score WHERE exam_id = ? AND user_id = ?", examID, userID).Scan(&examRank1)
-
+	if err != nil {
+		flag = 0
+	}
 	var closestExamID int
 
 	// 查询数据库以获取最近的另一场考试的ID
