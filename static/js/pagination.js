@@ -1,3 +1,6 @@
+/*
+ * @Date: 2024-04-17 14:17:35
+ */
 let BUTTON_NUM = 5; // 每页显示的按钮数
 let page = 1; // 当前页数
 let totalPage = 10; // 总页数
@@ -7,23 +10,23 @@ function createPaginationButtons() {
     const startBtns = document.querySelector(".startBtns");
     let startBtn = document.createElement("button");
     startBtn.classList.add('button');
-    let i=document.createElement("i");
-    i.classList.add("fa","fa-angles-left");
+    let i = document.createElement("i");
+    i.classList.add("fa", "fa-angles-left");
     startBtn.appendChild(i);
-    startBtn.addEventListener("click",()=>{
-        page=1;
+    startBtn.addEventListener("click", () => {
+        page = 1;
         updatePagination(BUTTON_NUM);
     });
     startBtns.appendChild(startBtn);
     let prevButton = document.createElement("button");
     prevButton.classList.add('button');
-    let i2=document.createElement("i");
-    i2.classList.add("fa","fa-angle-left");
+    let i2 = document.createElement("i");
+    i2.classList.add("fa", "fa-angle-left");
     prevButton.appendChild(i2);
-    prevButton.addEventListener("click",()=>{
+    prevButton.addEventListener("click", () => {
         page--;
-        if(page<1){
-            page=1;
+        if (page < 1) {
+            page = 1;
         }
         updatePagination(BUTTON_NUM);
     });
@@ -32,13 +35,13 @@ function createPaginationButtons() {
     const endBtns = document.querySelector(".endBtns");
     const nextButton = document.createElement("button");
     nextButton.classList.add('button');
-    let i3=document.createElement("i");
-    i3.classList.add("fa","fa-angle-right");
+    let i3 = document.createElement("i");
+    i3.classList.add("fa", "fa-angle-right");
     nextButton.appendChild(i3);
-    nextButton.addEventListener("click",()=>{
+    nextButton.addEventListener("click", () => {
         page++;
-        if(page>totalPage){
-            page=totalPage;
+        if (page > totalPage) {
+            page = totalPage;
         }
         updatePagination(BUTTON_NUM);
     });
@@ -46,11 +49,11 @@ function createPaginationButtons() {
 
     const endBtn = document.createElement("button");
     endBtn.classList.add('button');
-    let i4=document.createElement("i");
-    i4.classList.add("fa","fa-angles-right");
+    let i4 = document.createElement("i");
+    i4.classList.add("fa", "fa-angles-right");
     endBtn.appendChild(i4);
-    endBtn.addEventListener("click",()=>{
-        page=totalPage;
+    endBtn.addEventListener("click", () => {
+        page = totalPage;
         updatePagination(BUTTON_NUM);
     });
     endBtns.appendChild(endBtn);

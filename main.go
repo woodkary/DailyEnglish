@@ -1,7 +1,7 @@
 package main
 
 import (
-	controlsql "DailyEnglish/Control_SQL"
+	controlsql "DailyEnglish/db"
 	teamrouter "DailyEnglish/router/team_router"
 	userrouter "DailyEnglish/router/user_router"
 	"database/sql"
@@ -32,46 +32,28 @@ func main() {
 	}
 	defer db.Close()
 
-	// 检查数据库连接是否成功
-	err = db.Ping()
-	if err != nil {
-		panic("Failed to connect to the database")
-	}
-
-	fmt.Println("Successfully connected to the database")
-
 	// Redis连接
 	client := redis.NewClient(&redis.Options{
 		Addr:     "r-bp1jdmrszl1yd6xxdipd.redis.rds.aliyuncs.com:6379", // Redis服务器地址
 		Password: "MIMAhezhanghao1yang",                                // Redis服务器密码
 		DB:       255,                                                  // 使用的Redis数据库编号
 	})
-
+	client.Ping().Result()
 	defer client.Close()
 
-	// 检查连接是否成功
-	pong, err := client.Ping().Result()
-	if err != nil {
-		fmt.Println("连接Redis失败:", err)
-	} else {
-		fmt.Println("连接Redis成功:", pong)
-	}
-
 	//数据库测试
-	// 调用 insertData 函数插入测试数据
-
-	//controlsql.InsertUserInfo(db, "小明", "10086", "12344", "123456@qq.com", 2024000123, 19, 1, "2024-04-01")
-	//数据库测试
+	//teamName := "每日背单词小组"
+	controlsql.GetTeamInfo(client, "每日背单词小组")
+	//controlsql.InsertUserInfo(db, "小明", "10086", "12344", "1234567@qq.com", 2024000123, 19, 1, "2024-04-01")
 
 	r := gin.Default()
 	r.Static("static/team_manager", "./static")
 	// r.Static("static/team_manager/css", "./static/css")
 	// r.Static("static/team_manager/js", "./static/js")
-	//r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html", "./static/404.html")
-	// r.LoadHTMLGlob("./static/*.html")
+	// r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html", "./static/404.html")
 
-	userrouter.User_manager(r, client, db)
-	teamrouter.Team_manager(r, client, db)
+	userrouter.InitUserRouter(r, client, db)
+	teamrouter.InitTeamRouter(r, client, db)
 	r.Run(":8080")
 
 	users, err := controlsql.QueryUserInfo(db)

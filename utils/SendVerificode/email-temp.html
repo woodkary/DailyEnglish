@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Verification Code</title>
+    <style>
+        /* Reset CSS */
+        body,
+        h1,
+        p {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Global Styles */
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        p {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .verification-code {
+            font-size: 36px;
+            font-weight: bold;
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Welcome to Our Website!</h1>
+        <p>We are glad to have you here. To complete your registration, please enter the following verification code:</p>
+        <p class="verification-code">{{.Code}}</p>
+        <p>This code will expire in 5 minutes. If you did not request this code, please ignore this email.</p>
+        <p>If you have any questions or feedback, please contact us at <a href="mailto:{{.ContactEmail}}">{{.ContactEmail}}</a>.</p>
+    </div>
+</body>
+
+</html>

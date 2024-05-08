@@ -219,3 +219,22 @@ func QueryUser_Study(db *sql.DB) ([]User_Study, error) {
 	}
 	return userStudyInfos, nil
 }
+
+// 根据邮箱查询用户名，如果不存在则返回错误，如果存在则返回true(测试成功)
+func GetUsernameByEmail(db *sql.DB, email string) bool {
+	// 准备查询语句
+	query := "SELECT username FROM user_info WHERE email = ?"
+	// 执行查询操作
+	row := db.QueryRow(query, email)
+	// 从查询结果中获取用户名
+	var username string
+	err := row.Scan(&username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false
+		}
+		return false
+	}
+	fmt.Println("Username found:", username)
+	return true
+}

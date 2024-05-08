@@ -1,10 +1,11 @@
 ﻿package teamrouter
 
 import (
-	controlsql "DailyEnglish/Control_SQL"
+	controlsql "DailyEnglish/db"
 	service "DailyEnglish/services"
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -16,7 +17,6 @@ import (
 func tokenAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
-		fmt.Println(authHeader)
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, "未提供令牌")
 			c.Abort()
@@ -31,9 +31,7 @@ func tokenAuthMiddleware() gin.HandlerFunc {
 		// 提取令牌
 		token := strings.TrimPrefix(authHeader, "Bearer ")
 		user, err := service.ParseToken(token)
-		fmt.Println(user, token)
 		if err != nil {
-			fmt.Println(err)
 			c.JSON(http.StatusUnauthorized, "令牌无效")
 			c.Abort()
 			return
@@ -45,7 +43,7 @@ func tokenAuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
+func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 	//主页数据
 	r.GET("/api/team_manage/index/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		// 定义JSON响应的结构体
@@ -222,9 +220,22 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			c.JSON(400, "请求参数错误")
 			return
 		}
-		examInfo, err := controlsql.GetExamInfoByExamName(client, request.ExamName)
+
+		examInfo, err := controlsql.GetExamInfoByName(client, "Exam1")
+		fmt.Println(examInfo)
+		fmt.Println("AverageScore", examInfo.AverageScore)
+		fmt.Println("PassRate", examInfo.PassRate)
+		fmt.Println("QuestionCount", examInfo.QuestionCount)
+		fmt.Println("ID", examInfo.ID)
+		fmt.Println("Name", examInfo.Name)
+		fmt.Println("TopSix", examInfo.TopSix)
+		fmt.Println(examInfo.Questions)
+		//fmt.Println("TotalScore",examInfo.TotalScore)
+		//fmt.Println("TotalUser",examInfo.TotalUser)
+
 		if err != nil {
 			c.JSON(500, "服务器错误")
+			log.Panic(err)
 			return
 		}
 		type UserResult struct {
@@ -424,13 +435,13 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 	r.GET("/api/team_manage/request_manage/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
 		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
-		fmt.Println(userClaims.TeamName)
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
 		}
 
 		Item1, err := controlsql.GetTeamRequestsByFlag(client, userClaims.TeamName, "0")
+
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
@@ -474,18 +485,18 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			c.JSON(500, "服务器错误")
 			return
 		}
-		fmt.Println(userClaims.UserName)
-		Item1, Item2, err := controlsql.GetUserInfoByEmailPwd(db, userClaims.UserName)
+		Item1, Item2, Item3, err := controlsql.GetUserInfoByEmailPwd(db, userClaims.UserName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
-		fmt.Println(Item1, Item2)
 		type User struct {
-			Name     string `json:"name"`  // 用户姓名
-			Team     string `json:"team"`  // 用户所属团队
-			Right    string `json:"right"` // 用户权限
-			Email    string `json:"email"` // 用户邮箱
-			Password string `json:"pwd"`   //用户密码
+			Name string `json:"name"` // 用户姓名
+			// 用户所属全部团队
+			Teams    []string `json:"teams"`
+			Right    string   `json:"right"` // 用户权限
+			Email    string   `json:"email"` // 用户邮箱
+			Password string   `json:"pwd"`   //用户密码
+			Phone    string   `json:"phone"` // 用户手机号
 		}
 		// Response 定义了响应的信息
 		type Response struct {
@@ -496,8 +507,13 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		var response Response
 		response.User.Email = Item1
 		response.User.Password = Item2
+		response.User.Phone = Item3
 		response.User.Name = userClaims.UserName
-		response.User.Team = userClaims.TeamName
+		response.User.Teams, err = controlsql.GetJoinedTeams(client, userClaims.UserName)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+		}
+
 		response.Code = "200"
 		response.Msg = "成功"
 		c.JSON(200, response)

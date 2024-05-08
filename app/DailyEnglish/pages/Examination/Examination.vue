@@ -3,34 +3,46 @@
 -->
 <template>
 	<view class="container">
-		<view class="question-container">
+		<text class="progress-text">{{ current }}/{{questions.length}}</text>
+		<view class="progress-container">
+			<view class="progress-bar" :style="{ width:progress + '%' }"></view>
+		</view>
+		<image class="back-icon" src="../../static/back.svg" @click="handleBack"></image>
+		<swiper class="question-container" :options="swiperOptions" :easing-function="'linear'" :duration="250" @before-change="swiperChange"    >
+			<swiper-item v-for="(question, index) in questions" :key="index">
+				<view class="text-info">
+					<text class="word">{{ question.word }}</text>
+					<text class="phonetic">{{ question.phonetic }}</text>
+				</view>
+				<view class="button-group">
+					<button class="option" v-for="(choice, choiceIndex) in question.choices" :key="choiceIndex"
+						:class="getClass(choiceIndex)" @click="selectChoice(choiceIndex)">{{ choice }}</button>
+				</view>
 
-			<text class="progress-text">{{ current }}/{{questions.length}}</text>
-			<view class="progress-container">
-				<view class="progress-bar" :style="{ width:progress + '%' }"></view>
-			</view>
+				<view class="jump-group" @click="handleJump">
+					<text class="link">加入生词本</text>
+					<image class="jump-icon" src="../../static/jump.svg" />
 
-			<image class="back-icon" src="../../static/back.svg" @click="handleBack"></image>
-			<view class="text-info">
+				</view>
+			</swiper-item>
+
+
+
+			<!-- <view class="text-info">
 				<text class="word">{{ questions[currentQuestionIndex].word }}</text>
 				<text class="phonetic">{{questions[currentQuestionIndex].phonetic}}</text>
 			</view>
 
 			<view class="button-group">
 				<button class="option" v-for="(choice, index) in 
-				questions[currentQuestionIndex].choices" 
-				:key="index"	:class="getClass(index)" 
-				@click="selectChoice(index)">{{ choice }}</button>
-			</view>
+				questions[currentQuestionIndex].choices" :key="index" :class="getClass(index)"
+					@click="selectChoice(index)">{{ choice }}</button>
+			</view> -->
 
 
-			<view class="jump-group" @click="handleJump">
-				<text class="link">加入生词本</text>
-				<image class="jump-icon" src="../../static/jump.svg" />
 
-			</view>
 
-		</view>
+		</swiper>
 	</view>
 </template>
 
@@ -39,9 +51,15 @@
 	export default {
 		data() {
 			return {
+        swiperOptions: {
+          // 其他配置...
+          allowTouchMove: true, // 允许触摸滑动
+          preventClicksPropagation: true, // 阻止点击事件冒泡
+          // 其他 Swiper 配置...
+        },
 				progress: 1, // 进度条的初始值
 				current: 1, // 当前进度
-				currentQuestionIndex:0,
+				currentQuestionIndex: 0,
 
 				questions: [
 					// 题目和选项
@@ -63,10 +81,10 @@
 					// ...更多题目
 				], // 这里可以根据需要修改选项内容
 				selectedChoice: '', // 用于存储用户选择的答案
-				realAnswer:[
+				realAnswer: [
 					'放弃', '选项B', '选项C' // 正确答案
 				],
-				
+
 			}
 		},
 		methods: {
@@ -83,6 +101,23 @@
 				//后面会讲到如何刷新页面，记得改啊！！！！！！11
 				//todo:refresh the page
 			},
+			swiperChange(event) {
+				const current = event.detail.current;
+				const source = event.detail.source; // "touch" 或 "autoplay" 或 "pagination"
+
+				// 仅当用户通过触摸滑动时处理
+				if (source === 'touch') {
+					// 判断滑动方向
+					if (current > this.currentQuestionIndex) {
+						// 左滑
+						this.currentQuestionIndex = current;
+					} else if (current < this.currentQuestionIndex) {
+						// 右滑，防止切换
+						// 可以使用swiper的scrollTo方法回到原来的位置
+						this.$refs.swiper.scrollTo(this.currentQuestionIndex, 0, false);
+					}
+				}
+			},
 			updateProgressBar() {
 				// 处理按钮点击事件
 				// 使得进度条增加1
@@ -98,17 +133,20 @@
 				}
 			},
 			selectChoice(index) {
+        console.log(index);
 				let selectedChoice = this.questions[this.currentQuestionIndex].choices[index];
 				// 检查选中的答案是否正确
 				if (selectedChoice === this.realAnswer[this.currentQuestionIndex]) {
 					// 正确答案的逻辑
-          let index=this.currentQuestionIndex++; // 切换到下一题
+					let nextIndex = this.currentQuestionIndex++; // 切换到下一题
+					/*this.currentQuestionIndex++; // 先增加索引*/
+					this.updateProgressBar(); // 更新进度条
 					this.$nextTick(() => {
-						this.showCorrectAnswer(this.realAnswer[index]);
+						this.showCorrectAnswer(this.realAnswer[nextIndex]);
 					});
-          this.unlockSlice();
+
 				} else {
-          let currIndex=this.currentQuestionIndex;
+					let currIndex = this.currentQuestionIndex;
 					// 错误答案的逻辑
 					this.$nextTick(() => {
 						this.showIncorrectAnswer(index);
@@ -141,22 +179,15 @@
 			getClass(index) {
 				// 根据选中状态和答案正确与否返回相应的样式类
 				if (this.selectedChoice) {
-          console.log(this.currentQuestionIndex);
+					console.log(this.currentQuestionIndex);
 					if (this.questions[this.currentQuestionIndex].choices[index] === this.selectedChoice) {
-						return this.questions[this.currentQuestionIndex].choices[index] === this.realAnswer ? 'correct' : 'incorrect';
+						return this.questions[this.currentQuestionIndex].choices[index] === this.realAnswer ? 'correct' :
+							'incorrect';
 					}
 				}
 				return '';
 			},
-			unlockSlice() {
-				// 解锁下一题
-				this.updateProgressBar();
-				/*this.selectedChoice = '';*/
-				this.$nextTick(() => {
-					/*this.resetButtonStyle(); //重置按钮样式*/
-				});
 
-			},
 		}
 	}
 </script>
@@ -229,12 +260,13 @@
 
 	.text-info {
 		position: absolute;
-		top: 10rem;
+		top: 5rem;
 		left: 50%;
 		transform: translateX(-50%);
 		text-align: center;
 		overflow: auto;
 		height: auto;
+
 	}
 
 	.word {
@@ -245,6 +277,7 @@
 		/*加粗 */
 		margin-bottom: 1rem;
 		/*调整与phonetic之间的距离 */
+
 	}
 
 	.phonetic {
@@ -260,7 +293,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 2rem;
-		margin-top: 9rem;
+		margin-top: 15rem;
 	}
 
 	.option {
@@ -313,5 +346,10 @@
 		height: 1rem !important;
 		margin-left: 0.5rem;
 		margin-top: 0.2rem;
+	}
+
+	.question-container {
+		width: 100%;
+		height: 90%;
 	}
 </style>

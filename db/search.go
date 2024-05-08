@@ -38,28 +38,56 @@ func GetUserByUsername(client *redis.Client, username string) (Member, error) {
 	return member, nil
 }
 
-// 2 通过团队名查询团队信息
+// 2 通过团队名查询团队信息(测试成功)
 func GetTeamInfo(client *redis.Client, teamName string) (Team, error) {
 	// 构建 Redis Key
 	teamKey := "team:" + teamName
 
 	// 从 Redis 中获取团队信息
-	teamJSON, err := client.Get(teamKey).Result()
+	teamData, err := client.HGetAll(teamKey).Result()
 	if err != nil {
 		return Team{}, err
 	}
 
-	// 解析 JSON 格式的团队信息
+	// 解析团队信息
 	var team Team
-	err = json.Unmarshal([]byte(teamJSON), &team)
+	team.Name = teamName
+	team.ID, _ = strconv.Atoi(teamData["id"])
+	team.TotalMembers, _ = strconv.Atoi(teamData["total_members"])
+	team.AdminCount, _ = strconv.Atoi(teamData["admin_count"])
+	team.RecentExamDate = teamData["recent_exam_date"]
+
+	// 获取团队成员信息的键名
+	memberKeys, err := client.Keys("team:" + teamName + ":member:*").Result()
 	if err != nil {
 		return Team{}, err
 	}
 
+	// 解析团队成员信息
+	for _, key := range memberKeys {
+		// 从Redis中获取成员信息
+		memberData, err := client.HGetAll(key).Result()
+		if err != nil {
+			return Team{}, err
+		}
+
+		// 解析成员信息
+		var member Member
+		member.Username = strings.TrimPrefix(key, "team:"+teamName+":member:")
+		member.JoinDate = memberData["join_date"]
+		member.AttendanceDays, _ = strconv.Atoi(memberData["attendance_days"])
+		member.IsAdmin, _ = strconv.ParseBool(memberData["is_admin"])
+		member.AttendanceRate = memberData["attendance_rate"]
+		member.AttendanceNum, _ = strconv.Atoi(memberData["attendance_num"])
+
+		// 添加成员到团队成员列表中
+		team.Members = append(team.Members, member)
+	}
+	fmt.Println("团队信息：", team)
 	return team, nil
 }
 
-// 2.0通过团队名查询成员列表
+// 2.0通过团队名查询成员列表（测试成功）
 func GetTeamMembers(client *redis.Client, teamName string) ([]Member, error) {
 	// 查询团队成员信息
 	membersJSON, err := client.Get("team:" + teamName + ":members").Result()
@@ -77,7 +105,7 @@ func GetTeamMembers(client *redis.Client, teamName string) ([]Member, error) {
 	return members, nil
 }
 
-// 2.1 根据用户名查询该用户加入的所有团队
+// 2.1 根据用户名查询该用户加入的所有团队(测试成功)
 func GetJoinedTeams(client *redis.Client, username string) ([]string, error) {
 	// 从 Redis 获取指定用户名的团队信息
 	val, err := client.Get(username).Result()
@@ -98,23 +126,20 @@ func GetJoinedTeams(client *redis.Client, username string) ([]string, error) {
 
 // 2.2 【团队管理个人中心】根据用户名查询邮箱和密码
 
-func GetUserInfoByEmailPwd(db *sql.DB, username string) (string, string, error) {
+func GetUserInfoByEmailPwd(db *sql.DB, username string) (string, string, string, error) {
 	// 准备查询语句
-	query := "SELECT email, pwd FROM user_info WHERE username = ?"
+	query := "SELECT email, pwd, phone FROM user_info WHERE username = ?"
 	// 执行查询操作
 	row := db.QueryRow(query, username)
 
 	// 从查询结果中获取邮箱和密码
-	var email, pwd string
-	err := row.Scan(&email, &pwd)
+	var email, pwd, phone string
+	err := row.Scan(&email, &pwd, &phone)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return "", "", fmt.Errorf("user not found")
-		}
-		return "", "", fmt.Errorf("error getting user info: %v", err)
+		return "", "", "", fmt.Errorf("error getting user info: %v", err)
 	}
 
-	return email, pwd, nil
+	return email, pwd, phone, nil
 }
 
 // 2.3 【团队管理个人中心】根据用户名和团队名查询团队权限
@@ -180,7 +205,7 @@ func GetTeamAttendanceByTeamName(client *redis.Client, teamName string) (Attenda
 	return attendanceRecord, nil
 }
 
-// 3.1 查询团队成员的打卡情况
+// 3.1 查询团队成员的打卡情况  （测试成功）
 func GetTeamMembersAttendance1(client *redis.Client, teamName string) (map[string]Member, error) {
 	// 获取团队成员信息的键名
 	memberKeys, err := client.Keys("team:" + teamName + ":member:*").Result()
@@ -209,44 +234,55 @@ func GetTeamMembersAttendance1(client *redis.Client, teamName string) (map[strin
 		// 将成员信息存入map
 		teamMembersAttendance[member.Username] = member
 	}
-
+	// 打印团队成员的打卡情况
+	fmt.Println("Team Members Attendance:")
+	for username, member := range teamMembersAttendance {
+		fmt.Printf("Username: %s\n", username)
+		fmt.Printf("Join Date: %s\n", member.JoinDate)
+		fmt.Printf("Attendance Days: %d\n", member.AttendanceDays)
+		fmt.Printf("Is Admin: %t\n", member.IsAdmin)
+		fmt.Printf("Attendance Rate: %s\n", member.AttendanceRate)
+	}
 	return teamMembersAttendance, nil
 }
 
-// 3.2 查询当前日期的团队成员的打卡情况
+// 3.2 查询当前日期的团队成员的打卡情况  （已测试成功）
 func GetTeamMembersAttendanceByDate(client *redis.Client, teamName string) (map[string]int, error) {
 	// 获取当前日期
-	currentDate := time.Now().Format("2006-01-02")
+	currentDate := "2024-04-10"
+	// 构建哈希键模式
+	pattern := "attendance:" + currentDate + ":team:" + teamName + ":member:*"
 
-	// 获取团队成员信息的键名
-	memberKeys, err := client.Keys("team:" + teamName + ":member:*").Result()
+	// 从 Redis 中获取符合模式的所有键
+	keys, err := client.Keys(pattern).Result()
 	if err != nil {
 		return nil, err
 	}
 
-	// 初始化团队成员打卡情况的map
-	teamMembersAttendance := make(map[string]int)
+	// 初始化结果映射
+	membersAttendance := make(map[string]int)
 
-	// 遍历每个成员的键名，获取成员的打卡情况
-	for _, key := range memberKeys {
-		// 从Redis中获取成员的打卡情况
-		memberAttendance, err := client.HGet(key, currentDate).Result()
+	// 遍历符合模式的键并获取相应的值
+	for _, key := range keys {
+		// 获取用户名
+		username := strings.TrimPrefix(key, "attendance:"+currentDate+":team:"+teamName+":member:")
+		// 获取打卡情况
+		wordCount, err := client.HGet(key, "word_count").Int()
 		if err != nil {
 			return nil, err
 		}
-
-		// 解析成员的打卡情况，如果打卡则为1，否则为0
-		attendance, _ := strconv.Atoi(memberAttendance)
-
-		// 将成员的打卡情况存入map
-		memberUsername := strings.TrimPrefix(key, "team:"+teamName+":member:")
-		teamMembersAttendance[memberUsername] = attendance
+		// 将用户名及其对应的打卡情况添加到结果映射中
+		membersAttendance[username] = wordCount
 	}
-
-	return teamMembersAttendance, nil
+	// 输出结果映射
+	fmt.Println("Members Attendance:")
+	for username, wordCount := range membersAttendance {
+		fmt.Printf("%s: %d\n", username, wordCount)
+	}
+	return membersAttendance, nil
 }
 
-// 3.3// 根据团队名查找所有成员的打卡单词数量//返回一个 map，其中键是成员的用户名，值是对应的打卡单词数量
+// 3.3// 根据团队名查找所有成员的打卡单词数量//返回一个 map，其中键是成员的用户名，值是对应的打卡单词数量（测试成功）
 func GetTeamMembersAttendanceNum(client *redis.Client, teamName string) (map[string]int, error) {
 	// 获取团队成员信息的键名
 	memberKeys, err := client.Keys("team:" + teamName + ":member:*").Result()
@@ -272,7 +308,7 @@ func GetTeamMembersAttendanceNum(client *redis.Client, teamName string) (map[str
 		memberUsername := strings.TrimPrefix(key, "team:"+teamName+":member:")
 		teamMembersAttendanceNum[memberUsername] = attendanceNum
 	}
-
+	fmt.Println("团队成员打卡单词数量：", teamMembersAttendanceNum)
 	return teamMembersAttendanceNum, nil
 }
 
@@ -332,54 +368,58 @@ func GetTeamExamResult(client *redis.Client, teamName string, examName string) (
 	return examResult, nil
 }
 
-// 5.2根据团队名查询该团队所有考试的考试名称、考试日期、平均分、通过率，并按照考试日期排序
+// 5.2根据团队名查询该团队所有考试的考试名称，再通过考试名称查询相应考试日期、平均分、通过率，并按照考试日期排序（测试成功）
 func QueryTeamExams(client *redis.Client, teamName string) ([]map[string]string, error) {
-	// 获取所有考试的键名
-	keys, err := client.Keys("exam_info:*").Result()
+	// 查询该团队参加的所有考试名称
+	examNames, err := client.Keys("exam_result:" + teamName + ":*").Result()
 	if err != nil {
 		return nil, err
 	}
 
-	// 保存结果的切片
-	var examInfos []map[string]string
-
-	// 遍历所有考试键名，提取考试信息
-	for _, key := range keys {
-		examInfo, err := client.HGetAll(key).Result()
+	// 查询每场考试的详细信息
+	var exams []map[string]string
+	for _, examKey := range examNames {
+		// 提取考试名称
+		examName := strings.TrimPrefix(examKey, "exam_result:"+teamName+":")
+		// 查询考试详细信息
+		examInfo, err := GetExamInfoByName(client, examName)
 		if err != nil {
 			return nil, err
 		}
 
-		// 检查考试是否属于指定团队
-		if examInfo["team_name"] == teamName {
-			// 转换通过率为百分比形式
-			passRate, err := strconv.ParseFloat(examInfo["pass_rate"], 64)
-			if err != nil {
-				return nil, err
-			}
-			passRateStr := strconv.FormatFloat(passRate*100, 'f', 2, 64) + "%"
-
-			// 构建考试信息的映射
-			exam := map[string]string{
-				"Name":         examInfo["name"],
-				"Date":         examInfo["date"],
-				"AverageScore": examInfo["average_score"],
-				"PassRate":     passRateStr,
-			}
-
-			// 将考试信息添加到结果切片中
-			examInfos = append(examInfos, exam)
+		// 将 ExamInfo 转换为 map[string]string
+		examMap := map[string]string{
+			"ID":            strconv.Itoa(examInfo.ID),
+			"Date":          examInfo.Date,
+			"Name":          examInfo.Name,
+			"QuestionCount": strconv.Itoa(examInfo.QuestionCount),
+			"AverageScore":  strconv.FormatFloat(examInfo.AverageScore, 'f', -1, 64),
+			"PassRate":      strconv.FormatFloat(examInfo.PassRate, 'f', -1, 64),
 		}
+
+		// 将 TopSix 转换为 map[string]string
+		topSixMap := make(map[string]string)
+		for username, score := range examInfo.TopSix {
+			topSixMap[username] = strconv.Itoa(score)
+		}
+		examMap["TopSix"] = fmt.Sprintf("%v", topSixMap)
+
+		// 将 Questions 转换为 map[string]string
+		questionsMap := make(map[string]string)
+		for i, question := range examInfo.Questions {
+			questionsMap[strconv.Itoa(i)] = question
+		}
+		examMap["Questions"] = fmt.Sprintf("%v", questionsMap)
+
+		exams = append(exams, examMap)
 	}
-
-	// 按照考试日期排序
-	sort.Slice(examInfos, func(i, j int) bool {
-		dateI, _ := time.Parse("2006-01-02", examInfos[i]["Date"])
-		dateJ, _ := time.Parse("2006-01-02", examInfos[j]["Date"])
-		return dateI.Before(dateJ)
+	// 按日期升序排序
+	sort.Slice(exams, func(i, j int) bool {
+		date1, _ := time.Parse("2006-01-02", exams[i]["Date"])
+		date2, _ := time.Parse("2006-01-02", exams[j]["Date"])
+		return date1.Before(date2)
 	})
-
-	return examInfos, nil
+	return exams, nil
 }
 
 // 7. 通过团队名查询该团队的通知信息
@@ -416,96 +456,59 @@ func QueryUnprocessedNotifications(client *redis.Client, teamName string) ([]Not
 	return unprocessedNotifications, nil
 }
 
-// 8. 通过考试名获取考试id，然后再通过id获取该场考试信息
-func GetExamInfoByExamName(client *redis.Client, examName string) (ExamInfo, error) {
-	// 查询考试id
-	examIDStr, err := client.Get("exam_id:" + examName).Result()
-	if err != nil {
-		return ExamInfo{}, err
-	}
-
-	examID, err := strconv.Atoi(examIDStr)
-	if err != nil {
-		return ExamInfo{}, err
-	}
-
-	// 使用考试id查询考试信息
-	// 使用 Key 格式为 "exam_info:{examID}" 进行查询
-	examInfo, err := client.HGetAll("exam_info:" + strconv.Itoa(examID)).Result()
-	if err != nil {
-		return ExamInfo{}, err
-	}
-
-	// 解析考试信息并返回
-	questionCount, err := strconv.Atoi(examInfo["question_count"])
-	if err != nil {
-		return ExamInfo{}, err
-	}
-	averageScore, err := strconv.ParseFloat(examInfo["average_score"], 64)
-	if err != nil {
-		return ExamInfo{}, err
-	}
-	passRate, err := strconv.ParseFloat(examInfo["pass_rate"], 64)
-	if err != nil {
-		return ExamInfo{}, err
-	}
-
-	exam := ExamInfo{
-		ID:            examID,
-		Name:          examInfo["name"],
-		QuestionCount: questionCount,
-		AverageScore:  averageScore,
-		PassRate:      passRate,
-		TopSix:        make(map[string]int),
-		Questions:     []string{},
-	}
-
-	// 查询前十名成员信息
-	topSixMembers, err := client.HGetAll("exam_info:" + strconv.Itoa(examID) + ":top_six").Result()
-	if err != nil {
-		return ExamInfo{}, err
-	}
-	for username, score := range topSixMembers {
-		scoreInt, err := strconv.Atoi(score)
-		if err != nil {
-			return ExamInfo{}, err
-		}
-		exam.TopSix[username] = scoreInt
-	}
-
-	// 查询试题内容
-	questions, err := client.HGetAll("exam_info:" + strconv.Itoa(examID) + ":questions").Result()
-	if err != nil {
-		return ExamInfo{}, err
-	}
-	for _, question := range questions {
-		exam.Questions = append(exam.Questions, question)
-	}
-
-	return exam, nil
-}
-
-// 9. 通过日期查询当天所有考试信息
-func GetExamsByDate(client *redis.Client, date string) ([]ExamInfo, error) {
-	// 查询当天所有考试信息
-	// 使用 Key 格式为 "exams:{date}" 进行查询
-	examIDs, err := client.SMembers("exams:" + date).Result()
+// 8. 通过考试名获取考试  （测试成功）
+func GetExamInfoByName(client *redis.Client, examName string) (*ExamInfo, error) {
+	// 查询考试ID
+	examID, err := client.Get("exam_name:" + examName).Int()
 	if err != nil {
 		return nil, err
 	}
 
-	// 查询每场考试的信息并返回
-	var exams []ExamInfo
-	for _, examID := range examIDs {
-		exam, err := GetExamInfoByExamName(client, examID)
-		if err != nil {
-			return nil, err
-		}
-		exams = append(exams, exam)
+	// 查询考试信息
+	examInfo := ExamInfo{
+		ID:   examID,
+		Name: examName,
+	}
+	fmt.Println("exam_info:" + examInfo.Name)
+	examInfoMap, err := client.HGetAll("exam_info:" + examInfo.Name).Result()
+	fmt.Println(examInfoMap)
+	if err != nil {
+		return nil, err
 	}
 
-	return exams, nil
+	// 解析考试信息
+	examInfo.Name = examInfoMap["name"]
+	examInfo.Date = examInfoMap["date"]
+	examInfo.QuestionCount, _ = strconv.Atoi(examInfoMap["question_count"])
+	examInfo.AverageScore, _ = strconv.ParseFloat(examInfoMap["average_score"], 64)
+	examInfo.PassRate, _ = strconv.ParseFloat(examInfoMap["pass_rate"], 64)
+
+	// 查询前六名成员信息
+	topSixMap, err := client.HGetAll("exam_info:" + strconv.Itoa(examID) + ":top_six").Result()
+	if err != nil {
+		return nil, err
+	}
+	examInfo.TopSix = make(map[string]int)
+	for username, scoreStr := range topSixMap {
+		score, _ := strconv.Atoi(scoreStr)
+		examInfo.TopSix[username] = score
+	}
+
+	// 查询试题内容
+	questionsMap, err := client.HGetAll("exam_info:" + strconv.Itoa(examID) + ":questions").Result()
+	if err != nil {
+		return nil, err
+	}
+	examInfo.Questions = make([]string, len(questionsMap))
+	for i, question := range questionsMap {
+		index, _ := strconv.Atoi(i)
+		examInfo.Questions[index] = question
+	}
+	return &examInfo, nil
 }
+
+// 9. 通过日期查询当天所有考试信息
+func GetExamsByDate(client *redis.Client, date string) ([]ExamInfo, error) { return nil, nil }
 
 // 10. 通过用户名查询该用户是否团队管理员
 func IsUserTeamAdmin(client *redis.Client, username string) (bool, error) {

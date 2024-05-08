@@ -10,14 +10,70 @@
 </head>
 <link rel="stylesheet" href="./css/navSidebar.css">
 <link rel="stylesheet" href="./css/issuePunch.css">
+<link rel="stylesheet" href="./css/Toast.css">
 <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<!-- ====== Fontawesome CDN Link ====== -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!------ Include the above in your HEAD tag ---------->
-
 <body>
+
+    <div class="toast">
+        <div class="toast-content">
+            <i class="fas fa-solid fa-check check"></i>
+
+            <div class="message">
+                <span class="text text-1"></span>
+                <span class="text text-2"></span>
+            </div>
+        </div>
+        <i class="fa-solid fa-xmark close"></i>
+
+        <div class="progress"></div>
+    </div>
+    <div class="modal">
+        <article class="modal-container">
+            <header class="modal-container-header">
+                <h1 class="modal-container-title">
+
+                    创建一个团队
+                </h1>
+                <button class="icon-button">
+                    <svg t="1713943520685" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                        xmlns="http://www.w3.org/2000/svg" p-id="912" width="20" height="20">
+                        <path
+                            d="M512 412.416L860.416 64 960 163.584 611.584 512 960 860.416 860.416 960 512 611.584 163.584 960 64 860.416 412.416 512 64 163.584 163.584 64 512 412.416z"
+                            p-id="913" fill="#ffffff"></path>
+                    </svg>
+                </button>
+            </header>
+            <section class="modal-container-body">
+                <div class="coolinput">
+                    <label for="input" class="text">团队名*:</label>
+                    <input type="text" placeholder="输入团体名..." teamName="input" class="input">
+                </div>
+                <div class="coolinput">
+                    <label for="input" class="text">人数:</label>
+                    <input type="number" list="amount-opt" class="input" amount="amount" placeholder="选择或输入人数">
+                    <datalist id="amount-opt">
+                        <option value="20">
+                        <option value="30">
+                        <option value="40">
+                        <option value="50">
+                    </datalist>
+                    <span class="tip" style="margin-top: 8px;font-size: 0.8rem;color:#ef4565;display: none;">*人数至少为5</span>
+                </div>
+
+            </section>
+            <footer class="modal-container-footer">
+                <button class="button cancel">取消</button>
+                <button class="button accept">创建</button>
+            </footer>
+        </article>
+    </div>
     <nav>
         <div class="logo-name">
             <!--        <div class="logo-image">
@@ -30,34 +86,30 @@
         <div class="menu-items">
             <ul class="nav-links">
                 <li><a href="index.html">
-                        <i class="uil uil-estate"></i>
-                        <span class="link-name">主页</span>
-                    </a></li>
+                    <i class="uil uil-estate"></i>
+                    <span class="link-name">主页</span>
+                  </a></li>
                 <li><a href="issuePunch.html">
-                        <i class="uil uil-calendar-alt"></i>
-                        <span class="link-name">打卡发布</span>
-                    </a></li>
-                <li><a href="test-release.html">
-                        <i class="uil uil-calender"></i>
-                        <span class="link-name">考试发布</span>
-                    </a></li>
+                    <i class="uil uil-calendar-alt"></i>
+                    <span class="link-name">打卡发布</span>
+                  </a></li>
+                <li><a href="history.html">
+                    <i class="uil uil-calender"></i>
+                    <span class="link-name">考试相关</span>
+                  </a></li>
                 <li><a href="test-statistics.html">
-                        <i class="uil uil-chart"></i>
-                        <span class="link-name">考试情况</span>
-                    </a></li>
+                    <i class="uil uil-chart"></i>
+                    <span class="link-name">考试情况</span>
+                  </a></li>
                 <li><a href="manage.html">
-                        <i class="uil uil-meh-alt"></i>
-                        <span class="link-name">成员管理</span>
-                    </a></li>
-                <li><a href="review.html">
-                        <i class="uil uil-message"></i>
-                        <span class="link-name">申请审核</span>
-                    </a></li>
+                    <i class="uil uil-meh-alt"></i>
+                    <span class="link-name">成员管理</span>
+                  </a></li>
                 <li><a href="user.html">
-                        <i class="uil uil-user"></i>
-                        <span class="link-name">个人中心</span>
-                    </a></li>
-            </ul>
+                    <i class="uil uil-user"></i>
+                    <span class="link-name">个人中心</span>
+                  </a></li>
+              </ul>
 
             <ul class="logout-mode">
                 <li><a href="#">
@@ -120,7 +172,7 @@
 
                                         <!-- Tabs Detail -->
                                         <div class="tabs">
-                                            <span data-tab-value="#tab_1">About</span>
+                                            <span data-tab-value="#tab_1" id="about">About</span>
                                             <span data-tab-value="#tab_2" style="margin-left: 20px;">Team</span>
                                         </div>
 
@@ -140,7 +192,7 @@
                                                         <label>姓名</label>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <p>CarryWood</p>
+                                                        <p id="name">CarryWood</p>
                                                     </div>
                                                 </div>
                                                 <div class="row">
@@ -148,7 +200,7 @@
                                                         <label>邮箱</label>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <p>1221124124@gmail.com</p>
+                                                        <p id="email">1221124124@gmail.com</p>
                                                     </div>
                                                 </div>
                                                 <div class="row">
@@ -156,7 +208,7 @@
                                                         <label>电话</label>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <p>123 456 7890</p>
+                                                        <p id="phone">123 456 7890</p>
                                                     </div>
                                                 </div>
                                                 <div class="row">
@@ -179,9 +231,10 @@
                                                         <div class="group-code">
                                                             <p class="teamcode">团队码 :
                                                                 <span class="col-md-6">#ryjsbtkq23</span>
+                                                                <i class="uil uil-copy copyBtn"></i>
+                                                                <i class="uil uil-redo generateBtn"></i>
                                                             </p>
-                                                            <i class="uil uil-copy copyBtn">复制团队码</i>
-                                                            <i class="uil uil-redo generateBtn">生成新团队码</i>
+
                                                         </div>
                                                     </div>
                                                 </card>
@@ -196,14 +249,16 @@
                                                         <div class="group-code">
                                                             <p class="teamcode">团队码 :
                                                                 <span class="col-md-6">#ryjsbtkq23</span>
+                                                                <i class="uil uil-copy copyBtn"></i>
+                                                                <i class="uil uil-redo generateBtn"></i>
                                                             </p>
-                                                            <i class="uil uil-copy copyBtn">复制团队码</i>
-                                                            <i class="uil uil-redo generateBtn">生成新团队码</i>
+
                                                         </div>
                                                     </div>
                                                 </card>
+                                                <button id="openModalButton">添加新团队</button>
+                                               
                                             </div>
-
                                         </div>
                                     </div>
                                     <script>
@@ -258,129 +313,60 @@
     </section>
 
 </body>
-
-<script src="./js/navSidebar.js"></script>
 <script src="./js/test-details.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.0/lib/darkmode-js.min.js"></script>
+<script src="./js/navSidebar.js"></script>
+<script src="./js/user.js"></script>
 <script>
-    //先放入一个map存储所有的code和过期时间
-    document.addEventListener('DOMContentLoaded', function () {
-        let codeMap = JSON.parse(localStorage.getItem('codeMap'));
-        if (codeMap === null) {
-            codeMap = {};
-            localStorage.setItem('codeMap', JSON.stringify(codeMap));
-        }
-        let groupInfos = document.querySelectorAll('.team-card');
-        groupInfos.forEach(groupInfo => {
-            let teamname = groupInfo.querySelector('.group-name').textContent;
-            let code = getInvitationCode(teamname);
-            let teamcode = groupInfo.querySelector('.teamcode');
-            teamcode.querySelector('span').textContent = code;
-        });
+    const openModalButton = document.getElementById('openModalButton');
+    openModalButton.addEventListener('click', () => {
+        modal.style.display = 'flex';
     });
-    document.addEventListener('DOMContentLoaded', function () {
-        var editBtn = document.getElementById('editProfileBtn');
-        var saveBtn = document.getElementById('saveBtn');
-        var profileContent = document.getElementById('myTabContent');
 
-        editBtn.addEventListener('click', function (evt) {
-            evt.preventDefault();
-            // 将所有的p元素变为输入框
-            var ps = profileContent.getElementsByTagName('p');
-            for (var i = ps.length - 1; i >= 0; i--) { // 使用倒序循环
-                var p = ps[i];
-                var input = document.createElement('input');
-                input.type = 'text';
-                input.value = p.textContent;
-                input.classList.add('message-input');
-                p.parentNode.replaceChild(input, p);
-            }
+    const modal = document.querySelector('.modal');
+    const modalClose = document.querySelector('.icon-button');
+    const modalAccept = document.querySelector('.button.accept');
+    const modalDecline = document.querySelector('.button.cancel');
 
-            // 显示保存按钮
-            saveBtn.style.display = 'block';
-        });
-
-
-        saveBtn.addEventListener('click', function (evt) {
-            evt.preventDefault();
-            // 将所有的输入框变回p元素，并保存输入框中的文本
-            var inputs = profileContent.getElementsByTagName('input');
-            for (var i = inputs.length - 1; i >= 0; i--) {
-                var input = inputs[i];
-                var p = document.createElement('p');
-                p.textContent = input.value;
-                input.parentNode.replaceChild(p, input);
-            }
-
-            // 隐藏保存按钮
-            saveBtn.style.display = 'none';
-        });
-    });
-    document.addEventListener('DOMContentLoaded', function () {
-        let copyBtns = document.querySelectorAll('.copyBtn');
-        copyBtns.forEach(copyBtn => {
-            copyBtn.addEventListener('click', () => {
-                let code = copyBtn.parentNode.querySelector('span').textContent;
-                navigator.clipboard.writeText(code);
-                copyBtn.textContent = 'Copied!';
-                setTimeout(() => {
-                    copyBtn.textContent = '复制团队码';
-                }, 500);
-            });
-        });
-        let generateBtns = document.querySelectorAll('.generateBtn');
-        generateBtns.forEach(generateBtn => {
-            generateBtn.addEventListener('click', () => {
-                let teamname = generateBtn.parentNode.parentNode.querySelector('.group-name').textContent;
-                let newCode = generateTeamCode(teamname);
-                let code = generateBtn.parentNode.querySelector('.teamcode').querySelector('span');
-                code.textContent = newCode;
-            });
-        });
-    });
-    // Toggling invitation code generation
-
-    function generateInvitationCode() {
-        let code = "#";
-        let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        for (let i = 0; i < 10; i++) {
-            code += possible.charAt(Math.floor(Math.random() * possible.length));
-        }
-        return code;
+    function hideModal() {
+        modal.style.display = 'none';
     }
-    function getInvitationCode(teamname) {
-        let codeMap = JSON.parse(localStorage.getItem('codeMap'));
-        let codeAndExpiry = codeMap[teamname];
-        if (codeAndExpiry === null) {
-            let code = generateInvitationCode();
-            let expiry = new Date();
-            expiry.setDate(expiry.getTime() + 1000*60*5); // 设置5分钟后过期
-            codeMap[teamname] = { code: code, expiry: expiry };
-            localStorage.setItem('codeMap', JSON.stringify(codeMap));
-            return code;
+
+    modalClose.addEventListener('click', hideModal);
+    modalDecline.addEventListener('click', hideModal);
+
+    document.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    //以下是表单验证
+    const teamName = document.querySelector('.input[teamName]');
+    const amount = document.querySelector('.input[amount]');
+    
+    modalAccept.addEventListener('click', () => {
+        let isValid = true;
+        if(teamName.value.trim() === '') {
+            teamName.style.borderColor = '#e55d50';
+            isValid = false;
         } else {
-            let expiry = new Date(codeAndExpiry.expiry);
-            if (expiry < new Date()) { // 过期
-                let code = generateInvitationCode();
-                codeMap[teamname] = { code: code, expiry: new Date(expiry.getTime() + 1000*60*5) }; // 续期5分钟
-                localStorage.setItem('codeMap', JSON.stringify(codeMap));
-                return code;
-            } else {
-                return codeAndExpiry.code;
-            }
+            teamName.style.borderColor = '#818CF8';
         }
-    }
-    function generateTeamCode(teamname) {
-        let newCode = generateInvitationCode();
-        let codeMap = JSON.parse(localStorage.getItem('codeMap'));
-        codeMap[teamname] = { code: newCode, expiry: new Date(new Date().getTime() + 1000*60*5) }; // 5分钟后过期
-        localStorage.setItem('codeMap', JSON.stringify(codeMap));
-        return newCode;
-    }
-
-
+        if(amount.value<5){
+            amount.style.borderColor = '#e55d50';
+            modal.querySelector('.tip').style.display = 'block';
+            isValid = false;
+        } else {
+            amount.style.borderColor = '#818CF8';
+        }
+    });
 </script>
 <style>
+    body{
+        overflow-x: hidden;
+        overflow-y: hidden;
+    }
     .emp-profile {
         padding: 3%;
         margin-top: 3%;
@@ -878,13 +864,187 @@
     }
     .group-name{
         font-weight: 800;
+        font-size: 20px;
         color: #0062cc;
     }
     .group-peopleAmount{
         color: #818182;
         font-size: 16px;
     }
-</style>
-<script src="./js/navSidebar.js"></script>
+    :root{
+        --toast-background-color: #fff;
+    }
+    body.dark{
+        --toast-background-color: #222;
+    }
+    .Toast2{
+        position: fixed;
+        border: 1px solid #ddd;
+        border-radius: 2%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),
+        4px 0 4px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        background-color: var(--toast-background-color);
+        display: flex;
+        transition: all 0.5s ease;
+        width:400px;
+        height:400px;
+        z-index: 1001;
+    }
+    /* 遮罩层样式 */
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* 半透明背景 */
+        display: none; /* 默认不显示 */
+        z-index: 1000; /* 确保在页面内容的上方 */
+    }
+    .copyBtn{
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none;    /* Firefox */
+        -ms-user-select: none;     /* IE10+/Edge */
+        user-select: none;         /* Standard */
+    }
+    .generateBtn{
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none;    /* Firefox */
+        -ms-user-select: none;     /* IE10+/Edge */
+        user-select: none;         /* Standard */
+    }
 
+    .modal {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-container {
+        background-color: #fff;
+        border-radius: 16px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-container-header {
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        height: 45px;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #4070f4;
+    }
+
+    .modal-container-title {
+        padding: 20px 32px;
+        font-size: 20px;
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .icon-button {
+        height: 45px;
+        width: 45px;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+    .modal-container-body {
+        height: 200px;
+        width: 270px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modal-container-footer {
+        padding: 20px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        border-top: 1px solid #ddd;
+        gap: 12px;
+        position: relative;
+    }
+
+    .modal-container-footer:after {
+        content: "";
+        display: block;
+        position: absolute;
+        top: -51px;
+        left: 24px;
+        right: 24px;
+        height: 50px;
+        flex-shrink: 0;
+        /* background-image: linear-gradient(to top, rgba(255, 255, 255, 0.75), transparent); */
+        pointer-events: none;
+    }
+
+    .button.cancel,
+    .button.accept {
+        padding: 8px 16px;
+        font-size: 16px;
+        outline: none;
+        border: none;
+
+        color: #fff;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .button.cancel {
+        background-color: #ef4565;
+    }
+
+    .button.accept {
+        background-color: #265cf0;
+    }
+
+
+    .coolinput {
+        display: flex;
+        flex-direction: column;
+        width: fit-content;
+        position: static;
+        max-width: 240px;
+        margin-left: 20px;
+        margin-top: 20px;
+    }
+
+    .coolinput label {
+        font-size: 0.75rem;
+        color: rgb(118, 129, 231);
+        font-weight: 700;
+        position: relative;
+        top: 0.5rem;
+        margin: 0 0 0 7px;
+        padding: 0 3px;
+        background: #ffffff;
+        width: fit-content;
+    }
+
+    .coolinput input.input {
+        padding: 11px 10px;
+        font-size: 1rem;
+        border: 2px #818CF8 solid;
+        border-radius: 5px;
+        background: #ffffff;
+    }
+
+    .coolinput input.input:focus {
+        outline: none;
+    }
+    
+</style>
 </html>

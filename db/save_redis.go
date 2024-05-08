@@ -68,7 +68,7 @@ type ExamResult struct { //键值对的字符串string
 
 type ExamInfo struct { //hash
 	ID            int            // 考试ID
-	date          string         //日期
+	Date          string         //日期
 	Name          string         // 考试名称
 	QuestionCount int            // 试题数量
 	Questions     []string       // 试题内容
@@ -299,13 +299,15 @@ func SaveExamResult(client *redis.Client, examResult ExamResult) error {
 // 保存考试内容
 func SaveExamInfo(client *redis.Client, examInfo ExamInfo) error {
 	// 使用哈希数据结构保存考试信息
-	_, err := client.HMSet("exam_info:"+strconv.Itoa(examInfo.ID), map[string]interface{}{
-		"date":           examInfo.date,
-		"name":           examInfo.Name,
-		"question_count": examInfo.QuestionCount,
-		"average_score":  examInfo.AverageScore,
-		"pass_rate":      examInfo.PassRate,
+	_, err := client.HMSet("exam_info:"+examInfo.Name, map[string]interface{}{
+		"Date":           examInfo.Date,
+		"Name":           examInfo.Name,
+		"Question_count": examInfo.QuestionCount,
+		"Average_score":  examInfo.AverageScore,
+		"Pass_rate":      examInfo.PassRate,
 	}).Result()
+	client.Set("exam_name:"+examInfo.Name, examInfo.ID, 0)
+
 	if err != nil {
 		return err
 	}
