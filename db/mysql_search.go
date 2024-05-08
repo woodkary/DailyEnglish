@@ -34,35 +34,39 @@ func SearchTeamInfoByManagerID(db *sql.DB, managerID int) ([]string, []string, e
 }
 
 //2根据team_id查询该团队所有的exam_id,exam_name,exam_date
-func SearchExamsByTeamID(db *sql.DB, teamID int) ([]int, []string, []string, error) {
-	var examIDs []int
-	var examNames []string
-	var examDates []string
+// ExamInfo 结构体用于存储考试信息
+type ExamInfo struct {
+	ExamID   int
+	ExamName string
+	ExamDate string
+}
 
-	// 查询数据库以获取团队的考试信息
+// SearchExamInfoByTeamID 根据团队ID查询考试信息
+func SearchExamInfoByTeamID(db *sql.DB, teamID int) ([]ExamInfo, error) {
+	var examInfos []ExamInfo
+
+	// 查询数据库以获取考试信息
 	rows, err := db.Query("SELECT exam_id, exam_name, exam_date FROM exam_info WHERE team_id = ?", teamID)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, err
 	}
 	defer rows.Close()
 
 	// 遍历结果集并收集考试信息
 	for rows.Next() {
-		var examID int
-		var examName string
-		var examDate string
-		if err := rows.Scan(&examID, &examName, &examDate); err != nil {
-			return nil, nil, nil, err
+		var examInfo ExamInfo
+		if err := rows.Scan(&examInfo.ExamID, &examInfo.ExamName, &examInfo.ExamDate); err != nil {
+			return nil, err
 		}
-		examIDs = append(examIDs, examID)
-		examNames = append(examNames, examName)
-		examDates = append(examDates, examDate)
+		examInfos = append(examInfos, examInfo)
 	}
 
 	// 检查遍历过程中是否出错
 	if err := rows.Err(); err != nil {
-		return nil, nil, nil, err
+		return nil, err
 	}
 
-	return examIDs, examNames, examDates, nil
+	return examInfos, nil
 }
+
+//3
