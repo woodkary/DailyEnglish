@@ -4,31 +4,36 @@
 		<view class="edit">
 			<image class="photo" src="../../static/logo.png"></image>
 			<view class="items">
-				<EditableItemView  
+				<EditableItemView 
+						id="username"
 				      label="用户名"  
 				      :value="username"  
 				      placeholder="wwswad"  
 				      @update:value="username = $event"  
 				    />
 				<EditableItemView
+				id="email"
 				      label="邮箱"  
 				      :value="email"  
 				      placeholder="3242412@xy.com"  
 				      @update:value="email = $event"  
 				    />
 				<EditableItemView
+				id="phone"
 				      label="手机号"  
 				      :value="phone"  
 				      placeholder="12312312312"  
 				      @update:value="phone = $event"  
 				    />
-				<EditableItemView 
+				<EditableItemView
+				 id="birthday"
 				  label="生日"  
 				  :value="birthday"  
 				  placeholder="1999-01-01"  
 				  @update:value="birthday = $event"  
 				/>  
 				<EditableItemView
+				id="team"
 				      label="团队"  
 				      :value="team"  
 				      placeholder="无"  
