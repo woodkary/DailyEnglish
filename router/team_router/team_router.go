@@ -45,7 +45,26 @@ func tokenAuthMiddleware() gin.HandlerFunc {
 
 func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 	//考试情况数据
-	r.GET("/api/team_manage/exam_situation/calendar", tokenAuthMiddleware(), func(c *gin.Context) {
+	r.POST("/api/team_manage/exam_situation/calendar", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			Year  string `json:"year"`  // 年份
+			Month string `json:"month"` // 月份
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(400, "请求参数错误")
+			return
+		}
+		requestYear, err := strconv.Atoi(request.Year)
+		if err != nil {
+			log.Println("Error parsing year:", err)
+		}
+
+		requestMonth, err := strconv.Atoi(request.Month)
+		if err != nil {
+			log.Println("Error parsing month:", err)
+
+		}
 		user, _ := c.Get("user")
 		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
@@ -74,15 +93,13 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 
 		//TODO 将查询到的考试信息转换为响应的结构体
 		for _, exam := range Item {
-			now := time.Now()
-
 			examDate, err := time.Parse("2006-01-02", exam.ExamDate)
 			if err != nil {
 				log.Println("Error parsing date:", err)
 				continue
 			}
 
-			if examDate.Year() == now.Year() && examDate.Month() == now.Month() {
+			if examDate.Year() == requestYear && examDate.Month() == time.Month(requestMonth) {
 				Response.Exam_date = append(Response.Exam_date, exam.ExamDate)
 			}
 		}
