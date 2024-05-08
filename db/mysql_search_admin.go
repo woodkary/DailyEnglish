@@ -58,3 +58,14 @@ func CheckUser(db *sql.DB, username, password string) bool {
 	row1 := utils.AesEncrypt(password, "dailyenglish")
 	return row == row1
 }
+
+// 根据username获取userid和teamid[]
+func GetTokenParams(db *sql.DB, username string) (string, []string, error) {
+	var userid string
+	var teamids []string
+	err := db.QueryRow("SELECT manager_id, team_ids FROM manager_info WHERE manager_name =?", username).Scan(&userid, &teamids)
+	if err != nil {
+		return "", nil, err
+	}
+	return userid, teamids, nil
+}

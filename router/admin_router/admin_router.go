@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -138,12 +139,35 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 				"msg":  "用户不存在",
 			})
 		} else if controlsql.CheckUser(db, data.Username, data.Pwd) {
-			teamName, err := controlsql.GetJoinedTeams(db, data.Username)
-			//输出所有teamname
-			fmt.Println("teamName:", teamName, " err :", err)
+			item1, item2s, err := controlsql.GetTokenParams(db, data.Username)
+			//输出所有teamid
+			for _, item2 := range item2s {
+				fmt.Println(item2)
+			}
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"code": "500",
+					"msg":  "服务器内部错误",
+				})
+				return
+			}
+
+			//转化得到的Token参数为int类型
+			item1Int, err := strconv.Atoi(item1)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"code": "500",
+					"msg":  "服务器内部错误",
+				})
+				return
+			}
+			item2sInt := make([]int, len(item2s))
+			for i, item2 := range item2s {
+				item2sInt[i] = int(item2[i])
+			}
 
 			//生成token
-			token, err := service.GenerateToken(data.Username, teamName[0])
+			token, err := service.GenerateToken(item1Int, item2sInt)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{
 					"code": "500",
