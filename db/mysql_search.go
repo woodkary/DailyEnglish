@@ -233,16 +233,25 @@ func SearchUserIDByTeamID(db *sql.DB, teamID int) ([]int, error) {
 	return userIDs, nil
 }
 
-// 8.1 根据user_ids查询user_names和user_phones
-func SearchUserNameAndPhoneByUserID(db *sql.DB, userID int) (string, string, error) {
+// 8.1 根据user_id查询user_name和user_phone
+func SearchUserNameAndPhoneByUserID(db *sql.DB, userID int) (string, string, string, error) {
 	var userName string
 	var userPhone string
-
+	var userEmail string
 	// 查询数据库以获取用户名称
-	err := db.QueryRow("SELECT username, phone FROM user_info WHERE user_id = ?", userID).Scan(&userName, &userPhone)
+	err := db.QueryRow("SELECT username, phone,email FROM user_info WHERE user_id = ?", userID).Scan(&userName, &userPhone, &userEmail)
 	if err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
 
-	return userName, userPhone, nil
+	return userName, userPhone, userEmail, nil
+}
+
+// 8.2 根据user_id和team_id删除user_team表里的记录
+func DeleteUserTeamByUserIDAndTeamID(db *sql.DB, userID int, teamID int) error {
+	_, err := db.Exec("DELETE FROM user_team WHERE user_id = ? AND team_id = ?", userID, teamID)
+	if err != nil {
+		return err
+	}
+	return nil
 }
