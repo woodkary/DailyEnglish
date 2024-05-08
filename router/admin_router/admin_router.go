@@ -92,7 +92,7 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 		if !controlsql.UserExists(db, data.Username) {
 			//验证码由前端完成判定
 
-			Key := "DailyEnglish" //密钥
+			Key := "123456781234567812345678" //密钥
 			cryptoPwd := utils.AesEncrypt(data.Pwd, Key)
 			//获取系统当前日期
 			//RegisterDate := utils.GetCurrentDate()

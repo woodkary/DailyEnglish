@@ -3,6 +3,7 @@ package db
 import (
 	utils "DailyEnglish/utils"
 	"database/sql"
+	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -35,7 +36,8 @@ func UserExists(db *sql.DB, username string) bool {
 // RegisterUser 向 user_info 表中插入用户数据
 func RegisterUser(db *sql.DB, username, email, password string, phone string) error {
 	// 准备插入语句
-	userid := utils.GenerateID()
+	//userid := utils.GenerateID()
+	userid := 114514
 	stmt, err := db.Prepare("INSERT INTO manager_info(manager_id ,manager_name, email, phone, pwd) VALUES( ?, ?, ?, ?, ?)")
 	if err != nil {
 		return err
@@ -55,8 +57,14 @@ func RegisterUser(db *sql.DB, username, email, password string, phone string) er
 func CheckUser(db *sql.DB, username, password string) bool {
 	var row string
 	db.QueryRow("SELECT pwd FROM manager_info WHERE manager_name =?", username).Scan(&row)
-	row1 := utils.AesEncrypt(password, "dailyenglish")
-	return row == row1
+	utils.TestAES()
+
+	fmt.Println("row:", row)
+	fmt.Println("password:", password)
+	decryptrow := utils.AesDecrypt(row, "123456781234567812345678")
+	fmt.Println("decryptrow:", decryptrow)
+
+	return password == decryptrow
 }
 
 // 根据username获取userid和teamid[]

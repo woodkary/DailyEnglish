@@ -9,7 +9,7 @@ import (
 )
 
 func TestAES() {
-	orig := "hello world"
+	orig := "qwerty"
 	key := "123456781234567812345678"
 	fmt.Println("原文：", orig)
 
