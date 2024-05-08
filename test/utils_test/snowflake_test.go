@@ -1,7 +1,7 @@
 package test
 
 import (
-	"DailyEnglish/utils/snowflake"
+	snowflake "DailyEnglish/utils"
 	"fmt"
 	"testing"
 	"time"

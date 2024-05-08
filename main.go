@@ -1,15 +1,12 @@
 package main
 
 import (
-	controlsql "DailyEnglish/db"
 	adminrouter "DailyEnglish/router/admin_router"
 	teamrouter "DailyEnglish/router/team_router"
 	"database/sql"
 	"fmt"
-	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -32,30 +29,13 @@ func main() {
 	}
 	defer db.Close()
 
-	// Redis连接
-	client := redis.NewClient(&redis.Options{
-		Addr:     "r-bp1jdmrszl1yd6xxdipd.redis.rds.aliyuncs.com:6379", // Redis服务器地址
-		Password: "MIMAhezhanghao1yang",                                // Redis服务器密码
-		DB:       255,                                                  // 使用的Redis数据库编号
-	})
-	client.Ping().Result()
-	defer client.Close()
-
 	r := gin.Default()
 	r.Static("static/team_manager", "./static")
 	// r.Static("static/team_manager/css", "./static/css")
 	// r.Static("static/team_manager/js", "./static/js")
 	// r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html", "./static/404.html")
 
-	adminrouter.InitAdminRouter(r, client, db)
-	teamrouter.InitTeamRouter(r, client, db)
+	adminrouter.InitAdminRouter(r, db)
+	teamrouter.InitTeamRouter(r, db)
 	r.Run(":8080")
-
-	users, err := controlsql.QueryUserInfo(db)
-	if err != nil {
-		log.Fatal(err)
-	}
-	for i := 0; i < len(users); i++ {
-		fmt.Println(users[i])
-	}
 }
