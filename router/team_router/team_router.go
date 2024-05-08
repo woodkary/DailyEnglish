@@ -139,6 +139,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			Code  string `json:"code"` // 响应代码
 			Msg   string `json:"msg"`  // 响应消息
 			Exams []struct {
+				TeamName string `json:"team_name"` // 团队名称
 				TeamID   string `json:"team_id"`   // 团队ID
 				ExamID   string `json:"exam_id"`   // 考试ID
 				ExamName string `json:"exam_name"` // 考试名称
@@ -150,11 +151,19 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		for i, items := range Item {
 			for _, exam := range items {
 				var examInfo struct {
+					TeamName string `json:"team_name"`
 					TeamID   string `json:"team_id"`
 					ExamID   string `json:"exam_id"`
 					ExamName string `json:"exam_name"`
 				}
+				teamname, err := controlsql.SearchTeamNameByTeamID(db, userClaims.TeamID[i])
+				if err != nil {
+					c.JSON(500, "服务器错误")
+					log.Panic(err)
+					return
+				}
 				examInfo.TeamID = strconv.Itoa(userClaims.TeamID[i])
+				examInfo.TeamName = teamname
 				examInfo.ExamID = strconv.Itoa(exam.ExamID)
 				examInfo.ExamName = exam.ExamName
 				Response.Exams = append(Response.Exams, examInfo)
