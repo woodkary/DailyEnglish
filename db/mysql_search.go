@@ -204,3 +204,31 @@ func SearchQuestionIDsByExamID(db *sql.DB, examID int) ([]int, error) {
 
 	return questionIDs, nil
 }
+
+// 8 根据team_id查询user_id
+func SearchUserNameByTeamID(db *sql.DB, teamID int) ([]string, error) {
+	var userNames []string
+
+	// 查询数据库以获取用户名称
+	rows, err := db.Query("SELECT user_id FROM user_team WHERE team_id = ?", teamID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// 遍历结果集并收集用户名称
+	for rows.Next() {
+		var userName string
+		if err := rows.Scan(&userName); err != nil {
+			return nil, err
+		}
+		userNames = append(userNames, userName)
+	}
+
+	// 检查遍历过程中是否出错
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return userNames, nil
+}
