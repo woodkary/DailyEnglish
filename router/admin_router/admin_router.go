@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -92,13 +93,13 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 		}
 		if !controlsql.UserExists(db, data.Username) {
 			//验证码由前端完成判定
-			DefaultID := 2021111111 //默认ID
-			Key := "DailyEnglish"   //密钥
+
+			Key := "DailyEnglish" //密钥
 			cryptoPwd := service.AesEncrypt(data.Pwd, Key)
 			//获取系统当前日期
-			RegisterDate := utils.GetCurrentDate()
+			//RegisterDate := utils.GetCurrentDate()
 
-			if controlsql.InsertUserInfo(db, data.Username, "10086", cryptoPwd, data.Email, DefaultID, 18, 0, RegisterDate) != nil {
+			if controlsql.RegisterUser(db, data.Username, data.Email, cryptoPwd, "10086") != nil {
 				c.JSON(http.StatusOK, gin.H{
 					"code": "200",
 					"msg":  "注册成功",
@@ -138,12 +139,35 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 				"msg":  "用户不存在",
 			})
 		} else if controlsql.CheckUser(db, data.Username, data.Pwd) {
-			teamName, err := controlsql.GetJoinedTeams(client, data.Username)
-			//输出所有teamname
-			fmt.Println("teamName:", teamName, " err :", err)
+			item1, item2s, err := controlsql.GetTokenParams(db, data.Username)
+			//输出所有teamid
+			for _, item2 := range item2s {
+				fmt.Println(item2)
+			}
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"code": "500",
+					"msg":  "服务器内部错误",
+				})
+				return
+			}
+
+			//转化得到的Token参数为int类型
+			item1Int, err := strconv.Atoi(item1)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"code": "500",
+					"msg":  "服务器内部错误",
+				})
+				return
+			}
+			item2sInt := make([]int, len(item2s))
+			for i, item2 := range item2s {
+				item2sInt[i] = int(item2[i])
+			}
 
 			//生成token
-			token, err := service.GenerateToken(data.Username, teamName[0])
+			token, err := service.GenerateToken(item1Int, item2sInt)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{
 					"code": "500",
