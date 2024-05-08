@@ -143,7 +143,6 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 				TeamID   string `json:"team_id"`   // 团队ID
 				ExamID   string `json:"exam_id"`   // 考试ID
 				ExamName string `json:"exam_name"` // 考试名称
-				ExamDate string `json:"exam_date"` // 考试日期
 			} `json:"exams"` // 考试列表
 		}
 		var Response response
@@ -155,12 +154,10 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 					TeamID   string `json:"team_id"`
 					ExamID   string `json:"exam_id"`
 					ExamName string `json:"exam_name"`
-					ExamDate string `json:"exam_date"`
 				}
 				examInfo.TeamID = strconv.Itoa(userClaims.TeamID[i])
 				examInfo.ExamID = strconv.Itoa(exam.ExamID)
 				examInfo.ExamName = exam.ExamName
-				examInfo.ExamDate = exam.ExamDate
 				Response.Exams = append(Response.Exams, examInfo)
 			}
 		}
@@ -178,14 +175,13 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			return
 		}
 
-		examInfo, err := controlsql.GetExamInfoByID(client, "Exam1")
+		id, err := strconv.Atoi(request.ExamID)
 		if err != nil {
-			c.JSON(500, "服务器错误")
-			log.Panic(err)
+			c.JSON(400, "请求参数错误")
 			return
 		}
 
-		ScoresInExam, err := controlsql.GetScoresInExambyExamID(client, "Exam1")
+		ScoresInExam, err := controlsql.SearchExamScoreByExamID(db, id)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			log.Panic(err)
