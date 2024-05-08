@@ -1,8 +1,10 @@
 package DB
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
-//1根据manager_id查所有team_id和team_name
+// 1根据manager_id查所有team_id和team_name
 func SearchTeamInfoByManagerID(db *sql.DB, managerID int) ([]string, []string, error) {
 	var teamIDs []string
 	var teamNames []string
@@ -33,7 +35,7 @@ func SearchTeamInfoByManagerID(db *sql.DB, managerID int) ([]string, []string, e
 	return teamIDs, teamNames, nil
 }
 
-//2根据team_id查询该团队所有的exam_id,exam_name,exam_date
+// 2.1根据team_id查询该团队所有的exam_id,exam_name,exam_date
 // ExamInfo 结构体用于存储考试信息
 type ExamInfo struct {
 	ExamID   int
@@ -69,4 +71,30 @@ func SearchExamInfoByTeamID(db *sql.DB, teamID int) ([]ExamInfo, error) {
 	return examInfos, nil
 }
 
-//3
+// 2.1SearchExamInfoByTeamIDAndDate 根据团队ID和日期查询考试信息
+func SearchExamInfoByTeamIDAndDate(db *sql.DB, teamID int, date string) ([]ExamInfo, error) {
+	var examInfos []ExamInfo
+
+	// 查询数据库以获取考试信息
+	rows, err := db.Query("SELECT exam_id, exam_name, exam_date FROM exam_info WHERE team_id = ? AND exam_date = ?", teamID, date)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// 遍历结果集并收集考试信息
+	for rows.Next() {
+		var examInfo ExamInfo
+		if err := rows.Scan(&examInfo.ExamID, &examInfo.ExamName, &examInfo.ExamDate); err != nil {
+			return nil, err
+		}
+		examInfos = append(examInfos, examInfo)
+	}
+
+	// 检查遍历过程中是否出错
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return examInfos, nil
+}
