@@ -151,8 +151,8 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 	//获取单次考试详情
 	r.POST("/api/team_manage/exam_situation/exam_detail", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
-			ExamName string `json:"exam_name"` // 考试名称
-			TeamName string `json:"team_name"` // 团队名
+			ExamID string `json:"exam_id"` // 考试名称
+			TeamID string `json:"team_id"` // 团队名称
 		}
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
