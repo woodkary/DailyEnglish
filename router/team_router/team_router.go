@@ -275,50 +275,50 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 	})
 
 	//成员管理页面
-	r.POST("/api/team_manage/member_manage/data", tokenAuthMiddleware(), func(c *gin.Context) {
-		type Request struct {
-			Teamname string `json:"teamname"` // 团队名
-		}
-		var request Request
-		if err := c.ShouldBind(&request); err != nil {
-			c.JSON(400, "请求参数错误")
-			return
-		}
+	r.GET("/api/team_manage/member_manage/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
 		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
 		}
-
-		Item, err := controlsql.GetTeamInfo(db, userClaims.TeamID[0])
-		if err != nil {
-			c.JSON(500, "服务器错误")
-			return
-		}
 		type Member struct {
-			Name     string `json:"name"`      // 成员姓名
-			Right    string `json:"right"`     // 成员权限
-			Time     string `json:"time"`      // 时间
-			PunchDay string `json:"punch_day"` // 打卡天数
+			ID    int    `json:"id"`    // 成员ID
+			Name  string `json:"name"`  // 成员姓名
+			Phone string `json:"phone"` // 成员手机号
+			Email string `json:"email"` // 成员邮箱
+		}
+		type team struct {
+			TeamName string   `json:"team_name"` // 团队名
+			TeamID   int      `json:"team_id"`   // 团队ID
+			Members  []Member `json:"members"`   // 成员列表
 		}
 		type response struct {
-			Code    string   `json:"code"`    // 状态码
-			Msg     string   `json:"msg"`     // 消息
-			Members []Member `json:"members"` // 团队成员列表
+			Code string `json:"code"` // 状态码
+			Msg  string `json:"msg"`  // 消息
+			Team []team `json:"team"` // 团队列表
 		}
 		var Response response
-		for _, m := range Item.Members {
-			var member Member
-			member.Name = m.Username
-			member.PunchDay = strconv.Itoa(m.AttendanceDays)
-			member.Time = m.JoinDate
-			if m.IsAdmin {
-				member.Right = "管理员"
-			} else {
-				member.Right = "成员"
+		for _, teamID := range userClaims.TeamID {
+			var Team team
+			Team.TeamID = teamID
+			Team.TeamName, _ = controlsql.SearchTeamNameByTeamID(db, teamID)
+			users, err := controlsql.SearchUserIDByTeamID(db, teamID)
+			if err != nil {
+				c.JSON(500, "服务器错误")
+				return
 			}
-			Response.Members = append(Response.Members, member)
+			for _, userID := range users {
+				var Member Member
+				Member.ID = userID
+				Member.Name, Member.Phone, Member.Email, err = controlsql.SearchUserNameAndPhoneByUserID(db, userID)
+				if err != nil {
+					c.JSON(500, "服务器错误")
+					return
+				}
+				Team.Members = append(Team.Members, Member)
+			}
+			Response.Team = append(Response.Team, Team)
 		}
 		Response.Code = "200"
 		Response.Msg = "成功"
@@ -327,72 +327,18 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 	//成员删除
 	r.POST("/api/team_manage/member_manage/delete", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
-			Username string `json:"username"` // 要删除的成员的用户名
-			Teamname string `json:"teamname"` // 团队名
+			TeamID int `json:"team_id"` // 要删除的成员的用户名
+			UserID int `json:"user_id"` // 团队名
 		}
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(400, "请求参数错误")
 		}
-		err := controlsql.DeleteUserFromTeam(client, request.Teamname, request.Username)
+		err := controlsql.DeleteUserTeamByUserIDAndTeamID(db, request.TeamID, request.UserID)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
 		c.JSON(200, "删除成功")
-	})
-	//搜索成员
-	r.POST("/api/team_manage/member_manage/search", tokenAuthMiddleware(), func(c *gin.Context) {
-		type Request struct {
-			Username string `json:"username"` // 用户名
-			Teamname string `json:"teamname"` // 团队名
-		}
-		var request Request
-		if err := c.ShouldBind(&request); err != nil {
-			c.JSON(400, "请求参数错误")
-			return
-		}
-		Item, err := controlsql.GetTeamMembers(db, request.Teamname)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-			return
-		}
-		type Member struct {
-			Name     string `json:"name"`      // 成员姓名
-			Right    string `json:"right"`     // 成员权限
-			Time     string `json:"time"`      // 加入组织时间
-			PunchDay string `json:"punch_day"` // 打卡天数
-		}
-		type response struct {
-			Code    string   `json:"code"`    // 状态码
-			Msg     string   `json:"msg"`     // 消息
-			Members []Member `json:"members"` // 团队成员列表
-		}
-		var Response response
-		for _, m := range Item {
-			if m.Username == request.Username { // 检查成员名称是否与请求中的用户名匹配
-				var member Member
-				member.Name = m.Username
-				member.PunchDay = strconv.Itoa(m.AttendanceDays)
-				member.Time = m.JoinDate
-				if m.IsAdmin {
-					member.Right = "Admin"
-				} else {
-					member.Right = "Member"
-				}
-				Response.Members = append(Response.Members, member)
-				break // 如果找到了匹配的成员，就没有必要继续循环
-			}
-		}
-
-		if len(Response.Members) == 0 {
-			// 如果没有找到匹配的成员，返回空列表
-			Response.Code = "404"
-			Response.Msg = "未找到成员"
-		} else {
-			Response.Code = "200"
-			Response.Msg = "成功"
-		}
-		c.JSON(200, Response)
 	})
 	//获取个人中心界面所需信息
 	r.GET("/api/team_manage/personal_center/data", tokenAuthMiddleware(), func(c *gin.Context) {
