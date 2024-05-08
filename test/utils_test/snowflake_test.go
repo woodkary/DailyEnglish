@@ -1,4 +1,4 @@
-package utiltest
+package test
 
 import (
 	"DailyEnglish/utils/snowflake"
