@@ -150,7 +150,7 @@ func SearchQuestionStatistics(db *sql.DB, examID int, questionID int) ([]int, er
 	return questionStats, nil
 }
 
-// 7.1 根据team_id查team_name
+// 6.1 根据team_id查team_name
 func SearchTeamNameByTeamID(db *sql.DB, teamID int) (string, error) {
 	var teamName string
 
@@ -163,7 +163,7 @@ func SearchTeamNameByTeamID(db *sql.DB, teamID int) (string, error) {
 	return teamName, nil
 }
 
-// 7.2 SearchExamNameByExamID 根据考试ID查询考试名称
+// 6.2 SearchExamNameByExamID 根据考试ID查询考试名称
 func SearchExamNameByExamID(db *sql.DB, examID int) (string, error) {
 	var examName string
 
@@ -174,4 +174,17 @@ func SearchExamNameByExamID(db *sql.DB, examID int) (string, error) {
 	}
 
 	return examName, nil
+}
+
+// 7 根据exam_id查询exam_info里的quetion_id字段
+func SearchquetionIDbyexamID(db *sql.DB, examID int) (string, error) {
+	var questionID string
+
+	// 查询数据库以获取团队名称
+	err := db.QueryRow("SELECT question_id FROM exam_info WHERE exam_id = ?", examID).Scan(&questionID)
+	if err != nil {
+		return "", err
+	}
+
+	return questionID, nil
 }
