@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis"
 )
 
 func tokenAuthMiddleware() gin.HandlerFunc {
@@ -43,7 +42,7 @@ func tokenAuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
+func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 	//考试情况数据
 	r.POST("/api/team_manage/exam_situation/calendar", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
@@ -140,6 +139,7 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			Code  string `json:"code"` // 响应代码
 			Msg   string `json:"msg"`  // 响应消息
 			Exams []struct {
+				TeamName string `json:"team_name"` // 团队名称
 				TeamID   string `json:"team_id"`   // 团队ID
 				ExamID   string `json:"exam_id"`   // 考试ID
 				ExamName string `json:"exam_name"` // 考试名称
@@ -151,11 +151,19 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		for i, items := range Item {
 			for _, exam := range items {
 				var examInfo struct {
+					TeamName string `json:"team_name"`
 					TeamID   string `json:"team_id"`
 					ExamID   string `json:"exam_id"`
 					ExamName string `json:"exam_name"`
 				}
+				teamname, err := controlsql.SearchTeamNameByTeamID(db, userClaims.TeamID[i])
+				if err != nil {
+					c.JSON(500, "服务器错误")
+					log.Panic(err)
+					return
+				}
 				examInfo.TeamID = strconv.Itoa(userClaims.TeamID[i])
+				examInfo.TeamName = teamname
 				examInfo.ExamID = strconv.Itoa(exam.ExamID)
 				examInfo.ExamName = exam.ExamName
 				Response.Exams = append(Response.Exams, examInfo)
@@ -194,11 +202,17 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			Username string `json:"username"` // 用户名
 			Score    string `json:"score"`    // 得分
 			FailNum  string `json:"fail_num"` // 错题数量
-			Progress string `json:"progress"` // 进步分数 (相距上次)
+			Progress string `json:"progress"` // 进步名次 (相距上次)
 		}
 
-		QuestionNum := controlsql.GetQuestionNum(client, "Exam1") // 考试题目数量
-		var qd = make([][5]int, QuestionNum)                      // 考试题目详情
+		QuestionNum, err := controlsql.SearchQuestionNumByExamID(db, id) // 考试题目数量
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			log.Panic(err)
+			return
+		}
+
+		var qd = make([][5]int, QuestionNum) // 考试题目详情
 		for i := 0; i < QuestionNum; i++ {
 			for j := 0; j < 5; j++ {
 				//TODO
@@ -213,6 +227,13 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			QuestionDetail [][5]int     `json:"question_details"` // 考试题目详情
 			UserResult     []UserResult `json:"user_result"`      // 考试参与人员得分情况
 		}
+		ExamName, err := controlsql.SearchExamNameByExamID(db, id)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			log.Panic(err)
+			return
+		}
+
 		type response struct {
 			Code       string     `json:"code"`        // 状态码
 			Msg        string     `json:"msg"`         // 消息
@@ -221,10 +242,11 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		var Response response
 		Response.Code = "200"
 		Response.Msg = "成功"
-		Response.ExamDetail.ID = strconv.Itoa(examInfo.ID)
-		Response.ExamDetail.Name = examInfo.Name
-		Response.ExamDetail.UserLevels = levelNums
+		Response.ExamDetail.ID = strconv.Itoa(id)
+		Response.ExamDetail.Name = ExamName
+		Response.ExamDetail.UserLevels = levelNums[:]
 		Response.ExamDetail.QuestionDetail = qd
+		Response.ExamDetail.UserResult = make([]UserResult, 0)
 		for _, score := range ScoresInExam {
 			var userResult UserResult
 			userResult.Username = score.Username
@@ -245,17 +267,17 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			return
 		}
 
-		Item1, err := controlsql.GetTeamMembersAttendance1(client, userClaims.TeamName)
+		Item1, err := controlsql.GetTeamMembersAttendance1(db, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			return
 		}
-		Item2, err := controlsql.GetTeamMembersAttendanceByDate(client, userClaims.TeamName)
+		Item2, err := controlsql.GetTeamMembersAttendanceByDate(db, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			return
 		}
-		Item3, err := controlsql.GetTeamMembersAttendanceNum(client, userClaims.TeamName)
+		Item3, err := controlsql.GetTeamMembersAttendanceNum(db, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			return
@@ -299,7 +321,7 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			return
 		}
 
-		Item, err := controlsql.GetTeamInfo(client, userClaims.TeamName)
+		Item, err := controlsql.GetTeamInfo(db, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			return
@@ -359,7 +381,7 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			c.JSON(400, "请求参数错误")
 			return
 		}
-		Item, err := controlsql.GetTeamMembers(client, request.Teamname)
+		Item, err := controlsql.GetTeamMembers(db, request.Teamname)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			return
@@ -412,12 +434,12 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			return
 		}
 
-		Item1, err := controlsql.GetTeamRequestsByFlag(client, userClaims.TeamName, "0")
+		Item1, err := controlsql.GetTeamRequestsByFlag(db, userClaims.TeamName, "0")
 
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
-		Item2, err := controlsql.GetTeamInfo(client, userClaims.TeamName)
+		Item2, err := controlsql.GetTeamInfo(db, userClaims.TeamName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
@@ -481,7 +503,7 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		response.User.Password = Item2
 		response.User.Phone = Item3
 		response.User.Name = userClaims.UserName
-		response.User.Teams, err = controlsql.GetJoinedTeams(client, userClaims.UserName)
+		response.User.Teams, err = controlsql.GetJoinedTeams(db, userClaims.UserName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
