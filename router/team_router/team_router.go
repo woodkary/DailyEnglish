@@ -211,29 +211,53 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 	r.POST("/api/team_manage/exam_situation/exam_detail", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
 			ExamName string `json:"exam_name"` // 考试名称
+			TeamName string `json:"team_name"` // 团队名
 		}
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(400, "请求参数错误")
 			return
 		}
+
 		examInfo, err := controlsql.GetExamInfoByName(client, "Exam1")
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			log.Panic(err)
 			return
 		}
+
+		ScoresInExam, err := controlsql.GetScoresInExambyExamID(client, "Exam1")
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			log.Panic(err)
+			return
+		}
+		levelNums := service.CalculateUserLevel(ScoresInExam)
+
 		type UserResult struct {
 			Attend   string `json:"attend"`   // 考试参与情况
 			Username string `json:"username"` // 用户名
 			Score    string `json:"score"`    // 得分
 			FailNum  string `json:"fail_num"` // 错题数量
-
+			Progress string `json:"progress"` // 进步分数 (相距上次)
 		}
+
+		QuestionNum := controlsql.GetQuestionNum(client, "Exam1") // 考试题目数量
+		var QuestionDetail = make([][5]int, QuestionNum)          // 考试题目详情
+		for i := 0; i < QuestionNum; i++ {
+			for j := 0; j < 5; j++ {
+				//TODO
+				// 查询考试每一题正确选项，选A人数，选B人数，C,D
+			}
+		}
+
 		type ExamDetail struct {
-			ID          string       `json:"exam_id"`     // 考试ID
-			Name        string       `json:"exam_name"`   // 考试名称
-			UserResults []UserResult `json:"user_result"` // 考试参与人员及得分
+			ID             string       `json:"exam_id"`          // 考试ID
+			Name           string       `json:"exam_name"`        // 考试名称
+			UserLevels     []int        `json:"user_levels"`      // 用户等级
+			QuestionDetail [][5]int     `json:"question_details"` // 考试题目详情
+			UserResult     []UserResult `json:"user_result"`      // 考试参与人员得分情况
+
 		}
 		type response struct {
 			Code       string     `json:"code"`        // 状态码
@@ -245,7 +269,7 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		Response.Msg = "成功"
 		Response.ExamDetail.ID = strconv.Itoa(examInfo.ID)
 		Response.ExamDetail.Name = examInfo.Name
-		//TODO 这里应该查询数据库获取考试所有参与人员等情况
+
 		c.JSON(200, Response)
 	})
 

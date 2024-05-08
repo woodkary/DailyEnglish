@@ -10,8 +10,8 @@ var JWTkey = []byte("secret")
 
 type UserClaims struct {
 	jwt.StandardClaims
-	UserName string
-	TeamName string
+	UserID string
+	TeamID []string
 }
 
 func GenerateToken(userName string, teamName string) (string, error) {
