@@ -39,7 +39,7 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		// 验证邮箱是否已注册
-		if controlsql.GetUsernameByEmail(db, data.Email) {
+		if controlsql.EmailIsRegistered(db, data.Email) {
 			c.JSON(http.StatusConflict, gin.H{
 				"code": "409",
 				"msg":  "邮箱已注册",
@@ -90,7 +90,7 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 			})
 			return
 		}
-		if !controlsql.SearchUserByUsername(db, data.Username) {
+		if !controlsql.UserExists(db, data.Username) {
 			//验证码由前端完成判定
 			DefaultID := 2021111111 //默认ID
 			Key := "DailyEnglish"   //密钥

@@ -1,4 +1,4 @@
-package DB
+package db
 
 import (
 	"database/sql"
@@ -245,4 +245,42 @@ func SearchUserNameAndPhoneByUserID(db *sql.DB, userID int) (string, string, err
 	}
 
 	return userName, userPhone, nil
+}
+
+// 9 根据考试ID和团队ID和userID查询用户名，得分，进步
+func SearchClosestExamByTeamIDAndExamID(db *sql.DB, teamID, userID, examID int) (string, int, int, error) {
+	var username string
+	var score int
+	var examRank1 int
+	var examRank2 int
+	var delta int
+	var flag int
+	// 查询数据库以获取考试排名
+	err := db.QueryRow("SELECT exam_rank FROM user-exam_score WHERE exam_id = ? AND user_id = ?", examID, userID).Scan(&examRank1)
+
+	var closestExamID int
+
+	// 查询数据库以获取最近的另一场考试的ID
+	err = db.QueryRow("SELECT exam_id FROM exam_info WHERE team_id = ? AND exam_id != ? AND exam_date < (SELECT exam_date FROM exam_info WHERE exam_id = ?) ORDER BY exam_date DESC LIMIT 1", teamID, examID, examID).Scan(&closestExamID)
+	if err != nil {
+		flag = 0
+	}
+
+	// 查询数据库以获取考试排名
+	err = db.QueryRow("SELECT exam_rank FROM user-exam_score WHERE exam_id = ? AND user_id = ?", closestExamID, userID).Scan(&examRank2)
+	if err != nil {
+		flag = 0
+	}
+
+	flag = 1
+	if flag == 1 {
+		delta = examRank1 - examRank2
+	} else {
+		delta = 0
+	}
+
+	db.QueryRow("SELECT username FROM user_info WHERE user_id = ? ", userID).Scan(&username)
+	db.QueryRow("SELECT user_score FROM user-exam_score WHERE exam_id = ? AND user_id = ?", examID, userID).Scan(&score)
+
+	return username, score, delta, nil
 }
