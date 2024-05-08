@@ -31,18 +31,20 @@ func UserExists(db *sql.DB, username string) bool {
 }
 
 // 插入用户 数据库字段有username string, email string, pwd string, sex int, phone string, birthday date, register_date date
-func RegisterUser(db *sql.DB, username string, email string, pwd string, sex int, phone string, birthday date, register_date date) int {
-	stmt, err := db.Prepare("INSERT INTO users(username, email, pwd, sex, phone, birthday, register_date) VALUES(?,?)")
+// RegisterUser 向 user_info 表中插入用户数据
+func RegisterUser(db *sql.DB, username, email, password string, sex int, phone string, birthday string, registerDate string) error {
+	// 准备插入语句
+	stmt, err := db.Prepare("INSERT INTO user_info(username, email, pwd, sex, phone, birthday, register_date) VALUES(?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
-		return 0
+		return err
 	}
-	res, err := stmt.Exec(username, email, pwd, sex, phone, birthday, register_date)
+	defer stmt.Close()
+
+	// 执行插入语句
+	_, err = stmt.Exec(username, email, password, sex, phone, birthday, registerDate)
 	if err != nil {
-		return 0
+		return err
 	}
-	id, err := res.LastInsertId()
-	if err != nil {
-		return 0
-	}
-	return int(id)
+
+	return nil
 }
