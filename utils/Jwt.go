@@ -14,10 +14,10 @@ type UserClaims struct {
 	TeamID []string
 }
 
-func GenerateToken(userName string, teamName string) (string, error) {
+func GenerateToken(userID string, teamID []string) (string, error) {
 	claims := UserClaims{
-		UserName: userName,
-		TeamName: teamName,
+		UserID: userID,
+		TeamID: teamID,
 		StandardClaims: jwt.StandardClaims{
 			Issuer:    "DailyEnglish",
 			IssuedAt:  time.Now().Unix(), // token will be valid for 1 hour
