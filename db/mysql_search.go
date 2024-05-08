@@ -2,6 +2,7 @@ package DB
 
 import (
 	"database/sql"
+	"strconv"
 )
 
 // 1根据manager_id查所有team_id和team_name
@@ -127,7 +128,7 @@ func SearchQuestionNumByExamID(db *sql.DB, examID int) (int, error) {
 // 5 根据exam_id和quetion_id查询quetion_statistics表里的A_num,B_num,C_num,D_num,以及使用quetion_id查询quetion_info里的quetion_answer
 func SearchQuestionStatistics(db *sql.DB, examID int, questionID int) ([]int, error) {
 	var A_num, B_num, C_num, D_num int = 0, 0, 0, 0
-	var correctAnswer int = 0
+	var correctAnswer string
 	// 查询题目统计信息
 	err := db.QueryRow("SELECT A_num, B_num, C_num, D_num FROM quetion_statistics WHERE exam_id = ? AND question_id = ?", examID, questionID).Scan(&A_num, &B_num, &C_num, &D_num)
 	if err != nil {
@@ -139,9 +140,13 @@ func SearchQuestionStatistics(db *sql.DB, examID int, questionID int) ([]int, er
 	if err != nil {
 		return nil, err
 	}
+	ans, err := strconv.Atoi(correctAnswer)
+	if err != nil {
+		return nil, err
+	}
 
 	// 填充字段
-	questionStats := []int{correctAnswer, A_num, B_num, C_num, D_num}
+	questionStats := []int{ans, A_num, B_num, C_num, D_num}
 	return questionStats, nil
 }
 
