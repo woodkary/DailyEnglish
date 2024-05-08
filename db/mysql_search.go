@@ -151,39 +151,20 @@ func SearchQuestionStatistics(db *sql.DB, examID int, questionID int) ([]int, er
 	return questionStats, nil
 }
 
-<<<<<<< HEAD
-// 6.1 根据team_id查team_name
-=======
 // 6 根据exam_id查询exam_info里的quetion_id字段
-func SearchQuestionIDsByExamID(db *sql.DB, examID int) ([]int, error) {
-	var questionIDStr string
+func SearchquetionIDbyexamID(db *sql.DB, examID int) (string, error) {
+	var questionID string
 
-	// 查询数据库以获取题目ID字符串
-	err := db.QueryRow("SELECT question_id FROM exam_info WHERE exam_id = ?", examID).Scan(&questionIDStr)
+	// 查询数据库以获取团队名称
+	err := db.QueryRow("SELECT question_id FROM exam_info WHERE exam_id = ?", examID).Scan(&questionID)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	// 切割字符串以获取各个题目ID
-	questionIDStrs := strings.Split(questionIDStr, "-")
-
-	// 创建整数数组用于存储题目ID
-	questionIDs := make([]int, len(questionIDStrs))
-
-	// 将字符串转换为整数并存储到数组中
-	for i, str := range questionIDStrs {
-		id, err := strconv.Atoi(str)
-		if err != nil {
-			return nil, err
-		}
-		questionIDs[i] = id
-	}
-
-	return questionIDs, nil
+	return questionID, nil
 }
 
 // 7.1 根据team_id查team_name
->>>>>>> 8abdee9f63cd004026b2fcace1a4c1a963aa79a7
 func SearchTeamNameByTeamID(db *sql.DB, teamID int) (string, error) {
 	var teamName string
 
@@ -235,4 +216,42 @@ func SearchQuestionIDsByExamID(db *sql.DB, examID int) ([]int, error) {
 	}
 
 	return questionIDs, nil
+}
+
+// 8 根据考试ID和团队ID和userID查询用户名，得分，进步
+func SearchClosestExamByTeamIDAndExamID(db *sql.DB, teamID, userID, examID int) (string, int, int, error) {
+	var username string
+	var score int
+	var examRank1 int
+	var examRank2 int
+	var delta int
+	var flag int
+	// 查询数据库以获取考试排名
+	err := db.QueryRow("SELECT exam_rank FROM user-exam_score WHERE exam_id = ? AND user_id = ?", examID, userID).Scan(&examRank1)
+
+	var closestExamID int
+
+	// 查询数据库以获取最近的另一场考试的ID
+	err = db.QueryRow("SELECT exam_id FROM exam_info WHERE team_id = ? AND exam_id != ? AND exam_date < (SELECT exam_date FROM exam_info WHERE exam_id = ?) ORDER BY exam_date DESC LIMIT 1", teamID, examID, examID).Scan(&closestExamID)
+	if err != nil {
+		flag = 0
+	}
+
+	// 查询数据库以获取考试排名
+	err = db.QueryRow("SELECT exam_rank FROM user-exam_score WHERE exam_id = ? AND user_id = ?", closestExamID, userID).Scan(&examRank2)
+	if err != nil {
+		flag = 0
+	}
+
+	flag = 1
+	if flag == 1 {
+		delta = examRank1 - examRank2
+	} else {
+		delta = 0
+	}
+
+	db.QueryRow("SELECT username FROM user_info WHERE user_id = ? ", userID).Scan(&username)
+	db.QueryRow("SELECT user_score FROM user-exam_score WHERE exam_id = ? AND user_id = ?", examID, userID).Scan(&score)
+
+	return username, score, delta, nil
 }
