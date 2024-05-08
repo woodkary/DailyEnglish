@@ -132,7 +132,7 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 
-		if !controlsql.SearchUserByUsername(db, data.Username) {
+		if !controlsql.UserExists(db, data.Username) {
 			c.JSON(http.StatusForbidden, gin.H{
 				"code": "403",
 				"msg":  "用户不存在",

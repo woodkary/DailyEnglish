@@ -4,7 +4,6 @@ import (
 	"database/sql"
 
 	_ "github.com/go-sql-driver/mysql"
-	"golang.org/x/text/date"
 )
 
 func EmailIsRegistered(db *sql.DB, email string) bool {
@@ -32,7 +31,7 @@ func UserExists(db *sql.DB, username string) bool {
 }
 
 // 插入用户 数据库字段有username string, email string, pwd string, sex int, phone string, birthday date, register_date date
-func RegisterUser(db *sql.DB, username string, email string, pwd string, sex int, phone string, birthday date, register_date date）int {
+func RegisterUser(db *sql.DB, username string, email string, pwd string, sex int, phone string, birthday date, register_date date) int {
 	stmt, err := db.Prepare("INSERT INTO users(username, email, pwd, sex, phone, birthday, register_date) VALUES(?,?)")
 	if err != nil {
 		return 0
