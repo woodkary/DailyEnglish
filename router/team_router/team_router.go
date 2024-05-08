@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
@@ -43,175 +44,115 @@ func tokenAuthMiddleware() gin.HandlerFunc {
 }
 
 func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
-	//主页数据
-	r.GET("/api/team_manage/index/data", tokenAuthMiddleware(), func(c *gin.Context) {
-		// 定义JSON响应的结构体
-		type Response struct {
-			Code  string `json:"code"`
-			Msg   string `json:"msg"`
-			Punch struct {
-				Total_punchrate string   `json:"total_punchrate"`
-				Punched         int      `json:"punched"`
-				PunchNum        []string `json:"punch_num"`
-				PunchRate       []string `json:"punch_rate"`
-				PunchLB         []struct {
-					Name      string `json:"name"`
-					PunchRate string `json:"punch_rate"`
-					PunchDay  string `json:"punch_day"`
-				} `json:"punch_LB"`
-			} `json:"Punch"`
-			Exam struct {
-				Time   string `json:"time"`
-				ExamLB []struct {
-					Name      string `json:"name"`
-					ExamRank  string `json:"exam_rank"`
-					ExamScore string `json:"exam_score"`
-				} `json:"exam_LB"`
-			} `json:"exam"`
-			Notice struct {
-				NoticeJoin   int `json:"notice_join"`
-				NoticeRecent []struct {
-					NoticeData string `json:"notice_data"`
-					NoticeTime string `json:"notice_time"`
-				} `json:"notice_recent"`
-			} `json:"notice"`
-		}
-		var response Response
-		//@TODO 添加数据库查找数据放入response中的逻辑
-		//下面给定死的
-		response.Code = "200"
-		response.Msg = "成功"
-		response.Punch.Punched = 45
-		response.Punch.Total_punchrate = "87%"
-		response.Punch.PunchNum = []string{"45", "40", "37", "42", "48", "22", "46"}
-		response.Punch.PunchRate = []string{"0.9", "0.8", "0.7", "0.8", "0.96", "0.5", "0.93"}
-		Item1 := struct {
-			Name      string `json:"name"`
-			PunchRate string `json:"punch_rate"`
-			PunchDay  string `json:"punch_day"`
-		}{"OTTO", "87%", "666"}
-		response.Punch.PunchLB = append(response.Punch.PunchLB, Item1)
-		response.Punch.PunchLB = append(response.Punch.PunchLB, Item1)
-		response.Punch.PunchLB = append(response.Punch.PunchLB, Item1)
-		response.Punch.PunchLB = append(response.Punch.PunchLB, Item1)
-		response.Punch.PunchLB = append(response.Punch.PunchLB, Item1)
-		response.Punch.PunchLB = append(response.Punch.PunchLB, Item1)
-		response.Exam.Time = "三月三十五日"
-		Item2 := struct {
-			Name      string `json:"name"`
-			ExamRank  string `json:"exam_rank"`
-			ExamScore string `json:"exam_score"`
-		}{"OTTO", "第一名", "99"}
-		response.Exam.ExamLB = append(response.Exam.ExamLB, Item2)
-		Item2.ExamRank = "第二名"
-		Item2.ExamScore = "97"
-		response.Exam.ExamLB = append(response.Exam.ExamLB, Item2)
-		Item2.ExamRank = "第三名"
-		Item2.ExamScore = "87"
-		response.Exam.ExamLB = append(response.Exam.ExamLB, Item2)
-		Item2.ExamRank = "第四名"
-		Item2.ExamScore = "83"
-		response.Exam.ExamLB = append(response.Exam.ExamLB, Item2)
-		Item2.ExamRank = "第五名"
-		Item2.ExamScore = "74"
-		response.Exam.ExamLB = append(response.Exam.ExamLB, Item2)
-		Item2.ExamRank = "第六名"
-		Item2.ExamScore = "55"
-		response.Exam.ExamLB = append(response.Exam.ExamLB, Item2)
-		response.Notice.NoticeJoin = 5
-		Item3 := struct {
-			NoticeData string `json:"notice_data"`
-			NoticeTime string `json:"notice_time"`
-		}{"您有新增的团队加入申请，请及时审核", "1分钟前"}
-		response.Notice.NoticeRecent = append(response.Notice.NoticeRecent, Item3)
-		response.Notice.NoticeRecent = append(response.Notice.NoticeRecent, Item3)
-		response.Notice.NoticeRecent = append(response.Notice.NoticeRecent, Item3)
-		response.Notice.NoticeRecent = append(response.Notice.NoticeRecent, Item3)
-		response.Notice.NoticeRecent = append(response.Notice.NoticeRecent, Item3)
-		response.Notice.NoticeRecent = append(response.Notice.NoticeRecent, Item3)
-		c.JSON(200, response)
-	})
-	//主页打卡详情
-	r.GET("/api/team_manage/index/sign_in_details", tokenAuthMiddleware(), func(c *gin.Context) {
+	//考试情况数据
+	r.GET("/api/team_manage/exam_situation/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
 		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
 		}
-		Item, err := controlsql.GetTeamMembersAttendanceByDate(client, userClaims.TeamName)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-		}
-		// SignInDetails 结构体对应于JSON数组中的一个对象
-		type SignInDetails struct {
-			Name     string `json:"name"`
-			IsSignIn string `json:"issignIn"`
-		}
-		// Response 结构体对应于JSON响应
-		type Response struct {
-			Code    string          `json:"code"`
-			Msg     string          `json:"msg"`
-			Details []SignInDetails `json:"sign_in_details"`
-		}
-		var response Response
-		for key, value := range Item {
-			var sign_in_details SignInDetails
-			sign_in_details.Name = key
-			if value == 1 {
-				sign_in_details.IsSignIn = "是"
-			} else {
-				sign_in_details.IsSignIn = "否"
+		//TODO这里是查询数据库获取数据
+		var Item []controlsql.ExamInfo
+		for _, teamID := range userClaims.TeamID {
+			examInfo, err := controlsql.SearchExamInfoByTeamID(db, teamID)
+			if err != nil {
+				c.JSON(500, "服务器错误")
+				log.Panic(err)
+				return
 			}
-			response.Details = append(response.Details, sign_in_details)
+			Item = append(Item, examInfo...)
 		}
-		c.JSON(200, response)
+
+		// ExamsResponse 结构体表示包含多个考试的响应
+		type response struct {
+			Code      string   `json:"code"`      // 响应代码
+			Msg       string   `json:"msg"`       // 响应消息
+			Exam_date []string `json:"exam_date"` // 有考试的日期
+		}
+		var Response response
+
+		//TODO 将查询到的考试信息转换为响应的结构体
+		for _, exam := range Item {
+			now := time.Now()
+
+			examDate, err := time.Parse("2006-01-02", exam.ExamDate)
+			if err != nil {
+				log.Println("Error parsing date:", err)
+				continue
+			}
+
+			if examDate.Year() == now.Year() && examDate.Month() == now.Month() {
+				Response.Exam_date = append(Response.Exam_date, exam.ExamDate)
+			}
+		}
+		Response.Code = "200"
+		Response.Msg = "成功"
+		c.JSON(200, Response)
 	})
-	//考试情况数据
-	r.GET("/api/team_manage/exam_situation/data", tokenAuthMiddleware(), func(c *gin.Context) {
+	//获取某日管理的团队的所有考试信息
+	r.POST("/api/team_manage/exam_situation/exam_data", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			Date string `json:"date"` // 日期
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(400, "请求参数错误")
+			return
+		}
 		user, _ := c.Get("user")
-		_, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
+		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
 		}
 		//TODO这里是查询数据库获取数据
-		// ExamInfo 结构体表示单个考试的信息
-		type ExamInfo struct {
-			Name string `json:"name"` // 考试名称
-			Time string `json:"time"` // 考试时间
-			Date string `json:"date"` // 考试日期
-		}
+		var Item []controlsql.ExamInfo
+		for _, teamID := range userClaims.TeamID {
+			examInfo, err := controlsql.SearchExamInfoByTeamIDAndDate(db, teamID, request.Date)
+			if err != nil {
+				c.JSON(500, "服务器错误")
+				log.Panic(err)
+				return
 
+			}
+			Item = append(Item, examInfo...)
+		}
 		// ExamsResponse 结构体表示包含多个考试的响应
 		type response struct {
-			Code  string     `json:"code"`  // 响应代码
-			Msg   string     `json:"msg"`   // 响应消息
-			Exams []ExamInfo `json:"exams"` // 考试列表
+			Code  string `json:"code"` // 响应代码
+			Msg   string `json:"msg"`  // 响应消息
+			Exams []struct {
+				ExamID   string `json:"exam_id"`   // 考试ID
+				ExamName string `json:"exam_name"` // 考试名称
+				ExamDate string `json:"exam_date"` // 考试日期
+			} `json:"exams"` // 考试列表
 		}
 		var Response response
-		var examinfo ExamInfo
-		//TODO 将查询到的考试信息转换为响应的结构体
-		examinfo.Name = "软工01"
-		examinfo.Time = "10:00-12:00"
-		examinfo.Date = "2021-03-01"
-		Response.Exams = append(Response.Exams, examinfo)
-		examinfo.Name = "软工02"
-		examinfo.Time = "10:00-12:00"
-		examinfo.Date = "2021-03-02"
-		Response.Exams = append(Response.Exams, examinfo)
-		examinfo.Name = "软工01"
-		examinfo.Time = "10:00-12:00"
-		examinfo.Date = "2021-03-02"
 		Response.Code = "200"
 		Response.Msg = "成功"
+		for _, exam := range Item {
+			if exam.ExamDate == request.Date {
+				var examData struct {
+					ExamID   string `json:"exam_id"`
+					ExamName string `json:"exam_name"`
+					ExamDate string `json:"exam_date"`
+				}
+
+				examData.ExamID = strconv.Itoa(exam.ExamID)
+				examData.ExamName = exam.ExamName
+				examData.ExamDate = exam.ExamDate
+				Response.Exams = append(Response.Exams, examData)
+			}
+		}
 		c.JSON(200, Response)
 	})
+
 	//获取单次考试详情
 	r.POST("/api/team_manage/exam_situation/exam_detail", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
-			ExamName string `json:"exam_name"` // 考试名称
-			TeamName string `json:"team_name"` // 团队名
+			ExamID string `json:"exam_id"` // 考试名称
+			TeamID string `json:"team_id"` // 团队名称
 		}
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
