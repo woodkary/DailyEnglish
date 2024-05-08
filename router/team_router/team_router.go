@@ -4,7 +4,6 @@ import (
 	controlsql "DailyEnglish/db"
 	service "DailyEnglish/utils"
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -171,23 +170,17 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 	//考试情况数据
 	r.GET("/api/team_manage/exam_situation/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
-		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
+		_, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
 		}
-		Item, err := controlsql.QueryTeamExams(client, userClaims.TeamName)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-			return
-		}
+		//TODO这里是查询数据库获取数据
 		// ExamInfo 结构体表示单个考试的信息
 		type ExamInfo struct {
-			Name         string `json:"name"`          // 考试名称
-			Time         string `json:"time"`          // 考试时间
-			FullScore    string `json:"full_score"`    // 满分
-			AverageScore string `json:"average_score"` // 平均分
-			PassRate     string `json:"pass_rate"`     // 通过率
+			Name string `json:"name"` // 考试名称
+			Time string `json:"time"` // 考试时间
+			Date string `json:"date"` // 考试日期
 		}
 
 		// ExamsResponse 结构体表示包含多个考试的响应
@@ -198,14 +191,18 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		}
 		var Response response
 		var examinfo ExamInfo
-		for _, item := range Item {
-			examinfo.Name = item["Name"]
-			examinfo.FullScore = "100"
-			examinfo.AverageScore = item["AverageScore"]
-			examinfo.PassRate = item["PassRate"]
-			examinfo.Time = item["Date"]
-			Response.Exams = append(Response.Exams, examinfo)
-		}
+		//TODO 将查询到的考试信息转换为响应的结构体
+		examinfo.Name = "软工01"
+		examinfo.Time = "10:00-12:00"
+		examinfo.Date = "2021-03-01"
+		Response.Exams = append(Response.Exams, examinfo)
+		examinfo.Name = "软工02"
+		examinfo.Time = "10:00-12:00"
+		examinfo.Date = "2021-03-02"
+		Response.Exams = append(Response.Exams, examinfo)
+		examinfo.Name = "软工01"
+		examinfo.Time = "10:00-12:00"
+		examinfo.Date = "2021-03-02"
 		Response.Code = "200"
 		Response.Msg = "成功"
 		c.JSON(200, Response)
@@ -220,19 +217,7 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			c.JSON(400, "请求参数错误")
 			return
 		}
-
 		examInfo, err := controlsql.GetExamInfoByName(client, "Exam1")
-		fmt.Println(examInfo)
-		fmt.Println("AverageScore", examInfo.AverageScore)
-		fmt.Println("PassRate", examInfo.PassRate)
-		fmt.Println("QuestionCount", examInfo.QuestionCount)
-		fmt.Println("ID", examInfo.ID)
-		fmt.Println("Name", examInfo.Name)
-		fmt.Println("TopSix", examInfo.TopSix)
-		fmt.Println(examInfo.Questions)
-		//fmt.Println("TotalScore",examInfo.TotalScore)
-		//fmt.Println("TotalUser",examInfo.TotalUser)
-
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			log.Panic(err)
