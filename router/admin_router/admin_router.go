@@ -92,13 +92,13 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 		}
 		if !controlsql.UserExists(db, data.Username) {
 			//验证码由前端完成判定
-			DefaultID := 2021111111 //默认ID
-			Key := "DailyEnglish"   //密钥
+
+			Key := "DailyEnglish" //密钥
 			cryptoPwd := service.AesEncrypt(data.Pwd, Key)
 			//获取系统当前日期
-			RegisterDate := utils.GetCurrentDate()
+			//RegisterDate := utils.GetCurrentDate()
 
-			if controlsql.InsertUserInfo(db, data.Username, "10086", cryptoPwd, data.Email, DefaultID, 18, 0, RegisterDate) != nil {
+			if controlsql.RegisterUser(db, data.Username, data.Email, cryptoPwd, "10086") != nil {
 				c.JSON(http.StatusOK, gin.H{
 					"code": "200",
 					"msg":  "注册成功",
@@ -138,7 +138,7 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 				"msg":  "用户不存在",
 			})
 		} else if controlsql.CheckUser(db, data.Username, data.Pwd) {
-			teamName, err := controlsql.GetJoinedTeams(client, data.Username)
+			teamName, err := controlsql.GetJoinedTeams(db, data.Username)
 			//输出所有teamname
 			fmt.Println("teamName:", teamName, " err :", err)
 
