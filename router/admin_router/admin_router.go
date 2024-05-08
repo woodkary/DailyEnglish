@@ -2,8 +2,7 @@ package adminrouter
 
 import (
 	controlsql "DailyEnglish/db"
-	"DailyEnglish/utils"
-	service "DailyEnglish/utils"
+	utils "DailyEnglish/utils"
 	"database/sql"
 	"fmt"
 	"net/http"
@@ -94,7 +93,7 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 			//验证码由前端完成判定
 
 			Key := "DailyEnglish" //密钥
-			cryptoPwd := service.AesEncrypt(data.Pwd, Key)
+			cryptoPwd := utils.AesEncrypt(data.Pwd, Key)
 			//获取系统当前日期
 			//RegisterDate := utils.GetCurrentDate()
 
@@ -152,7 +151,7 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 			}
 
 			//生成token
-			token, err := service.GenerateToken(item1, item2s)
+			token, err := utils.GenerateToken(item1, item2s)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{
 					"code": "500",
