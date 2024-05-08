@@ -219,7 +219,7 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			return
 		}
 
-		examInfo, err := controlsql.GetExamInfoByName(client, "Exam1")
+		examInfo, err := controlsql.GetExamInfoByID(client, "Exam1")
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			log.Panic(err)
@@ -275,8 +275,8 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			var userResult UserResult
 			userResult.Username = score.Username
 			userResult.Score = score.Score
-			userResult.FailNum = "0"
-			userResult.Progress = "0"
+			userResult.FailNum = "0"  //
+			userResult.Progress = "0" //
 			Response.ExamDetail.UserResult = append(Response.ExamDetail.UserResult, userResult)
 		}
 		c.JSON(200, Response)

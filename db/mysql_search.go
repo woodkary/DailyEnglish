@@ -66,3 +66,15 @@ func SearchExamsByTeamID(db *sql.DB, teamID int) ([]int, []string, []string, err
 
 	return examIDs, examNames, examDates, nil
 }
+
+
+//3根据exam_id查询ExamInfo
+func SearchExamInfoByExamID(db *sql.DB, examID string) (string, error) {
+	ID := examID.Atoi()
+
+	// 查询数据库以获取考试信息
+	row := db.QueryRow("SELECT exam_name FROM exam_info WHERE exam_id = ?", ID)
+	if err := row.Scan(&examName); err != nil {
+		return "", err
+	}
+
