@@ -109,7 +109,7 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		//TODO这里是查询数据库获取数据
 		var Item []controlsql.ExamInfo
 		for _, teamID := range userClaims.TeamID {
-			examInfo, err := controlsql.SearchExamInfoByTeamID(db, teamID)
+			examInfo, err := controlsql.SearchExamInfoByTeamIDAndDate(db, teamID, request.Date)
 			if err != nil {
 				c.JSON(500, "服务器错误")
 				log.Panic(err)
@@ -147,6 +147,7 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		}
 		c.JSON(200, Response)
 	})
+
 	//获取单次考试详情
 	r.POST("/api/team_manage/exam_situation/exam_detail", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
