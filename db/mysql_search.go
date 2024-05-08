@@ -1,4 +1,4 @@
-package DB
+package db
 
 import (
 	"database/sql"
@@ -151,20 +151,7 @@ func SearchQuestionStatistics(db *sql.DB, examID int, questionID int) ([]int, er
 	return questionStats, nil
 }
 
-// 6 根据exam_id查询exam_info里的quetion_id字段
-func SearchquetionIDbyexamID(db *sql.DB, examID int) (string, error) {
-	var questionID string
-
-	// 查询数据库以获取团队名称
-	err := db.QueryRow("SELECT question_id FROM exam_info WHERE exam_id = ?", examID).Scan(&questionID)
-	if err != nil {
-		return "", err
-	}
-
-	return questionID, nil
-}
-
-// 7.1 根据team_id查team_name
+// 6.1 根据team_id查team_name
 func SearchTeamNameByTeamID(db *sql.DB, teamID int) (string, error) {
 	var teamName string
 
@@ -218,7 +205,49 @@ func SearchQuestionIDsByExamID(db *sql.DB, examID int) ([]int, error) {
 	return questionIDs, nil
 }
 
-// 8 根据考试ID和团队ID和userID查询用户名，得分，进步
+// 8 根据team_id查询user_id
+func SearchUserIDByTeamID(db *sql.DB, teamID int) ([]int, error) {
+	var userIDs []int
+
+	// 查询数据库以获取用户名称
+	rows, err := db.Query("SELECT user_id FROM user_team WHERE team_id = ?", teamID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// 遍历结果集并收集用户名称
+	for rows.Next() {
+		var userID int
+		if err := rows.Scan(&userID); err != nil {
+			return nil, err
+		}
+		userIDs = append(userIDs, userID)
+	}
+
+	// 检查遍历过程中是否出错
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return userIDs, nil
+}
+
+// 8.1 根据user_ids查询user_names和user_phones
+func SearchUserNameAndPhoneByUserID(db *sql.DB, userID int) (string, string, error) {
+	var userName string
+	var userPhone string
+
+	// 查询数据库以获取用户名称
+	err := db.QueryRow("SELECT username, phone FROM user_info WHERE user_id = ?", userID).Scan(&userName, &userPhone)
+	if err != nil {
+		return "", "", err
+	}
+
+	return userName, userPhone, nil
+}
+
+// 9 根据考试ID和团队ID和userID查询用户名，得分，进步
 func SearchClosestExamByTeamIDAndExamID(db *sql.DB, teamID, userID, examID int) (string, int, int, error) {
 	var username string
 	var score int
