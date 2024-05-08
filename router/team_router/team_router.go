@@ -218,7 +218,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			QuestionDetail [][5]int     `json:"question_details"` // 考试题目详情
 			UserResult     []UserResult `json:"user_result"`      // 考试参与人员得分情况
 		}
-		ExamName, err := controlsql.SearchExamInfoByExamID(db, id)
+		ExamName, err := controlsql.SearchExamNameByExamID(db, id)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			log.Panic(err)
