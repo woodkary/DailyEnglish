@@ -10,11 +10,11 @@ var JWTkey = []byte("secret")
 
 type UserClaims struct {
 	jwt.StandardClaims
-	UserID string
+	UserID int
 	TeamID []int
 }
 
-func GenerateToken(userID string, teamID []int) (string, error) {
+func GenerateToken(userID int, teamID []int) (string, error) {
 	claims := UserClaims{
 		UserID: userID,
 		TeamID: teamID,

@@ -270,6 +270,10 @@ func SearchClosestExamByTeamIDAndExamID(db *sql.DB, teamID, userID, examID int) 
 	if err != nil {
 		flag = 0
 	}
+	if err != nil {
+		flag = 0
+	}
+
 	var closestExamID int
 
 	// 查询数据库以获取最近的另一场考试的ID
@@ -295,4 +299,39 @@ func SearchClosestExamByTeamIDAndExamID(db *sql.DB, teamID, userID, examID int) 
 	db.QueryRow("SELECT user_score FROM user-exam_score WHERE exam_id = ? AND user_id = ?", examID, userID).Scan(&score)
 
 	return username, score, delta, nil
+}
+
+type ManagerInfo struct {
+	ManagerID       int
+	ManagerName     string
+	ManagerPhone    string
+	ManagerEmail    string
+	ManagerPartment string
+}
+
+// 10 根据manager_id查询manager_info数据表里的manager_name,manager_phone,manager_email,manager_partment
+func SearchManagerInfoByManagerID(db *sql.DB, managerID int) (ManagerInfo, error) {
+	var managerInfo ManagerInfo
+
+	// 查询数据库以获取管理员信息
+	err := db.QueryRow("SELECT manager_name, manager_phone, manager_email, manager_partment FROM manager_info WHERE manager_id = ?", managerID).Scan(&managerInfo.ManagerName, &managerInfo.ManagerPhone, &managerInfo.ManagerEmail, &managerInfo.ManagerPartment)
+	if err != nil {
+		return ManagerInfo{}, err
+	}
+
+	return managerInfo, nil
+}
+
+// 11 根据team_id查询team_info数据表里team_name,member_num
+func SearchTeamInfoByTeamID(db *sql.DB, teamID int) (string, int, error) {
+	var teamName string
+	var memberNum int
+
+	// 查询数据库以获取团队信息
+	err := db.QueryRow("SELECT team_name, member_num FROM team_info WHERE team_id = ?", teamID).Scan(&teamName, &memberNum)
+	if err != nil {
+		return "", 0, err
+	}
+
+	return teamName, memberNum, nil
 }
