@@ -136,7 +136,7 @@ type QuestionStatistics struct {
 	DNum           int
 }
 
-// SearchQuestionStatistics 根据考试ID和题目ID查询题目统计信息
+// 6 SearchQuestionStatistics 根据考试ID和题目ID查询题目统计信息
 func SearchQuestionStatistics(db *sql.DB, examID, questionID int) (QuestionStatistics, error) {
 	var questionStats QuestionStatistics
 
@@ -157,4 +157,30 @@ func SearchQuestionStatistics(db *sql.DB, examID, questionID int) (QuestionStati
 	questionStats.QuestionID = questionID
 
 	return questionStats, nil
+}
+
+// 7.1 根据team_id查team_name
+func SearchTeamNameByTeamID(db *sql.DB, teamID int) (string, error) {
+	var teamName string
+
+	// 查询数据库以获取团队名称
+	err := db.QueryRow("SELECT team_name FROM team_info WHERE team_id = ?", teamID).Scan(&teamName)
+	if err != nil {
+		return "", err
+	}
+
+	return teamName, nil
+}
+
+// 7.2 SearchExamNameByExamID 根据考试ID查询考试名称
+func SearchExamNameByExamID(db *sql.DB, examID int) (string, error) {
+	var examName string
+
+	// 查询数据库以获取考试名称
+	err := db.QueryRow("SELECT exam_name FROM exam_info WHERE exam_id = ?", examID).Scan(&examName)
+	if err != nil {
+		return "", err
+	}
+
+	return examName, nil
 }

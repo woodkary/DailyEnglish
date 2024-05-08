@@ -8,12 +8,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/go-redis/redis"
-
 	"github.com/gin-gonic/gin"
 )
 
-func InitAdminRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
+func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 
 	//注册&登录页面
 	r.GET("/api/team_manager/login", func(c *gin.Context) {
