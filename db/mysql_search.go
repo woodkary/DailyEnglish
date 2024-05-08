@@ -123,3 +123,38 @@ func SearchQuestionNumByExamID(db *sql.DB, examID int) (int, error) {
 
 	return questionNum, nil
 }
+
+// 5 根据exam_id和quetion_id查询quetion_statistics表里的A_num,B_num,C_num,D_num,以及使用quetion_id查询quetion_info里的quetion_answer
+// QuestionStatistics 结构体用于保存题目统计信息
+type QuestionStatistics struct {
+	ExamID         int
+	QuestionID     int
+	QuestionAnswer string
+	ANum           int
+	BNum           int
+	CNum           int
+	DNum           int
+}
+
+// SearchQuestionStatistics 根据考试ID和题目ID查询题目统计信息
+func SearchQuestionStatistics(db *sql.DB, examID, questionID int) (QuestionStatistics, error) {
+	var questionStats QuestionStatistics
+
+	// 查询题目统计信息
+	err := db.QueryRow("SELECT A_num, B_num, C_num, D_num FROM quetion_statistics WHERE exam_id = ? AND question_id = ?", examID, questionID).Scan(&questionStats.ANum, &questionStats.BNum, &questionStats.CNum, &questionStats.DNum)
+	if err != nil {
+		return QuestionStatistics{}, err
+	}
+
+	// 查询题目答案
+	err = db.QueryRow("SELECT quetion_answer FROM quetion_info WHERE question_id = ?", questionID).Scan(&questionStats.QuestionAnswer)
+	if err != nil {
+		return QuestionStatistics{}, err
+	}
+
+	// 填充其他字段
+	questionStats.ExamID = examID
+	questionStats.QuestionID = questionID
+
+	return questionStats, nil
+}
