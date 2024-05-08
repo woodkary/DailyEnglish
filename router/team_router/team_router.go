@@ -198,10 +198,8 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		levelNums := service.CalculateUserLevel(ScoresInExam)
 
 		type UserResult struct {
-			Attend   string `json:"attend"`   // 考试参与情况
 			Username string `json:"username"` // 用户名
 			Score    string `json:"score"`    // 得分
-			FailNum  string `json:"fail_num"` // 错题数量
 			Progress string `json:"progress"` // 进步名次 (相距上次)
 		}
 
@@ -212,11 +210,20 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 
-		var qd = make([][5]int, QuestionNum) // 考试题目详情
+		var qd = make([][]int, QuestionNum)                      // 考试题目详情
+		qid, err := controlsql.SearchQuestionIDsByExamID(db, id) // 考试题目ID
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			log.Panic(err)
+			return
+		}
+
 		for i := 0; i < QuestionNum; i++ {
-			for j := 0; j < 5; j++ {
-				//TODO
-				// 查询考试每一题正确选项，选A人数，选B人数，C,D
+			qd[i], err = controlsql.SearchQuestionStatistics(db, id, qid[i])
+			if err != nil {
+				c.JSON(500, "服务器错误")
+				log.Panic(err)
+				return
 			}
 		}
 
@@ -224,7 +231,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			ID             string       `json:"exam_id"`          // 考试ID
 			Name           string       `json:"exam_name"`        // 考试名称
 			UserLevels     []int        `json:"user_levels"`      // 用户等级
-			QuestionDetail [][5]int     `json:"question_details"` // 考试题目详情
+			QuestionDetail [][]int      `json:"question_details"` // 考试题目详情
 			UserResult     []UserResult `json:"user_result"`      // 考试参与人员得分情况
 		}
 		ExamName, err := controlsql.SearchExamNameByExamID(db, id)
@@ -246,72 +253,27 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		Response.ExamDetail.Name = ExamName
 		Response.ExamDetail.UserLevels = levelNums[:]
 		Response.ExamDetail.QuestionDetail = qd
+
+		userResult, err := controlsql.SearchUserResultByExamID(db, id)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			log.Panic(err)
+			return
+		}
+		Response.ExamDetail.UserResult = append(Response.ExamDetail.UserResult, userResult...)
+
 		Response.ExamDetail.UserResult = make([]UserResult, 0)
-		for _, score := range ScoresInExam {
-			var userResult UserResult
-			userResult.Username = score.Username
-			userResult.Score = score.Score
-			userResult.FailNum = "0"  //
-			userResult.Progress = "0" //
-			Response.ExamDetail.UserResult = append(Response.ExamDetail.UserResult, userResult)
+		for _, result := range userResult {
+			var res UserResult
+			res.Username = result.Username
+			res.Score = result.Score
+			res.Progress = result.Progress
+			Response.ExamDetail.UserResult = append(Response.ExamDetail.UserResult, res)
 		}
+
 		c.JSON(200, Response)
 	})
 
-	//打卡详情界面
-	r.GET("/api/team_manage/punch_statistics/data", tokenAuthMiddleware(), func(c *gin.Context) {
-		user, _ := c.Get("user")
-		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
-		if !ok {
-			c.JSON(500, "服务器错误")
-			return
-		}
-
-		Item1, err := controlsql.GetTeamMembersAttendance1(db, userClaims.TeamName)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-			return
-		}
-		Item2, err := controlsql.GetTeamMembersAttendanceByDate(db, userClaims.TeamName)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-			return
-		}
-		Item3, err := controlsql.GetTeamMembersAttendanceNum(db, userClaims.TeamName)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-			return
-		}
-		type punchStatistic struct {
-			Name      string `json:"name"`
-			IsPunched string `json:"ispunched"`
-			PunchDay  string `json:"punch_day"`
-			PunchWord string `json:"punch_word"`
-			PunchRate string `json:"punch_rate"`
-		}
-		type response struct {
-			Code             string           `json:"code"` // 响应代码
-			Msg              string           `json:"msg"`  // 响应消息
-			Punch_statistics []punchStatistic `json:"punch_statistics"`
-		}
-		var Response response
-		var punchstatistic punchStatistic
-		Response.Code = "200"
-		Response.Msg = "成功"
-		for _, member := range Item1 {
-			punchstatistic.Name = member.Username
-			punchstatistic.PunchDay = strconv.Itoa(member.AttendanceDays)
-			punchstatistic.PunchRate = member.AttendanceRate
-			if Item2[member.Username] == 1 {
-				punchstatistic.IsPunched = "是"
-			} else {
-				punchstatistic.IsPunched = "否"
-			}
-			punchstatistic.PunchWord = strconv.Itoa(Item3[member.Username])
-			Response.Punch_statistics = append(Response.Punch_statistics, punchstatistic)
-		}
-		c.JSON(200, Response)
-	})
 	//成员管理页面
 	r.GET("/api/team_manage/member_manage/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
