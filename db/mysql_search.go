@@ -3,6 +3,7 @@ package DB
 import (
 	"database/sql"
 	"strconv"
+	"strings"
 )
 
 // 1根据manager_id查所有team_id和team_name
@@ -177,14 +178,29 @@ func SearchExamNameByExamID(db *sql.DB, examID int) (string, error) {
 }
 
 // 7 根据exam_id查询exam_info里的quetion_id字段
-func SearchquetionIDbyexamID(db *sql.DB, examID int) (string, error) {
-	var questionID string
+func SearchQuestionIDsByExamID(db *sql.DB, examID int) ([]int, error) {
+	var questionIDStr string
 
-	// 查询数据库以获取团队名称
-	err := db.QueryRow("SELECT question_id FROM exam_info WHERE exam_id = ?", examID).Scan(&questionID)
+	// 查询数据库以获取题目ID字符串
+	err := db.QueryRow("SELECT question_id FROM exam_info WHERE exam_id = ?", examID).Scan(&questionIDStr)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return questionID, nil
+	// 切割字符串以获取各个题目ID
+	questionIDStrs := strings.Split(questionIDStr, "-")
+
+	// 创建整数数组用于存储题目ID
+	questionIDs := make([]int, len(questionIDStrs))
+
+	// 将字符串转换为整数并存储到数组中
+	for i, str := range questionIDStrs {
+		id, err := strconv.Atoi(str)
+		if err != nil {
+			return nil, err
+		}
+		questionIDs[i] = id
+	}
+
+	return questionIDs, nil
 }
