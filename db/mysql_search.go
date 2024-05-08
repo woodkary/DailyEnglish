@@ -1,8 +1,11 @@
 package DB
 
-import "database/sql"
+import (
+	"database/sql"
+	_ "strconv"
+)
 
-//1根据manager_id查所有team_id和team_name
+// 1根据manager_id查所有team_id和team_name
 func SearchTeamInfoByManagerID(db *sql.DB, managerID int) ([]string, []string, error) {
 	var teamIDs []string
 	var teamNames []string
@@ -33,7 +36,7 @@ func SearchTeamInfoByManagerID(db *sql.DB, managerID int) ([]string, []string, e
 	return teamIDs, teamNames, nil
 }
 
-//2根据team_id查询该团队所有的exam_id,exam_name,exam_date
+// 2根据team_id查询该团队所有的exam_id,exam_name,exam_date
 func SearchExamsByTeamID(db *sql.DB, teamID int) ([]int, []string, []string, error) {
 	var examIDs []int
 	var examNames []string
@@ -67,14 +70,34 @@ func SearchExamsByTeamID(db *sql.DB, teamID int) ([]int, []string, []string, err
 	return examIDs, examNames, examDates, nil
 }
 
+type ExamDetail struct {
+	ID             string       `json:"exam_id"`          // 考试ID
+	Name           string       `json:"exam_name"`        // 考试名称
+	UserLevels     []int        `json:"user_levels"`      // 用户等级
+	QuestionDetail [][5]int     `json:"question_details"` // 考试题目详情
+	UserResult     []UserResult `json:"user_result"`      // 考试参与人员得分情况
+}
 
-//3根据exam_id查询ExamInfo
-func SearchExamInfoByExamID(db *sql.DB, examID string) (string, error) {
-	ID := examID.Atoi()
+type UserResult struct {
+	Attend   string `json:"attend"`   // 考试参与情况
+	Username string `json:"username"` // 用户名
+	Score    string `json:"score"`    // 得分
+	FailNum  string `json:"fail_num"` // 错题数量
+	Progress string `json:"progress"` // 进步分数 (相距上次)
+}
 
-	// 查询数据库以获取考试信息
-	row := db.QueryRow("SELECT exam_name FROM exam_info WHERE exam_id = ?", ID)
-	if err := row.Scan(&examName); err != nil {
-		return "", err
-	}
+// 3根据exam_id查询exam_detail
+func SearchExamInfoByExamID(db *sql.DB, examID string) ExamDetail {
+	return ExamDetail{}
+}
 
+// 4根据exam_id查询题目数量
+func SearchQuestionNumByExamID(db *sql.DB, examID string) int {
+	return 0
+}
+
+// 5根据exam_id和question_id查询题目详情
+// 题目详情包括正确答案，选A人数，选B人数，选C人数，选D人数
+func SearchQuestionDetailByExamIDAndQuestionID(db *sql.DB, examID string, questionID int) [5]int {
+	return [5]int{}
+}

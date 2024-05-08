@@ -257,7 +257,6 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			UserLevels     []int        `json:"user_levels"`      // 用户等级
 			QuestionDetail [][5]int     `json:"question_details"` // 考试题目详情
 			UserResult     []UserResult `json:"user_result"`      // 考试参与人员得分情况
-
 		}
 		type response struct {
 			Code       string     `json:"code"`        // 状态码
