@@ -4,23 +4,26 @@ let teamAndStudents = {
     "team2": ["student4", "student5", "student6"],
     "team3": ["student7", "student8", "student9"]
 }
+//所有题目的数据
 const questions=[
     {name:"完型",max: 20},
     {name:"阅读",max: 40},
     {name:"翻译",max:10},
+    {name:"新题型",max:10},
     {name:"小作文",max:20},
     {name:"大作文",max:20}
 ];
+//所有学生不同题型的平均成绩数据
 let studentAverageGrades=[
-    {name: 'student1', value: [12, 2, 5, 20, 16]}, 
-    {name: 'student2', value: [20, 18, 3, 1, 7]},
-    {name: 'student3', value: [12, 32, 4, 7, 2]},
-    {name: 'student4', value: [8, 26, 3, 2, 10]},
-    {name: 'student5', value: [3, 22, 4, 13, 3]},
-    {name: 'student6', value: [15, 13, 8, 4, 16]},
-    {name: 'student7', value: [7, 4, 8, 13, 19]},
-    {name: 'student8', value: [14, 26, 7, 8, 15]},
-    {name: 'student9', value: [16, 10, 6, 6, 16]}
+    {name: 'student1', value: [12, 2, 5, 6, 20, 16]},
+    {name: 'student2', value: [20, 18, 3, 6, 1, 7]},
+    {name: 'student3', value: [12, 32, 4, 10, 7, 2]},
+    {name: 'student4', value: [8, 26, 3, 8, 2, 10]},
+    {name: 'student5', value: [3, 22, 4, 7, 13, 3]},
+    {name: 'student6', value: [15, 13, 8, 3, 4, 16]},
+    {name: 'student7', value: [7, 4, 8, 10, 13, 19]},
+    {name: 'student8', value: [14, 26, 7, 5, 8, 15]},
+    {name: 'student9', value: [16, 10, 6, 6, 6, 16]}
 ]
 //最近7次考试的名称
 let examNames=["2021年秋季期末考试","2021年春季期末考试","2021年夏季期末考试","2021年秋季期中考试","2021年春季期中考试","2021年夏季期中考试","2021年秋季期末考试"]
