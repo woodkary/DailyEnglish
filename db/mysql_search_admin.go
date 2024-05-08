@@ -60,12 +60,34 @@ func CheckUser(db *sql.DB, username, password string) bool {
 }
 
 // 根据username获取userid和teamid[]
-func GetTokenParams(db *sql.DB, username string) (string, []string, error) {
-	var userid string
-	var teamids []string
-	err := db.QueryRow("SELECT manager_id, team_ids FROM manager_info WHERE manager_name =?", username).Scan(&userid, &teamids)
+func GetTokenParams(db *sql.DB, username string) (int, []int, error) {
+	var managerID int
+	var teamIDs []int
+
+	// 查询数据库以获取 manager_id
+	err := db.QueryRow("SELECT manager_id FROM manager_info WHERE manager_name = ?", username).Scan(&managerID)
 	if err != nil {
-		return "", nil, err
+		return 0, nil, err
 	}
-	return userid, teamids, nil
+
+	// 查询数据库以获取与 manager_id 相关的 team_id 列表
+	rows, err := db.Query("SELECT team_id FROM team_info WHERE manager_id = ?", managerID)
+	if err != nil {
+		return 0, nil, err
+	}
+	defer rows.Close()
+
+	// 遍历结果集，将 team_id 存储到数组中
+	for rows.Next() {
+		var teamID int
+		if err := rows.Scan(&teamID); err != nil {
+			return 0, nil, err
+		}
+		teamIDs = append(teamIDs, teamID)
+	}
+	if err := rows.Err(); err != nil {
+		return 0, nil, err
+	}
+
+	return managerID, teamIDs, nil
 }
