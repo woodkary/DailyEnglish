@@ -174,8 +174,8 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 	//获取单次考试详情
 	r.POST("/api/team_manage/exam_situation/exam_detail", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
-			ExamID string `json:"exam_id"` // 考试名称
-			TeamID string `json:"team_id"` // 团队名称
+			ExamID int `json:"exam_id"` // 考试名称
+			TeamID int `json:"team_id"` // 团队名称
 		}
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
@@ -183,13 +183,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 
-		id, err := strconv.Atoi(request.ExamID)
-		if err != nil {
-			c.JSON(400, "请求参数错误")
-			return
-		}
-
-		ScoresInExam, err := controlsql.SearchExamScoreByExamID(db, id)
+		ScoresInExam, err := controlsql.SearchExamScoreByExamID(db, request.ExamID)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			log.Panic(err)
@@ -199,19 +193,37 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 
 		type UserResult struct {
 			Username string `json:"username"` // 用户名
-			Score    string `json:"score"`    // 得分
-			Progress string `json:"progress"` // 进步名次 (相距上次)
+			Score    int    `json:"score"`    // 得分
+			Progress int    `json:"progress"` // 进步名次 (相距上次)
 		}
 
-		QuestionNum, err := controlsql.SearchQuestionNumByExamID(db, id) // 考试题目数量
+		userIDs, err := controlsql.SearchUserIDByTeamID(db, request.TeamID)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			log.Panic(err)
 			return
 		}
 
-		var qd = make([][]int, QuestionNum)                      // 考试题目详情
-		qid, err := controlsql.SearchQuestionIDsByExamID(db, id) // 考试题目ID
+		userres := make([]UserResult, 0)
+		for _, userID := range userIDs {
+			item1, item2, item3, err := controlsql.SearchClosestExamByTeamIDAndExamID(db, request.TeamID, request.ExamID, userID)
+			if err != nil {
+				c.JSON(500, "服务器错误")
+				log.Panic(err)
+				return
+			}
+			userres = append(userres, UserResult{Username: item1, Score: item2, Progress: item3})
+		}
+
+		QuestionNum, err := controlsql.SearchQuestionNumByExamID(db, request.ExamID) // 考试题目数量
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			log.Panic(err)
+			return
+		}
+
+		var qd = make([][]int, QuestionNum)                                  // 考试题目详情
+		qid, err := controlsql.SearchQuestionIDsByExamID(db, request.ExamID) // 考试题目ID
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			log.Panic(err)
@@ -219,7 +231,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		}
 
 		for i := 0; i < QuestionNum; i++ {
-			qd[i], err = controlsql.SearchQuestionStatistics(db, id, qid[i])
+			qd[i], err = controlsql.SearchQuestionStatistics(db, request.ExamID, qid[i])
 			if err != nil {
 				c.JSON(500, "服务器错误")
 				log.Panic(err)
@@ -234,7 +246,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			QuestionDetail [][]int      `json:"question_details"` // 考试题目详情
 			UserResult     []UserResult `json:"user_result"`      // 考试参与人员得分情况
 		}
-		ExamName, err := controlsql.SearchExamNameByExamID(db, id)
+		ExamName, err := controlsql.SearchExamNameByExamID(db, request.ExamID)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			log.Panic(err)
@@ -249,28 +261,12 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		var Response response
 		Response.Code = "200"
 		Response.Msg = "成功"
-		Response.ExamDetail.ID = strconv.Itoa(id)
+		Response.ExamDetail.ID = strconv.Itoa(request.ExamID)
 		Response.ExamDetail.Name = ExamName
 		Response.ExamDetail.UserLevels = levelNums[:]
 		Response.ExamDetail.QuestionDetail = qd
-
-		userResult, err := controlsql.SearchUserResultByExamID(db, id)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-			log.Panic(err)
-			return
-		}
-		Response.ExamDetail.UserResult = append(Response.ExamDetail.UserResult, userResult...)
-
 		Response.ExamDetail.UserResult = make([]UserResult, 0)
-		for _, result := range userResult {
-			var res UserResult
-			res.Username = result.Username
-			res.Score = result.Score
-			res.Progress = result.Progress
-			Response.ExamDetail.UserResult = append(Response.ExamDetail.UserResult, res)
-		}
-
+		Response.ExamDetail.UserResult = append(Response.ExamDetail.UserResult, userres...)
 		c.JSON(200, Response)
 	})
 
