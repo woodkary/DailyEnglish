@@ -243,7 +243,7 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		}
 
 		QuestionNum := controlsql.GetQuestionNum(client, "Exam1") // 考试题目数量
-		var QuestionDetail = make([][5]int, QuestionNum)          // 考试题目详情
+		var qd = make([][5]int, QuestionNum)                      // 考试题目详情
 		for i := 0; i < QuestionNum; i++ {
 			for j := 0; j < 5; j++ {
 				//TODO
@@ -269,7 +269,16 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		Response.Msg = "成功"
 		Response.ExamDetail.ID = strconv.Itoa(examInfo.ID)
 		Response.ExamDetail.Name = examInfo.Name
-
+		Response.ExamDetail.UserLevels = levelNums
+		Response.ExamDetail.QuestionDetail = qd
+		for _, score := range ScoresInExam {
+			var userResult UserResult
+			userResult.Username = score.Username
+			userResult.Score = score.Score
+			userResult.FailNum = "0"
+			userResult.Progress = "0"
+			Response.ExamDetail.UserResult = append(Response.ExamDetail.UserResult, userResult)
+		}
 		c.JSON(200, Response)
 	})
 
