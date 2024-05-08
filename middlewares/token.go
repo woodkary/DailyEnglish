@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	service "DailyEnglish/services"
+	service "DailyEnglish/utils"
 	"fmt"
 	"net/http"
 	"strings"

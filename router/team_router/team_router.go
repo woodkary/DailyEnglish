@@ -2,7 +2,7 @@
 
 import (
 	controlsql "DailyEnglish/db"
-	service "DailyEnglish/services"
+	service "DailyEnglish/utils"
 	"database/sql"
 	"fmt"
 	"log"
