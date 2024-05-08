@@ -151,9 +151,6 @@ func SearchQuestionStatistics(db *sql.DB, examID int, questionID int) ([]int, er
 	return questionStats, nil
 }
 
-<<<<<<< HEAD
-// 6.1 根据team_id查team_name
-=======
 // 6 根据exam_id查询exam_info里的quetion_id字段
 func SearchquetionIDbyexamID(db *sql.DB, examID int) (string, error) {
 	var questionID string
@@ -168,7 +165,6 @@ func SearchquetionIDbyexamID(db *sql.DB, examID int) (string, error) {
 }
 
 // 7.1 根据team_id查team_name
->>>>>>> 8abdee9f63cd004026b2fcace1a4c1a963aa79a7
 func SearchTeamNameByTeamID(db *sql.DB, teamID int) (string, error) {
 	var teamName string
 
