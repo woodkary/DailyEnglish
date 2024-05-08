@@ -147,7 +147,6 @@ func InitTeamRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		}
 		c.JSON(200, Response)
 	})
-
 	//获取单次考试详情
 	r.POST("/api/team_manage/exam_situation/exam_detail", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
