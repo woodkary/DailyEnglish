@@ -275,7 +275,15 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 	})
 
 	//成员管理页面
-	r.GET("/api/team_manage/member_manage/data", tokenAuthMiddleware(), func(c *gin.Context) {
+	r.POST("/api/team_manage/member_manage/data", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			Teamname string `json:"teamname"` // 团队名
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(400, "请求参数错误")
+			return
+		}
 		user, _ := c.Get("user")
 		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
@@ -283,7 +291,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 
-		Item, err := controlsql.GetTeamInfo(db, userClaims.TeamName)
+		Item, err := controlsql.GetTeamInfo(db, userClaims.TeamID[0])
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			return
@@ -316,22 +324,22 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		Response.Msg = "成功"
 		c.JSON(200, Response)
 	})
-	// //成员删除
-	// r.POST("/api/team_manage/member_manage/delete", tokenAuthMiddleware(), func(c *gin.Context) {
-	// 	type Request struct {
-	// 		Username string `json:"username"` // 要删除的成员的用户名
-	// 		Teamname string `json:"teamname"` // 团队名
-	// 	}
-	// 	var request Request
-	// 	if err := c.ShouldBind(&request); err != nil {
-	// 		c.JSON(400, "请求参数错误")
-	// 	}
-	// 	err := controlsql.DeleteUserFromTeam(client, request.Teamname, request.Username)
-	// 	if err != nil {
-	// 		c.JSON(500, "服务器错误")
-	// 	}
-	// 	c.JSON(200, "删除成功")
-	// })
+	//成员删除
+	r.POST("/api/team_manage/member_manage/delete", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			Username string `json:"username"` // 要删除的成员的用户名
+			Teamname string `json:"teamname"` // 团队名
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(400, "请求参数错误")
+		}
+		err := controlsql.DeleteUserFromTeam(client, request.Teamname, request.Username)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+		}
+		c.JSON(200, "删除成功")
+	})
 	//搜索成员
 	r.POST("/api/team_manage/member_manage/search", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
@@ -386,53 +394,6 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		}
 		c.JSON(200, Response)
 	})
-
-	//获取审核申请页面信息
-	r.GET("/api/team_manage/request_manage/data", tokenAuthMiddleware(), func(c *gin.Context) {
-		user, _ := c.Get("user")
-		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
-		if !ok {
-			c.JSON(500, "服务器错误")
-			return
-		}
-
-		Item1, err := controlsql.GetTeamRequestsByFlag(db, userClaims.TeamName, "0")
-
-		if err != nil {
-			c.JSON(500, "服务器错误")
-		}
-		Item2, err := controlsql.GetTeamInfo(db, userClaims.TeamName)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-		}
-		type Request struct {
-			Name     string `json:"name"`      // 请求者姓名
-			Time     string `json:"time"`      // 请求时间
-			LeaveMsg string `json:"leave_msg"` // 留言信息
-		}
-
-		// Response 定义了响应的信息
-		type response struct {
-			Code       string    `json:"code"`        // 状态码
-			Msg        string    `json:"msg"`         // 消息
-			MemberNum  int       `json:"member_num"`  // 成员数量
-			ManagerNum int       `json:"manager_num"` // 管理员数量
-			Requests   []Request `json:"request"`     // 请求列表
-		}
-		var Response response
-		Response.Code = "200"
-		Response.Msg = "成功"
-		Response.ManagerNum = Item2.AdminCount
-		Response.MemberNum = Item2.TotalMembers
-		for _, r := range Item1 {
-			var request Request
-			request.Name = r.Username
-			request.Time = r.Time
-			request.LeaveMsg = r.Message
-			Response.Requests = append(Response.Requests, request)
-		}
-		c.JSON(200, Response)
-	})
 	//获取个人中心界面所需信息
 	r.GET("/api/team_manage/personal_center/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
@@ -474,80 +435,5 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
-	//打卡信息发布界面信息
-	r.GET("/api/team_manage/task_daily/data", tokenAuthMiddleware(), func(c *gin.Context) {
-		c.Get("user")
-		Item, err := controlsql.QueryBooksBy(db, "大一", "简单", 0)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-		}
-		type Book struct { //书籍信息
-			Title      string `json:"title"`       // 书名
-			LearnerNum int    `json:"learner_num"` // 学习人数
-			Describe   string `json:"describe"`    // 描述
-			WordsNum   int    `json:"words_num"`   // 单词数
-		}
-		type response struct { //响应信息
-			Code  string `json:"code"`  // 状态码
-			Msg   string `json:"msg"`   // 消息
-			Books []Book `json:"books"` // 书籍列表
-		}
-		var Response response
-		for _, item := range Item {
-			var book Book
-			book.Title = item.Title
-			book.LearnerNum = item.LearnerNum
-			book.Describe = item.Describe
-			book.WordsNum = item.WordsNum
-			Response.Books = append(Response.Books, book)
-		}
-		Response.Code = "200"
-		Response.Msg = "成功"
-		c.JSON(200, Response)
-	})
-	//团队管理员选择打卡发布页面信息
-	r.POST("/api/team_manage/task_daily/deliver_punch", func(c *gin.Context) {
-		type Request struct {
-			Grade          string `json:"grade"`          //年级
-			Difficulty     string `json:"difficulty"`     //难度
-			Flag           string `json:"flag"`           //按什么排序，0是最新，1是最热
-			Time_expected  string `json:"time_expected"`  //打卡时长预计
-			Words_expected string `json:"words_expected"` //每日单词预计
-		}
-		var request Request
-		if err := c.ShouldBind(&request); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-		flag, _ := strconv.Atoi(request.Flag)
-		Item, err := controlsql.QueryBooksBy(db, request.Grade, request.Difficulty, flag)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-		}
-		type Book struct { //书籍信息
-			Name       string `json:"name"`        // 书名
-			LearnerNum int    `json:"learner_num"` // 学习人数
-			Describe   string `json:"describe"`    // 描述
-			WordsNum   int    `json:"words_num"`   // 单词数
-		}
-		type Response struct { //响应信息
-			Code  string `json:"code"`  // 状态码
-			Msg   string `json:"msg"`   // 消息
-			Books []Book `json:"books"` // 书籍列表
-		}
-		var response Response
-		for _, item := range Item {
-			var book Book
-			book.Name = item.Title
-			book.Describe = item.Describe
-			book.LearnerNum = item.LearnerNum
-			book.WordsNum = item.WordsNum
-			response.Books = append(response.Books, book)
-		}
-		response.Code = "200"
-		response.Msg = "成功"
-		c.JSON(http.StatusOK, response)
-	})
+
 }
