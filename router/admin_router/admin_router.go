@@ -1,9 +1,9 @@
-package userrouter
+package adminrouter
 
 import (
 	controlsql "DailyEnglish/db"
-	service "DailyEnglish/services"
 	"DailyEnglish/utils"
+	service "DailyEnglish/utils"
 	"database/sql"
 	"fmt"
 	"net/http"
@@ -13,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitUserRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
+func InitAdminRouter(r *gin.Engine, client *redis.Client, db *sql.DB) {
 
 	//注册&登录页面
 	r.GET("/api/team_manager/login", func(c *gin.Context) {

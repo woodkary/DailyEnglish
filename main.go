@@ -2,8 +2,8 @@ package main
 
 import (
 	controlsql "DailyEnglish/db"
+	adminrouter "DailyEnglish/router/admin_router"
 	teamrouter "DailyEnglish/router/team_router"
-	userrouter "DailyEnglish/router/user_router"
 	"database/sql"
 	"fmt"
 	"log"
@@ -51,7 +51,7 @@ func main() {
 	// r.Static("static/team_manager/js", "./static/js")
 	// r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html", "./static/404.html")
 
-	userrouter.InitUserRouter(r, client, db)
+	adminrouter.InitAdminRouter(r, client, db)
 	teamrouter.InitTeamRouter(r, client, db)
 	r.Run(":8080")
 
