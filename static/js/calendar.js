@@ -73,7 +73,7 @@ function renderCalendar(dates,exam_dates) {
             calendarDays.appendChild(week); // 将周添加到日历的 days 容器中
         }
         const dayDiv = document.createElement('div'); // 创建一个 div 元素
-        let hasExam=false;
+        let hasExam;
         if((hasExam = exam_dates.has(fromDateToStr(date)))) {
             dayDiv.addEventListener('click', () => {
                 let eventDiv = document.querySelector('.event');
@@ -101,7 +101,7 @@ function renderCalendar(dates,exam_dates) {
                         cardDiv.appendChild(image);
                         // 创建一个 p 元素作为考试团队名称
                         let teamP = document.createElement('p');
-                        teamP.textContent = exams[i].team_name;
+                        teamP.textContent = exams[i].team_name+"\t"+exams[i].exam_name;
                         teamP.className = 'team';
                         cardDiv.appendChild(teamP);
                         /*// 创建一个 p 元素作为考试时间
@@ -143,6 +143,10 @@ function renderCalendar(dates,exam_dates) {
         }
         dayDiv.className = 'day'; // 设置类名
         dayDiv.classList.add(hasExam?'has_exam':'no_exam'); // 设置类名为 date
+        let today=new Date();
+        if (date.getFullYear() === today.getFullYear() && date.getMonth() + 1 === today.getMonth() + 1 && date.getDate() === today.getDate()) {
+            dayDiv.classList.add('today_exam'); // 设置类名为 today
+        }
         // 判断是否为本月的日期
         if (date.getMonth() !== month - 1) {
             dayDiv.classList.add('notThisMonth'); // 设置类名为 notThisMonth
@@ -208,8 +212,8 @@ function generateDates() {
     }
 
     // 填充下个月的日期
-    for (let i = 0; dates.length < 35; i++) {
-        let dateToCheck=new Date(firstDay + (i + 1) * 24 * 60 * 60 * 1000)
+    for (let i = 0; dates.length < 42; i++) {
+        let dateToCheck=new Date(year, month, i + 1);
         dates.push(new Date(Date.UTC(dateToCheck.getFullYear(), dateToCheck.getMonth(), dateToCheck.getDate())));
     }
     return dates;
@@ -305,7 +309,7 @@ function renderExamData(date){
         // 创建一个 p 元素作为考试团队名称
         let teamP = document.createElement('p');
         teamP.className = 'team';
-        teamP.textContent = exams[i].team_name;
+        teamP.textContent = exams[i].team_name+"\t"+exams[i].exam_name;
         cardDiv.appendChild(teamP);
 /*        // 创建一个 p 元素作为考试时间
         let timeP = document.createElement('p');
@@ -353,7 +357,7 @@ function getTodayExamData(){
             // 创建一个 p 元素作为考试团队名称
             let teamP = document.createElement('p');
             teamP.className = 'team';
-            teamP.textContent = exams[i].team_name;
+            teamP.textContent = exams[i].team_name+"\t"+exams[i].exam_name;
             cardDiv.appendChild(teamP);
             /*// 创建一个 p 元素作为考试时间
             let timeP = document.createElement('p');
@@ -402,7 +406,7 @@ function renderDefaultExamData(date){
         cardDiv.appendChild(image);
         // 创建一个 p 元素作为考试团队名称
         let teamP = document.createElement('p');
-        teamP.textContent = exams[i].team_name;
+        teamP.textContent = exams[i].team_name+"\t"+exams[i].exam_name;
         teamP.className = 'team';
         cardDiv.appendChild(teamP);
         /*// 创建一个 p 元素作为考试时间

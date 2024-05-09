@@ -201,7 +201,7 @@ style="font-size: 25px; font-weight: 600; color: #3a7afe;">题目分析</span>
         let localeDateString = new URLSearchParams(window.location.search).get("date");
         selectedDate = localeDateString ? new Date(localeDateString) : new Date();
         team_id = new URLSearchParams(window.location.search).get("team_id");
-        let exam_id = new URLSearchParams(window.location.search).get("exam_id");
+        exam_id = new URLSearchParams(window.location.search).get("exam_id");
         if(exam_id){
             fetchExamDetails();
         }
@@ -233,6 +233,41 @@ let user_result=[
         "score": "100",
         "fail_num": "0",
         "progress": 6
+    },
+    {
+        "attend": "1",
+        "username": "Kary",
+        score: "90",
+        "fail_num": "0",
+        "progress": 5
+    },
+    {
+        "attend": "1",
+        "username": "yyff",
+        "score": "90",
+        "fail_num": "0",
+        "progress": 5
+    },
+    {
+        "attend": "1",
+        "username": "Wood",
+        "score": "90",
+        "fail_num": "0",
+        "progress": 5
+    },
+    {
+        "attend": "1",
+        "username": "李华",
+        "score": "90",
+        "fail_num": "0",
+        "progress": 5
+    },
+    {
+        "attend": "1",
+        "username": "王明",
+        "score": "90",
+        "fail_num": "0",
+        "progress": 5
     }
 ];
 let angleDirections=[];
