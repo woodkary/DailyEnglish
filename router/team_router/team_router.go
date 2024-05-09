@@ -185,7 +185,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 
 		ScoresInExam, err := controlsql.SearchExamScoreByExamID(db, request.ExamID)
 		if err != nil {
-			c.JSON(500, "服务器错误")
+			c.JSON(500, "服务器错误1")
 			log.Panic(err)
 			return
 		}
@@ -199,7 +199,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 
 		userIDs, err := controlsql.SearchUserIDByTeamID(db, request.TeamID)
 		if err != nil {
-			c.JSON(500, "服务器错误")
+			c.JSON(500, "服务器错误2")
 			log.Panic(err)
 			return
 		}
@@ -208,7 +208,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		for _, userID := range userIDs {
 			item1, item2, item3, err := controlsql.SearchClosestExamByTeamIDAndExamID(db, request.TeamID, request.ExamID, userID)
 			if err != nil {
-				c.JSON(500, "服务器错误")
+				c.JSON(500, "服务器错误3")
 				log.Panic(err)
 				return
 			}
@@ -217,7 +217,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 
 		QuestionNum, err := controlsql.SearchQuestionNumByExamID(db, request.ExamID) // 考试题目数量
 		if err != nil {
-			c.JSON(500, "服务器错误")
+			c.JSON(500, "服务器错误4")
 			log.Panic(err)
 			return
 		}

@@ -78,10 +78,12 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 	r.POST("/api/team_manager/register", func(c *gin.Context) {
 		type regdata struct {
 			Username string `json:"username"`
-			Pwd      string `json:"pwd"`
+			Pwd      string `json:"password"`
 			Email    string `json:"email"`
 		}
+
 		var data regdata
+		fmt.Println("Username:", data.Username, "Pwd:", data.Pwd, "Email:", data.Email)
 		if err := c.ShouldBind(&data); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"code": "400",
@@ -91,13 +93,14 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 		}
 		if !controlsql.UserExists(db, data.Username) {
 			//验证码由前端完成判定
-
+			fmt.Println("Pwd:", data.Pwd)
 			Key := "123456781234567812345678" //密钥
 			cryptoPwd := utils.AesEncrypt(data.Pwd, Key)
+			fmt.Println("cryptoPwd:", cryptoPwd)
 			//获取系统当前日期
 			//RegisterDate := utils.GetCurrentDate()
 
-			if controlsql.RegisterUser(db, data.Username, data.Email, cryptoPwd, "10086") != nil {
+			if controlsql.RegisterUser(db, data.Username, data.Email, cryptoPwd, "10086") == nil {
 				c.JSON(http.StatusOK, gin.H{
 					"code": "200",
 					"msg":  "注册成功",
