@@ -37,7 +37,7 @@ function createExamTable(data) {
 //获取最新考试名称并渲染表格
 function getLatestExamNameAndRenderTable() {
     console.log(localStorage.getItem('token'));
-    fetch('http://localhost:8080/api/team_manage/exam_situation/data',{
+    fetch('http://47.113.117.103:8080/api/team_manage/exam_situation/data',{
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ function getLatestExamNameAndRenderTable() {
             const latestExam = data.exams[0].name;
             let latestExamDate=document.getElementById('latest-exam-date');
             latestExamDate.textContent=data.exams[0].time;
-            fetch('http://localhost:8080/api/team_manage/exam_situation/exam_detail', {
+            fetch('http://47.113.117.103:8080/api/team_manage/exam_situation/exam_detail', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
