@@ -5,7 +5,7 @@ import (
 	teamrouter "DailyEnglish/router/team_router"
 	"database/sql"
 	"fmt"
-
+	middleware "DailyEnglish/middleware"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -37,5 +37,6 @@ func main() {
 
 	adminrouter.InitAdminRouter(r, db)
 	teamrouter.InitTeamRouter(r, db)
+	r.Use(middleware.Cors())
 	r.Run(":8080")
 }
