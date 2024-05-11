@@ -91,7 +91,7 @@ daysTag.addEventListener('click', (event) => {
     }
 });
 const getAllTeamInfo=()=>{
-    let teamInfoJson=locaStorage.getItem("team_info");
+    let teamInfoJson=localStorage.getItem("team_info");
     if(teamInfoJson){
         return JSON.parse(teamInfoJson);
     }else {
