@@ -98,6 +98,8 @@ function login(event) {
         console.log(data);
         if (data.code == 200) {
             localStorage.setItem("token", data.token);
+            //获取管理员所管理的团队id和团队名称，这是个map类型的json数据
+            localStorage.setItem("team_info", data.team_info);
             let token = data.token;
             console.log(token);
            /* let url = 'http://47.113.117.103:8080/api/team_manage/personal_center/data';*/

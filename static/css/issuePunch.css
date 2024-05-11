@@ -1,189 +1,96 @@
-body{
-    background-color: #F7F7F7;
-}
-
-
-/* 第一个框 */
-.detail-selection{
-    
+/* Import Google font - Poppins */
+/*@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');*/
+.calendar-container{
     display: flex;
-    background-color: #ffffff; /* 将背景颜色改为白色 */
-    color: #000000; /* 文本颜色为黑色 */
-    text-decoration: none;
-    padding: 10px;
-    flex-direction: column;
-    border: 1px solid #000000; /* 添加边框，颜色为黑色 */
-    box-shadow: 0 0 5px rgba(73, 73, 73, 0.5); /* 添加阴影 */
-    margin-bottom: 20px;
+    align-items: center;
+    padding: 0 10px;
+    justify-content: center;
+    min-height: 100vh;
 }
-.detail-selection ol{
-    list-style-type: none;
+.wrapper{
+    width: 450px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
 }
-.detail-selection .horizontal-list {
-    display: flex; /* 使列表横向排布 */
-    flex-wrap: wrap; /* 如果横向空间不足，允许列表项换行 */
-}
-.horizontal-list {
+.wrapper header{
     display: flex;
-    list-style-type: none;
-    padding: 0;
+    align-items: center;
+    padding: 25px 30px 10px;
+    justify-content: space-between;
 }
-.horizontal-list li {
-    margin-right: 30px; /* 为了给列表项之间添加间距 */
-    margin-top: 10px;
+header .icons{
+    display: flex;
+}
+header .icons span{
+    height: 38px;
+    width: 38px;
+    margin: 0 1px;
     cursor: pointer;
-}
-
-
-.horizontal-list ul{
-    list-style-type: none;
-}
-
-.inline-block {
-    display: flex; /* 使用 Flexbox */
-    align-items: center; /* 垂直居中对齐 */
-    margin-top: 10px; /* 添加顶部间距 */
-}
-
-.gray{
-    color: #877979;
-}
-.inline-block p{
-    color: #456DE7;
-    margin-right: 10px; 
-}
-
-
-
-
-
-/* 第二个框 */
-
-.search-container {
-    
-    display: flex;
-    background-color: #ffffff; /* 将背景颜色改为白色 */
-    color: #000000; /* 文本颜色为黑色 */
-    text-decoration: none;
-    padding: 10px;
-    border: 1px solid #000000; /* 添加边框，颜色为黑色 */
-    box-shadow: 0 0 5px rgba(73, 73, 73, 0.5); /* 添加阴影 */
-    margin-bottom: 20px;
-}
-
-.search-container img {
-    width: 24px;
-    height: 24px;
-    vertical-align: middle;
-    cursor: pointer;
-}
-.search-container img[src="./image/搜索图标.png"] {
-    
-    border: 1px solid black;
-}
-.search-container span{
-    margin-left: 50px;
-}
-.blank{
-    margin-right: 450px;
-}
-.blue-text {
-    color: #456DE7; /* 设置文本颜色为蓝色 */
-}
-
-.separator {
-    margin-right: 50px; /* 图标之间的间距 */
-}
-
-/* 书籍框 */
-
-.book-container { 
-    display: flex;
-    background-color: #ffffff; /* 将背景颜色改为白色 */
-    color: #000000; /* 文本颜色为黑色 */
-    text-decoration: none;
-    padding: 10px;
-    border: 1px solid #000000; /* 添加边框，颜色为黑色 */
-    box-shadow: 0 0 5px rgba(73, 73, 73, 0.5); /* 添加阴影 */
-    align-items: center; /* 垂直居中子元素 */
-    margin-bottom: 10px;
-     order: 0; /* 默认顺序 */
-}
-
-.book-container img {
-    width: 80px;
-    height: 80px;
-    margin-left: 50px;
-}
-.book-name{
-    margin-left: 50px;
-}
-
-.book-static{
-    margin-left: 50px;
-    color: blue;
-}
-.book-info{
-    display: flex;
-    flex-direction: column;
-    margin-left: 50px;
-}
-.book-info > div {
-    display: flex; /* 每个包含p元素的div水平排列 */
-    align-items: center; /* 垂直居中子元素 */
-    margin-bottom: 10px; /* 设置div元素之间的间距 */
-}
-.prefix{
-    color: aquamarine;
-}
-.num span{
-    border: 1px solid #BBBBBB;
-    border-radius: 15%;
-    padding: 2px; /* 增加内边距，调整文字与边框的距离 */
-    background-color: #BBBBBB; 
-}
-.operation{
-    display: flex; /* 使用Flexbox布局 */
-    align-items: center; /* 垂直居中子元素 */
-    margin-left: 30%;
-}
-.operation img,
-.operation span{
-    width: 24px; /* 设置img和span的宽度 */
-    height: 24px; /* 设置img和span的高度 */
-    margin-right: 10px; /* 设置img和span之间的间距 */
-    display: flex; /* 使span元素也使用Flexbox布局 */
-    align-items: center; /* 垂直居中span内部的文本 */
-    justify-content: center; /* 水平居中span内部的文本 */
-}
-
-
-
-/* 同心圆按钮 */
-.circle-btn {
-    margin-left: 100px;
-    width: 16px;
-    height: 16px;
-    border: 2px solid #000;
+    color: #878787;
+    text-align: center;
+    line-height: 38px;
+    font-size: 1.9rem;
+    user-select: none;
     border-radius: 50%;
+}
+.icons span:last-child{
+    margin-right: -10px;
+}
+header .icons span:hover{
+    background: #f2f2f2;
+}
+header .current-date{
+    font-size: 1.45rem;
+    font-weight: 500;
+}
+.calendar{
+    padding: 20px;
+}
+.calendar ul{
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    text-align: center;
+}
+.calendar .days{
+    margin-bottom: 20px;
+}
+.calendar li{
+    color: #333;
+    width: calc(100% / 7);
+    font-size: 1.07rem;
+}
+.calendar .weeks li{
+    font-weight: 500;
+    cursor: default;
+}
+.calendar .days li{
+    z-index: 1;
+    cursor: pointer;
     position: relative;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-right: 10px;
+    margin-top: 30px;
 }
-.circle-btn::before {
-    content: '';
+.days li.inactive{
+    color: #aaa;
+}
+.days li.active{
+    color: #fff;
+}
+.days li::before{
     position: absolute;
-    top: 50%;
+    content: "";
     left: 50%;
-    transform: translate(-50%, -50%);
-    width: 50%;
-    height: 50%;
+    top: 50%;
+    height: 40px;
+    width: 40px;
+    z-index: -1;
     border-radius: 50%;
-    background-color: #000;
-    opacity: 0;
-    transition: opacity 0.3s;
+    transform: translate(-50%, -50%);
 }
-.circle-btn.active::before {
-    opacity: 1;
+.days li.active::before{
+    background: #9B59B6;
+}
+.days li:not(.active):hover::before{
+    background: #f2f2f2;
 }
