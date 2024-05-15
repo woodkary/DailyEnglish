@@ -1,4 +1,4 @@
-package team_router_test
+package test
 
 import (
 	"database/sql"
