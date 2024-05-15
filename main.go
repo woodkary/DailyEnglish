@@ -43,7 +43,7 @@ func main() {
 		r1 := gin.Default()
 		userrouter.InitUserRouter(r1, db)
 		r1.Use(middlewares.Cors())
-		r1.Run(":8081")
+		r1.Run(":8080")
 	}()
-	r.Run(":8080")
+	r.Run(":8081")
 }
