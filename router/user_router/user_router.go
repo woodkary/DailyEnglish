@@ -4,6 +4,7 @@ import (
 	controlsql "DailyEnglish/db"
 	utils "DailyEnglish/utils"
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -22,6 +23,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			})
 			return
 		}
+		fmt.Print("data.Email: ", data.Email, "\n")
 		// 验证邮箱是否已注册
 		if controlsql.EmailIsRegistered_User(db, data.Email) {
 			c.JSON(http.StatusConflict, gin.H{
