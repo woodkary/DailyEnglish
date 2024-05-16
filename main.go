@@ -1,11 +1,12 @@
 package main
 
 import (
+	middleware "DailyEnglish/middlewares"
 	adminrouter "DailyEnglish/router/admin_router"
 	teamrouter "DailyEnglish/router/team_router"
 	"database/sql"
 	"fmt"
-	middleware "DailyEnglish/middleware"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 )
