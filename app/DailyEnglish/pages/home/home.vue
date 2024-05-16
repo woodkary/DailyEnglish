@@ -1,9 +1,9 @@
 <template>
 	<view class="homepage">
-		<view class="search-container" @click="handleSearch">
-			<view class="search">
+		<view class="search-container" >
+			<view class="search" @click="handleSearch">
 				<image class="search-icon" src="/static/search.svg"></image>
-				<input placeholder="搜索"></input>
+				<input placeholder="搜索" v-model:value="searchInput">
 			</view>
 			<view class="history" v-show="isHistoryVisible">
 				<view class="history-header">
@@ -11,7 +11,7 @@
 					<text class="clean">清空</text>
 				</view>
 				<view class="list">
-					<view class="item" v-for="(item, index) in items" :key="index">
+					<view class="item" v-for="(item, index) in items" :key="index" @click="handleSearchInput(item.word)">
 						<view class="top-row">
 							<view class="word">{{ item.word }}</view>
 							<view class="phonetic">{{ item.phonetic }}</view>
@@ -140,6 +140,7 @@
 		data() {
 			return {
 				isHistoryVisible: false,
+        searchInput: '',
 				items: [{
 						word: 'apple',
 						phonetic: '/ˈæpl/',
@@ -157,7 +158,10 @@
 		methods: {
 			handleSearch() {
 				this.isHistoryVisible = !this.isHistoryVisible;
-			}
+			},
+      handleSearchInput(input) {
+        this.searchInput = input;
+      }
 		}
 	}
 	
