@@ -63,10 +63,11 @@
         }
         let btn = document.getElementById('sendCodeBtn');
         uni.request({
-          url: 'http://47.113.117.103:8080/api/register/sendCode',
+          url: '/api/register/sendCode',
           data: {
             email: this.email
           },
+          withCredentials: false,
           method: 'POST',
           success: (res) => {
             console.log(res);
@@ -91,12 +92,12 @@
                   btn.disabled=false;
                 }
               }, 1000);
-            }else if(data.code==409) {//邮箱已注册
+            }else if(res.statusCode==409) {//邮箱已注册
               uni.showToast({
                 title: '邮箱已注册',
                 icon: 'error'
               });
-            }else if(data.code==400){//请求参数错误
+            }else if(res.statusCode==400){//请求参数错误
               uni.showToast({
                 title: '请求参数错误',
                 icon: 'error'
@@ -169,7 +170,7 @@
         let email=this.email;
         let password=this.password;
         uni.request({
-          url: 'http://47.113.117.103:8080/api/users/register',
+          url: '/api/users/register',
           data: {
             username: username,
             email: email,
