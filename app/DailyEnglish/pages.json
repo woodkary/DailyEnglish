@@ -125,32 +125,33 @@
     //凡是在tabBar内的页面，都不能由默认的navigateTo，navigateBack跳转，只能通过switchTab跳转
     "color" : "#333",
     "selectedColor" : "#007AFF",
+	    "backgroundColor" : "#ffffff",
+	"fontSize": "20rpx",
+	"borderStyle": "black",
     "list" : [
       {
-        "pagePath" : "pages/login/login",
-        "text" : "登录"
+        "pagePath" : "pages/home/home",
+		"iconPath": "static/homepage.png",
+		"selectedIconPath": "static/homepage_active.png",
+        "text" : "主页"
       },
-      // "iconPath": "static/tabbar/home.png",
-      // "selectedIconPath": "static/tabbar/home-active.png"
-      {
-        "pagePath" : "pages/Vocab/Vocab",
-        "text" : "词汇书"
-      },
-      // "iconPath": "static/tabbar/vocab.png",
-      // "selectedIconPath": "static/tabbar/vocab-active.png"
       {
         "pagePath" : "pages/Examination/Examination",
-        "text" : "答题测验"
-      },
-      // "iconPath": "static/tabbar/exam.png",
-      // "selectedIconPath": "static/tabbar/exam-active.png"
-      {
-        "pagePath" : "pages/register/register",
-        "text" : "注册"
+		"iconPath": "static/exampage.png",
+		"selectedIconPath": "static/exampage_active.png",
+        "text" : "考试"
       },
 	  {
+	    "pagePath" : "pages/Vocab/Vocab",
+	  		"iconPath": "static/vocpage.png",
+	  		"selectedIconPath": "static/vocpage_active.png",
+	    "text" : "单词本"
+	  },
+	  {
 		  "pagePath": "pages/user/user",
-		  "text": "个人中心"
+		  "iconPath": "static/userpage.png",
+		  "selectedIconPath": "static/userpage_active.png",
+		  "text": "我的"
 	  }
     ]
   },
