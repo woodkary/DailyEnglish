@@ -61,6 +61,9 @@
 		width: 75%;
 		margin-left: 40rpx;
 		padding: 5rpx;
+    border-color: rgba(247, 127, 0, 0.4);
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgb(247 127 0 / 10%);
 	}
 
 	.search-icon {
