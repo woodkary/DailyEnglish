@@ -6,7 +6,8 @@
 					<image class="search-icon" src="/static/search.svg"></image>
 					<input placeholder="搜索" v-model:value="searchInput">
 				</view>
-				<button class="cancel" v-show="isHistoryVisible" @click="cancelSearch">取消</button>
+				<button class="cancel" v-if="isHistoryVisible" @click="cancelSearch">取消</button>
+				<image class="Msg-icon" v-else src="/static/email.png"></image>
 			</view>
 			<view class="history" v-show="isHistoryVisible">
 				<view class="history-header">
@@ -26,12 +27,50 @@
 
 			</view>
 		</view>
+		<view class="content-container" v-show="!isHistoryVisible">
+			<view class="button-list">
+				<view class="btn-item">
+					<image src="/static/word-exercise.png"></image>
+					<text>单词训练</text>
+				</view>
+				<view class="btn-item">
+					<image src="/static/biji.svg"></image>
+					<text>单词自检</text>
+				</view>
+				<view class="btn-item">
+					<image src="/static/write.svg"></image>
+					<text>爱写作</text>
+				</view>
+				<view class="btn-item">
+					<image src="/static/read.svg"></image>
+					<text>爱阅读</text>
+				</view>
+			</view>
+		</view>
+		<view class="ad-container" v-show="!isHistoryVisible">
+			<view class="ad-list">
+				<view class="ad-item">
+					<view class="text-container">
+						<text class="title">30分钟，拿下英语阅读</text>
+						<text class="content">每日一读，提高英语阅读能力</text>
+					</view>
+					<image class="image" src="/static/ad1.svg"></image>
+				</view>
+				<view class="ad-item">
+					<view class="text-container">
+						<text class="title">30分钟，拿下英语阅读</text>
+						<text class="content">每日一读，提高英语阅读能力</text>
+					</view>
+					<image class="image" src="/static/ad1.svg"></image>
+				</view>
+			</view>
+		</view>
 	</view>
 </template>
 
 <style>
 	.homepage {
-		background-color: #f5f5f5;
+		background-color: #f8d7d0;
 		height: 100vh;
 		width: 100vw;
 	}
@@ -42,10 +81,10 @@
 	}
 
 	.search {
-		background-color: #fff;
+		background-color: #ffffff;
 		border-radius: 50rpx;
 		display: flex;
-		height: 65rpx;
+		height: 72rpx;
 		padding: 5rpx;
 		width: 70%;
 		align-items: center;
@@ -61,9 +100,9 @@
 		width: 75%;
 		margin-left: 40rpx;
 		padding: 5rpx;
-    border-color: rgba(247, 127, 0, 0.4);
-    background-color: #fff;
-    box-shadow: 0 0 0 4px rgb(247 127 0 / 10%);
+		border: 2px solid rgba(255, 115, 0, 0.4);
+		height: 65rpx;
+		box-shadow: 0 0 0 4px rgb(247 127 0 / 10%);
 	}
 
 	.search-icon {
@@ -109,11 +148,17 @@
 
 	}
 
+	.Msg-icon {
+		width: 75rpx;
+		height: 75rpx;
+		margin-left: 40rpx;
+	}
 
 	.search.active input {
 		width: 80%;
 		text-align: left;
 		max-width: 80%;
+		color: #000000;
 		height: 100%;
 		font-size: 38rpx;
 		margin-left: 10rpx;
@@ -183,6 +228,101 @@
 		overflow: hidden;
 		white-space: nowrap;
 		font-weight: 500;
+	}
+
+	.content-container {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+	}
+
+	.button-list {
+		display: flex;
+		white-space: nowrap;
+		justify-content: center;
+		width: 100%;
+		margin-top: 40rpx;
+		background-color: transparent;
+
+	}
+
+	.btn-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 144rpx;
+		height: 144rpx;
+		border: 1px solid #e4e4e4;
+		margin-left: 30rpx;
+		border-radius: 10rpx;
+		background-color: #fff;
+		box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+		/* 渐变阴影 */
+
+	}
+
+	.btn-item:first-child {
+		margin-left: 0rpx;
+	}
+
+	.btn-item image {
+		margin-top: 10rpx;
+		width: 102rpx;
+		height: 102rpx;
+	}
+
+	.ad-container {
+		width: 100%;
+
+	}
+
+	.ad-list {
+		display: flex;
+		flex-direction: column;
+		/* background-color: white; */
+		width: 90%;
+		margin-left: 5%;
+		margin-top: 30rpx;
+	}
+
+	.ad-item {
+		display: flex;
+		border: 1px solid #e4e4e4;
+		border-radius: 10rpx;
+		margin-bottom: 20rpx;
+		height: 86px;
+		background-color: #fff;
+		box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+	}
+
+	.text-container {
+		display: flex;
+		/* 将文本容器设置为Flex容器 */
+		flex-direction: column;
+		/* 垂直排列 */
+		margin-right: 30px;
+		/* 右边距 */
+		/*居中*/
+		justify-content: center;
+		margin-left: 20px;
+	}
+
+	.title {
+		font-size: 20px;
+		font-weight: bold;
+	}
+
+	.content {
+		font-size: 16px;
+		color: #666;
+		margin-top: 5px;
+	}
+
+	.image {
+		width: 110px;
+		height: 110px;
+		margin-top: -15px;
 	}
 </style>
 <script>
