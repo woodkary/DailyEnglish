@@ -19,11 +19,12 @@
     <view class="word-blocks" @touchend="handleTouchEnd()">
       <word-block
         v-for="word in words"
-        :key="word"
-        :word="word"
-        pronunciation="/ˈæpəl/"
-        meaning="苹果"
-        review-count="5"
+        :key="word.spelling"
+        :word="word.spelling"
+        :pronunciation="word.pronunciation"
+        :meaning="getMeaningStr(word.meanings)"
+        :details="word"
+        :review-count="5"
       >
       </word-block>
     </view>
@@ -47,15 +48,44 @@ export default {
 
   data() {
     return {
+      //词性简写
+      simplifiedSpeech:{
+        verb: "v.",
+        adjective: "adj.",
+        noun: "n.",
+        pronoun: "pron.",
+        adverb: "adv.",
+        conjunction: "conj.",
+        preposition: "prep.",
+        interjection: "int."
+      },
       words: [
-        "moral",
-        "abandon",
-        "banana",
-        "apple",
-        "cat",
-        "dog",
-        "site",
-        "lagrg",
+        {spelling: "moral",
+          pronunciation: "/ˈmɔːrəl/",
+          meanings:{
+            verb:null,
+            adjective:["道德的","品行端正的","伦理的"," 精神上的"],
+            noun: ["道德教训","寓意","品德","品行"],
+            pronoun:null,
+            adverb:null,
+            conjunction:null,
+            preposition:null,
+            interjection:null
+          }
+        },
+        {
+          spelling: "abandon",
+          pronunciation: "/əˈbændən/",
+          meanings:{
+            verb:["抛弃","放弃","弃置","放弃治疗"],
+            noun:["放弃物","放弃的事物","放弃的念头","放弃的决定"],
+            pronoun:null,
+            adverb:null,
+            conjunction:null,
+            preposition:null,
+            interjection:null
+          }
+        }
       ], // 单词列表
       cnt: 0,
       book: "cet4",
@@ -77,6 +107,38 @@ export default {
     }
   },
   methods: {
+    getMeaningStr(meanings) {
+      let meaningStr = "";
+      let foundFirst = false; // 标志是否找到了第一个非空词性的意思
+
+      for (let key in meanings) {
+        if (meanings[key] && meanings[key].length > 0) {
+          if (!foundFirst) {
+            // 如果是第一个非空词性，添加词性前缀
+            meaningStr += this.simplifiedSpeech[key];
+            foundFirst = true;
+          } else {
+            // 如果不是第一个非空词性，则不再添加词性前缀
+            meaningStr += "、";
+          }
+
+          // 只添加前两个意思
+          meaningStr += meanings[key].slice(0, 2).join("、");
+
+          // 如果意思多于两个，添加 "..."
+          if (meanings[key].length > 2) {
+            meaningStr += "..."
+            break; // 找到了第一个非空词性的前两个意思，结束循环
+          } else if (meanings[key].length === 2) {
+            meaningStr += "\n"; // 添加换行符，但只有当添加了两个意思时
+            break; // 找到了第一个非空词性的前两个意思，结束循环
+          }
+        }
+      }
+
+      return meaningStr;
+    },
+
     handleBack() {
       uni.navigateBack();
     },
