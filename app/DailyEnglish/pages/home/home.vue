@@ -2,9 +2,9 @@
 	<view class="homepage">
 		<view class="search-container">
 			<view class="search-head" style="display: flex;">
-				<view class="search" :class="{active:isHistoryVisible}" @click="handleSearch">
-					<image class="search-icon" src="/static/search.svg"></image>
-					<input placeholder="搜索" v-model:value="searchInput">
+				<view class="search" :class="{active:isHistoryVisible}" @click="handleSearchShow()">
+					<image class="search-icon" src="/static/search.svg" @click="handleSearchRouter"></image>
+					<input placeholder="搜索" v-model:value="searchInput" @confirm="handleSearchRouter">
 				</view>
 				<button class="cancel" v-if="isHistoryVisible" @click="cancelSearch">取消</button>
 				<image class="Msg-icon" v-else src="/static/email.png"></image>
@@ -28,14 +28,15 @@
 			</view>
 		</view>
 		<view class="daka-container" v-show="!isHistoryVisible">
-			<image src="../../static/lihua.png" v-show="isDaka" style="position: absolute;width:330px;height:330px;top:140px;left:120px;"></image>
+			<image src="../../static/lihua.png" v-show="isDaka"
+				style="position: absolute;width:330px;height:330px;top:140px;left:120px;"></image>
 			<view class="daka-head">
 				<view class="column">
 					<image class="vocabook-img" src="../../static/book.png"></image>
 				</view>
 				<view class="column">
 					<view class="row">
-						<view class="daka-title">中考词汇</view>
+						<view class="daka-title">{{ daka_book }}</view>
 						<view class="daka-subtitle">修改</view>
 					</view>
 					<view class="row">
@@ -50,7 +51,8 @@
 
 			</view>
 			<view class="daka-line">
-				<view class="daka-title" v-if="isDaka" style="font-size: 30rpx;font-weight: normal;">恭喜你！<br>完成今日打卡</view>
+				<view class="daka-title" v-if="isDaka" style="font-size: 30rpx;font-weight: normal;">恭喜你！<br>完成今日打卡
+				</view>
 				<view class="daka-title" v-else>今日计划</view>
 				<view class="daka-slogan">随时随地，单词猛记</view>
 			</view>
@@ -354,7 +356,7 @@
 			margin-top: 40rpx;
 			margin-left: 40rpx;
 			margin-right: 40rpx;
-		/* 	border-top: 1px solid #e4e4e4;
+			/* 	border-top: 1px solid #e4e4e4;
 			border-bottom: 1px solid #e4e4e4; */
 
 			.daka-title {
@@ -524,27 +526,59 @@
 	export default {
 		data() {
 			return {
-				isHistoryVisible: false,//查询单词
-				isDaka: true,//是否打卡
-				isReview:true,//是否复习
+				isHistoryVisible: false, //查询单词
+				isDaka: true, //是否打卡
+				isReview: true, //是否复习
 				searchInput: '',
+				daka_book: '',
 				items: [{
-						word: 'apple',
-						phonetic: '/ˈæpl/',
-						meaning: '苹果111111111111111111111111111111111111111111111111'
-					}, {
-						word: 'banana',
-						phonetic: '/bəˈnɑː.nə/',
-						meaning: '香蕉'
-					}
-
-					// 其他列表项
-				]
+					word: 'apple',
+					phonetic: '/ˈæpl/',
+					meaning: '苹果111111111111111111111111111111111111111111111111'
+				}, {
+					word: 'banana',
+					phonetic: '/bəˈnɑː.nə/',
+					meaning: '香蕉'
+				}]
 			}
 		},
 		methods: {
-			handleSearch() {
+			fetchData() {
+				uni.request({
+					url: ">>>>>>>>>>>",
+					method: 'GET',
+					success: (res) => {
+						if (res.statusCode === 200) {
+							this.daka_book = res.data.daka_book;
+						} else {
+							console.error("请求失败",res),
+							this.daka_book = "词汇书123"
+						}
+					},
+					fail: (err) => {
+						console.error("请求失败",err),
+						this.daka_book = "词汇书123"
+					}
+				});
+			},
+			onload() {
+				this.fetchData();
+				console.log("hi");
+			},
+			handleSearchShow() {
 				this.isHistoryVisible = true;
+			},
+			handleSearchRouter() {
+				// 跳转到搜索结果页
+				uni.navigateTo({
+					// url: `/pages/word_details/word_details?word=${this.searchInput}`
+					url: `/pages/word_details/word_details`
+				});
+				uni.showToast({
+					title: '搜索成功',
+					icon: 'none'
+				});
+				console.log("本次搜索内容是", this.searchInput);
 			},
 			handleSearchInput(input) {
 				this.searchInput = input;
@@ -553,6 +587,7 @@
 				this.isHistoryVisible = false;
 				this.searchInput = '';
 			}
+
 		}
 	}
 </script>
