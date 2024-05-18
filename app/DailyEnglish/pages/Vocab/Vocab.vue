@@ -19,8 +19,9 @@
     <view class="word-blocks" @touchend="handleTouchEnd()">
       <word-block
         v-for="word in words"
-        :key="word.spelling"
+        :key="word.id"
         :word="word.spelling"
+        :id="word.word_id"
         :pronunciation="word.pronunciation"
         :meaning="getMeaningStr(word.meanings)"
         :details="word"
@@ -60,7 +61,9 @@ export default {
         interjection: "int."
       },
       words: [
-        {spelling: "moral",
+        {
+          word_id: 1,
+          spelling: "moral",
           pronunciation: "/ˈmɔːrəl/",
           meanings:{
             verb:null,
@@ -71,9 +74,11 @@ export default {
             conjunction:null,
             preposition:null,
             interjection:null
-          }
+          },
+          sound:"https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
         },
         {
+          word_id: 2,
           spelling: "abandon",
           pronunciation: "/əˈbændən/",
           meanings:{
@@ -84,7 +89,8 @@ export default {
             conjunction:null,
             preposition:null,
             interjection:null
-          }
+          },
+          sound:"https://ssl.gstatic.com/dictionary/static/sounds/oxford/abandon--_gb_1.mp3"
         }
       ], // 单词列表
       cnt: 0,
@@ -94,6 +100,21 @@ export default {
       showBackTop: false, //是否显示返回顶部按钮
     };
   },
+/*  onLoad() {
+    uni.request({
+      url: "/api/words/get_starbk",
+      method: "POST",
+      header: {
+        'Authorization': 'Bearer ' + uni.getStorageSync('token')
+      },
+      success: (res) => {
+        this.words = res.data.words;
+      },
+      fail: (res) => {
+        console.log("请求失败");
+      }
+    });
+  },*/
 
   onPageScroll(e) {
     // 获取滚动的距离
@@ -147,24 +168,6 @@ export default {
     },
     Export() {
       //预计导出生词，后续再写
-    },
-    fetchWords() {
-      // 使用 axios 或其他 HTTP 客户端来发送请求
-      axios
-        .get("/api/words", {
-          params: {
-            start: this.startIndex,
-            end: this.endIndex,
-          },
-        })
-        .then((response) => {
-          // 假设 API 返回的是一个新的单词数组
-          // todo根据需要合并新旧单词列表
-          this.words = [...this.words, ...response.data];
-          // 更新起始索引和结束索引
-          this.startIndex += 20;
-          this.endIndex += 20;
-        });
     },
     handleTouchEnd(e) {
       // 获取scroll-view的滚动高度

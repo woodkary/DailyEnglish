@@ -1,7 +1,7 @@
 <template>
   <view>
     <view class="word-list-container">
-      <view class="word-item" v-for="(word, index) in words" :key="index">
+      <view class="word-item">
         <view class="word-card">
           <h1 class="word">{{ word.name }}</h1>
           <image src="../../static/collection.png" class="collection"></image>
@@ -23,7 +23,7 @@
       </template>
       <view class="content">这里是第一个可展开/缩起的内容</view>
     </CollapsibleView>
-    <CollapsibleView ref="collapsibleView2" v-for="wordDetail in wordDetails" :key="wordDetail.word">
+    <CollapsibleView ref="collapsibleView2">
       <template #header>
         <view class="header">
           <h3>详细释义</h3>
@@ -44,7 +44,7 @@
         </view>
       </view>
     </CollapsibleView>
-    <CollapsibleView ref="collapsibleView3" v-for="wordAndPhrase in wordAndPhrases" :key="wordAndPhrase.word">
+    <CollapsibleView ref="collapsibleView3">
       <template #header>
         <view class="header">
           <h3>短语</h3>
@@ -70,17 +70,26 @@ export default {
   },
   data() {
     return {
-      words: [{
+      //词性简写
+      simplifiedSpeech:{
+        verb: "v.",
+        adjective: "adj.",
+        noun: "n.",
+        pronoun: "pron.",
+        adverb: "adv.",
+        conjunction: "conj.",
+        preposition: "prep.",
+        interjection: "int."
+      },
+      word: {
         name: 'abandon',
         pronunciation: '/ əˈbændən /',
         meanings: ['v.    抛弃；放弃；沉湎于（某种情感）；舍弃，废弃','n.    尽情，放纵'],
         book: '高中/ CET4 / CET6 / 考研 / IELTS / TOEFL / GRE'
       },
-        // 更多单词...
-      ],
       //这是一个数组，元素是结构体，有word、details两个属性，分别代表单词和详细释义
       //其中details是一个数组，元素是结构体，有partOfSpeech、chineseMeaning、exampleSentence、sentenceMeaning四个属性，分别代表词性、中文释义、例句、英文释义
-      wordDetails: [
+      wordDetail:
         {
           word: 'abandon',
           details: [{
@@ -111,11 +120,9 @@ export default {
           }
           ],
         },
-        // 更多单词...
-      ],
       //wordAndPhrases是一个数组，元素是结构体，有word、phraseAndMeanings两个属性，分别代表单词和短语释义
       //其中phraseAndMeanings是一个数组，元素是结构体，有phrase、meaning两个属性，分别代表短语和释义
-      wordAndPhrases: [{
+      wordAndPhrase: {
         word: 'abandon',
         phraseAndMeanings:[
           {
@@ -140,12 +147,98 @@ export default {
           },
         ]
       },
-        // 更多单词...
-      ],
     }
   },
+  onLoad(event) {
+    //获取请求参数中的word和word_id
+    let word=event["word"];
+    let word_id=event["word_id"];
+    this.word.name=word;
+    this.wordDetail.word=word;
+    this.wordAndPhrase.word=word;
+    //从本地缓存中获取word的信息
+    let localDetails=uni.getStorageSync(word_id);
+    /**
+     * {
+     *           word_id: 2,
+     *           spelling: "abandon",
+     *           pronunciation: "/əˈbændən/",
+     *           meanings:{
+     *             verb:["抛弃","放弃","弃置","放弃治疗"],
+     *             noun:["放弃物","放弃的事物","放弃的念头","放弃的决定"],
+     *             pronoun:null,
+     *             adverb:null,
+     *             conjunction:null,
+     *             preposition:null,
+     *             interjection:null
+     *           },
+     *           sound:"https://ssl.gstatic.com/dictionary/static/sounds/oxford/abandon--_gb_1.mp3"
+     *         }
+     */
+    if(localDetails){
+      //获取发音和释义
+      this.word.pronunciation=localDetails.pronunciation;
+      this.word.meanings=this.transformMeaningsToText(localDetails.meanings);
+    }
+    uni.request({
+      url: '/api/words/word_details',
+      method: 'POST',
+      header: {
+        'content-type': 'application/json', // 默认值
+        'Authorization': 'Bearer '+uni.getStorageSync('token') // 登录后获取的token
+      },
+      data: {
+        word_id: word_id
+      },
+      success: (res) => {
+        //发送请求，获取详细释义和短语释义
+        let detailedMeanings=res.data.detailed_meanings;
+        this.wordDetail.details=this.transformDetailedMeaningsToDetails(detailedMeanings);
+        this.wordAndPhrase.phraseAndMeanings=res.data.phrases;
+        this.word.book=res.data.word_book;
+      },
+      fail: (res) => {
+        console.log(res);
+      }
+    });
+  },
   methods: {
-    toggleCollapse1() {
+      transformMeaningsToText(meanings) {
+          const transformedMeanings = [];
+          for (const speech in meanings) {
+            if (meanings[speech] && meanings[speech].length > 0) {
+              // 获取词性简写
+              const speechAbbreviation = this.simplifiedSpeech[speech];
+              // 生成词性及其意思的字符串，之间加入两个制表符
+              const meaningText = `${speechAbbreviation}\t\t${meanings[speech].join("; ")}\n`;
+              // 添加到数组中
+              transformedMeanings.push(meaningText);
+            }
+          }
+          return transformedMeanings;
+    },
+    transformDetailedMeaningsToDetails(detailedMeanings) {
+      const details = [];
+      for (const speech in detailedMeanings) {
+        if (detailedMeanings[speech] && detailedMeanings[speech].length > 0) {
+          // 获取词性简写
+          const partOfSpeech = this.simplifiedSpeech[speech];
+          detailedMeanings[speech].forEach(meaning => {
+            // 创建一个对象，包含词性、中文意思、示例句子和句子意思
+            const detail = {
+              partOfSpeech: partOfSpeech,
+              chineseMeaning: meaning.chinese_meaning,
+              exampleSentence: meaning.example_sentence,
+              sentenceMeaning: meaning.sentence_meaning
+            };
+            // 添加到details数组中
+            details.push(detail);
+          });
+        }
+      }
+      return details;
+    },
+  toggleCollapse1() {
 
     },
     toggleCollapse2() {
@@ -196,6 +289,7 @@ export default {
 .word {
   margin-top: 3rem;
   margin-bottom: 10px;
+  font-size: 2rem;
 }
 
 .pronunciation {

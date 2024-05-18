@@ -23,7 +23,8 @@ export default {
     pronunciation: String,
     meaning: String,
     reviewCount: Number,
-    details: Object
+    details: Object,
+    id: Number,
   },
   // 组件的其他逻辑
   data() {
@@ -33,7 +34,8 @@ export default {
       meaning: this.meaning,
       showPronunciationMeaning: false,
       reviewCount: this.reviewCount,
-      details: this.details
+      details: this.details,
+      id: this.id,
     };
   },
   methods: {
@@ -41,14 +43,14 @@ export default {
       this.showPronunciationMeaning =!this.showPronunciationMeaning;
     },
     navigation(){
+      let localDetails=uni.getStorageSync(this.id);
+      if(!localDetails){
+        uni.setStorageSync(this.id,this.details);
+      }
       // 实现页面跳转的逻辑
       uni.navigateTo({
-        url: '/pages/word_details/word_details?word=' + this.word
+        url: '/pages/word_details/word_details?word_id='+this.id+'&word='+this.word
       });
-      let localDetails=uni.getStorageSync(this.word);
-      if(!localDetails){
-        uni.setStorageSync(this.word,this.details);
-      }
     },
     readWord() {
       // 实现系统朗读的逻辑
