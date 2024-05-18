@@ -27,6 +27,52 @@
 
 			</view>
 		</view>
+		<view class="daka-container" v-show="!isHistoryVisible">
+			<view class="daka-head">
+				<view class="column">
+					<image class="vocabook-img" src="../../static/book.png"></image>
+				</view>
+				<view class="column">
+					<view class="row">
+						<view class="daka-title">中考词汇</view>
+						<view class="daka-subtitle">修改</view>
+					</view>
+					<view class="row">
+						<progress percent="10" active-color="#10aeff" backgroundColor="#c8c8c8"
+							stroke-width="7"></progress>
+					</view>
+					<view class="row">
+						<view class="progress1">123/2345</view>
+						<view class="progress2">剩余30天</view>
+					</view>
+				</view>
+
+			</view>
+			<view class="daka-line">
+				<view class="daka-title">今日计划</view>
+				<view class="daka-slogan">随时随地，单词猛记</view>
+			</view>
+			<view class="daka-plan">
+				<view class="row">
+					<view class="plan-title1">需新学</view>
+					<view class="plan-title2">需复习</view>
+				</view>
+				<view class="row">
+					<view class="plan-num">
+						<view class="number">5</view>
+						<text>词</text>
+					</view>
+					<view class="plan-num" style="margin-left:100px">
+						<view class="number">5</view>
+						<text>词</text>
+					</view>
+
+				</view>
+				<view class="row">
+					<button class="plan-btn1">开始学习</button>
+				</view>
+			</view>
+		</view>
 		<view class="content-container" v-show="!isHistoryVisible">
 			<view class="button-list">
 				<view class="btn-item">
@@ -69,8 +115,12 @@
 </template>
 
 <style>
+	@font-face {
+		font-family: "SF-UI-Text";
+		src: url('@/static/SF-UI-Text-Regular.otf');
+	}
 	.homepage {
-		background-color: #f8d7d0;
+		background-color: #f8f8f8;
 		height: 100vh;
 		width: 100vw;
 	}
@@ -230,6 +280,143 @@
 		font-weight: 500;
 	}
 
+	.daka-container {
+		width: 90%;
+		height: 690rpx;
+		margin-left: 5%;
+		margin-top: 40rpx;
+		background-color: white;
+		border-radius: 10px;
+		box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.1);
+
+		.daka-head {
+			display: flex;
+			flex-direction: row;
+
+			.column {
+				display: flex;
+				flex-direction: column;
+			}
+
+			.row {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+			}
+
+			.vocabook-img {
+				width: 160rpx;
+				height: 180rpx;
+				margin-top: 40rpx;
+				margin-left: 40rpx;
+			}
+
+			.daka-title {
+				margin-top: 40rpx;
+				font-weight: 550;
+				font-size: 40rpx;
+				margin-left: 40rpx;
+			}
+
+			.daka-subtitle {
+				margin-top: 42rpx;
+				margin-left: 20rpx;
+				color: #9e9e9e;
+			}
+
+			progress {
+				margin-left: 40rpx;
+				height: 60rpx;
+				width: 350rpx;
+			}
+
+			.progress1 {
+				margin-left: 30rpx;
+				color: #9e9e9e;
+			}
+
+			.progress2 {
+				margin-left: 100rpx;
+				color: #9e9e9e;
+			}
+		}
+
+		.daka-line {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			margin-top: 40rpx;
+			margin-left: 40rpx;
+			margin-right: 40rpx;
+			border-top: 1px solid #e4e4e4;
+			border-bottom: 1px solid #e4e4e4;
+
+			.daka-title {
+				font-weight: 550;
+				font-size: 40rpx;
+			}
+
+			.daka-slogan {
+				color: #F55F4A;
+				margin-top: 10rpx;
+			}
+		}
+
+		.daka-plan {
+			display: flex;
+			flex-direction: column;
+			margin-top: 40rpx;
+			margin-left:20rpx;
+			.row {
+				display: flex;
+				flex-direction: row;
+
+				.plan-title1 {
+					fontsize: 45rpx;
+					margin-left: 40rpx;
+				}
+
+				.plan-title2 {
+					fontsize: 45rpx;
+					margin-left: 250rpx;
+				}
+
+				.plan-num {
+					margin-left: 40rpx;
+					display: flex;
+					text{
+						margin-left:20rpx;
+						margin-top:90rpx;
+						font-size: 45rpx;
+						font-weight: 550;
+					}
+				}
+				
+				.number {
+					font-size: 150rpx;
+					font-weight: 600;
+					font-family: 'SF-UI-Text';
+					/*斜体*/
+					font-style: italic;
+				}
+				
+			}
+			
+			.plan-btn1 {
+				width:90%;
+				height: 90rpx;
+				background-color: #2c8af5;
+				color: white;
+				font-size: 25px;
+				display: flex;
+				justify-content: center;
+				  align-items: center;     /* 垂直居中 */
+				margin-left: 21rpx;
+			}
+		}
+		
+	}
+
 	.content-container {
 		display: flex;
 		justify-content: center;
@@ -274,7 +461,7 @@
 
 	.ad-container {
 		width: 100%;
-
+		margin-top: 40rpx;
 	}
 
 	.ad-list {
@@ -283,17 +470,16 @@
 		/* background-color: white; */
 		width: 90%;
 		margin-left: 5%;
-		margin-top: 30rpx;
 	}
 
 	.ad-item {
 		display: flex;
 		border: 1px solid #e4e4e4;
 		border-radius: 10rpx;
-		margin-bottom: 20rpx;
+		margin-bottom: 40rpx;
 		height: 86px;
 		background-color: #fff;
-		box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+		box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 	}
 
 	.text-container {
