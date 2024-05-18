@@ -39,6 +39,10 @@ export default {
 	display: flex;  
 	flex-direction: column; /* 设置为列方向，实现从上往下排列 */  
 	align-items: stretch; /* 子项默认拉伸以填充整个容器 */ 
+	
+	margin-top: 10px;/*这是稍微的改动*/
+	margin-bottom: 10px;/*这是稍微的改动*/
+	
 }  
   .content {  
 	  overflow: hidden; /* 隐藏超出内容区域的内容 */
