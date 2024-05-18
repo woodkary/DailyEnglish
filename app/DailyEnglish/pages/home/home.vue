@@ -28,6 +28,7 @@
 			</view>
 		</view>
 		<view class="daka-container" v-show="!isHistoryVisible">
+			<image src="../../static/lihua.png" v-show="isDaka" style="position: absolute;width:330px;height:330px;top:140px;left:120px;"></image>
 			<view class="daka-head">
 				<view class="column">
 					<image class="vocabook-img" src="../../static/book.png"></image>
@@ -49,13 +50,16 @@
 
 			</view>
 			<view class="daka-line">
-				<view class="daka-title">今日计划</view>
+				<view class="daka-title" v-if="isDaka" style="font-size: 30rpx;font-weight: normal;">恭喜你！<br>完成今日打卡</view>
+				<view class="daka-title" v-else>今日计划</view>
 				<view class="daka-slogan">随时随地，单词猛记</view>
 			</view>
 			<view class="daka-plan">
 				<view class="row">
-					<view class="plan-title1">需新学</view>
-					<view class="plan-title2">需复习</view>
+					<view class="plan-title1" v-if="isDaka">今日已新学</view>
+					<view class="plan-title1" v-else>需新学</view>
+					<view class="plan-title2" v-if="isReview">今日已复习</view>
+					<view class="plan-title2" v-else>需复习</view>
 				</view>
 				<view class="row">
 					<view class="plan-num">
@@ -119,6 +123,7 @@
 		font-family: "SF-UI-Text";
 		src: url('@/static/SF-UI-Text-Regular.otf');
 	}
+
 	.homepage {
 		background-color: #f8f8f8;
 		height: 100vh;
@@ -344,12 +349,13 @@
 		.daka-line {
 			display: flex;
 			flex-direction: row;
+			align-items: center;
 			justify-content: space-between;
 			margin-top: 40rpx;
 			margin-left: 40rpx;
 			margin-right: 40rpx;
-			border-top: 1px solid #e4e4e4;
-			border-bottom: 1px solid #e4e4e4;
+		/* 	border-top: 1px solid #e4e4e4;
+			border-bottom: 1px solid #e4e4e4; */
 
 			.daka-title {
 				font-weight: 550;
@@ -366,7 +372,8 @@
 			display: flex;
 			flex-direction: column;
 			margin-top: 40rpx;
-			margin-left:20rpx;
+			margin-left: 20rpx;
+
 			.row {
 				display: flex;
 				flex-direction: row;
@@ -378,20 +385,21 @@
 
 				.plan-title2 {
 					fontsize: 45rpx;
-					margin-left: 250rpx;
+					margin-left: 200rpx;
 				}
 
 				.plan-num {
 					margin-left: 40rpx;
 					display: flex;
-					text{
-						margin-left:20rpx;
-						margin-top:90rpx;
+
+					text {
+						margin-left: 20rpx;
+						margin-top: 90rpx;
 						font-size: 45rpx;
 						font-weight: 550;
 					}
 				}
-				
+
 				.number {
 					font-size: 150rpx;
 					font-weight: 600;
@@ -399,22 +407,23 @@
 					/*斜体*/
 					font-style: italic;
 				}
-				
+
 			}
-			
+
 			.plan-btn1 {
-				width:90%;
+				width: 90%;
 				height: 90rpx;
 				background-color: #2c8af5;
 				color: white;
 				font-size: 25px;
 				display: flex;
 				justify-content: center;
-				  align-items: center;     /* 垂直居中 */
+				align-items: center;
+				/* 垂直居中 */
 				margin-left: 21rpx;
 			}
 		}
-		
+
 	}
 
 	.content-container {
@@ -515,7 +524,9 @@
 	export default {
 		data() {
 			return {
-				isHistoryVisible: false,
+				isHistoryVisible: false,//查询单词
+				isDaka: true,//是否打卡
+				isReview:true,//是否复习
 				searchInput: '',
 				items: [{
 						word: 'apple',
