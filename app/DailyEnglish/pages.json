@@ -114,6 +114,14 @@
 				"navigationBarTitleText": "",
 				"enablePullDownRefresh": false
 			}
+		},
+		{
+			"path" : "pages/exam_details/exam_details",
+			"style" : 
+			{
+				"navigationBarTitleText" : "考试详情",
+				"enablePullDownRefresh" : false
+			}
 		}
 
 	],
