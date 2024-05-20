@@ -70,7 +70,7 @@ export default {
   },
   data() {
     return {
-      //词性简写
+      //词性简写转换表
       simplifiedSpeech:{
         verb: "v.",
         adjective: "adj.",
@@ -150,7 +150,7 @@ export default {
     }
   },
   onLoad(event) {
-    //获取请求参数中的word和word_id
+    //获取请求参数中的word和word_id，从Vocab页面中传来
     let word=event["word"];
     let word_id=event["word_id"];
     this.word.name=word;
@@ -158,6 +158,7 @@ export default {
     this.wordAndPhrase.word=word;
     //从本地缓存中获取word的信息
     let localDetails=uni.getStorageSync(word_id);
+    //localDetails结构如下
     /**
      * {
      *           word_id: 2,
@@ -178,6 +179,8 @@ export default {
     if(localDetails){
       //获取发音和释义
       this.word.pronunciation=localDetails.pronunciation;
+      //转换为如下格式：
+      //meanings: ['v.    抛弃；放弃；沉湎于（某种情感）；舍弃，废弃','n.    尽情，放纵']
       this.word.meanings=this.transformMeaningsToText(localDetails.meanings);
     }
     uni.request({
@@ -193,6 +196,38 @@ export default {
       success: (res) => {
         //发送请求，获取详细释义和短语释义
         let detailedMeanings=res.data.detailed_meanings;
+        //原格式：
+        /*
+    "detailed_meanings": {
+		"verb": [
+			{
+				"chinese_meaning": "抛弃",
+				"example_sentence": "Should I tell you to abandon me and save yourself, you must to do so. ",
+				"sentence_meaning": "我若是让你别管我，救自己，你也必须照做。",
+				"sentence_sound": "https://example1.mp3"
+			},
+			{
+				"chinese_meaning": "放弃",
+				"example_sentence": "The girl has totally abandoned the use of computer for her homework.",
+				"sentence_meaning": "这个女生彻底放弃使用电脑做作业了。",
+				"sentence_sound": "https://example2.mp3"
+			}
+		],
+		"noun": [
+			{
+				"chinese_meaning": "放任，放纵",
+				"example_sentence": "she sings and sways with total abandon.",
+				"sentence_meaning": "她纵情地边唱边晃。",
+				"sentence_sound": "https://example3.mp3"
+			}
+		],
+        "pronoun": null,
+        "adjective": null,
+        "adverb": null,
+        "preposition": null,
+        "conjunction": null,
+        "interjection": null
+	},*/
         this.wordDetail.details=this.transformDetailedMeaningsToDetails(detailedMeanings);
         this.wordAndPhrase.phraseAndMeanings=res.data.phrases;
         this.word.book=res.data.word_book;

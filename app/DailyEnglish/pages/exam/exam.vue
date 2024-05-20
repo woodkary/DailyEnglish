@@ -24,6 +24,11 @@
 			</swiper-item>
 		</swiper>
 		<view class="footer">
+      <view v-for="(thisRowQuestions,index) in rows" :key="index" class="row">
+        <button v-for="(thisRowQuestion,index) in thisRowQuestions" :key="index" class="option" :style="{margin:buttonMargin+'rpx'}">
+          {{thisRowQuestion.index+1}}
+        </button>
+      </view>
 			<view style="display: flex;white-space: nowrap;">
 				<uni-countdown class="daojishi" :show-day="false" :hour="12" :minute="12" :second="12"
 					:font-size="20" />
@@ -51,6 +56,7 @@
 				progress: 1, // 进度条的初始值
 				current: 1, // 当前进度
 				currentQuestionIndex: 0,
+        questionButtonIndex: 0, // 当前题目的按钮序号
 
 				questions: [
 					// 题目和选项
@@ -76,9 +82,27 @@
 				realAnswer: [
 					'放弃', '选项B', '选项C' // 正确答案
 				],
-
+        maxButtonsPerRow: 6, // 每行的最大元素个数
+        buttonMargin: 35, // 元素间隔
 			}
 		},
+    computed: {
+      //这是每一行的按钮，其中最多有maxButtonsPerRow个
+      rows() {
+        const rows = [];
+        for (let i = 0; i < this.questions.length; i += this.maxButtonsPerRow) {
+          let thisRowQuestions=[];
+          for(let j=i;j<i+this.maxButtonsPerRow&&j<this.questions.length;j++){
+            thisRowQuestions.push({
+              index:j,
+              question:this.questions[j]
+            });
+          }
+          rows.push(thisRowQuestions);
+        }
+        return rows;
+      },
+    },
 		methods: {
 
 			handleJump() {
@@ -155,6 +179,10 @@
 		font-family: "pingfang";
 		src: url('@/static/PingFang Medium_downcc.otf');
 	}
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+  }
 
 	.container {
 
