@@ -91,7 +91,7 @@ export default {
             interjection:null
           },
           sound:"https://ssl.gstatic.com/dictionary/static/sounds/oxford/abandon--_gb_1.mp3"
-        }
+        },
       ], // 单词列表
       cnt: 0,
       book: "cet4",
@@ -192,11 +192,6 @@ export default {
 </script>
 
 <style>
-html,
-body {
-  height: 100%;
-  overflow: auto;
-}
 
 .container {
   display: grid;
@@ -206,7 +201,7 @@ body {
   /*水平居中 */
   justify-content: center;
   /*垂直居中 */
-
+	height:100vh;
   background-image: linear-gradient(
     -190deg,
     #fff669 0%,
@@ -231,7 +226,7 @@ body {
 }
 
 .vocabook {
-  position: relative;
+  position:absolute;
   width: 100%;
   /*宽度100%*/
   display: flex;
@@ -239,7 +234,7 @@ body {
   border-bottom: thick groove #ffff00;
   /*改一下颜色*/
   height: 10rem;
-  margin-top: 2rem;
+  top: 1rem;
 }
 
 .vocabook-img {
@@ -261,7 +256,6 @@ body {
   font-size: 0.9rem;
   margin-left: -3.7rem;
   margin-top: 3.8rem;
-  margin-bottom: 17rem;
 }
 
 .button-container {
@@ -269,7 +263,7 @@ body {
   justify-content: center;
   /*水平居中*/
   align-items: center;
-  /*垂直居中*/
+
 }
 
 .review {
@@ -299,15 +293,16 @@ body {
 }
 
 .word-blocks {
+	position: absolute;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
   /* 或使用 'center', 'flex-end' 等 */
   align-content: flex-start;
   width: 100%;
-  margin-top: -0.1rem;
   /* height: auto; 移除这一行，或者使用 min-height */
-  min-height: 50vh;
+  /* min-height: 50vh; */
   /* 根据需要设置最小高度 */
+  top: 11.1rem;
 }
 </style>
