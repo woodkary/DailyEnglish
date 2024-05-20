@@ -544,6 +544,8 @@
 		},
 		methods: {
 			fetchData() {
+				isDaka: false;
+				isReview: false;
 				uni.request({
 					url: ">>>>>>>>>>>",
 					method: 'GET',
@@ -561,7 +563,7 @@
 					}
 				});
 			},
-			onload() {
+			onLoad() {
 				this.fetchData();
 				console.log("hi");
 			},

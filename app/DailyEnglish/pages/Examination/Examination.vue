@@ -24,6 +24,9 @@
 					<image class="jump-icon" src="../../static/jump.svg" />
 
 				</view>
+				<view class="jump-group2" @click="handleJump2">
+					<text class="link">不认识，下一个</text>				
+				</view>
 			</swiper-item>
 
 
@@ -100,6 +103,16 @@
 				}) //跳转到生词本页面，注意此处暂时用了switchTab，因为跳转到生词本页面后，需要刷新页面，所以用了switchTab
 				//后面会讲到如何刷新页面，记得改啊！！！！！！11
 				//todo:refresh the page
+				uni.request({
+					url:'xxvcav',
+					method:'post',
+					data:{
+						//data
+					},
+					success:(res)=>{
+						//success
+					},
+				})
 			},
 			swiperChange(event) {
 				const current = event.detail.current;
@@ -329,25 +342,44 @@
 		position: fixed;
 		/*固定定位 */
 		bottom: 4rem;
-		right: 2rem;
+		left: 2rem;
 		display: flex;
 		/* 使用 flexbox 布局 */
 		font-size: 1rem;
+		.link {
+			width: 5rem;
+			height: 2rem;
+			cursor: pointer;
+		}
+		
+		.jump-icon {
+			width: 1rem;
+			height: 1rem !important;
+			margin-left: 0.5rem;
+			margin-top: 0.2rem;
+		}
+		
+	}
+	
+	.jump-group2 {
+		position: fixed;
+		/*固定定位 */
+		bottom: 4rem;
+		right: 2.5rem;
+		/*不换行 */
+		maxlines: 1;
+		display: flex;
+		/* 使用 flexbox 布局 */
+		font-size: 1rem;
+		.link {
+			width: 5rem;
+			height: 2rem;
+			cursor: pointer;
+			white-space: nowrap;
+			}
 	}
 
-	.link {
-		width: 5rem;
-		height: 2rem;
-		cursor: pointer;
-	}
-
-	.jump-icon {
-		width: 1rem;
-		height: 1rem !important;
-		margin-left: 0.5rem;
-		margin-top: 0.2rem;
-	}
-
+	
 	.question-container {
 		width: 100%;
 		height: 90%;
