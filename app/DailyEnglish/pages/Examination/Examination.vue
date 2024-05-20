@@ -54,6 +54,7 @@
 	export default {
 		data() {
 			return {
+        operation:0,//0打卡，1复习
         swiperOptions: {
           // 其他配置...
           allowTouchMove: true, // 允许触摸滑动
@@ -63,20 +64,28 @@
 				progress: 1, // 进度条的初始值
 				current: 1, // 当前进度
 				currentQuestionIndex: 0,
-
+        //所有题目正确情况
+        isCorrects:{
+          1:false,
+          2:false,
+          3:false,
+        },
 				questions: [
 					// 题目和选项
 					{
+            word_id: 1,
 						word: 'abandon',
 						phonetic: '[ə\'bændən]',
 						choices: ['1', '2', '2', '放弃']
 					},
 					{
+            word_id: 2,
 						word: 'abandon',
 						phonetic: '[ə\'bændən]',
 						choices: ['1', '选项B', '选项C', '选项D']
 					},
 					{
+            word_id: 3,
 						word: 'abandon2',
 						phonetic: '[ə\'bændən]',
 						choices: ['1', '选项B', '选项C', '选项D']
@@ -90,6 +99,51 @@
 
 			}
 		},
+    onLoad(event){
+      let operation=parseInt(event["operation"]);
+      this.operation=operation;
+      this.isCorrects={};
+      uni.request({
+        //判断操作类型并发送请求
+        url:operation?'/api/main/take_punch':'/api/main/take_review',
+        method:'GET',
+        header:{
+          'Authorization':`Bearer ${uni.getStorageSync('token')}`
+        },
+        success:(res)=> {
+          console.log(res);
+          if(res.data.code==200){
+            let word_list=res.data.word_list;
+            //以下是单词结构
+            /*"word_list":[
+            {
+              "word_id":12341,
+              "word":"abandon",
+              "phonetic_us ":"[ə\'bændən]",
+              "word_question":"A:放弃,B:成功,C:失败,D:错误",//这个是对象map，需要用Object.values()转成数组
+              "answer":"A",
+            }
+            ]*/
+            word_list.forEach((word,index)=>{
+              let question={
+                word_id:word.word_id,
+                word:word.word,
+                phonetic:word.phonetic_us,
+                choices:Object.values(word.word_question),
+              }
+              //让所有题目都不正确
+              this.isCorrects[word.word_id]=false;
+              let realAnswer=word.word_question[word.answer];
+              this.questions.push(question);
+              this.realAnswer.push(realAnswer);
+            });
+          }
+        },
+        fail:(err)=> {
+          console.log(err);
+        }
+      });
+    },
 		methods: {
 			handleBack() {
 				// 处理返回按钮点击事件
@@ -148,15 +202,57 @@
 			selectChoice(index) {
         console.log(index);
 				let selectedChoice = this.questions[this.currentQuestionIndex].choices[index];
+        //获取当前题目的word_id
+        let word_id=this.questions[this.currentQuestionIndex].word_id;
+        console.log(word_id);
+        //判断当前题目是否正确
+        let isCorrect=selectedChoice===this.realAnswer[this.currentQuestionIndex];
+        console.log(isCorrect);
+        //往map中添加当前题目是否正确的键值对
+        this.isCorrects[word_id]=isCorrect;
 				// 检查选中的答案是否正确
-				if (selectedChoice === this.realAnswer[this.currentQuestionIndex]) {
+				if (isCorrect) {
 					// 正确答案的逻辑
-					let nextIndex = this.currentQuestionIndex++; // 切换到下一题
+
+					let nextIndex = this.currentQuestionIndex; // 切换到下一题
 					/*this.currentQuestionIndex++; // 先增加索引*/
 					this.updateProgressBar(); // 更新进度条
 					this.$nextTick(() => {
-						this.showCorrectAnswer(this.realAnswer[nextIndex]);
+						this.showCorrectAnswer(this.realAnswer[nextIndex],nextIndex);
 					});
+          // 增加索引并判断是否是最后一题
+          //TODO 这个逻辑应该在完成打卡页面中做，而打卡页面中做
+          if(++this.currentQuestionIndex==this.questions.length) {
+            uni.request({
+              //判断操作类型并发送请求
+              url:this.operation?'/api/main/punched':'/api/main/reviewed',
+              method:'POST',
+              header:{
+                'Authorization':`Bearer ${uni.getStorageSync('token')}`
+              },
+              data:{
+                punch_result:this.isCorrects,
+              },
+              success:(res)=> {
+                console.log(res);
+                if(res.data.code==200){
+                  uni.showToast({
+                    title: '复习结束',
+                    icon: 'none',
+                    duration: 2000,
+                    success:()=> {
+                      uni.switchTab({
+                        url: '../home/home'
+                      })
+                    }
+                  });
+                }
+              },
+              fail:(err)=> {
+                console.log(err);
+              }
+            });
+          }
 
 				} else {
 					let currIndex = this.currentQuestionIndex;
@@ -167,9 +263,9 @@
 					});
 				}
 			},
-			showCorrectAnswer(answer) {
+			showCorrectAnswer(answer,index) {
 				// 找到正确答案的索引
-				const correctIndex = this.questions[this.currentQuestionIndex].choices.indexOf(answer);
+				const correctIndex = this.questions[index].choices.indexOf(answer);
 				// 应用正确答案的样式
 				const correctButton = this.$refs[`option${correctIndex}`];
 				if (correctButton) {

@@ -128,6 +128,13 @@
         	{
         		"navigationBarTitleText" : ""
         	}
+        },
+        {
+        	"path" : "pages/ExamHistory/ExamHistory",
+        	"style" : 
+        	{
+        		"navigationBarTitleText" : ""
+        	}
         }
     ],
     "globalStyle" : {
@@ -152,7 +159,7 @@
                 "text" : "主页"
             },
             {
-                "pagePath" : "pages/Examination/Examination",
+                "pagePath" : "pages/ExamHistory/ExamHistory",
                 "iconPath" : "static/exampage.png",
                 "selectedIconPath" : "static/exampage_active.png",
                 "text" : "考试"
