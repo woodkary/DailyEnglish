@@ -44,7 +44,7 @@
 							stroke-width="7"></progress>
 					</view>
 					<view class="row">
-						<view class="progress1">{{ wordNumLearned }}/2345</view>
+						<view class="progress1">{{ wordNumLearned }}/{{ wordNumTotal }}</view>
 						<view class="progress2">剩余{{ daysLeft }}天</view>
 					</view>
 				</view>
@@ -76,8 +76,7 @@
 				</view>
 				<view class="row">
 					<button class="plan-btn1" v-show="!isDaka" @click="handleDaka">开始学习</button>
-          <button class="plan-btn1" v-show="!isReview" @click="handleReview">开始复习</button>
-					<button class="plan-btn1" style="margin-left: 2px">开始复习</button>
+          <button class="plan-btn1" style="margin-left: 2px" v-show="!isReview" @click="handleReview">开始复习</button>
 				</view>
 			</view>
 		</view>
@@ -534,6 +533,7 @@
 				searchInput: '',
 				daka_book: '',
         wordNumLearned: 123,
+        wordNumTotal: 2345,
         daysLeft: 30,
         wordNumToPunch: 5,
         wordNumPunched: 15,
@@ -570,6 +570,7 @@
 						if (res.statusCode === 200) {
 							this.daka_book = res.data.task_doday.book_learning;
               this.wordNumLearned = res.data.task_doday.word_num_learned;
+              this.wordNumTotal = res.data.task_doday.word_num_total;
               this.daysLeft = res.data.task_doday.days_left;
               this.wordNumToPunch = res.data.task_doday.word_num_to_punch;
               if(this.wordNumToPunch == 0){
