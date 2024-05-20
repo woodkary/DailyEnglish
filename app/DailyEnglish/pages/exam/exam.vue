@@ -35,7 +35,7 @@
 			<view class="xuanxiang-container" v-show="isShow">
 				<view v-for="(thisRowQuestions,index) in rows" :key="index" class="row">
 					<button v-for="(thisRowQuestion,index) in thisRowQuestions" :key="index" class="option"
-                  :class="thisRowQuestion.isFinished? 'finished' : ''"
+                   :class="{ 'finished': thisRowQuestion.isFinished, 'selected': thisRowQuestion.index === current }"
 						:style="{margin:buttonMargin+'rpx'}">
 						{{thisRowQuestion.index+1}}
 					</button>
@@ -109,6 +109,7 @@
 				}
 				return rows;
 			},
+			
 		},
 		methods: {
       finishQuestion(index){
@@ -148,7 +149,6 @@
 				console.log(index);
 				// 选择答案
 			},
-
 			preventSelect(event) {
 				// 阻止长按事件的默认行为
 				event.preventDefault();
@@ -272,8 +272,8 @@
 
 	.option {
 		box-shadow: 0 0 0 1px #aaa39b;
-		width: 2rem;
-		height: 2rem;
+		width: 2.2rem;
+		height: 2.2rem;
 		border-radius: 2rem;
 		display: flex;
 		justify-content: center;
@@ -301,9 +301,7 @@
 		border-radius: 2rem;
 		height: 3rem;
 	}
-  .finished{
-     background-color: #597dea;
-  }
+ 
 
 	.question-container {
 		width: 100%;
@@ -347,4 +345,13 @@
 			margin-bottom: 10px;
 		}
 	}
+	.finished{
+	   border: 1px solid #5f85f9;
+	   background-color: #e9fbfd;
+	}
+	/* .isSelected{
+	   background-color: #456de7;
+	   color: white;
+	   border: 1px solid #5f85f9;
+	} */
 </style>
