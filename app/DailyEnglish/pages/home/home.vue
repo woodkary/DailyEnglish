@@ -44,8 +44,8 @@
 							stroke-width="7"></progress>
 					</view>
 					<view class="row">
-						<view class="progress1">123/2345</view>
-						<view class="progress2">剩余30天</view>
+						<view class="progress1">{{ wordNumLearned }}/2345</view>
+						<view class="progress2">剩余{{ daysLeft }}天</view>
 					</view>
 				</view>
 
@@ -65,11 +65,11 @@
 				</view>
 				<view class="row">
 					<view class="plan-num">
-						<view class="number">5</view>
+						<view class="number">{{ isDaka?wordNumPunched:wordNumToPunch }}</view>
 						<text>词</text>
 					</view>
 					<view class="plan-num" style="margin-left:100px">
-						<view class="number">5</view>
+						<view class="number">{{ isReview?wordNumReviewed:wordNumToReview }}</view>
 						<text>词</text>
 					</view>
 
@@ -528,9 +528,15 @@
 			return {
 				isHistoryVisible: false, //查询单词
 				isDaka: true, //是否打卡
-				isReview: true, //是否复习
+				isReview: false, //是否复习
 				searchInput: '',
 				daka_book: '',
+        wordNumLearned: 123,
+        daysLeft: 30,
+        wordNumToPunch: 5,
+        wordNumPunched: 15,
+        wordNumToReview: 10,
+        wordNumReviewed: 5,
 				items: [{
 					word: 'apple',
 					phonetic: '/ˈæpl/',
@@ -544,27 +550,31 @@
 		},
 		methods: {
 			fetchData() {
-				isDaka: false;
-				isReview: false;
 				uni.request({
-					url: ">>>>>>>>>>>",
+					url: "/api/punch/main_menu",
 					method: 'GET',
 					success: (res) => {
 						if (res.statusCode === 200) {
-							this.daka_book = res.data.daka_book;
+							this.daka_book = res.data.task_doday.book_learning;
+              this.wordNumLearned = res.data.task_doday.word_num_learned;
+              this.daysLeft = res.data.task_doday.days_left;
+              this.wordNumToPunch = res.data.task_doday.word_num_to_punch;
+              this.wordNumToReview = res.data.task_doday.word_num_to_review;
 						} else {
-							console.error("请求失败",res),
+							console.error("请求失败",res);
 							this.daka_book = "词汇书123"
 						}
 					},
 					fail: (err) => {
-						console.error("请求失败",err),
+						console.error("请求失败",err);
 						this.daka_book = "词汇书123"
 					}
 				});
 			},
 			onLoad() {
-				this.fetchData();
+        if(!this.isDaka) {
+          this.fetchData();
+        }
 				console.log("hi");
 			},
 			handleSearchShow() {
