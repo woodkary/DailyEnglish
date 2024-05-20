@@ -92,7 +92,7 @@
         const rows = [];
         for (let i = 0; i < this.questions.length; i += this.maxButtonsPerRow) {
           let thisRowQuestions=[];
-          for(let j=i;j<i+this.maxButtonsPerRow;j++){
+          for(let j=i;j<i+this.maxButtonsPerRow&&j<this.questions.length;j++){
             thisRowQuestions.push({
               index:j,
               question:this.questions[j]
