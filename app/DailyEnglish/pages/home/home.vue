@@ -76,6 +76,7 @@
 				</view>
 				<view class="row">
 					<button class="plan-btn1">开始学习</button>
+					<button class="plan-btn1" style="margin-left: 2px">开始复习</button>
 				</view>
 			</view>
 		</view>

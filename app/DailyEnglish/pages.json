@@ -140,7 +140,7 @@
     "tabBar" : {
         //凡是在tabBar内的页面，都不能由默认的navigateTo，navigateBack跳转，只能通过switchTab跳转
         "color" : "#333",
-        "selectedColor" : "#007AFF",
+        "selectedColor" : "#02afff",
         "backgroundColor" : "#ffffff",
         "fontSize" : "20rpx",
         "borderStyle" : "black",
