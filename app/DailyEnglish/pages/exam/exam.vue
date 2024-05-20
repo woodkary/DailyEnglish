@@ -17,7 +17,7 @@
 						</button>
 						<span class="choice-content">{{ choice }}</span>
 					</div>
-					<button class="confirm">确认答案</button>
+					<button class="confirm" @click="finishQuestion(index)">确认答案</button>
 				</view>
 
 
@@ -35,6 +35,7 @@
 			<view class="xuanxiang-container" v-show="isShow">
 				<view v-for="(thisRowQuestions,index) in rows" :key="index" class="row">
 					<button v-for="(thisRowQuestion,index) in thisRowQuestions" :key="index" class="option"
+                  :class="thisRowQuestion.isFinished? 'finished' : ''"
 						:style="{margin:buttonMargin+'rpx'}">
 						{{thisRowQuestion.index+1}}
 					</button>
@@ -83,6 +84,7 @@
 					// ...更多题目
 				], // 这里可以根据需要修改选项内容
 				selectedChoice: '', // 用于存储用户选择的答案
+        finishedQuestions: new Set(), // 用于存储已完成的题目序号
 				realAnswer: [
 					'放弃', '选项B', '选项C' // 正确答案
 				],
@@ -99,7 +101,8 @@
 					for (let j = i; j < i + this.maxButtonsPerRow && j < this.questions.length; j++) {
 						thisRowQuestions.push({
 							index: j,
-							question: this.questions[j]
+							question: this.questions[j],
+              isFinished: this.finishedQuestions.has(j)
 						});
 					}
 					rows.push(thisRowQuestions);
@@ -108,7 +111,9 @@
 			},
 		},
 		methods: {
-
+      finishQuestion(index){
+        this.finishedQuestions.add(index);
+      },
 			handleJump() {
 
 				uni.request({
@@ -296,6 +301,9 @@
 		border-radius: 2rem;
 		height: 3rem;
 	}
+  .finished{
+     background-color: #597dea;
+  }
 
 	.question-container {
 		width: 100%;
