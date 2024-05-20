@@ -6,15 +6,15 @@
 		</view>
 		 <view class="container1">
 			 <view class="words-amount">
-				 <span class="number1">120</span>
+				 <span class="number1">{{ punch_word_num }}</span>
 				 <span class="words1">打卡单词数</span>
 			 </view>
 			 <view class="dakatianshu">
-			 	<span class="number2">12</span>
+			 	<span class="number2">{{ total_punch_day }}</span>
 			 	<span class="words2">总打卡天数</span>
 			 </view>
 			 <view class="lianxudakatianshu">
-			 	<span class="number3">7</span>
+			 	<span class="number3">{{ consecutive_punch_day }}</span>
 			 	<span class="words3">连续打卡天数</span>
 			 </view>
 		 </view>
@@ -45,9 +45,30 @@
 	export default {
 		data() {
 			return {
-				
+        punch_word_num: 120,
+        total_punch_day: 12,
+        consecutive_punch_day: 7
 			}
 		},
+    onLoad() {
+      //获取一些打卡数据
+      uni.request({
+        url: '/api/users/my_punches',
+        method: 'GET',
+        header: {
+          'Authorization': 'Bearer '+ uni.getStorageSync('token')
+        },
+        success: (res) => {
+          console.log(res.data);
+          this.punch_word_num = res.data.punch_word_num;
+          this.total_punch_day = res.data.total_punch_day;
+          this.consecutive_punch_day = res.data.consecutive_punch_day;
+        },
+        fail: (err) => {
+          console.log(err);
+        }
+      });
+    },
 		methods: {
 			goToCalendar() {
 			    // 使用 uniapp 提供的路由跳转方法进行跳转
