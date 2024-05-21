@@ -141,6 +141,10 @@
         {
             "path" : "pages/questionDetail/questionDetail",
             "style" : {}
+        },
+        {
+            "path" : "pages/startexam/startexam",
+            "style" : {}
         }
     ],
     "globalStyle" : {
