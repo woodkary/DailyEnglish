@@ -1,5 +1,6 @@
 <template>
 	<view>
+		
 		<view class="title-container">
 			<image class="back-icon" src="../../static/back.svg"></image>
 			<span>考试</span>
@@ -13,6 +14,7 @@
 			</view>
 			<view class="start-exam-btn">去考试</view>
 		</view>
+		
 	</view>
 </template>
 
@@ -30,6 +32,11 @@
 </script>
 
 <style>
+	body {
+		background-image: url(@/static/daka-background.png);
+		background-size: cover;
+		
+	}
 	.title-container {
 		display: flex;
 		line-height: 80rpx;
@@ -96,7 +103,7 @@
 		color: #b0b0b0;
 	}
 	.start-exam-btn {
-			background-color: #456DE7; /* 蓝色背景 */
+			background-color: #0276ff; /* 蓝色背景 */
 			color: #fff; /* 白色文字 */
 			padding: 10px 20px; /* 添加适当的内边距 */
 			border-radius: 5px; /* 圆角 */ 
@@ -104,5 +111,6 @@
 			text-align: center; /* 文本居中 */
 			cursor: pointer; /* 鼠标指针样式 */
 			font-size: 26px;
+			 box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.1);
 		}
 </style>
