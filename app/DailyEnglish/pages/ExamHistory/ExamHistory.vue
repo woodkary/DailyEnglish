@@ -3,28 +3,17 @@
 		<view class="today-container">
 			<span class="title">今日考试</span>
 			<span class="no-exam">今日暂无考试，<navigator>前往复习</navigator></span>
-			<view class="todo-exam">
-				<view class="row1">
-					<text class="exam-name">第一单元第一次小测</text>
-					<text class="exam-time"> 20：00 ~ 21：00</text>
-					<text class="exam-info">共20题</text>
-				</view>
-				<view class="row2">
-					<button class="todo-btn">提醒我</button>
-					<button class="todo-btn">去考试</button>
-				</view>
-			</view>
-			<view class="todo-exam">
-				<view class="row1">
-					<text class="exam-name">第一单元第一次小测</text>
-					<text class="exam-time"> 20：00 ~ 21：00</text>
-					<text class="exam-info">共20题</text>
-				</view>
-				<view class="row2">
-					<button class="todo-btn">提醒我</button>
-					<button class="todo-btn">去考试</button>
-				</view>
-			</view>
+      <view class="todo-exam" v-for="exam in exams" :key="exam.name">
+        <view class="row1">
+          <text class="exam-name">{{ exam.name }}</text>
+          <text class="exam-time"> {{ exam.time }}</text>
+          <text class="exam-info">{{ exam.info }}</text>
+        </view>
+        <view class="row2">
+          <button class="todo-btn" @click="reminder(exam)">提醒我</button>
+          <button class="todo-btn" @click="takeExam(exam)">去考试</button>
+        </view>
+      </view>
 		</view>
 		<view class="history-container">
 			<view class="_row1">
@@ -37,46 +26,66 @@
 				<button class="choice">成绩顺序</button>
 				<button class="choice">成绩逆序</button>
 			</view>
-			<view class="finished-exam">
-				<image class="level" src="@/static/score1.svg"></image>
-				<view class="row1">
-					<text class="exam-name">第一单元第一次小测</text>
-					<text class="exam-date"> 2023年1月1日</text>
-					<text class="exam-info">共20题</text>
-				</view>
-				<view class="row22">
-					<view>
-						<span class="score">95</span>
-						<span style="margin-left: 8rpx;font-size: 24px;">分</span>
-					</view>
-					<button class="todetail-btn">考试详情</button>
-				</view>
-			</view>
-			<view class="finished-exam">
-				<view class="row1">
-					<text class="exam-name">第一单元第一次小测</text>
-					<text class="exam-date"> 2023年1月1日</text>
-					<text class="exam-info">共20题</text>
-				</view>
-				<view class="row22">
-					<view>
-						<span class="score">95</span>
-						<span style="margin-left: 8rpx;font-size: 24px;">分</span>
-					</view>
-					<button class="todetail-btn">考试详情</button>
-				</view>
-			</view>
+      <view class="finished-exam" v-for="exam in finishedExams" :key="exam.date">
+        <image class="level" src="@/static/score1.svg"></image>
+        <view class="row1">
+          <text class="exam-name">{{ exam.name }}</text>
+          <text class="exam-date"> {{ exam.date }}</text>
+          <text class="exam-info">{{ exam.info }}</text>
+        </view>
+        <view class="row22">
+          <view>
+            <span class="score">{{ exam.score }}</span>
+            <span style="margin-left: 8rpx;font-size: 24px;">分</span>
+          </view>
+          <button class="todetail-btn" @click="viewDetails(exam)">考试详情</button>
+        </view>
+      </view>
 		</view>
 	</view>
 </template>
 
 <script>
 	export default {
-		data() {
-			return {
+    data() {
+      return{
+        exams: [
+          {
+            name: '第一单元第一次小测',
+            time: '20:00 ~ 21:00',
+            info: '共20题'
+          },
+          {
+            name: '第一单元第一次小测',
+            time: '20:00 ~ 21:00',
+            info: '共20题'
+          },
+          // ...更多的考试对象
+        ],
+        finishedExams: [
+          {
+            name: '第一单元第一次小测',
+            date: '2023年1月1日',
+            info: '共20题',
+            score: 95
+          },
+          {
+            name: '第一单元第一次小测',
+            date: '2023年1月1日',
+            info: '共20题',
+            score: 95
+          },
+          {
+            name: '第一单元第一次小测',
+            date: '2023年1月1日',
+            info: '共20题',
+            score: 95
+          },
+          // ...更多的考试结果对象
+        ]
+      }
 
-			}
-		},
+    },
 		methods: {
 
 		}
