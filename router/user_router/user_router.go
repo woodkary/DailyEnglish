@@ -132,9 +132,29 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			})
 			return
 		}
+		//生成token
+		userid, err := controlsql.GetUserID(db, data.Username)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误",
+			})
+			return
+		}
+		team_id, team_name, err := controlsql.GetTokenParams_User(db, userid)
+
+		if err != nil && err.Error() != "sql: no rows in result set" {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+			return
+		}
+
+		token, _ := utils.GenerateToken_User(userid, team_id, team_name)
 		c.JSON(http.StatusOK, gin.H{
-			"code": "200",
-			"msg":  "登录成功",
+			"code":  "200",
+			"msg":   "登录成功",
+			"token": token,
 		})
 	})
 }

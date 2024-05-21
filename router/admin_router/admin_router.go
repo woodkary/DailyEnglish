@@ -140,7 +140,7 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 				"msg":  "用户不存在",
 			})
 		} else if controlsql.CheckTeamManager(db, data.Username, data.Pwd) {
-			item1, item2s, err := controlsql.GetTokenParams(db, data.Username)
+			item1, item2s, err := controlsql.GetTokenParams_TeamManager(db, data.Username)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{
 					"code": "500",

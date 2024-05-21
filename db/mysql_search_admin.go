@@ -68,7 +68,7 @@ func CheckTeamManager(db *sql.DB, username, password string) bool {
 }
 
 // 根据username获取map[user_id]username和map[team_id]team_name
-func GetTokenParams(db *sql.DB, username string) (int, map[int]string, error) {
+func GetTokenParams_TeamManager(db *sql.DB, username string) (int, map[int]string, error) {
 	var managerID int
 	team := make(map[int]string)
 
