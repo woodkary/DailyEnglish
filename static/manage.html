@@ -174,37 +174,58 @@
         { name: 'Alex', classNumber: 20, phoneNumber: '1234567890' },
         { name: 'Karen', classNumber: 21, phoneNumber: '1234567890' },
     ];
-    fetchDataToTable('http://localhost:8080/api/team_manage/exam_situation/exam_detail', 'POST', { exam_name: "我是傻逼" })
-    function getMapValue(data, responseData) {
-        for (let key in data) {
-            //遍历并寻找到值为列表的属性
-            let value = data[key];
-            if (Array.isArray(value)) {
-                //列表中的每一项都是map对象
-                for (let i = 0; i < value.length; i++) {
-                    responseData.push(value[i])
-                }
-            } else if (typeof value === 'object') {
-                getMapValue(value, responseData)
-            }
-        }
-    }
-    //需要制定url、'GET'或'POST'、请求数据,用Map类型表示
-    function fetchDataToTable(url, method, requestData) {
-        let responseData = []
-        method = method.toUpperCase();
-        fetch(url, {
-            method: method,
+    let selectedTeamId=0;
+    let teamAndMembers={};
+    function fetchData(){
+        let teamSelect=document.getElementById("category");
+        teamSelect.innerHTML="";
+        fetch('http://47.113.117.103:8080/api/team_manage/member_manage/data',{
+            method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
-            },
-            body: method === 'GET' ? null : JSON.stringify(requestData)
+            }
         }).then(response => response.json())
-            .then(data => {
-                getMapValue(data, responseData)
-                createTable(responseData);
-            }).catch(error => console.error(error));
+       .then(data => {
+            console.log(data);
+            data.team.forEach(t => {
+                //获取班级id和名称
+               let team_id=t.team_id;
+               let team_name=t.team_name;
+               //获取成员列表并保存到teamAndMembers对象中
+                teamAndMembers[team_id]=t.members;
+                //创建班级选项
+                let option=document.createElement("option");
+                option.value=team_id;
+                option.text=team_name;
+                teamSelect.add(option);
+            });
+            //默认显示第一个班级的成员列表
+           selectedTeamId=data.team[0].team_id;
+           createTeamMembersTable(data.team[0].team_id);
+           teamSelect.addEventListener("change", function(){
+               selectedTeamId=this.value;
+               createTeamMembersTable(selectedTeamId);
+           });
+        }).catch(error => {
+            console.log(error);
+            //使用默认数据创建表格
+            createTable(data);
+        });
+    }
+    fetchData();
+    //用team_id对应的members列表创建表格
+    function createTeamMembersTable(team_id) {
+        let members=teamAndMembers[team_id];
+        // 去掉id属性
+        let membersWithoutId=members.map(m => {
+            return {
+                name: m.name,
+                phone: m.phone,
+                email: m.email
+            }
+        });
+        // 调用createTable函数创建表格
+        createTable(membersWithoutId);
     }
     let angleDirections = [];
     function createTable(data) {
@@ -292,8 +313,36 @@
                     // deleteBtn.textContent = '删除';
                     deleteBtn.addEventListener('click', function () {
                         // 删除按钮点击事件
-                        data.splice(rowIndex, 1); // 从数据中移除行
-                        createTable(data); // 重新创建表格
+                        if (confirm('确认删除该成员吗？')) {
+                            // 确认删除后发起删除请求
+                            fetch('http://47.113.117.103:8080/api/team_manage/member_manage/delete', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                                },
+                                body: JSON.stringify({
+                                    // 发送要删除的成员的id和所在的班级id
+                                    user_id: teamAndMembers[selectedTeamId][rowIndex].id,
+                                    team_id: selectedTeamId
+
+                                })
+                            }).then(response => {
+                                if (response.status === 200) {
+                                    // 成功删除后刷新表格
+                                    teamAndMembers[selectedTeamId].splice(rowIndex, 1); // 从成员列表中移除成员
+                                    createTeamMembersTable(selectedTeamId);
+                                    /*data.splice(rowIndex, 1); // 从数据中移除行
+                                    createTable(data);*/
+                                    alert("删除成功");
+                                }else{
+                                    alert("删除失败");
+                                }
+                            }).catch(error => {
+                                console.log(error);
+                                alert("删除失败");
+                            });
+                        }
                     });
                     td.appendChild(deleteBtn);
                 } else {
@@ -305,7 +354,7 @@
         });
     }
 
-    createTable(data);
+    /*createTable(data);*/
     //添加隐藏筛选框点击事件
     document.addEventListener('DOMContentLoaded', function () {
         // 获取点击的图标元素

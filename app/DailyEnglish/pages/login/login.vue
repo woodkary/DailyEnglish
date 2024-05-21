@@ -21,6 +21,7 @@
 
 <script>
 	export default {
+<<<<<<< Updated upstream
     data() {
       return {
         username: '',
@@ -66,6 +67,99 @@
               uni.setStorageSync('password');
               uni.setStorageSync('remember');
               uni.setStorageSync('token', token);
+=======
+		data() {
+			return {
+				username: '',
+				password: '',
+				remember: false
+			}
+		},
+		beforeMount() {
+			//获取本地存储的用户名和密码
+			let username = uni.getStorageSync('username');
+			let password = uni.getStorageSync('password');
+			let remember = uni.getStorageSync('remember');
+			if (username && password && remember) {
+				this.username = username;
+				this.password = password;
+				this.remember = remember;
+			}
+		},
+		methods: {
+			autoLogin() {
+				this.remember = !this.remember;
+				console.log(this.remember);
+				console.log(this.username);
+				console.log(this.password);
+			},
+			login() {
+        let flag=true;
+				// 登录逻辑
+				let username = this.username;
+        if(!username){
+          this.$nextTick(() => {
+            let usernameInput = document.getElementById('username');
+            usernameInput.classList.add('inputActive');
+            setTimeout(() => {
+              usernameInput.classList.remove('inputActive');
+            }, 2000);
+          });
+          flag=false;
+        }
+				let password = this.password;
+        if(!password){
+          this.$nextTick(() => {
+            let passwordInput = document.getElementById('password');
+            passwordInput.classList.add('inputActive');
+            setTimeout(() => {
+              passwordInput.classList.remove('inputActive');
+            }, 2000);
+          });
+          flag=false;
+        }
+        if(!flag){
+          return;
+        }
+				let remember = this.remember;
+				uni.request({
+					url: '/api/users/login',
+					data: {
+						username: username,
+						password: password,
+						remember: remember
+					},
+					method: 'POST',
+					success: (res) => {
+            if(res.statusCode == 200){
+              if (remember) {
+                let token = res.data.token;
+                uni.setStorageSync('username');
+                uni.setStorageSync('password');
+                uni.setStorageSync('remember');
+                uni.setStorageSync('token', token);
+              }
+
+              uni.navigateTo({
+                //TODO: 跳转到首页，或处理其他逻辑
+                url: '/pages/index/index'
+              });
+            }else if(res.statusCode == 400){//用户名或密码错误
+              let usernameInput = document.getElementById('username');
+              usernameInput.classList.add('inputActive');
+              setTimeout(() => {
+                usernameInput.classList.remove('inputActive');
+              }, 2000);
+              let passwordInput = document.getElementById('password');
+              passwordInput.classList.add('inputActive');
+              setTimeout(() => {
+                passwordInput.classList.remove('inputActive');
+              }, 2000);
+              uni.showToast({
+                title: '用户名或密码错误',
+                icon: 'none'
+              });
+>>>>>>> Stashed changes
             }
 
             uni.navigateTo({

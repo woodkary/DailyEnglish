@@ -10,8 +10,20 @@
 				<view class="progress-bar" :style="{ width:progress + '%' }"></view>
 			</view>
 
+<<<<<<< Updated upstream
 			<image class="back-icon" src="../../static/back.svg" @click="handleBack"></image>
 			<view class="text-info">
+=======
+				</view>
+				<view class="jump-group2" @click="handleJump2">
+					<text class="link">不认识，下一个</text>				
+				</view>
+			</swiper-item>
+
+
+
+			<!-- <view class="text-info">
+>>>>>>> Stashed changes
 				<text class="word">{{ questions[currentQuestionIndex].word }}</text>
 				<text class="phonetic">{{questions[currentQuestionIndex].phonetic}}</text>
 			</view>
@@ -39,23 +51,45 @@
 	export default {
 		data() {
 			return {
+<<<<<<< Updated upstream
 				progress: 1, // 进度条的初始值
 				current: 1, // 当前进度
 				currentQuestionIndex:0,
 
+=======
+        operation:0,//0打卡，1复习
+        swiperOptions: {
+          // 其他配置...
+          allowTouchMove: true, // 允许触摸滑动
+          preventClicksPropagation: true, // 阻止点击事件冒泡
+          // 其他 Swiper 配置...
+        },
+				progress: 1, // 进度条的初始值
+				current: 1, // 当前进度
+				currentQuestionIndex: 0,
+        //所有题目正确情况
+        isCorrects:{
+          1:false,
+          2:false,
+          3:false,
+        },
+>>>>>>> Stashed changes
 				questions: [
 					// 题目和选项
 					{
+            word_id: 1,
 						word: 'abandon',
 						phonetic: '[ə\'bændən]',
 						choices: ['1', '2', '2', '放弃']
 					},
 					{
+            word_id: 2,
 						word: 'abandon',
 						phonetic: '[ə\'bændən]',
 						choices: ['1', '选项B', '选项C', '选项D']
 					},
 					{
+            word_id: 3,
 						word: 'abandon2',
 						phonetic: '[ə\'bændən]',
 						choices: ['1', '选项B', '选项C', '选项D']
@@ -69,6 +103,51 @@
 				
 			}
 		},
+    onLoad(event){
+      let operation=parseInt(event["operation"]);
+      this.operation=operation;
+      this.isCorrects={};
+      uni.request({
+        //判断操作类型并发送请求
+        url:operation?'/api/main/take_punch':'/api/main/take_review',
+        method:'GET',
+        header:{
+          'Authorization':`Bearer ${uni.getStorageSync('token')}`
+        },
+        success:(res)=> {
+          console.log(res);
+          if(res.data.code==200){
+            let word_list=res.data.word_list;
+            //以下是单词结构
+            /*"word_list":[
+            {
+              "word_id":12341,
+              "word":"abandon",
+              "phonetic_us ":"[ə\'bændən]",
+              "word_question":"A:放弃,B:成功,C:失败,D:错误",//这个是对象map，需要用Object.values()转成数组
+              "answer":"A",
+            }
+            ]*/
+            word_list.forEach((word,index)=>{
+              let question={
+                word_id:word.word_id,
+                word:word.word,
+                phonetic:word.phonetic_us,
+                choices:Object.values(word.word_question),
+              }
+              //让所有题目都不正确
+              this.isCorrects[word.word_id]=false;
+              let realAnswer=word.word_question[word.answer];
+              this.questions.push(question);
+              this.realAnswer.push(realAnswer);
+            });
+          }
+        },
+        fail:(err)=> {
+          console.log(err);
+        }
+      });
+    },
 		methods: {
 			handleBack() {
 				// 处理返回按钮点击事件
@@ -82,6 +161,16 @@
 				}) //跳转到生词本页面，注意此处暂时用了switchTab，因为跳转到生词本页面后，需要刷新页面，所以用了switchTab
 				//后面会讲到如何刷新页面，记得改啊！！！！！！11
 				//todo:refresh the page
+				uni.request({
+					url:'xxvcav',
+					method:'post',
+					data:{
+						//data
+					},
+					success:(res)=>{
+						//success
+					},
+				})
 			},
 			updateProgressBar() {
 				// 处理按钮点击事件
@@ -99,14 +188,66 @@
 			},
 			selectChoice(index) {
 				let selectedChoice = this.questions[this.currentQuestionIndex].choices[index];
+        //获取当前题目的word_id
+        let word_id=this.questions[this.currentQuestionIndex].word_id;
+        console.log(word_id);
+        //判断当前题目是否正确
+        let isCorrect=selectedChoice===this.realAnswer[this.currentQuestionIndex];
+        console.log(isCorrect);
+        //往map中添加当前题目是否正确的键值对
+        this.isCorrects[word_id]=isCorrect;
 				// 检查选中的答案是否正确
-				if (selectedChoice === this.realAnswer[this.currentQuestionIndex]) {
+				if (isCorrect) {
 					// 正确答案的逻辑
+<<<<<<< Updated upstream
           let index=this.currentQuestionIndex++; // 切换到下一题
 					this.$nextTick(() => {
 						this.showCorrectAnswer(this.realAnswer[index]);
 					});
           this.unlockSlice();
+=======
+
+					let nextIndex = this.currentQuestionIndex; // 切换到下一题
+					/*this.currentQuestionIndex++; // 先增加索引*/
+					this.updateProgressBar(); // 更新进度条
+					this.$nextTick(() => {
+						this.showCorrectAnswer(this.realAnswer[nextIndex],nextIndex);
+					});
+          // 增加索引并判断是否是最后一题
+          //TODO 这个逻辑应该在完成打卡页面中做，而打卡页面中做
+          if(++this.currentQuestionIndex==this.questions.length) {
+            uni.request({
+              //判断操作类型并发送请求
+              url:this.operation?'/api/main/punched':'/api/main/reviewed',
+              method:'POST',
+              header:{
+                'Authorization':`Bearer ${uni.getStorageSync('token')}`
+              },
+              data:{
+                punch_result:this.isCorrects,
+              },
+              success:(res)=> {
+                console.log(res);
+                if(res.data.code==200){
+                  uni.showToast({
+                    title: '复习结束',
+                    icon: 'none',
+                    duration: 2000,
+                    success:()=> {
+                      uni.switchTab({
+                        url: '../home/home'
+                      })
+                    }
+                  });
+                }
+              },
+              fail:(err)=> {
+                console.log(err);
+              }
+            });
+          }
+
+>>>>>>> Stashed changes
 				} else {
           let currIndex=this.currentQuestionIndex;
 					// 错误答案的逻辑
@@ -116,9 +257,9 @@
 					});
 				}
 			},
-			showCorrectAnswer(answer) {
+			showCorrectAnswer(answer,index) {
 				// 找到正确答案的索引
-				const correctIndex = this.questions[this.currentQuestionIndex].choices.indexOf(answer);
+				const correctIndex = this.questions[index].choices.indexOf(answer);
 				// 应用正确答案的样式
 				const correctButton = this.$refs[`option${correctIndex}`];
 				if (correctButton) {
@@ -296,12 +437,44 @@
 		position: fixed;
 		/*固定定位 */
 		bottom: 4rem;
-		right: 2rem;
+		left: 2rem;
 		display: flex;
 		/* 使用 flexbox 布局 */
 		font-size: 1rem;
+		.link {
+			width: 5rem;
+			height: 2rem;
+			cursor: pointer;
+		}
+		
+		.jump-icon {
+			width: 1rem;
+			height: 1rem !important;
+			margin-left: 0.5rem;
+			margin-top: 0.2rem;
+		}
+		
+	}
+	
+	.jump-group2 {
+		position: fixed;
+		/*固定定位 */
+		bottom: 4rem;
+		right: 2.5rem;
+		/*不换行 */
+		maxlines: 1;
+		display: flex;
+		/* 使用 flexbox 布局 */
+		font-size: 1rem;
+		.link {
+			width: 5rem;
+			height: 2rem;
+			cursor: pointer;
+			white-space: nowrap;
+			}
 	}
 
+<<<<<<< Updated upstream
 	.link {
 		width: 5rem;
 		height: 2rem;
@@ -313,5 +486,11 @@
 		height: 1rem !important;
 		margin-left: 0.5rem;
 		margin-top: 0.2rem;
+=======
+	
+	.question-container {
+		width: 100%;
+		height: 90%;
+>>>>>>> Stashed changes
 	}
 </style>

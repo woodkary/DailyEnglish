@@ -11,7 +11,7 @@ window.onload = function () {
 }
 function allTestStatistics() {
     let token = localStorage.getItem('token');
-    let url = "http://localhost:8080/api/team_manage/request_manage/data";
+    let url = "http://47.113.117.103:8080/api/team_manage/request_manage/data";
     fetch(url, {
         method: 'GET',
         headers: {

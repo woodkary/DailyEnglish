@@ -129,6 +129,46 @@
 
 </body>
 
+<<<<<<< Updated upstream
+=======
+  //   // 取消所有按钮的选中状态
+  //   var tablinks = document.getElementsByClassName("tablinks");
+  //   for (var i = 0; i < tablinks.length; i++) {
+  //     tablinks[i].classList.remove("active");
+  //   }
+
+  //   // 显示选中的标签页内容
+  //   document.getElementById(tabName).style.display = "block";
+
+  //   // 将选中的按钮设为选中状态
+  //   event.currentTarget.classList.add("active");
+  // }
+  function openTab(arg){
+      console.log(arg);
+      switch(arg){
+          case "历次考试":
+              console.log("历次考试");
+              window.location.href = "calendar.html";
+              break;
+
+          case "考试发布"://todo 需要改样式的页面
+              console.log("考试发布");
+              window.location.href = "issuePunch.html";
+              break;
+
+          case "学生成绩":
+              console.log("学生成绩");
+              window.location.href = "studentGrade.html";
+              break;
+
+          case "考试安排"://todo 没有这个页面
+              console.log("考试安排");
+              window.location.href = "test-schedule.html";
+              break;
+      }
+  }
+</script>
+>>>>>>> Stashed changes
 <style>
   .tab-container {
     position: relative;

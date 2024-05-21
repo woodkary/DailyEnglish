@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	service "DailyEnglish/services"
+	service "DailyEnglish/utils"
 	"fmt"
 	"net/http"
 	"strings"
@@ -26,7 +26,7 @@ func tokenAuthMiddleware() gin.HandlerFunc {
 		}
 		// 提取令牌
 		token := strings.TrimPrefix(authHeader, "Bearer ")
-		user, err := service.ParseToken(token)
+		user, err := service.ParseToken_TeamManager(token)
 		fmt.Println(user, token)
 		if err != nil {
 			fmt.Println(err)

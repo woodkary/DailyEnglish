@@ -3,16 +3,512 @@
 
 <head>
     <meta charset="UTF-8">
+<<<<<<< Updated upstream
     <title>打卡发布</title>
 </head>
+=======
+    <title>考试发布</title>
+
+
+    <!----======== CSS ======== -->
+    <link rel="stylesheet" href="./css/navSidebar.css">
+    <link rel="stylesheet" href="./css/pagination.css" />
+    <link rel="stylesheet" href="./css/issuePunch.css">
+    <!----===== Iconscout CSS ===== -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <title>Admin Dashboard Panel</title>
+    
+
+</head>
+
+<body>
+<div class="modal-overlay"></div>
+<div class="modal">
+    <article class="modal-container">
+        <div class="calendar-container">
+            <div class="wrapper">
+                <header>
+                    <p class="current-date"></p>
+                    <div class="icons">
+                        <span id="prev" class="material-symbols-rounded">chevron_left</span>
+                        <span id="next" class="material-symbols-rounded">chevron_right</span>
+                    </div>
+                </header>
+                <div class="calendar">
+                    <ul class="weeks">
+                        <li>Sun</li>
+                        <li>Mon</li>
+                        <li>Tue</li>
+                        <li>Wed</li>
+                        <li>Thu</li>
+                        <li>Fri</li>
+                        <li>Sat</li>
+                    </ul>
+                    <ul class="days"></ul>
+                </div>
+            </div>
+        </div>
+    </article>
+</div>
+    <nav>
+        <div class="logo-name">
+            <span class="logo_name">DailyEnglish</span>
+        </div>
+
+        <div class="menu-items">
+            <ul class="nav-links">
+                <li><a href="index.html">
+                    <i class="uil uil-estate"></i>
+                    <span class="link-name">主页</span>
+                  </a></li>
+                <li><a href="issuePunch.html">
+                    <i class="uil uil-calendar-alt"></i>
+                    <span class="link-name">打卡发布</span>
+                  </a></li>
+                <li><a href="history.html">
+                    <i class="uil uil-calender"></i>
+                    <span class="link-name">考试相关</span>
+                  </a></li>
+                <li><a href="test-statistics.html">
+                    <i class="uil uil-chart"></i>
+                    <span class="link-name">考试情况</span>
+                  </a></li>
+                <li><a href="manage.html">
+                    <i class="uil uil-meh-alt"></i>
+                    <span class="link-name">成员管理</span>
+                  </a></li>
+                <li><a href="user.html">
+                    <i class="uil uil-user"></i>
+                    <span class="link-name">个人中心</span>
+                  </a></li>
+              </ul>
+
+            <ul class="logout-mode">
+                <li><a href="#">
+                        <i class="uil uil-signout"></i>
+                        <span class="link-name">Logout</span>
+                    </a></li>
+
+                <li class="mode">
+                    <a href="#">
+                        <i class="uil uil-moon"></i>
+                        <span class="link-name">Dark Mode</span>
+                    </a>
+
+                    <div class="mode-toggle">
+                        <span class="switch"></span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="dashboard">
+        <div class="top">
+            <i class="uil uil-bars sidebar-toggle"></i>
+
+            <div class="search-box">
+                <i class="uil uil-search"></i>
+                <input type="text" placeholder="Search here...">
+            </div>
+
+            <img src="image/pikachu.jpg" alt="">
+        </div>
+
+        <div class="dash-content">
+            <div class="calendar-Container"><!-- 不知道怎么取名字了 -->
+
+                <div class="select-head">
+                    <span>考试发布</span>
+                </div>
+                <div class="select">
+
+                    <select name="category" id="category">
+                        <option value="" disabled selected>当前团队：1</option> <!-- 默认占位文本 -->
+
+                        <option value="category1">团队1</option>
+                        <option value="category2">团队2</option>
+                        <option value="category3">团队3</option>
+                    </select>
+
+                    <button class="exam-select-btn">
+                        <span style="color: #9e9ea7">选择考试日期</span>
+                    </button>
+
+                    <div class="group">
+                        <input class="input" placeholder="输入考试名称" />
+                    </div>
+
+                    <button class="publish-button">
+                        <img src="./image/search.svg" alt="Button Icon">
+                        <span>发布</span>
+                    </button>
+
+
+                </div>
+
+
+
+                <div class="search-container">
+                    <table class="content-table">
+                        <thead>
+                            <tr>
+                                <th style="width:60px">选择</th>
+                                <th style="width:120px">题型</th>
+                                <th>题目</th>
+                                <th style="width:80px;">难度</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tableBody">
+                            <tr>
+                                <td><input type="checkbox" name="checkbox" value="1"></td>
+                                <td>单选题</td>
+                                <td>What is the capital of China?</td>
+                                <td>简单</td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" name="checkbox" value="2"></td>
+                                <td>单选题</td>
+                                <td>How many province in China?</td>
+                                <td>简单</td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" name="checkbox" value="3"></td>
+                                <td>判断题</td>
+                                <td>Is BJ the capital of China?</td>
+                                <td>简单</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="paginationContainer" style="height:40px;width:370px;margin-left:auto;margin-top:20px;box-shadow:none;">
+                    <div class="startBtns" style="flex-direction: row; display: flex; column-gap: 10px;"></div>
+                    <div class="links" id="pagination">
+                    </div>
+                    <div class="endBtns" style="flex-direction: row; display: flex; column-gap: 10px;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+</body> 
+<script src="./js/pagination.js" defer></script>
+<script src="./js/issuePunch.js"></script>
+>>>>>>> Stashed changes
 <style>
     .darkmode--activated .circle-btn {
         background-color: brown;
         color: red;
     }
 
+<<<<<<< Updated upstream
     .darkmode--activated .search-container img {
         filter: invert(1);
+=======
+    .calendar-Container {
+        position: relative;
+        margin-top: 20px;
+        padding: 20px;
+        height: 460px;
+        /* background-color: salmon; */
+    }
+
+    .select {
+        display: flex;
+        padding: 20px;
+        gap: 20px;
+        border-bottom: 1px solid #f0f0f0;
+        background-color: white;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    .select-head {
+        width: 100%;
+        color: #3a7afe;
+        font-size: 23px;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #3a7afe;
+        background-color: white;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .select-head span {
+        margin-left: 20px;
+    }
+
+    #category {
+        height: 40px;
+        width: auto;
+        margin-left: 10px;
+        font-size: 14px;
+        font-weight: 400;
+        padding: 8px;
+        border: 1px solid #d7dae3;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #7e7e7e;
+        outline: none;
+    }
+
+    #category:hover,
+    #category:focus {
+        border-color: #9dbdff;
+    }
+
+    /* 鼠标悬停在选项上时的样式 */
+    #category option:hover {
+        background-color: #f0f0f0;
+    }
+
+    /* 选中的选项样式 */
+    #category option:checked {
+        background-color: #6e93f7;
+        color: #fff;
+    }
+    .group {
+        display: flex;
+        line-height: 28px;
+        align-items: center;
+        position: relative;
+        max-width: 190px;
+
+        .input {
+            width: 100%;
+            height: 40px;
+            line-height: 28px;
+            padding: 0 1rem;
+            padding-left: 2.5rem;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            outline: none;
+            color: #89879f;
+            transition: 0.3s ease;
+            border-color: #d7dae3;
+        }
+
+        .input::placeholder {
+            color: #9e9ea7;
+        }
+
+        .input:focus,
+        input:hover {
+            outline: none;
+            border-color: #9dbdff;
+            background-color: #fff;
+        }
+
+        .icon {
+            position: relative;
+            left: 2rem;
+            width: 1rem;
+            height: 1rem;
+
+        }
+
+    }
+    .exam-select-btn{
+        height: 40px;
+        display: flex;
+        align-items: center;
+        /*水平居中*/
+        justify-content: center;
+        cursor: pointer;
+        padding: 5px;
+        /* 为按钮内部添加一些间距 */
+        overflow: hidden;
+        /* 确保内容不会溢出按钮 */
+        border-radius: 5px;
+        width: 110px;
+        margin-left: 10px;
+        background-color: transparent;
+        border: 1px solid #d7dae3;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .publish-button {
+        height: 40px;
+        width: 90px;
+        display: flex;
+        align-items: center;
+        /*水平居中*/
+        justify-content: center;
+        border: none;
+        background-color: #3a7afe;
+        cursor: pointer;
+        padding: 5px;
+        /* 为按钮内部添加一些间距 */
+        overflow: hidden;
+        /* 确保内容不会溢出按钮 */
+        border-radius: 5px;
+        margin-left: 45px;
+    }
+
+    .publish-button img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .publish-button span {
+        flex-grow: 1;
+        text-align: center;
+        color: white;
+        font-size: 16px;
+    }
+
+    .search-container {
+        display: flex;
+        /* background-color: white; */
+        border-radius: 10px;
+        margin-top: 20px;
+    }
+
+    .content-table {
+        /*合并边框*/
+        font-size: 1em;
+        width: 970px;
+        border-radius:10px 10px 0 0;
+        overflow: hidden;
+        border-collapse: collapse;
+
+        /* background-color: white; */
+    }
+
+    .content-table thead tr {
+        background-color: #3a7afe;
+        color: #ffffff;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .content-table th{
+        line-height: 10px; 
+    }
+
+    .content-table th,
+    .content-table td {
+        padding: 15px 13px;
+    }
+
+    .content-table tbody{
+        background-color: white;
+    }
+
+    .content-table tbody tr {
+        border-bottom: 1px solid #dddddd;
+        color: #3f3ba2;
+        text-align: center;
+        overflow: hidden;
+    }
+
+    .content-table tbody tr:last-of-type {
+        border-bottom: 2px solid #3a7afe;
+        /*最后一行加粗*/
+>>>>>>> Stashed changes
+    }
+
+    /* 遮罩层样式 */
+    .modal-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* 半透明背景 */
+        display: none; /* 默认不显示 */
+        z-index: 1000; /* 确保在页面内容的上方 */
+    }
+
+    .modal {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background-color: transparent;
+        z-index: 1001;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .modal-container {
+        background-color: transparent;
+        border-radius: 16px;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-container-header {
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        height: 45px;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #4070f4;
+    }
+
+    .modal-container-title {
+        padding: 20px 32px;
+        font-size: 20px;
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .icon-button {
+        height: 45px;
+        width: 45px;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+    .modal-container-body {
+        height: 200px;
+        width: 270px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modal-container-footer {
+        padding: 20px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        border-top: 1px solid #ddd;
+        gap: 12px;
+        position: relative;
+    }
+
+    .modal-container-footer:after {
+        content: "";
+        display: block;
+        position: absolute;
+        top: -51px;
+        left: 24px;
+        right: 24px;
+        height: 50px;
+        flex-shrink: 0;
+        /* background-image: linear-gradient(to top, rgba(255, 255, 255, 0.75), transparent); */
+        pointer-events: none;
     }
 </style>
 <link rel="stylesheet" href="./css/sidebar.css">

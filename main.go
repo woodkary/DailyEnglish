@@ -1,13 +1,18 @@
 package main
 
 import (
+<<<<<<< Updated upstream
 	controlsql "DailyEnglish/Control_SQL"
+=======
+	middlewares "DailyEnglish/middlewares"
+	adminrouter "DailyEnglish/router/admin_router"
+	teamrouter "DailyEnglish/router/team_router"
+	userrouter "DailyEnglish/router/user_router"
+>>>>>>> Stashed changes
 	"database/sql"
 	"fmt"
-	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -30,6 +35,7 @@ func main() {
 	}
 	defer db.Close()
 
+<<<<<<< Updated upstream
 	// 检查数据库连接是否成功
 	err = db.Ping()
 	if err != nil {
@@ -60,6 +66,8 @@ func main() {
 	//controlsql.InsertData(client)
 	//controlsql.InsertUserInfo(db, "小明", "10086", "12344", "123456@qq.com", 2024000123, 19, 1, "2024-04-01")
 	//数据库测试
+=======
+>>>>>>> Stashed changes
 	r := gin.Default()
 	r.Static("static/team_manager", "./static")
 	// r.Static("static/team_manager/css", "./static/css")
@@ -67,6 +75,7 @@ func main() {
 	//r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html", "./static/404.html")
 	// r.LoadHTMLGlob("./static/*.html")
 
+<<<<<<< Updated upstream
 	userrouter.User_manager(r, client, db)
 	teamrouter.Team_manager(r, client, db)
 	r.Run(":8080")
@@ -78,4 +87,15 @@ func main() {
 	for i := 0; i < len(users); i++ {
 		fmt.Println(users[i])
 	}
+=======
+	adminrouter.InitAdminRouter(r, db)
+	teamrouter.InitTeamRouter(r, db)
+	go func() {
+		r1 := gin.Default()
+		userrouter.InitUserRouter(r1, db)
+		r1.Use(middlewares.Cors())
+		r1.Run(":8080")
+	}()
+	r.Run(":8081")
+>>>>>>> Stashed changes
 }

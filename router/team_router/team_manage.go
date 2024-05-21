@@ -1,17 +1,21 @@
 ﻿package teamrouter
 
 import (
+<<<<<<< Updated upstream:router/team_router/team_manage.go
 	controlsql "DailyEnglish/Control_SQL"
 	service "DailyEnglish/services"
+=======
+	controlsql "DailyEnglish/db"
+	service "DailyEnglish/utils"
+>>>>>>> Stashed changes:router/team_router/team_router.go
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis"
 )
 
 func tokenAuthMiddleware() gin.HandlerFunc {
@@ -30,7 +34,7 @@ func tokenAuthMiddleware() gin.HandlerFunc {
 		}
 		// 提取令牌
 		token := strings.TrimPrefix(authHeader, "Bearer ")
-		user, err := service.ParseToken(token)
+		user, err := service.ParseToken_TeamManager(token)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, "令牌无效")
 			c.Abort()
@@ -43,6 +47,7 @@ func tokenAuthMiddleware() gin.HandlerFunc {
 	}
 }
 
+<<<<<<< Updated upstream:router/team_router/team_manage.go
 func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 	//主页数据
 	r.GET("/api/team_manage/index/data", tokenAuthMiddleware(), func(c *gin.Context) {
@@ -168,77 +173,219 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		}
 		c.JSON(200, response)
 	})
+=======
+func InitTeamRouter(r *gin.Engine, db *sql.DB) {
+>>>>>>> Stashed changes:router/team_router/team_router.go
 	//考试情况数据
-	r.GET("/api/team_manage/exam_situation/data", tokenAuthMiddleware(), func(c *gin.Context) {
-		user, _ := c.Get("user")
-		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
-		if !ok {
-			c.JSON(500, "服务器错误")
-			return
-		}
-		Item, err := controlsql.QueryTeamExams(client, userClaims.TeamName)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-			return
-		}
-		// ExamInfo 结构体表示单个考试的信息
-		type ExamInfo struct {
-			Name         string `json:"name"`          // 考试名称
-			Time         string `json:"time"`          // 考试时间
-			FullScore    string `json:"full_score"`    // 满分
-			AverageScore string `json:"average_score"` // 平均分
-			PassRate     string `json:"pass_rate"`     // 通过率
-		}
-
-		// ExamsResponse 结构体表示包含多个考试的响应
-		type response struct {
-			Code  string     `json:"code"`  // 响应代码
-			Msg   string     `json:"msg"`   // 响应消息
-			Exams []ExamInfo `json:"exams"` // 考试列表
-		}
-		var Response response
-		var examinfo ExamInfo
-		for _, item := range Item {
-			examinfo.Name = item["Name"]
-			examinfo.FullScore = "100"
-			examinfo.AverageScore = item["AverageScore"]
-			examinfo.PassRate = item["PassRate"]
-			examinfo.Time = item["Date"]
-			Response.Exams = append(Response.Exams, examinfo)
-		}
-		Response.Code = "200"
-		Response.Msg = "成功"
-		c.JSON(200, Response)
-	})
-	//获取单次考试详情
-	r.POST("/api/team_manage/exam_situation/exam_detail", tokenAuthMiddleware(), func(c *gin.Context) {
+	r.POST("/api/team_manage/exam_situation/calendar", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
-			ExamName string `json:"exam_name"` // 考试名称
+			Year  string `json:"year"`  // 年份
+			Month string `json:"month"` // 月份
 		}
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(400, "请求参数错误")
 			return
 		}
+		requestYear, err := strconv.Atoi(request.Year)
+		if err != nil {
+			log.Println("Error parsing year:", err)
+		}
+
+		requestMonth, err := strconv.Atoi(request.Month)
+		if err != nil {
+			log.Println("Error parsing month:", err)
+
+		}
+		user, _ := c.Get("user")
+		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		//TODO这里是查询数据库获取数据
+		var Item []controlsql.ExamInfo
+		for teamID := range TeamManagerClaims.Team {
+			examInfo, err := controlsql.SearchExamInfoByTeamID(db, teamID)
+			if err != nil {
+				c.JSON(500, "服务器错误")
+				log.Panic(err)
+				return
+			}
+			Item = append(Item, examInfo...)
+		}
+
+		// ExamsResponse 结构体表示包含多个考试的响应
+		type response struct {
+			Code      string   `json:"code"`      // 响应代码
+			Msg       string   `json:"msg"`       // 响应消息
+			Exam_date []string `json:"exam_date"` // 有考试的日期
+		}
+		var Response response
+
+		//TODO 将查询到的考试信息转换为响应的结构体
+		for _, exam := range Item {
+			examDate, err := time.Parse("2006-01-02", exam.ExamDate)
+			if err != nil {
+				log.Println("Error parsing date:", err)
+				continue
+			}
+
+			if examDate.Year() == requestYear && examDate.Month() == time.Month(requestMonth) {
+				Response.Exam_date = append(Response.Exam_date, exam.ExamDate)
+			}
+		}
+		Response.Code = "200"
+		Response.Msg = "成功"
+		c.JSON(200, Response)
+	})
+	//获取某日管理的团队的所有考试信息
+	r.POST("/api/team_manage/exam_situation/exam_date", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			Date string `json:"date"` // 日期
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(400, "请求参数错误")
+			return
+		}
+		user, _ := c.Get("user")
+		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		//TODO这里是查询数据库获取数据
+		Item := make(map[int][]controlsql.ExamInfo)
+		for teamID := range TeamManagerClaims.Team {
+			examInfo, err := controlsql.SearchExamInfoByTeamIDAndDate(db, teamID, request.Date)
+			if err != nil {
+				c.JSON(500, "服务器错误")
+				log.Panic(err)
+				return
+
+			}
+			Item[teamID] = examInfo
+		}
+		// ExamsResponse 结构体表示包含多个考试的响应
+		type response struct {
+			Code  string `json:"code"` // 响应代码
+			Msg   string `json:"msg"`  // 响应消息
+			Exams []struct {
+				TeamName string `json:"team_name"` // 团队名称
+				TeamID   string `json:"team_id"`   // 团队ID
+				ExamID   string `json:"exam_id"`   // 考试ID
+				ExamName string `json:"exam_name"` // 考试名称
+			} `json:"exams"` // 考试列表
+		}
+		var Response response
+		Response.Code = "200"
+		Response.Msg = "成功"
+		for team_id, items := range Item {
+			for _, exam := range items {
+				var examInfo struct {
+					TeamName string `json:"team_name"`
+					TeamID   string `json:"team_id"`
+					ExamID   string `json:"exam_id"`
+					ExamName string `json:"exam_name"`
+				}
+				teamname := TeamManagerClaims.Team[team_id]
+				examInfo.TeamID = strconv.Itoa(team_id)
+				examInfo.TeamName = teamname
+				examInfo.ExamID = strconv.Itoa(exam.ExamID)
+				examInfo.ExamName = exam.ExamName
+				Response.Exams = append(Response.Exams, examInfo)
+			}
+		}
+		c.JSON(200, Response)
+	})
+	//获取单次考试详情
+	r.POST("/api/team_manage/exam_situation/exam_detail", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			ExamID int `json:"exam_id"` // 考试名称
+			TeamID int `json:"team_id"` // 团队名称
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(400, "请求参数错误")
+			return
+		}
+<<<<<<< Updated upstream:router/team_router/team_manage.go
 		fmt.Print(request.ExamName)
 		examInfo, err := controlsql.GetExamInfoByName(client, "Exam1")
+=======
+
+		ScoresInExam, err := controlsql.SearchExamScoreByExamID(db, request.ExamID)
+		if err != nil {
+			c.JSON(500, "服务器错误1")
+			log.Panic(err)
+			return
+		}
+		levelNums := service.CalculateUserLevel(ScoresInExam)
+
+		type UserResult struct {
+			Username string `json:"username"` // 用户名
+			Score    int    `json:"score"`    // 得分
+			Progress int    `json:"progress"` // 进步名次 (相距上次)
+		}
+
+		userIDs, err := controlsql.SearchUserIDByTeamID(db, request.TeamID)
+		if err != nil {
+			c.JSON(500, "服务器错误2")
+			log.Panic(err)
+			return
+		}
+
+		userres := make([]UserResult, 0)
+		for _, userID := range userIDs {
+			item1, item2, item3, err := controlsql.SearchClosestExamByTeamIDAndExamID(db, request.TeamID, request.ExamID, userID)
+			if err != nil {
+				c.JSON(500, "服务器错误3")
+				log.Panic(err)
+				return
+			}
+			userres = append(userres, UserResult{Username: item1, Score: item2, Progress: item3})
+		}
+
+		QuestionNum, err := controlsql.SearchQuestionNumByExamID(db, request.ExamID) // 考试题目数量
+		if err != nil {
+			c.JSON(500, "服务器错误4")
+			log.Panic(err)
+			return
+		}
+
+		var qd = make([][]int, QuestionNum)                                  // 考试题目详情
+		qid, err := controlsql.SearchQuestionIDsByExamID(db, request.ExamID) // 考试题目ID
+>>>>>>> Stashed changes:router/team_router/team_router.go
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			log.Panic(err)
 			return
 		}
-		type UserResult struct {
-			Attend   string `json:"attend"`   // 考试参与情况
-			Username string `json:"username"` // 用户名
-			Score    string `json:"score"`    // 得分
-			FailNum  string `json:"fail_num"` // 错题数量
 
+		for i := 0; i < QuestionNum; i++ {
+			qd[i], err = controlsql.SearchQuestionStatistics(db, request.ExamID, qid[i])
+			if err != nil {
+				c.JSON(500, "服务器错误")
+				log.Panic(err)
+				return
+			}
 		}
+
 		type ExamDetail struct {
-			ID          string       `json:"exam_id"`     // 考试ID
-			Name        string       `json:"exam_name"`   // 考试名称
-			UserResults []UserResult `json:"user_result"` // 考试参与人员及得分
+			ID             string       `json:"exam_id"`          // 考试ID
+			Name           string       `json:"exam_name"`        // 考试名称
+			UserLevels     []int        `json:"user_levels"`      // 用户等级
+			QuestionDetail [][]int      `json:"question_details"` // 考试题目详情
+			UserResult     []UserResult `json:"user_result"`      // 考试参与人员得分情况
 		}
+		ExamName, err := controlsql.SearchExamNameByExamID(db, request.ExamID)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			log.Panic(err)
+			return
+		}
+
 		type response struct {
 			Code       string     `json:"code"`        // 状态码
 			Msg        string     `json:"msg"`         // 消息
@@ -247,135 +394,76 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		var Response response
 		Response.Code = "200"
 		Response.Msg = "成功"
-		Response.ExamDetail.ID = strconv.Itoa(examInfo.ID)
-		Response.ExamDetail.Name = examInfo.Name
-		//TODO 这里应该查询数据库获取考试所有参与人员等情况
+		Response.ExamDetail.ID = strconv.Itoa(request.ExamID)
+		Response.ExamDetail.Name = ExamName
+		Response.ExamDetail.UserLevels = levelNums[:]
+		Response.ExamDetail.QuestionDetail = qd
+		Response.ExamDetail.UserResult = make([]UserResult, 0)
+		Response.ExamDetail.UserResult = append(Response.ExamDetail.UserResult, userres...)
 		c.JSON(200, Response)
 	})
 
-	//打卡详情界面
-	r.GET("/api/team_manage/punch_statistics/data", tokenAuthMiddleware(), func(c *gin.Context) {
-		user, _ := c.Get("user")
-		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
-		if !ok {
-			c.JSON(500, "服务器错误")
-			return
-		}
-
-		Item1, err := controlsql.GetTeamMembersAttendance1(client, userClaims.TeamName)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-			return
-		}
-		Item2, err := controlsql.GetTeamMembersAttendanceByDate(client, userClaims.TeamName)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-			return
-		}
-		Item3, err := controlsql.GetTeamMembersAttendanceNum(client, userClaims.TeamName)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-			return
-		}
-		type punchStatistic struct {
-			Name      string `json:"name"`
-			IsPunched string `json:"ispunched"`
-			PunchDay  string `json:"punch_day"`
-			PunchWord string `json:"punch_word"`
-			PunchRate string `json:"punch_rate"`
-		}
-		type response struct {
-			Code             string           `json:"code"` // 响应代码
-			Msg              string           `json:"msg"`  // 响应消息
-			Punch_statistics []punchStatistic `json:"punch_statistics"`
-		}
-		var Response response
-		var punchstatistic punchStatistic
-		Response.Code = "200"
-		Response.Msg = "成功"
-		for _, member := range Item1 {
-			punchstatistic.Name = member.Username
-			punchstatistic.PunchDay = strconv.Itoa(member.AttendanceDays)
-			punchstatistic.PunchRate = member.AttendanceRate
-			if Item2[member.Username] == 1 {
-				punchstatistic.IsPunched = "是"
-			} else {
-				punchstatistic.IsPunched = "否"
-			}
-			punchstatistic.PunchWord = strconv.Itoa(Item3[member.Username])
-			Response.Punch_statistics = append(Response.Punch_statistics, punchstatistic)
-		}
-		c.JSON(200, Response)
-	})
 	//成员管理页面
 	r.GET("/api/team_manage/member_manage/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
-		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
+		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
-			c.JSON(500, "服务器错误")
-			return
-		}
-
-		Item, err := controlsql.GetTeamInfo(client, userClaims.TeamName)
-		if err != nil {
 			c.JSON(500, "服务器错误")
 			return
 		}
 		type Member struct {
-			Name     string `json:"name"`      // 成员姓名
-			Right    string `json:"right"`     // 成员权限
-			Time     string `json:"time"`      // 时间
-			PunchDay string `json:"punch_day"` // 打卡天数
+			ID    int    `json:"id"`    // 成员ID
+			Name  string `json:"name"`  // 成员姓名
+			Phone string `json:"phone"` // 成员手机号
+			Email string `json:"email"` // 成员邮箱
+		}
+		type team struct {
+			TeamName string   `json:"team_name"` // 团队名
+			TeamID   int      `json:"team_id"`   // 团队ID
+			Members  []Member `json:"members"`   // 成员列表
 		}
 		type response struct {
-			Code    string   `json:"code"`    // 状态码
-			Msg     string   `json:"msg"`     // 消息
-			Members []Member `json:"members"` // 团队成员列表
+			Code string `json:"code"` // 状态码
+			Msg  string `json:"msg"`  // 消息
+			Team []team `json:"team"` // 团队列表
 		}
 		var Response response
-		for _, m := range Item.Members {
-			var member Member
-			member.Name = m.Username
-			member.PunchDay = strconv.Itoa(m.AttendanceDays)
-			member.Time = m.JoinDate
-			if m.IsAdmin {
-				member.Right = "管理员"
-			} else {
-				member.Right = "成员"
+		for teamID, teamname := range TeamManagerClaims.Team {
+			var Team team
+			Team.TeamID = teamID
+			Team.TeamName = teamname
+			users, err := controlsql.SearchUserIDByTeamID(db, teamID)
+			if err != nil {
+				c.JSON(500, "服务器错误")
+				return
 			}
-			Response.Members = append(Response.Members, member)
+			for _, userID := range users {
+				var Member Member
+				Member.ID = userID
+				Member.Name, Member.Phone, Member.Email, err = controlsql.SearchUserNameAndPhoneByUserID(db, userID)
+				if err != nil {
+					c.JSON(500, "服务器错误")
+					return
+				}
+				Team.Members = append(Team.Members, Member)
+			}
+			Response.Team = append(Response.Team, Team)
 		}
 		Response.Code = "200"
 		Response.Msg = "成功"
 		c.JSON(200, Response)
 	})
-	// //成员删除
-	// r.POST("/api/team_manage/member_manage/delete", tokenAuthMiddleware(), func(c *gin.Context) {
-	// 	type Request struct {
-	// 		Username string `json:"username"` // 要删除的成员的用户名
-	// 		Teamname string `json:"teamname"` // 团队名
-	// 	}
-	// 	var request Request
-	// 	if err := c.ShouldBind(&request); err != nil {
-	// 		c.JSON(400, "请求参数错误")
-	// 	}
-	// 	err := controlsql.DeleteUserFromTeam(client, request.Teamname, request.Username)
-	// 	if err != nil {
-	// 		c.JSON(500, "服务器错误")
-	// 	}
-	// 	c.JSON(200, "删除成功")
-	// })
-	//搜索成员
-	r.POST("/api/team_manage/member_manage/search", tokenAuthMiddleware(), func(c *gin.Context) {
+	//成员删除
+	r.POST("/api/team_manage/member_manage/delete", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
-			Username string `json:"username"` // 用户名
-			Teamname string `json:"teamname"` // 团队名
+			TeamID int `json:"team_id"` // 要删除的成员的用户名
+			UserID int `json:"user_id"` // 团队名
 		}
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(400, "请求参数错误")
-			return
 		}
+<<<<<<< Updated upstream:router/team_router/team_manage.go
 		Item, err := controlsql.GetTeamMembers(client, request.Teamname)
 		if err != nil {
 			c.JSON(500, "服务器错误")
@@ -430,49 +518,23 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 		}
 
 		Item1, err := controlsql.GetTeamRequestsByFlag(client, userClaims.TeamName, "0")
+=======
+		err := controlsql.DeleteUserTeamByUserIDAndTeamID(db, request.TeamID, request.UserID)
+>>>>>>> Stashed changes:router/team_router/team_router.go
 		if err != nil {
 			c.JSON(500, "服务器错误")
 		}
-		Item2, err := controlsql.GetTeamInfo(client, userClaims.TeamName)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-		}
-		type Request struct {
-			Name     string `json:"name"`      // 请求者姓名
-			Time     string `json:"time"`      // 请求时间
-			LeaveMsg string `json:"leave_msg"` // 留言信息
-		}
-
-		// Response 定义了响应的信息
-		type response struct {
-			Code       string    `json:"code"`        // 状态码
-			Msg        string    `json:"msg"`         // 消息
-			MemberNum  int       `json:"member_num"`  // 成员数量
-			ManagerNum int       `json:"manager_num"` // 管理员数量
-			Requests   []Request `json:"request"`     // 请求列表
-		}
-		var Response response
-		Response.Code = "200"
-		Response.Msg = "成功"
-		Response.ManagerNum = Item2.AdminCount
-		Response.MemberNum = Item2.TotalMembers
-		for _, r := range Item1 {
-			var request Request
-			request.Name = r.Username
-			request.Time = r.Time
-			request.LeaveMsg = r.Message
-			Response.Requests = append(Response.Requests, request)
-		}
-		c.JSON(200, Response)
+		c.JSON(200, "删除成功")
 	})
 	//获取个人中心界面所需信息
 	r.GET("/api/team_manage/personal_center/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
-		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
+		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
 		}
+<<<<<<< Updated upstream:router/team_router/team_manage.go
 		Item1, Item2, err := controlsql.GetUserInfoByEmailPwd(db, userClaims.UserName)
 		if err != nil {
 			c.JSON(500, "服务器错误")
@@ -483,96 +545,56 @@ func Team_manager(r *gin.Engine, client *redis.Client, db *sql.DB) {
 			Right    string `json:"right"` // 用户权限
 			Email    string `json:"email"` // 用户邮箱
 			Password string `json:"pwd"`   //用户密码
+=======
+
+		type Team struct {
+			TeamName  string `json:"team_name"`  // 团队名
+			TeamID    int    `json:"team_id"`    // 团队ID
+			MemberNum int    `json:"member_num"` // 成员数量
+>>>>>>> Stashed changes:router/team_router/team_router.go
 		}
 		// Response 定义了响应的信息
 		type Response struct {
-			Code string `json:"code"` // 状态码
-			Msg  string `json:"msg"`  // 消息
-			User User   `json:"user"` // 用户信息
+			Code     string `json:"code"`     // 状态码
+			Msg      string `json:"msg"`      // 消息
+			Name     string `json:"name"`     // 用户名
+			Phone    string `json:"phone"`    // 手机号
+			Partment string `json:"partment"` // 部门
+			Email    string `json:"email"`    // 邮箱
+			Team     []Team `json:"team"`     // 团队列表
 		}
 		var response Response
+<<<<<<< Updated upstream:router/team_router/team_manage.go
 		response.User.Email = Item1
 		response.User.Password = Item2
 		response.User.Name = userClaims.UserName
 		response.User.Team = userClaims.TeamName
+=======
+		// 查询用户信息
+		ManageInfo, err := controlsql.SearchManagerInfoByManagerID(db, TeamManagerClaims.ManagerID)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		response.Name = ManageInfo.ManagerName
+		response.Phone = ManageInfo.ManagerPhone
+		response.Partment = ManageInfo.ManagerPartment
+		response.Email = ManageInfo.ManagerEmail
+		// 查询团队信息
+		for teamID := range TeamManagerClaims.Team {
+			var team Team
+			team.TeamID = teamID
+			team.TeamName, team.MemberNum, err = controlsql.SearchTeamInfoByTeamID(db, teamID)
+			if err != nil {
+				c.JSON(500, "服务器错误")
+				return
+			}
+			response.Team = append(response.Team, team)
+		}
+>>>>>>> Stashed changes:router/team_router/team_router.go
 		response.Code = "200"
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
-	//打卡信息发布界面信息
-	r.GET("/api/team_manage/task_daily/data", tokenAuthMiddleware(), func(c *gin.Context) {
-		c.Get("user")
-		Item, err := controlsql.QueryBooksBy(db, "大一", "简单", 0)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-		}
-		type Book struct { //书籍信息
-			Title      string `json:"title"`       // 书名
-			LearnerNum int    `json:"learner_num"` // 学习人数
-			Describe   string `json:"describe"`    // 描述
-			WordsNum   int    `json:"words_num"`   // 单词数
-		}
-		type response struct { //响应信息
-			Code  string `json:"code"`  // 状态码
-			Msg   string `json:"msg"`   // 消息
-			Books []Book `json:"books"` // 书籍列表
-		}
-		var Response response
-		for _, item := range Item {
-			var book Book
-			book.Title = item.Title
-			book.LearnerNum = item.LearnerNum
-			book.Describe = item.Describe
-			book.WordsNum = item.WordsNum
-			Response.Books = append(Response.Books, book)
-		}
-		Response.Code = "200"
-		Response.Msg = "成功"
-		c.JSON(200, Response)
-	})
-	//团队管理员选择打卡发布页面信息
-	r.POST("/api/team_manage/task_daily/deliver_punch", func(c *gin.Context) {
-		type Request struct {
-			Grade          string `json:"grade"`          //年级
-			Difficulty     string `json:"difficulty"`     //难度
-			Flag           string `json:"flag"`           //按什么排序，0是最新，1是最热
-			Time_expected  string `json:"time_expected"`  //打卡时长预计
-			Words_expected string `json:"words_expected"` //每日单词预计
-		}
-		var request Request
-		if err := c.ShouldBind(&request); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-		flag, _ := strconv.Atoi(request.Flag)
-		Item, err := controlsql.QueryBooksBy(db, request.Grade, request.Difficulty, flag)
-		if err != nil {
-			c.JSON(500, "服务器错误")
-		}
-		type Book struct { //书籍信息
-			Name       string `json:"name"`        // 书名
-			LearnerNum int    `json:"learner_num"` // 学习人数
-			Describe   string `json:"describe"`    // 描述
-			WordsNum   int    `json:"words_num"`   // 单词数
-		}
-		type Response struct { //响应信息
-			Code  string `json:"code"`  // 状态码
-			Msg   string `json:"msg"`   // 消息
-			Books []Book `json:"books"` // 书籍列表
-		}
-		var response Response
-		for _, item := range Item {
-			var book Book
-			book.Name = item.Title
-			book.Describe = item.Describe
-			book.LearnerNum = item.LearnerNum
-			book.WordsNum = item.WordsNum
-			response.Books = append(response.Books, book)
-		}
-		response.Code = "200"
-		response.Msg = "成功"
-		c.JSON(http.StatusOK, response)
-	})
+
 }

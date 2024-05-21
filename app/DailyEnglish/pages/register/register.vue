@@ -31,6 +31,7 @@
 
 <script>
 	export default {
+<<<<<<< Updated upstream
 		data() {
 			return {
 
@@ -40,6 +41,189 @@
 
 		}
 	}
+=======
+    data() {
+      return {
+        username: '',
+        email: '',
+        password: '',
+        password2: '',
+        initialVerifyCodeInput: '',
+        verifyCode: ''
+      }
+    },
+    methods: {
+      checkEmail() {
+        let regex = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+        let emailInput = document.getElementById('emailInput');
+        if (!regex.test(this.email)) {
+          emailInput.classList.add('inputActive');
+          setTimeout(() => {
+            emailInput.classList.remove('inputActive');
+          }, 2000);
+          return false;
+        }
+        return true;
+      },
+      sendCode() {
+        if (!this.checkEmail()) {
+          return;
+        }
+        let btn = document.getElementById('sendCodeBtn');
+        uni.request({
+          url: '/api/register/sendCode',
+          data: {
+            email: this.email
+          },
+          withCredentials: false,
+          method: 'POST',
+          success: (res) => {
+            console.log(res);
+            if(res.statusCode === 200){
+              let vCode = res.data.data;
+              let codeAndExpiry = {
+                vCode: vCode,
+                expiry: new Date().getTime() + 1000 * 60 * 5//5分钟有效
+              };
+              //存储验证码和过期时间
+              uni.setStorageSync('codeAndExpiry', codeAndExpiry);
+              let timeLeft=60;
+              btn.disabled=true;
+              //按钮可使用状态倒计时
+              let timer=setInterval(() => {
+                timeLeft--;
+                btn.innerText = `${timeLeft}秒后请重试`;
+                //倒计时结束，按钮恢复可用状态
+                if(timeLeft<=0){
+                  clearInterval(timer);
+                  btn.innerText='发送验证码';
+                  btn.disabled=false;
+                }
+              }, 1000);
+            }else if(res.statusCode==409) {//邮箱已注册
+              uni.showToast({
+                title: '邮箱已注册',
+                icon: 'error'
+              });
+            }else if(res.statusCode==400){//请求参数错误
+              uni.showToast({
+                title: '请求参数错误',
+                icon: 'error'
+              });
+            }else{
+              uni.showToast({
+                title: '发送失败',
+                icon: 'error'
+              });
+            }
+          },
+          fail: (res) => {
+            console.log(res);
+            uni.showToast({
+              title: '发送失败',
+              icon: 'error'
+            });
+          }
+        });
+      },
+      checkInput(){
+        let verifyCode=this.verifyCode;
+        let verifyCodeInput=document.getElementById('verifyCodeInput');
+        if(verifyCode!==''&&!this.checkVerifyCode(verifyCode)){
+          verifyCodeInput.classList.add('inputActive');
+          setTimeout(() => {
+            verifyCodeInput.classList.remove('inputActive');
+          }, 2000);
+          return false;
+        }
+        return true;
+      },
+      checkVerifyCode(verifyCode) {
+        let codeAndExpiry = uni.getStorageSync('codeAndExpiry');
+        if (codeAndExpiry) {
+          let now = new Date().getTime();
+          if (now < codeAndExpiry.expiry) {
+            if (verifyCode == codeAndExpiry.vCode) {
+              return true;
+            }
+          }
+        }
+        return false;
+      },
+      //密码输入框失去焦点时检查密码是否一致
+      checkPasswordInput(){
+        let password=this.password;
+        let password2=this.password2;
+        let passwordInput=document.getElementById('passwordInput');
+        if(password!==''&&password2!==''&&password!==password2){
+          passwordInput.classList.add('inputActive');
+          setTimeout(() => {
+            passwordInput.classList.remove('inputActive');
+          }, 2000);
+          uni.showToast({
+            title: '两次输入的密码不一致',
+            icon: 'error'
+          });
+          return false;
+        }
+        return true;
+      },
+      //注册
+      register() {
+        //检查密码是否一致
+        /*if(!this.checkPasswordInput()){
+          return;
+        }*/
+        let username=this.username;
+        let email=this.email;
+        let password=this.password;
+        uni.request({
+          url: '/api/users/register',
+          data: {
+            username: username,
+            email: email,
+            password: password
+          },
+          method: 'POST',
+          success: (res) => {
+            console.log(res);
+            if(res.statusCode === 200){
+              uni.showToast({
+                title: '注册成功',
+                icon: 'success'
+              });
+              setTimeout(() => {
+                uni.navigateBack();
+              }, 1000);
+            }else if(data.code==409) {//用户名已注册
+              uni.showToast({
+                title: '用户名已注册',
+                icon: 'error'
+              });
+            }else if(data.code==400){//请求参数错误
+              uni.showToast({
+                title: '请求参数错误',
+                icon: 'error'
+              });
+            }else{
+              uni.showToast({
+                title: '注册失败',
+                icon: 'error'
+              });
+            }
+          },
+          fail: (res) => {
+            console.log(res);
+            uni.showToast({
+              title: '注册失败',
+              icon: 'error'
+            });
+          }
+        });
+      }
+    }
+  }
+>>>>>>> Stashed changes
 </script>
 
 <style>
