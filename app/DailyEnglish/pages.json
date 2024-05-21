@@ -123,18 +123,24 @@
             }
         },
         {
-        	"path" : "pages/exam/exam",
-        	"style" : 
-        	{
-        		"navigationBarTitleText" : ""
-        	}
+            "path" : "pages/exam/exam",
+            "style" : {
+                "navigationBarTitleText" : ""
+            }
         },
         {
-        	"path" : "pages/ExamHistory/ExamHistory",
-        	"style" : 
-        	{
-        		"navigationBarTitleText" : ""
-        	}
+            "path" : "pages/ExamHistory/ExamHistory",
+            "style" : {
+                "navigationBarTitleText" : ""
+            }
+        },
+        {
+            "path" : "pages/finishexam/finishexam",
+            "style" : {}
+        },
+        {
+            "path" : "pages/questionDetail/questionDetail",
+            "style" : {}
         }
     ],
     "globalStyle" : {
