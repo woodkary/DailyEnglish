@@ -12,7 +12,7 @@
 				</view>
 				<view class="button-group">
 					<div v-for="(choice, choiceIndex) in question.choices" :key="choiceIndex" class="choice-container">
-						<button class="option" :class="getClass(choiceIndex)" @click="selectChoice(choiceIndex)">
+						<button class="option" @click="selectChoice(choiceIndex)">
 							{{ getLabel(choiceIndex) }}
 						</button>
 						<span class="choice-content">{{ choice }}</span>
@@ -35,12 +35,12 @@
 			<view class="xuanxiang-container" v-show="isShow">
 				<view v-for="(thisRowQuestions,index) in rows" :key="index" class="row">
 					<button v-for="(thisRowQuestion,index) in thisRowQuestions" :key="index" class="option"
-                   :class="{ 'finished': thisRowQuestion.isFinished, 'selected': thisRowQuestion.index === current }"
+						:class="{ 'finished': thisRowQuestion.isFinished, 'selected': thisRowQuestion.index === current }"
 						:style="{margin:buttonMargin+'rpx'}">
 						{{thisRowQuestion.index+1}}
 					</button>
 				</view>
-				<button class="submit">直接交卷</button>
+				<button class="submit" @click="toFinishExam">直接交卷</button>
 			</view>
 
 		</view>
@@ -84,7 +84,7 @@
 					// ...更多题目
 				], // 这里可以根据需要修改选项内容
 				selectedChoice: '', // 用于存储用户选择的答案
-        finishedQuestions: new Set(), // 用于存储已完成的题目序号
+				finishedQuestions: new Set(), // 用于存储已完成的题目序号
 				realAnswer: [
 					'放弃', '选项B', '选项C' // 正确答案
 				],
@@ -102,32 +102,19 @@
 						thisRowQuestions.push({
 							index: j,
 							question: this.questions[j],
-              isFinished: this.finishedQuestions.has(j)
+							isFinished: this.finishedQuestions.has(j)
 						});
 					}
 					rows.push(thisRowQuestions);
 				}
 				return rows;
 			},
-			
+
 		},
 		methods: {
-      finishQuestion(index){
-        this.finishedQuestions.add(index);
-        this.current++;
-      },
-			handleJump() {
-
-				uni.request({
-					url: 'xxvcav',
-					method: 'post',
-					data: {
-						//data
-					},
-					success: (res) => {
-						//success
-					},
-				})
+			finishQuestion(index) {
+				this.finishedQuestions.add(index);
+				this.current++;
 			},
 			swiperChange(event) {
 				const current = event.detail.current;
@@ -146,24 +133,8 @@
 					}
 				}
 			},
-			preventSelect(event) {
-				// 阻止长按事件的默认行为
-				event.preventDefault();
-				// 在这里可以添加长按的额外逻辑，比如显示一个提示框
-			},
-			getClass(index) {
-				// 根据选中状态和答案正确与否返回相应的样式类
-				if (this.selectedChoice) {
-					console.log(this.currentQuestionIndex);
-					if (this.questions[this.currentQuestionIndex].choices[index] === this.selectedChoice) {
-						return this.questions[this.currentQuestionIndex].choices[index] === this.realAnswer ? 'correct' :
-							'incorrect';
-					}
-				}
-				return '';
-			},
 			selectChoice(choiceIndex) {
-				// Your logic to handle choice selection
+				// todo:选择选项，添加选项样式
 				console.log(`Choice ${choiceIndex + 1} selected`);
 			},
 			getLabel(choiceIndex) {
@@ -172,6 +143,20 @@
 			},
 			showQuestions() {
 				this.isShow = !this.isShow;
+			},
+			toFinishExam() {
+				uni.showModal({
+					title: '提示',
+					content: '是否确认交卷？',
+					success: (res) => {
+						if (res.confirm) {
+							//todo:Post 提交答案
+							uni.navigateTo({
+								url: '/pages/finishexam/finishexam'
+							})
+						}
+					}
+				})
 			}
 
 		}
@@ -183,6 +168,10 @@
 	@font-face {
 		font-family: "pingfang";
 		src: url('@/static/PingFang Medium_downcc.otf');
+	}
+
+	body {
+		overflow-y: hidden;
 	}
 
 	.row {
@@ -294,7 +283,7 @@
 		border-radius: 2rem;
 		height: 3rem;
 	}
- 
+
 
 	.question-container {
 		width: 100%;
@@ -326,6 +315,7 @@
 		justify-content: center;
 		margin-top: 10px;
 		border-top: 1px solid #ccc;
+
 		.submit {
 			margin-top: 20px;
 			width: 80%;
@@ -338,10 +328,12 @@
 			margin-bottom: 10px;
 		}
 	}
-	.finished{
-	   border: 1px solid #5f85f9;
-	   background-color: #e9fbfd;
+
+	.finished {
+		border: 1px solid #5f85f9;
+		background-color: #e9fbfd;
 	}
+
 	/* .isSelected{
 	   background-color: #456de7;
 	   color: white;

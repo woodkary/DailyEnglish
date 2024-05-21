@@ -6,23 +6,24 @@
 		</view>
 		<view class="center-container">
 			<view class="exam-result">
-				<h3 class="exam-title">第一单元第一次小测</h3>
-				<span class="exam-score">95</span><span style="color:#3FC681;font-size: 25px;">分</span>
+				<h3 class="exam-title">{{exam_title}}</h3>
+				<span class="exam-score">{{exam_score}}</span><span style="color:#3FC681;font-size: 25px;">分</span>
 				<br>
-				<span class="exam-num">共20题</span><span class="true-num">答对<span
-						style="color:#3FC681;">19</span>/20题</span>
-						
+				
+				<span class="exam-num"><span>共</span>{{exam_num}}<span>题</span></span>
+				<span class="true-num">答对<span	 style="color:#3FC681;">{{true_num}}</span>/<span>{{exam_num}}</span>题</span>
+
 				<view style="margin-left: 100px;margin-top: 20px;">
-				<piaoyiProgressBar canvasId="progressCanvas4" :progress="95" backgroundColor="#EFEFF4"
-				    progressBackgroundColor="#07C160" :showText="true" textColor="#456DE7" :textSize="48" :height="20"
-				    :isCircular="true" :diameter="200"></piaoyiProgressBar>
-				<view class="bg"></view>
+					<piaoyiProgressBar canvasId="progressCanvas4" :progress="95" backgroundColor="#EFEFF4"
+						progressBackgroundColor="#07C160" :showText="true" textColor="#456DE7" :textSize="48"
+						:height="20" :isCircular="true" :diameter="200"></piaoyiProgressBar>
+					<view class="bg"></view>
 				</view>
-				<view class="btn">考试详情</view>
+				<view class="btn " @click="toDetail">考试详情</view>
 			</view>
-			
+
 		</view>
-		<view class="btn">完成</view>
+		<view class="btn" @click="toHome">完成</view>
 	</view>
 </template>
 
@@ -33,9 +34,41 @@
 			piaoyiProgressBar
 		},
 		data() {
-			return {}
+			return {
+				exam_title: '第一单元第一次小测',
+				exam_score: 95,
+				exam_num: '20',
+				true_num: '19',
+			}
 		},
-		methods: {}
+		methods: {
+			onLoad() {
+				this.fetchData();
+			},
+			//todo:exam_score的值需要从后端获取，其他的从前面的页面传递过来
+			fetchData() {
+				uni.request({
+					url: 'https://www.example.com/api/exam',
+					method: 'GET',
+					success: (res) => {
+						this.exam_title = res.data.exam_title;
+						this.exam_score = res.data.exam_score;
+						this.exam_num = res.data.exam_num;
+						this.true_num = res.data.true_num;
+					}
+				});
+			},
+			toDetail() {
+				uni.navigateTo({
+					url: '/pages/exam_details/exam_details'
+				});
+			},
+			toHome(){
+				uni.reLaunch({
+					url:'/pages/home/home'
+				})
+			}
+		}
 	}
 </script>
 
