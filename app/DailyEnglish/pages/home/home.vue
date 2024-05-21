@@ -75,8 +75,9 @@
 
 				</view>
 				<view class="row">
-					<button class="plan-btn1" v-show="!isDaka" @click="handleDaka">开始学习</button>
-          <button class="plan-btn1" style="margin-left: 2px" v-show="!isReview" @click="handleReview">开始复习</button>
+					<button class="plan-btn1" v-show="!isDaka " @click="handleDaka">开始学习</button>
+					<button class="plan-btn1" v-show="isDaka && !isReview" @click="handleReview">开始复习</button>
+					<button class="plan-btn1" v-show="isDaka && isReview " @click="handleDaka">继续学习</button>
 				</view>
 			</view>
 		</view>
@@ -532,13 +533,13 @@
 				isReview: false, //是否复习
 				searchInput: '',
 				daka_book: '',
-        wordNumLearned: 123,
-        wordNumTotal: 2345,
-        daysLeft: 30,
-        wordNumToPunch: 5,
-        wordNumPunched: 15,
-        wordNumToReview: 10,
-        wordNumReviewed: 5,
+				wordNumLearned: 123,
+				wordNumTotal: 2345,
+				daysLeft: 30,
+				wordNumToPunch: 5,
+				wordNumPunched: 15,
+				wordNumToReview: 10,
+				wordNumReviewed: 5,
 				items: [{
 					word: 'apple',
 					phonetic: '/ˈæpl/',
@@ -551,17 +552,17 @@
 			}
 		},
 		methods: {
-      handleDaka(){
-        //operation 0：打卡，1：复习
-        uni.navigateTo({
-          url: "/pages/Examination/Examination?operation="+0
-        });
-      },
-      handleReview() {
-        uni.navigateTo({
-          url: "/pages/Examination/Examination?operation="+1
-        });
-      },
+			handleDaka() {
+				//operation 0：打卡，1：复习
+				uni.navigateTo({
+					url: "/pages/Examination/Examination?operation=" + 0
+				});
+			},
+			handleReview() {
+				uni.navigateTo({
+					url: "/pages/Examination/Examination?operation=" + 1
+				});
+			},
 			fetchData() {
 				uni.request({
 					url: "/api/punch/main_menu",
@@ -569,32 +570,32 @@
 					success: (res) => {
 						if (res.statusCode === 200) {
 							this.daka_book = res.data.task_doday.book_learning;
-              this.wordNumLearned = res.data.task_doday.word_num_learned;
-              this.wordNumTotal = res.data.task_doday.word_num_total;
-              this.daysLeft = res.data.task_doday.days_left;
-              this.wordNumToPunch = res.data.task_doday.word_num_to_punch;
-              if(this.wordNumToPunch == 0){
-                this.isDaka = true;
-              }
-              this.wordNumPunched = res.data.task_doday.word_num_punched;
-              this.wordNumToReview = res.data.task_doday.word_num_to_review;
-              if(this.wordNumToReview == 0){
-                this.isReview = true;
-              }
-              this.wordNumReviewed = res.data.task_doday.word_num_reviewed;
+							this.wordNumLearned = res.data.task_doday.word_num_learned;
+							this.wordNumTotal = res.data.task_doday.word_num_total;
+							this.daysLeft = res.data.task_doday.days_left;
+							this.wordNumToPunch = res.data.task_doday.word_num_to_punch;
+							if (this.wordNumToPunch == 0) {
+								this.isDaka = true;
+							}
+							this.wordNumPunched = res.data.task_doday.word_num_punched;
+							this.wordNumToReview = res.data.task_doday.word_num_to_review;
+							if (this.wordNumToReview == 0) {
+								this.isReview = true;
+							}
+							this.wordNumReviewed = res.data.task_doday.word_num_reviewed;
 						} else {
-							console.error("请求失败",res);
+							console.error("请求失败", res);
 							this.daka_book = "词汇书123"
 						}
 					},
 					fail: (err) => {
-						console.error("请求失败",err);
+						console.error("请求失败", err);
 						this.daka_book = "词汇书123"
 					}
 				});
 			},
 			onLoad() {
-        this.fetchData();
+				this.fetchData();
 				console.log("hi");
 			},
 			handleSearchShow() {
