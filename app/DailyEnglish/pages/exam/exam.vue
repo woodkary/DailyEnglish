@@ -59,7 +59,7 @@
 					// 其他 Swiper 配置...
 				},
 				progress: 1, // 进度条的初始值
-				current: 1, // 当前进度
+				current: 0, // 当前进度
 				currentQuestionIndex: 0,
 				questionButtonIndex: 0, // 当前题目的按钮序号
 				isShow: false, //是否显示全部题目
@@ -114,6 +114,7 @@
 		methods: {
       finishQuestion(index){
         this.finishedQuestions.add(index);
+        this.current++;
       },
 			handleJump() {
 
@@ -145,10 +146,6 @@
 					}
 				}
 			},
-			selectChoice(index) {
-				console.log(index);
-				// 选择答案
-			},
 			preventSelect(event) {
 				// 阻止长按事件的默认行为
 				event.preventDefault();
@@ -164,10 +161,6 @@
 					}
 				}
 				return '';
-			},
-			getClass(choiceIndex) {
-				// Your logic to return class based on choiceIndex
-				return 'some-class-based-on-index'; // Placeholder
 			},
 			selectChoice(choiceIndex) {
 				// Your logic to handle choice selection

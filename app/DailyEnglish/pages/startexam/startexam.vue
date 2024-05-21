@@ -12,7 +12,7 @@
 				<span class="exam-time">考试时间60分钟</span>
 				<span class="exam-num">共二十题</span>
 			</view>
-			<view class="start-exam-btn">去考试</view>
+			<view class="start-exam-btn" @click="startExam">去考试</view>
 		</view>
 		
 	</view>
@@ -26,7 +26,11 @@
 			}
 		},
 		methods: {
-
+      startExam() {
+        uni.navigateTo({
+          url: '/pages/exam/exam'
+        });
+      }
 		}
 	}
 </script>
