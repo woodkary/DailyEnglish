@@ -2,6 +2,7 @@ package userrouter
 
 import (
 	controlsql "DailyEnglish/db"
+	middlewares "DailyEnglish/middlewares"
 	utils "DailyEnglish/utils"
 	"database/sql"
 	"fmt"
@@ -10,6 +11,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func tokenAuthMiddleware() gin.HandlerFunc {
+	return middlewares.TokenAuthMiddleware("User")
+}
 func InitUserRouter(r *gin.Engine, db *sql.DB) {
 	//发送验证码
 	r.POST("/api/register/sendCode", func(c *gin.Context) {
@@ -156,5 +160,9 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			"msg":   "登录成功",
 			"token": token,
 		})
+	})
+	//首页
+	r.GET("/api/punch/main_menu", func(c *gin.Context) {
+
 	})
 }
