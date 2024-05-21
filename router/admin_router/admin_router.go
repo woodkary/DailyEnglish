@@ -38,7 +38,7 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		// 验证邮箱是否已注册
-		if controlsql.EmailIsRegistered(db, data.Email) {
+		if controlsql.EmailIsRegistered_TeamManager(db, data.Email) {
 			c.JSON(http.StatusConflict, gin.H{
 				"code": "409",
 				"msg":  "邮箱已注册",
@@ -91,7 +91,7 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 			})
 			return
 		}
-		if !controlsql.UserExists(db, data.Username) {
+		if !controlsql.AdminManagerExists(db, data.Username) {
 			//验证码由前端完成判定
 			fmt.Println("Pwd:", data.Pwd)
 			Key := "123456781234567812345678" //密钥
@@ -134,17 +134,13 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 
-		if !controlsql.UserExists(db, data.Username) {
+		if !controlsql.AdminManagerExists(db, data.Username) {
 			c.JSON(http.StatusForbidden, gin.H{
 				"code": "403",
 				"msg":  "用户不存在",
 			})
-		} else if controlsql.CheckUser(db, data.Username, data.Pwd) {
+		} else if controlsql.CheckTeamManager(db, data.Username, data.Pwd) {
 			item1, item2s, err := controlsql.GetTokenParams(db, data.Username)
-			//输出所有teamid
-			for _, item2 := range item2s {
-				fmt.Println(item2)
-			}
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{
 					"code": "500",
@@ -154,7 +150,7 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 			}
 
 			//生成token
-			token, err := utils.GenerateToken(item1, item2s)
+			token, err := utils.GenerateToken_TeamManager(item1, item2s)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{
 					"code": "500",

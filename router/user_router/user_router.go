@@ -11,6 +11,7 @@ import (
 )
 
 func InitUserRouter(r *gin.Engine, db *sql.DB) {
+	//发送验证码
 	r.POST("/api/register/sendCode", func(c *gin.Context) {
 		type response struct {
 			Email string `json:"email"`
@@ -59,5 +60,81 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			"data": Vcode,
 		})
 	})
+	//注册
+	r.POST("/api/user/register", func(c *gin.Context) {
+		type regdata struct {
+			Username string `json:"username"`
+			Pwd      string `json:"password"`
+			Email    string `json:"email"`
+		}
 
+		var data regdata
+		fmt.Println("Username:", data.Username, "Pwd:", data.Pwd, "Email:", data.Email)
+		if err := c.ShouldBind(&data); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+		//验证用户是否已注册
+		if controlsql.UserExists_User(db, data.Username) {
+			c.JSON(http.StatusConflict, gin.H{
+				"code": "409",
+				"msg":  "用户已注册",
+			})
+			return
+		}
+		Key := "123456781234567812345678" //密钥
+		cryptoPwd := utils.AesEncrypt(data.Pwd, Key)
+		//注册用户
+		err := controlsql.RegisterUser_User(db, data.Username, cryptoPwd, data.Email)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"code": "200",
+			"msg":  "注册成功",
+		})
+	})
+	//登录
+	r.POST("/api/user/login", func(c *gin.Context) {
+		type logindata struct {
+			Username string `json:"username"`
+			Pwd      string `json:"password"`
+		}
+		var data logindata
+		if err := c.ShouldBind(&data); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+		//验证用户是否存在
+		if !controlsql.UserExists_User(db, data.Username) {
+			c.JSON(403, gin.H{
+				"code": "403",
+				"msg":  "用户不存在",
+			})
+			return
+		}
+		//验证密码是否正确
+		isMatch := controlsql.CheckUser_User(db, data.Username, data.Pwd)
+		if !isMatch {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"code": "401",
+				"msg":  "密码错误",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"code": "200",
+			"msg":  "登录成功",
+		})
+	})
 }

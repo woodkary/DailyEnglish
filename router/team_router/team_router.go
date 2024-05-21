@@ -29,7 +29,7 @@ func tokenAuthMiddleware() gin.HandlerFunc {
 		}
 		// 提取令牌
 		token := strings.TrimPrefix(authHeader, "Bearer ")
-		user, err := service.ParseToken(token)
+		user, err := service.ParseToken_TeamManager(token)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, "令牌无效")
 			c.Abort()
@@ -65,14 +65,14 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 
 		}
 		user, _ := c.Get("user")
-		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
+		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
 		}
 		//TODO这里是查询数据库获取数据
 		var Item []controlsql.ExamInfo
-		for _, teamID := range userClaims.TeamID {
+		for teamID := range TeamManagerClaims.Team {
 			examInfo, err := controlsql.SearchExamInfoByTeamID(db, teamID)
 			if err != nil {
 				c.JSON(500, "服务器错误")
@@ -117,14 +117,14 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		user, _ := c.Get("user")
-		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
+		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
 		}
 		//TODO这里是查询数据库获取数据
-		var Item [][]controlsql.ExamInfo
-		for _, teamID := range userClaims.TeamID {
+		Item := make(map[int][]controlsql.ExamInfo)
+		for teamID := range TeamManagerClaims.Team {
 			examInfo, err := controlsql.SearchExamInfoByTeamIDAndDate(db, teamID, request.Date)
 			if err != nil {
 				c.JSON(500, "服务器错误")
@@ -132,7 +132,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 				return
 
 			}
-			Item = append(Item, examInfo)
+			Item[teamID] = examInfo
 		}
 		// ExamsResponse 结构体表示包含多个考试的响应
 		type response struct {
@@ -148,7 +148,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		var Response response
 		Response.Code = "200"
 		Response.Msg = "成功"
-		for i, items := range Item {
+		for team_id, items := range Item {
 			for _, exam := range items {
 				var examInfo struct {
 					TeamName string `json:"team_name"`
@@ -156,13 +156,8 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 					ExamID   string `json:"exam_id"`
 					ExamName string `json:"exam_name"`
 				}
-				teamname, err := controlsql.SearchTeamNameByTeamID(db, userClaims.TeamID[i])
-				if err != nil {
-					c.JSON(500, "服务器错误")
-					log.Panic(err)
-					return
-				}
-				examInfo.TeamID = strconv.Itoa(userClaims.TeamID[i])
+				teamname := TeamManagerClaims.Team[team_id]
+				examInfo.TeamID = strconv.Itoa(team_id)
 				examInfo.TeamName = teamname
 				examInfo.ExamID = strconv.Itoa(exam.ExamID)
 				examInfo.ExamName = exam.ExamName
@@ -273,7 +268,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 	//成员管理页面
 	r.GET("/api/team_manage/member_manage/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
-		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
+		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
@@ -295,10 +290,10 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			Team []team `json:"team"` // 团队列表
 		}
 		var Response response
-		for _, teamID := range userClaims.TeamID {
+		for teamID, teamname := range TeamManagerClaims.Team {
 			var Team team
 			Team.TeamID = teamID
-			Team.TeamName, _ = controlsql.SearchTeamNameByTeamID(db, teamID)
+			Team.TeamName = teamname
 			users, err := controlsql.SearchUserIDByTeamID(db, teamID)
 			if err != nil {
 				c.JSON(500, "服务器错误")
@@ -339,7 +334,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 	//获取个人中心界面所需信息
 	r.GET("/api/team_manage/personal_center/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
-		userClaims, ok := user.(*service.UserClaims) // 将 user 转换为 *UserClaims 类型
+		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
@@ -362,7 +357,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		}
 		var response Response
 		// 查询用户信息
-		ManageInfo, err := controlsql.SearchManagerInfoByManagerID(db, userClaims.UserID)
+		ManageInfo, err := controlsql.SearchManagerInfoByManagerID(db, TeamManagerClaims.ManagerID)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			return
@@ -372,7 +367,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		response.Partment = ManageInfo.ManagerPartment
 		response.Email = ManageInfo.ManagerEmail
 		// 查询团队信息
-		for _, teamID := range userClaims.TeamID {
+		for teamID := range TeamManagerClaims.Team {
 			var team Team
 			team.TeamID = teamID
 			team.TeamName, team.MemberNum, err = controlsql.SearchTeamInfoByTeamID(db, teamID)
