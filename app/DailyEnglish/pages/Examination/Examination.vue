@@ -237,7 +237,7 @@
                 console.log(res);
                 if(res.data.code==200){
                   uni.showToast({
-                    title: '复习结束',
+                    title: this.operation? '复习结束':'打卡结束',
                     icon: 'none',
                     duration: 2000,
                     success:()=> {
