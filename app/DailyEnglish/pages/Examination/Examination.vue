@@ -105,7 +105,7 @@
       this.isCorrects={};
       uni.request({
         //判断操作类型并发送请求
-        url:operation?'/api/main/take_punch':'/api/main/take_review',
+        url:!operation?'/api/main/take_punch':'/api/main/take_review',
         method:'GET',
         header:{
           'Authorization':`Bearer ${uni.getStorageSync('token')}`
@@ -225,7 +225,7 @@
           if(++this.currentQuestionIndex==this.questions.length) {
             uni.request({
               //判断操作类型并发送请求
-              url:this.operation?'/api/main/punched':'/api/main/reviewed',
+              url:!this.operation?'/api/main/punched':'/api/main/reviewed',
               method:'POST',
               header:{
                 'Authorization':`Bearer ${uni.getStorageSync('token')}`
@@ -237,7 +237,7 @@
                 console.log(res);
                 if(res.data.code==200){
                   uni.showToast({
-                    title: '复习结束',
+                    title: this.operation? '复习结束':'打卡结束',
                     icon: 'none',
                     duration: 2000,
                     success:()=> {
