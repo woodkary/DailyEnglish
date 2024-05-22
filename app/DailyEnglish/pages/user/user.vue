@@ -4,26 +4,30 @@
 			<image class="head" src="../../static/pikachu.jpg"></image>
 			<view style="display:flex;flex-direction: column;">
 				<span class="username">user</span>
-				<view class="dakatianshu">
-					<span class="words2">总打卡天数</span>
-					<span class="number2">{{ total_punch_day }}</span>
-				</view>
+				
 			</view>
 			<image class="right1" src="../../static/back.svg"></image>
 
 		</view>
 
+		
 		<view class="container1">
 			<view class="words-amount">
 				<span class="number1">{{ punch_word_num }}</span>
 				<span class="words1">打卡单词数</span>
 			</view>
-
+			
 			<view class="lianxudakatianshu">
 				<span class="number3">{{ consecutive_punch_day }}</span>
 				<span class="words3">连续打卡天数</span>
 			</view>
+			
+			<view class="dakatianshu">
+				<span class="number2">{{ total_punch_day }}</span>
+				<span class="words2">总打卡天数</span>
+			</view>
 		</view>
+		
 		<view class="container2" @click="goToCalendar">
 			<image class="calendar" src="../../static/calendar.png"></image>
 			<span class="word2">我的日历</span>
@@ -137,17 +141,26 @@
 	}
 
 	.dakatianshu {
-		margin-top: 0.4rem;
+		height: 100%;
+		width: 50%;
+		margin-left: 7%;
 		display: flex;
-		white-space: nowrap;
+		flex-direction: column;
+		/* 将 flex 子项垂直堆叠 */
+		align-items: center;
 	}
 
 	.number2 {
-		margin-left: 1rem;
+		margin-top: 0.7rem;
+		margin-bottom: 0.2rem;
+		font-size: 60px;
+		font-family: 'w03';
+		color:#2a9d8fd6;
 	}
 
 	.words2 {
-		margin-left: 1rem;
+		font-size: 12px;
+		/* color:#828491; */
 	}
 
 	.right1 {
@@ -163,25 +176,24 @@
 		height: 7rem;
 		width:90%;
 		margin-bottom:20px;
+		margin-left: 5%;
 		display: flex;
 		/* 使用 flexbox 以方便布局 */
 		align-items: center;
 		/* 如果需要水平居中 */
+		border-radius: 10px;
+		box-shadow: rgba(0, 0, 0, 0.45) 0px 10px 20px -20px;
+		background-color: white;
 	}
 
 	.words-amount {
 		height: 100%;
 		width: 50%;
 		margin-left:7%;
-		background: rgb(255,243,228);
-		background: linear-gradient(180deg, rgba(255, 245, 224, 1.0) 0%, rgba(255,250,245,1) 100%, rgba(148,254,255,1) 100%);
-		border-radius: 2rem;
 		display: flex;
 		flex-direction: column;
 		/* 将 flex 子项垂直堆叠 */
 		align-items: center;
-		/* 如果需要水平居中 */
-		
 	}
 
 	.number1 {
@@ -203,9 +215,6 @@
 		height: 100%;
 		width: 50%;
 		margin-left: 7%;
-		background: rgb(245,239,245);
-		background: linear-gradient(180deg, rgba(249, 240, 255, 1.0) 0%, rgba(255,250,252,1) 100%, rgba(148,254,255,1) 100%);
-		border-radius: 2rem;
 		display: flex;
 		flex-direction: column;
 		/* 将 flex 子项垂直堆叠 */
