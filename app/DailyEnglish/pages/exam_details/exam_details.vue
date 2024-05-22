@@ -148,13 +148,13 @@ export default {
     }
   },
   onLoad(event){
-    this.examId=parseInt(event.exam_id);
+    this.examId=event.exam_id;
     this.examName=event.exam_name;
   },
   methods: {
     formatDate(date) {
       // 格式化日期
-      return date.replace(/-/g, '年').replace(/01/g, '月01日');
+      return date.replace('-', '年').replace('-', '月').replace('-', '日');
     },
     sortQuestions(by) {
       // 根据不同的标准排序题目
