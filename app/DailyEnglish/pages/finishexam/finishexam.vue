@@ -60,15 +60,15 @@ export default {
     },
     //todo:exam_score的值不需要从后端获取，而是从本地缓存中获取
     fetchData() {
-      uni.getStorageSync("examResult").then(res => {
-        console.log(res);
-        this.exam_id = res.exam_id;
-        this.examTitle = res.examTitle;
-        this.score = res.score;
-        this.totalQuestions = res.totalQuestions;
-        this.correctAnswers = res.correctAnswers;
-        this.progress = parseInt(res.score / res.totalQuestions * 100);
-      });
+      let examResult=uni.getStorageSync("examResult");
+      if(examResult){
+        this.exam_id=examResult.exam_id;
+        this.examTitle=examResult.examTitle;
+        this.score=examResult.score;
+        this.totalQuestions=examResult.totalQuestions;
+        this.correctAnswers=examResult.correctAnswers;
+        this.progress=parseInt(examResult.score/examResult.totalQuestions*100);
+      }
     },
     toDetail() {
       uni.navigateTo({

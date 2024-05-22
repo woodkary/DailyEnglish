@@ -114,9 +114,9 @@
           },
 				},
 				isFinished: {
-					1: false,
-					2: false,
-					3: false
+					1: true,
+					2: true,
+					3: true
 				}, // 是否完成答题
 				hasShownSubmitPrompt: false, // 是否已显示提交提示
 			}
@@ -126,7 +126,7 @@
       this.exam_name=event.name;
       this.exam_id=exam_id;
       uni.request({
-        url: '/api/exams/getExamQuestions',
+        url: '/api/exams/take_examination',
         method: 'POST',
         data: {
           exam_id: exam_id
@@ -139,11 +139,13 @@
           let questionAndAnswer=this.transformQuestions(res.data.question_list);
           this.questions=questionAndAnswer.questions;
           this.realAnswer=questionAndAnswer.realAnswer;
-          for(let i=0;i<res.data.question_num;i++){
-            this.isFinished[i+1]=false;
-            this.selectedChoiceAndScore[i+1].selectedChoice=null;
-            this.selectedChoiceAndScore[i+1].score=0;
-          }
+          questionAndAnswer.questions.forEach((question, index) => {
+            this.isFinished[question.question_id]=false;
+            this.selectedChoiceAndScore[question.question_id]={
+              selectedChoice: null, // 用于存储当前选择的选项
+              score: 0 // 用于存储当前题目的分数
+            };
+          });
         },
         fail: (res) => {
           uni.showToast({
@@ -237,7 +239,7 @@
         let question_id=this.questions[index].question_id;//获取当前题目的id
         //将当前题目的选择和分数保存到selectedChoiceAndScore中
         this.selectedChoiceAndScore[question_id].selectedChoice=selectedChoice;
-        if(selectedChoice===this.realAnswer[index-1]){
+        if(selectedChoice===this.realAnswer[index]){
           // 如果选择正确，则加满分
           this.selectedChoiceAndScore[question_id].score=this.questions[index].fullScore;
         }else{
