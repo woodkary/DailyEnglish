@@ -2,7 +2,7 @@
 	<view class="container">
 		<text class="progress-text">{{ current }}/{{questions.length}}</text>
 
-		<swiper class="question-container" :options="swiperOptions" :easing-function="'linear'" :duration="250"
+		<swiper class="question-container" :options="swiperOptions" :easing-function="'linear'" :duration="500" :current="currentQuestionIndex"
 			@before-change="swiperChange">
 			<swiper-item v-for="(question, index) in questions" :key="index">
 				<view class="text-info">
@@ -35,7 +35,7 @@
 
 			<view class="xuanxiang-container" v-show="isShow">
 				<view v-for="(thisRowQuestions,rowIndex) in rows" :key="rowIndex" class="row">
-					<button v-for="(thisRowQuestion,index) in thisRowQuestions" :key="index" class="option"
+					<button v-for="(thisRowQuestion,index) in thisRowQuestions" :key="index" class="option" @click="setCurrentQuestionIndexByQuestionId(thisRowQuestion.question.question_id)"
 						:class="{ 'finished': isFinished[thisRowQuestion.question.question_id], 'selected': thisRowQuestion.index === current }"
 						:style="{margin:buttonMargin+'rpx'}">
 						{{thisRowQuestion.index+1}}
@@ -149,6 +149,15 @@
 
 		},
 		methods: {
+      setCurrentQuestionIndexByQuestionId(question_id){
+        console.log("setCurrentQuestionIndexByQuestionId:"+question_id);
+        for(let i=0;i<this.questions.length;i++){
+          if(this.questions[i].question_id===question_id){
+            this.currentQuestionIndex=i;
+            break;
+          }
+        }
+      },
 			isAllFinished() {
 				let allFinished = true;
 				for (let key in this.isFinished) {
