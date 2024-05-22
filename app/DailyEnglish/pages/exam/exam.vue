@@ -136,6 +136,15 @@
         }
         return allFinished;
       },
+      getProgress(){
+        let progress=0;
+        for(let key in this.isFinished){
+          if(this.isFinished[key]){
+            progress++;
+          }
+        }
+        return progress/this.questions.length*100;
+      },
       finishQuestion(index){
         // 记录用户的答案
         let selectedChoice=this.questions[index].choices[this.selectedIndex];
@@ -184,7 +193,7 @@
       },
 			handleJump() {
         uni.navigateTo({
-          url: '/pages/finishexam/finishexam',
+          url: '/pages/finishexam/finishexam?progress='+this.getProgress()
         });
         //todo 提交考试结果到服务器
 				uni.request({
