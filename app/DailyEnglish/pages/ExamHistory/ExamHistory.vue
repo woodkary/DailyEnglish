@@ -3,17 +3,17 @@
 		<view class="today-container">
 			<span class="title">今日考试</span>
 			<span v-if="exams.length === 0" class="no-exam">今日暂无考试，<navigator>前往复习</navigator></span>
-      <view class="todo-exam" v-for="exam in exams" :key="exam.name">
-        <view class="row1">
-          <text class="exam-name">{{ exam.name }}</text>
-          <text class="exam-time"> {{ exam.time }}</text>
-          <text class="exam-info">{{ exam.info }}</text>
-        </view>
-        <view class="row2">
-          <button class="todo-btn" @click="reminder(exam)">提醒我</button>
-          <button class="todo-btn" @click="takeExam(exam)">去考试</button>
-        </view>
-      </view>
+			<view class="todo-exam" v-for="exam in exams" :key="exam.name">
+				<view class="row1">
+					<text class="exam-name">{{ exam.name }}</text>
+					<text class="exam-time"> {{ formatTimeRange(exam.start_time, exam.duration) }}</text>
+					<text class="exam-info">{{ exam.info }}</text>
+				</view>
+				<view class="row2">
+					<button class="todo-btn" @click="reminder(exam)">提醒我</button>
+					<button class="todo-btn" @click="takeExam(exam)">去考试</button>
+				</view>
+			</view>
 		</view>
 		<view class="history-container">
 			<view class="_row1">
@@ -26,104 +26,157 @@
 				<button class="choice">成绩顺序</button>
 				<button class="choice">成绩逆序</button>
 			</view>
-      <view class="finished-exam" v-for="exam in finishedExams" :key="exam.date">
-        <image class="level" src="@/static/score1.svg"></image>
-        <view class="row1">
-          <text class="exam-name">{{ exam.name }}</text>
-          <text class="exam-date"> {{ exam.date }}</text>
-          <text class="exam-info">{{ exam.info }}</text>
-        </view>
-        <view class="row22">
-          <view>
-            <span class="score">{{ exam.score }}</span>
-            <span style="margin-left: 8rpx;font-size: 24px;">分</span>
-          </view>
-          <button class="todetail-btn" @click="viewDetails(exam)">考试详情</button>
-        </view>
-      </view>
+			<view class="finished-exam" v-for="exam in finishedExams" :key="exam.date">
+				<image class="level" src="@/static/score1.svg" v-if="exam.score>= 80"></image>
+				<image class="level" src="@/static/score2.svg" v-else-if="exam.score >= 60&&exam.score<80"></image>
+				<image class="level" src="@/static/score3.png" v-else></image>
+				<!-- <image class="level" src="@/static/score1.svg" v-else></image> -->
+				<view class="row1">
+					<text class="exam-name">{{ exam.name }}</text>
+					<text class="exam-date"> {{ exam.date }}</text>
+					<text class="exam-info">{{ exam.info }}</text>
+				</view>
+				<view class="row22">
+					<view>
+						<span class="score">{{ exam.score }}</span>
+						<span style="margin-left: 8rpx;font-size: 24px;">分</span>
+					</view>
+					<button class="todetail-btn" @click="viewDetails(exam)">考试详情</button>
+				</view>
+			</view>
 		</view>
 	</view>
 </template>
 
 <script>
 	export default {
-    data() {
-      return{
-        exams: [
-          {
-            exam_id: 1,
-            name: '第一单元第一次小测',
-            time: '20:00 ~ 21:00',
-            info: '共20题'
-          },
-          {
-            exam_id: 2,
-            name: '第一单元第一次小测',
-            time: '20:00 ~ 21:00',
-            info: '共20题'
-          },
-          // ...更多的考试对象
-        ],
-        finishedExams: [
-          {
-            exam_id: 3,
-            name: '第一单元第一次小测',
-            date: '2023年1月1日',
-            info: '共20题',
-            score: 95
-          },
-          {
-            exam_id: 4,
-            name: '第一单元第二次小测',
-            date: '2023年1月1日',
-            info: '共20题',
-            score: 95
-          },
-          {
-            exam_id: 5,
-            name: '第二单元第一次小测',
-            date: '2023年1月1日',
-            info: '共20题',
-            score: 95
-          },
-          // ...更多的考试结果对象
-        ]
-      }
+		data() {
+			return {
+				exams: [{
+						exam_id: 1,
+						name: '第一单元第一次小测',
+						start_time: '20:00',
+						duration: 60,
+						info: '共20题',
+						questionNum: 20,
+					},
+					{
+						exam_id: 2,
+						name: '第一单元第一次小测',
+						start_time: '20:00',
+						duration: 60,
+						info: '共20题',
+						questionNum: 20
+					},
+					// ...更多的考试对象
+				],
+				finishedExams: [{
+						exam_id: 3,
+						name: '第一单元第一次小测',
+						date: '2023年1月1日',
+						info: '共20题',
+						questionNum: 20,
+						score: 95
+					},
+					{
+						exam_id: 4,
+						name: '第一单元第二次小测',
+						date: '2023年1月1日',
+						info: '共20题',
+						questionNum: 20,
+						score: 35
+					},
+					{
+						exam_id: 5,
+						name: '第二单元第一次小测',
+						date: '2023年1月1日',
+						info: '共20题',
+						questionNum: 20,
+						score: 70
+					},
+					// ...更多的考试结果对象
+				]
+			}
 
-    },
+		},
+		onLoad() {
+			this.getTodayExams();
+			this.getPreviousExams();
+		},
 		methods: {
-      getPreviousExams() {
-        // 从服务器获取上一次考试记录
-        uni.request({
-          url: '/api/exams/previous_examinations',
-          success: (res) => {
-            this.exams = this.transformExams(res.data.exams);
-          }
-        });
-      },
+			formatTimeRange(start_time, duration) {
+				// 解析开始时间
+				const [startHour, startMinute] = start_time.split(':').map(Number);
 
-      viewDetails(exam){
-        // 跳转到考试详情页面
-        uni.navigateTo({
-          url: `../exam_details/exam_details?exam_id=${exam.exam_id}&exam_name=${exam.name}`
-        });
-      },
+				// 计算结束时间
+				const endMinute = (startMinute + duration) % 60;
+				const endHour = startHour + Math.floor((startMinute + duration) / 60);
+				const endTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
 
-      transformExams(exams) {
-        return exams.map(exam => {
-          // 将日期从 "yyyy/mm/dd" 转换为 "年月日"
-          const dateParts = exam.exam_date.split('/');
-          const dateInChineseFormat = `${dateParts[0]}年${dateParts[1]}月${dateParts[2]}日`;
+				// 返回格式化的时间范围字符串
+				return `${start_time} ~${endTime}`;
+			},
+			takeExam(exam) {
+				uni.setStorageSync("startExam", JSON.stringify(exam));
+				uni.navigateTo({
+					url: `../startexam/startexam`
+				});
+			},
+			getTodayExams() {
+				// 从服务器获取今天的考试记录
+				uni.request({
+					url: '/api/exams/exam_date',
+					method: 'POST',
+					header: {
+						'Authorization': `Bearer ${uni.getStorageSync('token')}`
+					},
+					success: (res) => {
+						if (res.data.code == 200) {
+							this.exams = res.data.exams;
+						}
+					},
+					fail: (err) => {
+						console.log(err);
+					}
+				});
+			},
+			getPreviousExams() {
+				// 从服务器获取之前的考试记录
+				uni.request({
+					url: '/api/exams/previous_examinations',
+					method: 'GET',
+					header: {
+						'Authorization': `Bearer ${uni.getStorageSync('token')}`
+					},
+					success: (res) => {
+						this.finishedExams = this.transformExams(res.data.exams);
+					}
+				});
+			},
 
-          return {
-            exam_id: exam.exam_id,
-            name: exam.exam_name,
-            date: dateInChineseFormat,
-            info: `共${exam.question_num}题`,
-            score: exam.exam_score
-          };
-        });
-  }
+			viewDetails(exam) {
+				// 跳转到考试详情页面
+				uni.navigateTo({
+					url: `../exam_details/exam_details?exam_id=${exam.exam_id}&exam_name=${exam.name}`
+				});
+			},
+
+			transformExams(exams) {
+				return exams.map(exam => {
+					// 将日期从 "yyyy/mm/dd" 转换为 "年月日"
+					const dateParts = exam.exam_date.split('/');
+					const dateInChineseFormat = `${dateParts[0]}年${dateParts[1]}月${dateParts[2]}日`;
+
+					return {
+						exam_id: exam.exam_id,
+						name: exam.exam_name,
+						date: dateInChineseFormat,
+						info: `共${exam.question_num}题`,
+						questionNum: exam.question_num,
+						score: exam.exam_score
+					};
+				});
+			}
 
 		}
 	}
@@ -293,7 +346,7 @@
 	.level {
 		position: absolute;
 		right: 0;
-		top:-15px;
+		top: -15px;
 		width: 200rpx;
 		height: 200rpx;
 		z-index: 0;
@@ -304,7 +357,7 @@
 		font-size: 46px;
 		font-family: 'pingfang';
 		margin-left: 20rpx;
-		
+
 	}
 
 	.todetail-btn {

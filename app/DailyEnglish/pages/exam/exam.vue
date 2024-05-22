@@ -2,23 +2,23 @@
 	<view class="container">
 		<text class="progress-text">{{ current }}/{{questions.length}}</text>
 
-		<swiper class="question-container" :options="swiperOptions" :easing-function="'linear'" :duration="250"
+		<swiper class="question-container" :options="swiperOptions" :easing-function="'linear'" :duration="500" :current="currentQuestionIndex"
 			@before-change="swiperChange">
 			<swiper-item v-for="(question, index) in questions" :key="index">
 				<view class="text-info">
-					<text class="number">1</text>
+					<text class="number">{{ index + 1 }}</text>
 					<!-- 以上是题目序号 -->
 					<text class="question">{{ question.question }}</text>
 				</view>
 				<view class="button-group">
 					<div v-for="(choice, choiceIndex) in question.choices" :key="choiceIndex" class="choice-container">
-						<button class="option" @click="selectChoice(choiceIndex)">
+						<button class="option" :class="{ 'active': choiceIndex === question.activeButtonIndex }" @click="selectChoice(choiceIndex,index)">
 						    {{ getLabel(choiceIndex) }}
 						</button>
 
 						<span class="choice-content">{{ choice }}</span>
 					</div>
-					<button class="confirm" @click="finishQuestion(index)">确认答案</button>
+<!--					<button class="confirm" @click="finishQuestion(index)">确认答案</button>-->
 				</view>
 
 
@@ -35,7 +35,7 @@
 
 			<view class="xuanxiang-container" v-show="isShow">
 				<view v-for="(thisRowQuestions,rowIndex) in rows" :key="rowIndex" class="row">
-					<button v-for="(thisRowQuestion,index) in thisRowQuestions" :key="index" class="option"
+					<button v-for="(thisRowQuestion,index) in thisRowQuestions" :key="index" class="option" @click="setCurrentQuestionIndexByQuestionId(thisRowQuestion.question.question_id)"
 						:class="{ 'finished': isFinished[thisRowQuestion.question.question_id], 'selected': thisRowQuestion.index === current }"
 						:style="{margin:buttonMargin+'rpx'}">
 						{{thisRowQuestion.index+1}}
@@ -71,33 +71,41 @@
 						question_id: 1,
 						question: `__ is your brother?
 									-He is a doctor.`,
-
+            activeButtonIndex: null, // 用于存储当前激活的按钮索引
 						choices: ['1', '2', '2', '放弃']
 					},
 					{
 						question_id: 2,
 						question: 'abandon',
-
+            activeButtonIndex: null, // 用于存储当前激活的按钮索引
 						choices: ['1', '选项B', '选项C', '选项D']
 					},
 					{
 						question_id: 3,
 						question: 'abandon2',
-
+            activeButtonIndex: null, // 用于存储当前激活的按钮索引
 						choices: ['1', '选项B', '选项C', '选项D']
 					},
 					// ...更多题目
 				], // 这里可以根据需要修改选项内容
-				selectedChoice: '', // 用于存储用户选择的答案
 				realAnswer: [
 					'放弃', '选项B', '选项C' // 正确答案
 				],
 				maxButtonsPerRow: 6, // 每行的最大元素个数
 				buttonMargin: 35, // 元素间隔
-				isCorrects: {
-					1: false,
-					2: false,
-					3: false,
+				selectedChoiceAndScore: {
+					1: {
+            selectedChoice: null, // 用于存储当前选择的选项
+            score: 0 // 用于存储当前题目的分数
+          },
+					2: {
+            selectedChoice: null, // 用于存储当前选择的选项
+            score: 0 // 用于存储当前题目的分数
+          },
+					3: {
+            selectedChoice: null, // 用于存储当前选择的选项
+            score: 0 // 用于存储当前题目的分数
+          },
 				},
 				isFinished: {
 					1: false,
@@ -105,9 +113,38 @@
 					3: false
 				}, // 是否完成答题
 				hasShownSubmitPrompt: false, // 是否已显示提交提示
-
 			}
 		},
+    onLoad(event){
+      let exam_id=parseInt(event.exam_id);
+      uni.request({
+        url: '/api/exams/getExamQuestions',
+        method: 'POST',
+        data: {
+          exam_id: exam_id
+        },
+        header: {
+          'Authorization': `Bearer ${uni.getStorageSync('token')}`
+        },
+        success: (res) => {
+          //todo 获取所有题目信息
+          let questionAndAnswer=this.transformQuestions(res.data.question_list);
+          this.questions=questionAndAnswer.questions;
+          this.realAnswer=questionAndAnswer.realAnswer;
+          for(let i=0;i<res.data.question_num;i++){
+            this.isFinished[i+1]=false;
+            this.selectedChoiceAndScore[i+1].selectedChoice=null;
+            this.selectedChoiceAndScore[i+1].score=0;
+          }
+        },
+        fail: (res) => {
+          uni.showToast({
+            title: '获取题目失败',
+            icon: 'none'
+          });
+        }
+      });
+    },
 		computed: {
 			//这是每一行的按钮，其中最多有maxButtonsPerRow个
 			rows() {
@@ -129,6 +166,37 @@
 
 		},
 		methods: {
+        transformQuestions(questionList) {
+          let questions = [];
+          let realAnswer = [];
+
+          questionList.forEach((item, index) => {
+            // 为每个问题创建一个新的对象，并添加到 questions 数组中
+            questions.push({
+              question_id: item.question_id,
+              question: item.question_content,
+              activeButtonIndex: null, // 初始化激活按钮索引
+              choices: item.question_choices
+            });
+
+            // 将正确答案添加到 realAnswer 数组中
+            realAnswer.push(item.question_answer);
+          });
+
+          return {
+            questions: questions,
+            realAnswer: realAnswer
+          };
+      },
+      setCurrentQuestionIndexByQuestionId(question_id){
+        console.log("setCurrentQuestionIndexByQuestionId:"+question_id);
+        for(let i=0;i<this.questions.length;i++){
+          if(this.questions[i].question_id===question_id){
+            this.currentQuestionIndex=i;
+            break;
+          }
+        }
+      },
 			isAllFinished() {
 				let allFinished = true;
 				for (let key in this.isFinished) {
@@ -155,7 +223,6 @@
 				// 记录用户的答案
 				let selectedChoice = this.questions[index].choices[this.selectedIndex];
 				console.log("第"+index+"题你选择了" + selectedChoice);
-				this.selectedChoice = selectedChoice;
 
 				if (!this.isFinished[this.questions[index].question_id]) {
 					// 保存是否完成到 map 中
@@ -229,15 +296,31 @@
 					// 更新当前题目索引
 					this.currentQuestionIndex = current;
 					this.selectedIndex = -1; // 重置选中的选项，确保选项渲染正确
-					this.selectedChoice = ''; // 重置已选答案
 				}
 			},
-
 			
-			selectChoice(index) {
+			selectChoice(index,currentQuestionIndex) {
+        /*// 如果当前点击的按钮已经是激活状态，则移除激活状态
+        if (this.activeButtonIndex === index) {
+          this.activeButtonIndex = null;
+        } else {
+          // 否则，设置当前点击的按钮为激活状态
+          this.activeButtonIndex = index;
+        }*/
+        // 记录用户的答案
 				this.selectedIndex = index;
 				//获取当前题目的word_id
-				let question_id = this.questions[this.currentQuestionIndex].question_id;
+				let question_id = this.questions[currentQuestionIndex].question_id;
+        // 如果当前点击的按钮已经是激活状态，则移除激活状态
+        if(this.questions[currentQuestionIndex].activeButtonIndex===index){
+          this.questions[currentQuestionIndex].activeButtonIndex=null;
+        }else{
+          // 否则，设置当前点击的按钮为激活状态
+          this.questions[currentQuestionIndex].activeButtonIndex=index;
+        }
+        //直接提交当前题目的选择
+        this.finishQuestion(currentQuestionIndex)
+
 			},
 			getLabel(choiceIndex) {
 				const labels = ['A', 'B', 'C', 'D'];
@@ -259,4 +342,7 @@
 		font-family: "pingfang";
 		src: url('@/static/PingFang Medium_downcc.otf');
 	}
+  .active{
+    background-color: #e74c3c;
+  }
 </style>
