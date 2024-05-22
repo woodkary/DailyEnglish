@@ -10,7 +10,7 @@ import (
 )
 
 func TokenAuthMiddleware(usertype string) gin.HandlerFunc {
-	if(usertype == "TeamManager"){
+	if usertype == "TeamManager" {
 		return func(c *gin.Context) {
 			authHeader := c.Request.Header.Get("Authorization")
 			fmt.Println(authHeader)
@@ -71,4 +71,3 @@ func TokenAuthMiddleware(usertype string) gin.HandlerFunc {
 		c.Next()
 	}
 }
-func 
