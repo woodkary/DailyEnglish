@@ -3,6 +3,7 @@ package db
 import (
 	utils "DailyEnglish/utils"
 	"database/sql"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -23,7 +24,7 @@ func EmailIsRegistered_User(db *sql.DB, email string) bool {
 // 根据username查询user是否存在
 func UserExists_User(db *sql.DB, username string) bool {
 	var count int
-	err := db.QueryRow("SELECT COUNT(*) FROM user_info WHERE username =?", username).Scan(&count)
+	err := db.QueryRow("SELECT COUNT(*) FROM user_info WHERE email =?", username).Scan(&count)
 	if err != nil {
 		return false
 	}
@@ -35,17 +36,18 @@ func UserExists_User(db *sql.DB, username string) bool {
 
 // 插入用户 数据库字段有username string, email string
 func RegisterUser_User(db *sql.DB, username string, password string, email string) error {
+	fmt.Print("RegisterUser_User")
 	// 准备插入语句
-	userid := utils.GenerateID()
-	//userid := 114514
-	stmt, err := db.Prepare("INSERT INTO manager_info(manager_id ,manager_name, email, pwd) VALUES( ?, ?, ?, ?)")
+	// userid := utils.GenerateID()
+	userid := 31
+	stmt, err := db.Prepare("INSERT INTO user_info(user_id ,username, email, pwd,sex,phone,birthday,register_date) VALUES( ?, ?, ?, ?,?,?,?,?)")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
 	// 执行插入语句
-	_, err = stmt.Exec(userid, username, email, password)
+	_, err = stmt.Exec(userid, username, email, password, 0, "12345678901", "2000-01-01", utils.GetCurrentDate())
 	if err != nil {
 		return err
 	}

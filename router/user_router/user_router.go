@@ -75,6 +75,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		var data regdata
 		fmt.Println("Username:", data.Username, "Pwd:", data.Pwd, "Email:", data.Email)
 		if err := c.ShouldBind(&data); err != nil {
+			fmt.Print("not bind data\n")
 			c.JSON(http.StatusBadRequest, gin.H{
 				"code": "400",
 				"msg":  "请求参数错误",
@@ -82,18 +83,20 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		//验证用户是否已注册
-		if controlsql.UserExists_User(db, data.Username) {
+		if controlsql.UserExists_User(db, data.Email) {
 			c.JSON(http.StatusConflict, gin.H{
 				"code": "409",
 				"msg":  "用户已注册",
 			})
 			return
 		}
+		fmt.Print("nonono")
 		Key := "123456781234567812345678" //密钥
 		cryptoPwd := utils.AesEncrypt(data.Pwd, Key)
 		//注册用户
 		err := controlsql.RegisterUser_User(db, data.Username, cryptoPwd, data.Email)
 		if err != nil {
+			fmt.Print(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
 				"msg":  "服务器内部错误",
