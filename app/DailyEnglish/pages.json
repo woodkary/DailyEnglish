@@ -145,6 +145,10 @@
         {
             "path" : "pages/startexam/startexam",
             "style" : {}
+        },
+        {
+            "path" : "pages/finishClockin/finishClockin",
+            "style" : {}
         }
     ],
     "globalStyle" : {
