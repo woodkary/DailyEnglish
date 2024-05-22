@@ -1,9 +1,10 @@
 package main
 
 import (
-	middleware "DailyEnglish/middlewares"
+	middlewares "DailyEnglish/middlewares"
 	adminrouter "DailyEnglish/router/admin_router"
 	teamrouter "DailyEnglish/router/team_router"
+	userrouter "DailyEnglish/router/user_router"
 	"database/sql"
 	"fmt"
 
@@ -38,6 +39,11 @@ func main() {
 
 	adminrouter.InitAdminRouter(r, db)
 	teamrouter.InitTeamRouter(r, db)
-	r.Use(middleware.Cors())
-	r.Run(":8080")
+	go func() {
+		r1 := gin.Default()
+		userrouter.InitUserRouter(r1, db)
+		r1.Use(middlewares.Cors())
+		r1.Run(":8080")
+	}()
+	r.Run(":8081")
 }

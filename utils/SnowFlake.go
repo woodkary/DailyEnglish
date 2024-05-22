@@ -8,17 +8,14 @@ import (
 
 var node *sf.Node
 
-func Init(startTime string, machineID int64) (err error) {
-	var st time.Time
-	st, err = time.Parse("2006-01-02", startTime)
-	if err != nil {
-		return
-	}
+func Init(st time.Time, machineID int64) (err error, node *sf.Node) {
 	sf.Epoch = st.UnixNano() / 1000000
 	node, err = sf.NewNode(machineID)
-	return
+	return nil, node
 }
 
 func GenerateID() int64 {
+	st := time.Now()
+	_, node := Init(st, 1145141919810)
 	return node.Generate().Int64()
 }
