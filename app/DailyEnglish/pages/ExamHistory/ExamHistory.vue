@@ -6,7 +6,7 @@
       <view class="todo-exam" v-for="exam in exams" :key="exam.name">
         <view class="row1">
           <text class="exam-name">{{ exam.name }}</text>
-          <text class="exam-time"> {{ exam.time }}</text>
+          <text class="exam-time"> {{ formatTimeRange(exam.start_time, exam.duration) }}</text>
           <text class="exam-info">{{ exam.info }}</text>
         </view>
         <view class="row2">
@@ -53,14 +53,16 @@
           {
             exam_id: 1,
             name: '第一单元第一次小测',
-            time: '20:00 ~ 21:00',
+            start_time: '20:00',
+            duration: 60,
             info: '共20题',
             questionNum: 20,
           },
           {
             exam_id: 2,
             name: '第一单元第一次小测',
-            time: '20:00 ~ 21:00',
+            start_time: '20:00',
+            duration: 60,
             info: '共20题',
             questionNum: 20
           },
@@ -97,14 +99,26 @@
 
     },
 		methods: {
+      formatTimeRange(start_time, duration) {
+        // 解析开始时间
+        const [startHour, startMinute] = start_time.split(':').map(Number);
+
+        // 计算结束时间
+        const endMinute = (startMinute + duration) % 60;
+        const endHour = startHour + Math.floor((startMinute + duration) / 60);
+        const endTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
+
+        // 返回格式化的时间范围字符串
+        return `${start_time} ~${endTime}`;
+      },
       takeExam(exam){
-        uni.setStorageSync("exam",JSON.stringify(exam));
+        uni.setStorageSync("startExam",JSON.stringify(exam));
         uni.navigateTo({
           url: `../startexam/startexam`
         });
       },
       getPreviousExams() {
-        // 从服务器获取上一次考试记录
+        // 从服务器获取之前的考试记录
         uni.request({
           url: '/api/exams/previous_examinations',
           success: (res) => {

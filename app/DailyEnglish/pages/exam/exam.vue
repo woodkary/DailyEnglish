@@ -108,6 +108,28 @@
 
 			}
 		},
+    onLoad(event){
+      let exam_id=parseInt(event.exam_id);
+      uni.request({
+        url: '/api/exams/getExamQuestions',
+        method: 'POST',
+        data: {
+          exam_id: exam_id
+        },
+        header: {
+          'Authorization': `Bearer ${uni.getStorageSync('token')}`
+        },
+        success: (res) => {
+          //todo 获取所有题目信息
+        },
+        fail: (res) => {
+          uni.showToast({
+            title: '获取题目失败',
+            icon: 'none'
+          });
+        }
+      });
+    },
 		computed: {
 			//这是每一行的按钮，其中最多有maxButtonsPerRow个
 			rows() {
