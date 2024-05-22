@@ -61,7 +61,7 @@
 				},
 				progress: 1, // 进度条的初始值
 				current: 0, // 当前进度
-				currentQuestionIndex: 0,
+				currentQuestionIndex: 0,//当前正在做的题目序号
 				selectedIndex: -1, // 当前题目的选中按钮序号
 				questionButtonIndex: 0, // 当前题目的按钮序号
 				isShow: false, //是否显示全部题目
@@ -72,19 +72,22 @@
 						question: `__ is your brother?
 									-He is a doctor.`,
             activeButtonIndex: null, // 用于存储当前激活的按钮索引
-						choices: ['1', '2', '2', '放弃']
+						choices: ['1', '2', '2', '放弃'],
+            fullScore: 5 // 题目满分
 					},
 					{
 						question_id: 2,
 						question: 'abandon',
             activeButtonIndex: null, // 用于存储当前激活的按钮索引
-						choices: ['1', '选项B', '选项C', '选项D']
+						choices: ['1', '选项B', '选项C', '选项D'],
+            fullScore: 5 // 题目满分
 					},
 					{
 						question_id: 3,
 						question: 'abandon2',
             activeButtonIndex: null, // 用于存储当前激活的按钮索引
-						choices: ['1', '选项B', '选项C', '选项D']
+						choices: ['1', '选项B', '选项C', '选项D'],
+            fullScore: 5 // 题目满分
 					},
 					// ...更多题目
 				], // 这里可以根据需要修改选项内容
@@ -94,6 +97,7 @@
 				maxButtonsPerRow: 6, // 每行的最大元素个数
 				buttonMargin: 35, // 元素间隔
 				selectedChoiceAndScore: {
+          //key为question_id
 					1: {
             selectedChoice: null, // 用于存储当前选择的选项
             score: 0 // 用于存储当前题目的分数
@@ -176,7 +180,8 @@
               question_id: item.question_id,
               question: item.question_content,
               activeButtonIndex: null, // 初始化激活按钮索引
-              choices: item.question_choices
+              choices: item.question_choices,
+              fullScore: item.full_score // 题目满分
             });
 
             // 将正确答案添加到 realAnswer 数组中
@@ -224,6 +229,18 @@
 				let selectedChoice = this.questions[index].choices[this.selectedIndex];
 				console.log("第"+index+"题你选择了" + selectedChoice);
 
+        // 更新当前题目的选择和分数
+        let question_id=this.questions[index].question_id;//获取当前题目的id
+        //将当前题目的选择和分数保存到selectedChoiceAndScore中
+        this.selectedChoiceAndScore[question_id].selectedChoice=selectedChoice;
+        if(selectedChoice===this.realAnswer[index-1]){
+          // 如果选择正确，则加满分
+          this.selectedChoiceAndScore[question_id].score=this.questions[index].fullScore;
+        }else{
+          // 如果选择错误，则扣除分数
+          this.selectedChoiceAndScore[question_id].score=0;
+        }
+
 				if (!this.isFinished[this.questions[index].question_id]) {
 					// 保存是否完成到 map 中
 					this.isFinished[this.questions[index].question_id] = true;
@@ -265,7 +282,28 @@
 					showCancel: true,
 					success: (res) => {
 						if (res.confirm) {
-							this.handleJump();
+              //todo 提交考试结果到服务器
+              uni.request({
+                url: '/api/exams/submitExamResult',
+                method: 'POST',
+                data: this.selectedChoiceAndScore,
+                header: {
+                  'Authorization': `Bearer ${uni.getStorageSync('token')}`
+                },
+                success: (res) => {
+                  uni.showToast({
+                    title: '提交成功',
+                    icon: 'none'
+                  });
+                  this.handleJump();
+                },
+                fail: (res) => {
+                  uni.showToast({
+                    title: '提交失败',
+                    icon: 'none'
+                  });
+                }
+              });
 						}
 					}
 				})
