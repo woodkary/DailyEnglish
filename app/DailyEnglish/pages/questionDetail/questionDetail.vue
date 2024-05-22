@@ -1,55 +1,78 @@
 <template>
-	<view>
-		<view class="title-container">
-			<image class="back-icon" src="../../static/back.svg"></image>
-			<span>第1/20题</span>
-		</view>
-		<view class="question-container">
-			<view style="width: max-content;">
-				<span style="font-size: 24px;">题目</span>
-				<hr style="border: 0;border-top: 5px solid #456DE7;height: 0;">
-			</view>
-			<view class="question">
-				<span>—is your brother?</span>
-				<span>—He is a doctor.</span>
-				<span class="answer">A. What</span>
-				<span class="answer">B. Who</span>
-				<span class="answer">C. Where</span>
-				<span class="answer">D. How</span>
-			</view>
-		</view>
-		<hr style="border: 0;border-bottom: 12px solid #BBBBBB;height: 0;">
-		<view class="answer-container">
-			<view style="width: max-content;">
-				<span style="font-size: 24px;">答案</span>
-				<hr style="border: 0;border-top: 5px solid #456DE7;height: 0;">
-			</view>
-			<span class="true-answer">正确答案：A</span>
-			<span class="your-answer">您的答案：B</span>
-		</view>
-		<hr style="border: 0;border-bottom: 12px solid #BBBBBB;height: 0;">
-		<view class="explain-container">
-			<view style="width: max-content;">
-				<span style="font-size: 24px;">解析</span>
-				<hr style="border: 0;border-top: 5px solid #456DE7;height: 0;">
-			</view>
-			<span>在回答“What"开头的问句时，要注意回答的内容应该是描述事物的性质或身份，如职业、颜色、形状等。因此该题选A。</span>
-		</view>
-		<hr style="border: 0;border-bottom: 12px solid #BBBBBB;height: 0;">
-	</view>
+  <view>
+    <view class="title-container">
+      <img class="back-icon" src="../../static/back.svg">
+      <span>第{{ questionIndex + 1 }}/{{ questionNum }}题</span>
+    </view>
+    <view class="question-container">
+      <view style="width: max-content;">
+        <span style="font-size: 24px;">题目</span>
+        <hr style="border: 0;border-top: 5px solid #456DE7;height: 0;">
+      </view>
+      <view class="question">
+        <span v-for="(sentence, index) in currentQuestion.sentences" :key="index">{{ sentence }}</span>
+        <view class="answers">
+          <label v-for="(option, label) in currentQuestion.options" :key="label" class="answer">
+<!--            <input type="radio" :value="label" v-model="currentQuestion.userAnswer">-->
+            {{ label }}. {{ option }}
+          </label>
+        </view>
+      </view>
+    </view>
+    <hr style="border: 0;border-bottom: 12px solid #BBBBBB;height: 0;">
+    <view class="answer-container">
+      <view style="width: max-content;">
+        <span style="font-size: 24px;">答案</span>
+        <hr style="border: 0;border-top: 5px solid #456DE7;height: 0;">
+      </view>
+      <span class="true-answer">正确答案：{{ currentQuestion.correctAnswer }}</span>
+      <span class="your-answer">您的答案：{{ currentQuestion.userAnswer }}</span>
+    </view>
+    <hr style="border: 0;border-bottom: 12px solid #BBBBBB;height: 0;">
+    <view class="explain-container">
+      <view style="width: max-content;">
+        <span style="font-size: 24px;">解析</span>
+        <hr style="border: 0;border-top: 5px solid #456DE7;height: 0;">
+      </view>
+      <span>{{ currentQuestion.questionAnalysis }}</span>
+    </view>
+    <hr style="border: 0;border-bottom: 12px solid #BBBBBB;height: 0;">
+  </view>
 </template>
 
 <script>
-	export default {
-		data() {
-			return {
-
-			}
-		},
-		methods: {
-
-		}
-	}
+export default {
+  data() {
+    return {
+      questionId: 1,
+      questionIndex: 0,
+      questionNum: 20,
+      currentQuestion: {
+        id: 1,
+        sentences: [
+          "-is your brother?",
+          "-He is a doctor."
+        ],
+        options: {
+          A: "What",
+          B: "Who",
+          C: "Where",
+          D: "How"
+        },
+        correctAnswer: 'B',
+        correctPoints: 0,
+        totalPoints: 5,
+        userAnswer: 'A',
+        questionAnalysis: '在回答“What"开头的问句时，要注意回答的内容应该是描述事物的性质或身份，如职业、颜色、形状等。因此该题选A。'
+      }
+    };
+  },
+  onLoad(event){
+    this.questionId = parseInt(event["questionId"]);
+    this.questionIndex = parseInt(event["questionIndex"]);
+    this.questionNum = parseInt(event["questionNum"]);
+  }
+};
 </script>
 
 <style>

@@ -6,14 +6,13 @@
 		</view>
 		<view class="center-container">
 			<view class="exam-result">
-				<h3 class="exam-title">第一单元第一次小测</h3>
-				<span class="exam-score">95</span><span style="color:#3FC681;font-size: 25px;">分</span>
-				<br>
-				<span class="exam-num">共20题</span><span class="true-num">答对<span
-						style="color:#3FC681;">19</span>/20题</span>
-						
-				<view style="margin-left: 100px;margin-top: 20px;">
-				<piaoyiProgressBar canvasId="progressCanvas4" :progress="95" backgroundColor="#EFEFF4"
+        <h3 class="exam-title">{{ examTitle }}</h3>
+        <span class="exam-score">{{ score }}</span><span style="color:#3FC681;font-size: 25px;">分</span>
+        <br>
+        <span class="exam-num">共{{ totalQuestions }}题</span><span class="true-num">答对<span :style="{color: correctAnswers === totalQuestions? '#3FC681' : '#FF4949'}">{{ correctAnswers }}</span>/{{ totalQuestions }}题</span>
+
+        <view style="margin-left: 100px;margin-top: 20px;">
+				<piaoyiProgressBar canvasId="progressCanvas4" :progress="progress" backgroundColor="#EFEFF4"
 				    progressBackgroundColor="#07C160" :showText="true" textColor="#456DE7" :textSize="48" :height="20"
 				    :isCircular="true" :diameter="200"></piaoyiProgressBar>
 				<view class="bg"></view>
@@ -33,9 +32,29 @@
 			piaoyiProgressBar
 		},
 		data() {
-			return {}
+      return {
+        exam_id: 1,
+        examTitle: '第一单元第一次小测',
+        score: 95,
+        totalQuestions: 20,
+        correctAnswers: 19,
+        //完成度百分比
+        progress: 95
+      };
 		},
-		methods: {}
+		methods: {
+      progressBarColor(progress){
+        if(progress >= 90){
+          return '#3FC681';
+        }else if(progress >= 80) {
+          return '#FFC107';
+        }else if(progress >= 60){
+            return '#FF4949';
+        }else {
+            return '#EFEFF4';
+        }
+      }
+    }
 	}
 </script>
 

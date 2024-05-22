@@ -1,76 +1,185 @@
 <template>
-	<view>
-		<view class="container">
-			<view class="left-container">
-				<h3 class="exam-number">第一单元第一次小测</h3>
-				<p class="date">2023年1月1日</p>
-				<view style="display: flex; justify-content: flex-start; margin-top: 25px; margin-bottom: 20px;">
-					<p class="question-number">共20题</p>
-					<p class="correct-number">答对19/20题</p>
-				</view>
-			</view>
-			<view class="right-container">
-				<p class="point">95</p>
-				<p class="small-text">分</p>
-			</view>
-		</view>
-		<view class="container2">
-			<view class="header-container">
-				<h3>考试题目</h3>
-				<view class="search">
-					<image class="search-icon" src="/static/search.svg"></image>
-					<input placeholder="搜索">
-				</view>
-			</view>
-			<view class="button-group">
-				<button class="button1">题目顺序</button>
-				<button class="button2">题目逆序</button>
-				<button class="button3">分数顺序</button>
-				<button class="button4">分数逆序</button>
-			</view>
-		</view>
-		<view class="title-container">
-			<view style="    display: flex; justify-content: space-between; width: 90%;">
-				<p class="title-number">1.</p>
-				<p class="wrong-title-point">0/5</p>
-			</view>
-			<p class="sentence1">—____ is your brother?</p>
-			<p class="sentence2">—He is a doctor.</p>
-			<p class="answer">A.What B.Who C.Where D. How</p>
-			<view style="    display: flex; justify-content: space-between; width: 90%; margin-top: 20px;">
-				<p class="wrong-answer">我的答案:B</p>
-				<p class="true-answer">正确答案:A</p>
-			</view>
-			<button class="big-button">查看解析</button>
-		</view>
-		<view class="title-container">
-			<view style="    display: flex; justify-content: space-between; width: 90%;">
-				<p class="title-number">1.</p>
-				<p class="correct-title-point">5/5</p>
-			</view>
-			<p class="sentence1">—____is the nearest post office, please?</p>
-			<p class="sentence2">—lt’s about half an hour’s walk from here.</p>
-			<p class="answer">A.How far B.How long C. How often D. How soon</p>
-			<view style="    display: flex; justify-content: space-between; width: 90%; margin-top: 20px;">
-				<p class="correct-answer">我的答案:A</p>
-				<p class="true-answer">正确答案:A</p>
-			</view>
-			<button class="big-button">查看解析</button>
-		</view>
-	</view>
+  <view>
+    <view class="container">
+      <view class="left-container">
+        <h3 class="exam-number">{{ examName }}</h3>
+        <p class="date">{{ formatDate(examDate) }}</p>
+        <view style="display: flex; justify-content: flex-start; margin-top: 25px; margin-bottom: 20px;">
+          <p class="question-number">共{{ questionNum }}题</p>
+          <p class="correct-number">答对{{ correctNum }}/{{ questionNum }}题</p>
+        </view>
+      </view>
+      <view class="right-container">
+        <p class="point">{{ score }}</p>
+        <p class="small-text">分</p>
+      </view>
+    </view>
+    <view class="container2">
+      <view class="header-container">
+        <h3>考试题目</h3>
+        <view class="search">
+          <img class="search-icon" src="/static/search.svg">
+          <input v-model="searchQuery" placeholder="搜索">
+        </view>
+      </view>
+      <view class="button-group">
+        <button class="button1" @click="sortQuestions('order')">题目顺序</button>
+        <button class="button2" @click="sortQuestions('reverse')">题目逆序</button>
+        <button class="button3" @click="sortQuestions('score')">分数顺序</button>
+        <button class="button4" @click="sortQuestions('scoreReverse')">分数逆序</button>
+      </view>
+    </view>
+    <view v-for="(question, index) in filteredQuestions" :key="question.id" class="title-container">
+      <view style="display: flex; justify-content: space-between; width: 90%;">
+        <p class="title-number">{{ index + 1 }}.</p>
+        <p :class="question.correctPoints>=question.totalPoints ? 'correct-title-point' : 'wrong-title-point'">{{ question.correctPoints }}/{{question.totalPoints}}</p>
+      </view>
+      <view v-for="(sentence, sentenceIndex) in question.sentences" :key="sentenceIndex" class="sentence-group">
+        <p :class="sentence">{{ sentence }}</p>
+      </view>
+      <!-- 使用v-for遍历options对象 -->
+      <view class="options-group">
+        <p v-for="(optionContent, optionLabel) in question.options" :key="optionLabel" class="option">
+          {{ optionLabel }}: {{ optionContent }}
+        </p>
+      </view>
+      <view style="display: flex; justify-content: space-between; width: 90%; margin-top: 20px;">
+        <p :class="question.correctPoints>=question.totalPoints ? 'correct-answer' : 'wrong-answer'">我的答案:{{ question.userAnswer }}</p>
+        <p class="true-answer">正确答案:{{ question.correctAnswer }}</p>
+      </view>
+      <button class="big-button" @click="showAnalysis(question.id,index)">查看解析</button>
+    </view>
+  </view>
 </template>
 
 <script>
-	export default {
-		data() {
-			return {
-				
-			}
-		},
-		methods: {
-			
-		}
-	}
+export default {
+  data() {
+    return {
+      examId: 1,
+      examName: '第一单元第一次小测',
+      examDate: '1970-01-01',
+      questionNum: 20,
+      correctNum: 19,
+      score: 95,
+      searchQuery: '',
+      questions: [
+        // ...题目数组
+        {
+          id: 1,
+          sentences:[
+            "-is your brother?",
+            "-He is a doctor."
+          ],
+          options: {
+            A: "What",
+            B: "Who",
+            C: "Where",
+            D: "How"
+          },
+          correctAnswer: 'B',
+          correctPoints: 0,
+          totalPoints: 5,
+          userAnswer: 'A',
+        },
+        {
+          id: 2,
+         sentences:[
+            "-______is the nearest post office,please?",
+            "-It's about half an hour's walk from here？"
+          ],
+          options: {
+            A: "How far",
+            B: "How long",
+            C: "How often",
+            D: "How soon"
+          },
+          correctAnswer: 'A',
+          correctPoints: 5,
+          totalPoints: 5,
+          userAnswer: 'A',
+          
+        },
+        {
+          id: 3,
+          sentences:[
+            "-is your brother?",
+            "-He is a doctor."
+          ],
+          options: {
+            A: "What",
+            B: "Who",
+            C: "Where",
+            D: "How"
+          },
+          correctAnswer: 'B',
+          correctPoints: 0,
+          totalPoints: 5,
+          userAnswer: 'A',
+        },
+        {
+          id: 4,
+          sentences:[
+            "-______is the nearest post office,please?",
+            "-It's about half an hour's walk from here？"
+          ],
+          options: {
+            A: "How far",
+            B: "How long",
+            C: "How often",
+            D: "How soon"
+          },
+          correctAnswer: 'A',
+          correctPoints: 5,
+          totalPoints: 5,
+          userAnswer: 'A',
+
+        }
+      ]
+    };
+  },
+  computed: {
+    filteredQuestions() {
+      if (this.searchQuery) {
+        // 根据搜索框内容过滤题目
+        return this.questions.filter(question => question.sentence[1].includes(this.searchQuery));
+      }
+      return this.questions;
+    }
+  },
+  onLoad(event){
+    this.examId=parseInt(event.exam_id);
+    this.examName=event.exam_name;
+  },
+  methods: {
+    formatDate(date) {
+      // 格式化日期
+      return date.replace(/-/g, '年').replace(/01/g, '月01日');
+    },
+    sortQuestions(by) {
+      // 根据不同的标准排序题目
+      this.questions.sort((a, b) => {
+        if (by === 'order') {
+          return a.id - b.id;
+        } else if (by ==='reverse') {
+          return b.id - a.id;
+        } else if (by ==='score') {
+          return b.correctPoints - a.correctPoints;
+        } else if (by ==='scoreReverse') {
+          return a.correctPoints - b.correctPoints;
+        }
+      });
+      // ...
+    },
+    showAnalysis(questionId,questionIndex) {
+      // 显示题目解析
+      uni.navigateTo({
+        url: '/pages/questionDetail/questionDetail?questionId=' + questionId+'&questionIndex='+questionIndex+'&questionNum='+this.questionNum
+      });
+      // ...
+    }
+  }
+};
 </script>
 
 <style>
@@ -210,11 +319,7 @@
 		 font-style: italic; /* 设置为斜体 */ 
 		  color: #3fc681;
 	 }
-	 .sentence1{
-		 margin-left: 30px;
-		 margin-bottom: 5px;
-	 }
-	 .sentence2{
+	 .sentence{
 		 margin-left: 30px;
 		 margin-bottom: 5px;
 	 }

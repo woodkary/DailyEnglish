@@ -2,7 +2,7 @@
 	<view>
 		<view class="today-container">
 			<span class="title">今日考试</span>
-			<span class="no-exam">今日暂无考试，<navigator>前往复习</navigator></span>
+			<span v-if="exams.length === 0" class="no-exam">今日暂无考试，<navigator>前往复习</navigator></span>
       <view class="todo-exam" v-for="exam in exams" :key="exam.name">
         <view class="row1">
           <text class="exam-name">{{ exam.name }}</text>
@@ -51,11 +51,13 @@
       return{
         exams: [
           {
+            exam_id: 1,
             name: '第一单元第一次小测',
             time: '20:00 ~ 21:00',
             info: '共20题'
           },
           {
+            exam_id: 2,
             name: '第一单元第一次小测',
             time: '20:00 ~ 21:00',
             info: '共20题'
@@ -64,19 +66,22 @@
         ],
         finishedExams: [
           {
+            exam_id: 3,
             name: '第一单元第一次小测',
             date: '2023年1月1日',
             info: '共20题',
             score: 95
           },
           {
-            name: '第一单元第一次小测',
+            exam_id: 4,
+            name: '第一单元第二次小测',
             date: '2023年1月1日',
             info: '共20题',
             score: 95
           },
           {
-            name: '第一单元第一次小测',
+            exam_id: 5,
+            name: '第二单元第一次小测',
             date: '2023年1月1日',
             info: '共20题',
             score: 95
@@ -87,6 +92,38 @@
 
     },
 		methods: {
+      getPreviousExams() {
+        // 从服务器获取上一次考试记录
+        uni.request({
+          url: '/api/exams/previous_examinations',
+          success: (res) => {
+            this.exams = this.transformExams(res.data.exams);
+          }
+        });
+      },
+
+      viewDetails(exam){
+        // 跳转到考试详情页面
+        uni.navigateTo({
+          url: `../exam_details/exam_details?exam_id=${exam.exam_id}&exam_name=${exam.name}`
+        });
+      },
+
+      transformExams(exams) {
+        return exams.map(exam => {
+          // 将日期从 "yyyy/mm/dd" 转换为 "年月日"
+          const dateParts = exam.exam_date.split('/');
+          const dateInChineseFormat = `${dateParts[0]}年${dateParts[1]}月${dateParts[2]}日`;
+
+          return {
+            exam_id: exam.exam_id,
+            name: exam.exam_name,
+            date: dateInChineseFormat,
+            info: `共${exam.question_num}题`,
+            score: exam.exam_score
+          };
+        });
+  }
 
 		}
 	}

@@ -33,14 +33,14 @@
 
 
 			<view class="xuanxiang-container" v-show="isShow">
-				<view v-for="(thisRowQuestions,index) in rows" :key="index" class="row">
+				<view v-for="(thisRowQuestions,rowIndex) in rows" :key="rowIndex" class="row">
 					<button v-for="(thisRowQuestion,index) in thisRowQuestions" :key="index" class="option"
-                   :class="{ 'finished': thisRowQuestion.isFinished, 'selected': thisRowQuestion.index === current }"
+                   :class="{ 'finished': isFinished[thisRowQuestion.question.question_id], 'selected': thisRowQuestion.index === current }"
 						:style="{margin:buttonMargin+'rpx'}">
 						{{thisRowQuestion.index+1}}
 					</button>
 				</view>
-				<button class="submit">直接交卷</button>
+				<button class="submit" @click="submitExam">直接交卷</button>
 			</view>
 
 		</view>
@@ -61,22 +61,26 @@
 				progress: 1, // 进度条的初始值
 				current: 0, // 当前进度
 				currentQuestionIndex: 0,
+        selectedIndex: 0, // 当前题目的选中按钮序号
 				questionButtonIndex: 0, // 当前题目的按钮序号
 				isShow: false, //是否显示全部题目
 				questions: [
 					// 题目和选项
 					{
+            question_id:1,
 						question: `__ is your brother?
 									-He is a doctor.`,
 
 						choices: ['1', '2', '2', '放弃']
 					},
 					{
+            question_id:2,
 						question: 'abandon',
 
 						choices: ['1', '选项B', '选项C', '选项D']
 					},
 					{
+            question_id:3,
 						question: 'abandon2',
 
 						choices: ['1', '选项B', '选项C', '选项D']
@@ -84,12 +88,21 @@
 					// ...更多题目
 				], // 这里可以根据需要修改选项内容
 				selectedChoice: '', // 用于存储用户选择的答案
-        finishedQuestions: new Set(), // 用于存储已完成的题目序号
 				realAnswer: [
 					'放弃', '选项B', '选项C' // 正确答案
 				],
 				maxButtonsPerRow: 6, // 每行的最大元素个数
 				buttonMargin: 35, // 元素间隔
+        isCorrects: {
+          1: false,
+          2: false,
+          3: false,
+        },
+        isFinished: {
+          1: false,
+          2: false,
+          3: false
+        }, // 是否完成答题
 			}
 		},
 		computed: {
@@ -100,9 +113,10 @@
 					let thisRowQuestions = [];
 					for (let j = i; j < i + this.maxButtonsPerRow && j < this.questions.length; j++) {
 						thisRowQuestions.push({
+              //题目序号
 							index: j,
+              //题目
 							question: this.questions[j],
-              isFinished: this.finishedQuestions.has(j)
 						});
 					}
 					rows.push(thisRowQuestions);
@@ -112,12 +126,67 @@
 			
 		},
 		methods: {
+      isAllFinished(){
+        let allFinished=true;
+        for(let key in this.isFinished){
+          if(!this.isFinished[key]){
+            allFinished=false;
+            break;
+          }
+        }
+        return allFinished;
+      },
       finishQuestion(index){
-        this.finishedQuestions.add(index);
+        // 记录用户的答案
+        let selectedChoice=this.questions[index].choices[this.selectedIndex];
+        console.log(selectedChoice);
+        this.selectedChoice=selectedChoice;
+        // 记录用户的答案和是否正确
+        let isCorrect=selectedChoice===this.realAnswer[index];
+        console.log(isCorrect);
+        // 保存是否正确到map中
+        this.isCorrects[this.questions[index].question_id]=isCorrect;
+        // 保存是否完成到map中
+        this.isFinished[this.questions[index].question_id]=true;
         this.current++;
+        // 切换到下一题
+        this.swiperChange({
+          detail:{
+            current: this.currentQuestionIndex+1,
+            source: 'touch'
+          }
+        });
+        if(this.currentQuestionIndex===this.questions.length){
+          uni.showModal({
+            title: '提示',
+            content: this.isAllFinished()?'您已完成全部题目，是否确认提交':'您还有题目未完成，是否确认提交',
+            showCancel: false,
+            success: (res) => {
+              if (res.confirm) {
+                this.handleJump();
+              }
+            }
+          })
+        }
+      },
+      submitExam(){
+        uni.showModal({
+          title: '提示',
+          content: this.isAllFinished()?'您已完成全部题目，是否确认提交':'您还有题目未完成，是否确认提交',
+          showCancel: true,
+          success: (res) => {
+            if (res.confirm) {
+              this.handleJump();
+            }
+          }
+        })
+
       },
 			handleJump() {
-
+        uni.navigateTo({
+          url: '/pages/finishexam/finishexam',
+        });
+        //todo 提交考试结果到服务器
 				uni.request({
 					url: 'xxvcav',
 					method: 'post',
@@ -162,10 +231,17 @@
 				}
 				return '';
 			},
-			selectChoice(choiceIndex) {
-				// Your logic to handle choice selection
-				console.log(`Choice ${choiceIndex + 1} selected`);
-			},
+      selectChoice(index) {
+        console.log(index);
+        this.selectedIndex = index;
+        //获取当前题目的word_id
+        let question_id=this.questions[this.currentQuestionIndex].question_id;
+        console.log(question_id);
+        /*//判断当前题目是否正确
+        let isCorrect=selectedChoice===this.realAnswer[this.currentQuestionIndex];
+        console.log(isCorrect);
+       */
+      },
 			getLabel(choiceIndex) {
 				const labels = ['A', 'B', 'C', 'D'];
 				return labels[choiceIndex];
