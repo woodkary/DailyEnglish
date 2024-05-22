@@ -54,13 +54,15 @@
             exam_id: 1,
             name: '第一单元第一次小测',
             time: '20:00 ~ 21:00',
-            info: '共20题'
+            info: '共20题',
+            questionNum: 20,
           },
           {
             exam_id: 2,
             name: '第一单元第一次小测',
             time: '20:00 ~ 21:00',
-            info: '共20题'
+            info: '共20题',
+            questionNum: 20
           },
           // ...更多的考试对象
         ],
@@ -70,6 +72,7 @@
             name: '第一单元第一次小测',
             date: '2023年1月1日',
             info: '共20题',
+            questionNum: 20,
             score: 95
           },
           {
@@ -77,6 +80,7 @@
             name: '第一单元第二次小测',
             date: '2023年1月1日',
             info: '共20题',
+            questionNum: 20,
             score: 95
           },
           {
@@ -84,6 +88,7 @@
             name: '第二单元第一次小测',
             date: '2023年1月1日',
             info: '共20题',
+            questionNum: 20,
             score: 95
           },
           // ...更多的考试结果对象
@@ -92,6 +97,12 @@
 
     },
 		methods: {
+      takeExam(exam){
+        uni.setStorageSync("exam",JSON.stringify(exam));
+        uni.navigateTo({
+          url: `../startexam/startexam`
+        });
+      },
       getPreviousExams() {
         // 从服务器获取上一次考试记录
         uni.request({
@@ -120,6 +131,7 @@
             name: exam.exam_name,
             date: dateInChineseFormat,
             info: `共${exam.question_num}题`,
+            questionNum: exam.question_num,
             score: exam.exam_score
           };
         });

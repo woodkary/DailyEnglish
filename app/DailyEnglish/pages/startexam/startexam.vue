@@ -1,30 +1,37 @@
 <template>
-	<view>
-		
-		<view class="title-container">
-			<image class="back-icon" src="../../static/back.svg"></image>
-			<span>考试</span>
-		</view>
-		<view class="exam-info">
-			<h2>第一单元第一次小测</h2>
-			<h3>20：00 ~ 21：00</h3>
-			<view class="circle">
-				<span class="exam-time">考试时间60分钟</span>
-				<span class="exam-num">共二十题</span>
-			</view>
-			<view class="start-exam-btn" @click="startExam">去考试</view>
-		</view>
-		
-	</view>
+  <view>
+    <!-- 头部标题栏 -->
+    <view class="title-container">
+      <image class="back-icon" src="../../static/back.svg" @click="back"></image>
+      <span>考试</span>
+    </view>
+
+    <!-- 考试信息部分 -->
+    <view class="exam-info">
+      <h2 v-bind:title="name">{{ name }}</h2>
+      <h3>{{ time }}</h3>
+      <view class="circle">
+        <span class="exam-time" v-bind:title="examDuration">考试时间{{ examDuration }}分钟</span>
+        <span class="exam-num" v-bind:title="questionNum">共{{ questionNum }}题</span>
+      </view>
+      <!-- 点击去考试按钮，调用 startExam 方法 -->
+      <view class="start-exam-btn" v-on:click="startExam">去考试</view>
+    </view>
+  </view>
 </template>
 
 <script>
-	export default {
-		data() {
-			return {
-
-			}
-		},
+export default {
+  data() {
+    return {
+      // 考试信息的数据属性
+      exam_id: 1,
+      name: '第一单元第一次小测',
+      time: '20:00 ~ 21:00',
+      examDuration: 60,
+      questionNum: 20
+    };
+  },
 		methods: {
       startExam() {
         uni.navigateTo({
