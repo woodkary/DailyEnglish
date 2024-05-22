@@ -1,0 +1,165 @@
+.row {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.container {
+
+	display: flex;
+	/*flex布局 */
+	flex-direction: column;
+	/*垂直布局 */
+	align-items: center;
+	/*水平居中 */
+	justify-content: center;
+	/*垂直居中 */
+	height: 100vh;
+	/*占满整个屏幕 */
+	overflow: hidden;
+	/*隐藏溢出部分 不能滚动*/
+	background-color: white;
+}
+
+
+
+.progress-text {
+	position: absolute;
+	color: #333;
+	/* 文本颜色 */
+	font-size: 0.8rem;
+	/* 文本大小 */
+	top: 1.3rem;
+	left: 3rem;
+}
+
+
+.text-info {
+	position: absolute;
+	top: 2rem;
+	left: 7%;
+	text-align: center;
+	overflow: auto;
+	height: auto;
+	display: flex;
+}
+
+.number {
+	position: relative;
+	font-size: 1rem;
+}
+
+.question {
+	position: relative;
+	font-size: 1.5rem;
+	margin-top: 1rem;
+	white-space: pre-line;
+	font-family: "pingfang";
+}
+
+.button-group {
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+	margin-top: 10rem;
+}
+
+.choice-container {
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+.choice-content {
+	flex-grow: 1;
+	margin-left: 12px;
+	font-size: 26px;
+	font-family: "pingfang";
+}
+
+.option {
+	box-shadow: 0 0 0 1px #aaa39b;
+	width: 2.2rem;
+	height: 2.2rem;
+	border-radius: 2rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: rgba(255, 255, 255, 0.2);
+	cursor: pointer;
+	font-size: 27px;
+	margin-left: 10%;
+	background-color: white;
+
+}
+
+.option.selected {
+	background-color: #597dea;
+	color: white;
+
+}
+
+.confirm {
+	width: 80%;
+	background-color: #2f5eed;
+	font-size: 1.2rem;
+	font-family: "pingfang";
+	color: white;
+	border-radius: 2rem;
+	height: 3rem;
+}
+
+
+.question-container {
+	width: 100%;
+	height: 90%;
+}
+
+.footer {
+	bottom: 0;
+	position: fixed;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+
+	
+}
+.xuanxiangbtn {
+		width: 35px;
+		height: 35px;
+		margin-left: 260px;
+	}
+
+	.daojishi {
+		margin-left: 10px;
+	}
+.xuanxiang-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	margin-top: 10px;
+	border-top: 1px solid #ccc;
+
+	
+}
+.submit {
+		margin-top: 20px;
+		width: 80%;
+		background-color: #2f5eed;
+		font-size: 1.2rem;
+		font-family: "pingfang";
+		color: white;
+		border-radius: 0.5rem;
+		height: 3rem;
+		margin-bottom: 10px;
+	}
+.finished {
+	border: 1px solid #5f85f9;
+	background-color: #e9fbfd;
+}
+
+/* .isSelected{
+	   background-color: #456de7;
+	   color: white;
+	   border: 1px solid #5f85f9;
+	} */
