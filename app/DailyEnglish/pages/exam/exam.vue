@@ -59,6 +59,8 @@
 					preventClicksPropagation: true, // 阻止点击事件冒泡
 					// 其他 Swiper 配置...
 				},
+        exam_id:null,
+        exam_name:null,
 				progress: 1, // 进度条的初始值
 				current: 0, // 当前进度
 				currentQuestionIndex: 0,//当前正在做的题目序号
@@ -121,6 +123,8 @@
 		},
     onLoad(event){
       let exam_id=parseInt(event.exam_id);
+      this.exam_name=event.name;
+      this.exam_id=exam_id;
       uni.request({
         url: '/api/exams/getExamQuestions',
         method: 'POST',
@@ -254,16 +258,7 @@
 				// 检查是否完成所有题目
 				if (this.currentQuestionIndex === this.questions.length && !this.hasShownSubmitPrompt) {
 					this.hasShownSubmitPrompt = true; // 设置为已显示提交提示
-					uni.showModal({
-						title: '提示',
-						content: this.isAllFinished() ? '您已完成全部题目，是否确认提交' : '您还有题目未完成，是否确认提交',
-						showCancel: true,
-						success: (res) => {
-							if (res.confirm) {
-								this.handleJump();
-							}
-						}
-					});
+					this.submitExam();
 				} else {
 					// 切换到下一题
 					this.swiperChange({
@@ -274,17 +269,42 @@
 					});
 				}
 			},
-
-			submitExam() {
+      getTotalScore(){
+          let totalScore=0;
+          for(let key in this.selectedChoiceAndScore){
+            totalScore+=this.selectedChoiceAndScore[key].score;
+          }
+          return totalScore;
+      },
+      getCorrectAnswers(){
+          let correctAnswers=0;
+          for(let key in this.selectedChoiceAndScore){
+            if(this.selectedChoiceAndScore[key].selectedChoice===this.realAnswer[key-1]){
+              correctAnswers++;
+            }
+          }
+          return correctAnswers;
+      },
+      submitExam() {
 				uni.showModal({
 					title: '提示',
 					content: this.isAllFinished() ? '您已完成全部题目，是否确认提交' : '您还有题目未完成，是否确认提交',
 					showCancel: true,
 					success: (res) => {
 						if (res.confirm) {
+              //计算并保存考试结果到本地
+              let examResult= {
+                exam_id: this.exam_id,
+                examTitle: this.exam_name,
+                score: this.getTotalScore(),//考试总分
+                totalQuestions: this.questions.length,//总题目数
+                correctAnswers: this.getCorrectAnswers(),//正确答案数
+              };
+              console.log(examResult);
+              uni.setStorageSync('examResult', examResult);
               //todo 提交考试结果到服务器
               uni.request({
-                url: '/api/exams/submitExamResult',
+                url: `/api/exams/submitExamResult`,
                 method: 'POST',
                 data: this.selectedChoiceAndScore,
                 header: {
@@ -313,17 +333,6 @@
 				uni.navigateTo({
 					url: '/pages/finishexam/finishexam?progress=' + this.getProgress()
 				});
-				//todo 提交考试结果到服务器
-				uni.request({
-					url: 'xxvcav',
-					method: 'post',
-					data: {
-						//data
-					},
-					success: (res) => {
-						//success
-					},
-				})
 			},
 			swiperChange(event) {
 				const current = event.detail.current;

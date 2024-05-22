@@ -56,7 +56,7 @@ export default {
       },
       startExam() {
         uni.navigateTo({
-          url: `/pages/exam/exam?exam_id=${this.exam_id}`
+          url: `/pages/exam/exam?exam_id=${this.exam_id}&name=${this.name}`
         });
       }
 		}

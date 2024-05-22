@@ -58,17 +58,16 @@ export default {
         return '#EFEFF4';
       }
     },
-    //todo:exam_score的值需要从后端获取，其他的从前面的页面传递过来
+    //todo:exam_score的值不需要从后端获取，而是从本地缓存中获取
     fetchData() {
-      uni.request({
-        url: 'https://www.example.com/api/exam',
-        method: 'GET',
-        success: (res) => {
-          this.exam_title = res.data.exam_title;
-          this.exam_score = res.data.exam_score;
-          this.exam_num = res.data.exam_num;
-          this.true_num = res.data.true_num;
-        }
+      uni.getStorageSync("examResult").then(res => {
+        console.log(res);
+        this.exam_id = res.exam_id;
+        this.examTitle = res.examTitle;
+        this.score = res.score;
+        this.totalQuestions = res.totalQuestions;
+        this.correctAnswers = res.correctAnswers;
+        this.progress = parseInt(res.score / res.totalQuestions * 100);
       });
     },
     toDetail() {
