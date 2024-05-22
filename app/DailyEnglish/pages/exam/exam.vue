@@ -93,10 +93,19 @@
 				],
 				maxButtonsPerRow: 6, // 每行的最大元素个数
 				buttonMargin: 35, // 元素间隔
-				isCorrects: {
-					1: false,
-					2: false,
-					3: false,
+				selectedChoiceAndScore: {
+					1: {
+            selectedChoice: null, // 用于存储当前选择的选项
+            score: 0 // 用于存储当前题目的分数
+          },
+					2: {
+            selectedChoice: null, // 用于存储当前选择的选项
+            score: 0 // 用于存储当前题目的分数
+          },
+					3: {
+            selectedChoice: null, // 用于存储当前选择的选项
+            score: 0 // 用于存储当前题目的分数
+          },
 				},
 				isFinished: {
 					1: false,
@@ -119,6 +128,14 @@
         },
         success: (res) => {
           //todo 获取所有题目信息
+          let questionAndAnswer=this.transformQuestions(res.data.question_list);
+          this.questions=questionAndAnswer.questions;
+          this.realAnswer=questionAndAnswer.realAnswer;
+          for(let i=0;i<res.data.question_num;i++){
+            this.isFinished[i+1]=false;
+            this.selectedChoiceAndScore[i+1].selectedChoice=null;
+            this.selectedChoiceAndScore[i+1].score=0;
+          }
         },
         fail: (res) => {
           uni.showToast({
@@ -149,6 +166,28 @@
 
 		},
 		methods: {
+        transformQuestions(questionList) {
+          let questions = [];
+          let realAnswer = [];
+
+          questionList.forEach((item, index) => {
+            // 为每个问题创建一个新的对象，并添加到 questions 数组中
+            questions.push({
+              question_id: item.question_id,
+              question: item.question_content,
+              activeButtonIndex: null, // 初始化激活按钮索引
+              choices: item.question_choices
+            });
+
+            // 将正确答案添加到 realAnswer 数组中
+            realAnswer.push(item.question_answer);
+          });
+
+          return {
+            questions: questions,
+            realAnswer: realAnswer
+          };
+      },
       setCurrentQuestionIndexByQuestionId(question_id){
         console.log("setCurrentQuestionIndexByQuestionId:"+question_id);
         for(let i=0;i<this.questions.length;i++){

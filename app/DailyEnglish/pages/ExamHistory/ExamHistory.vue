@@ -98,6 +98,10 @@
       }
 
     },
+    onLoad() {
+      this.getTodayExams();
+      this.getPreviousExams();
+    },
 		methods: {
       formatTimeRange(start_time, duration) {
         // 解析开始时间
@@ -117,12 +121,34 @@
           url: `../startexam/startexam`
         });
       },
+      getTodayExams() {
+        // 从服务器获取今天的考试记录
+        uni.request({
+          url: '/api/exams/exam_date',
+          method: 'POST',
+          header:{
+            'Authorization': `Bearer ${uni.getStorageSync('token')}`
+          },
+          success: (res) => {
+            if(res.data.code==200) {
+              this.exams = res.data.exams;
+            }
+          },
+          fail: (err) => {
+            console.log(err);
+          }
+        });
+      },
       getPreviousExams() {
         // 从服务器获取之前的考试记录
         uni.request({
           url: '/api/exams/previous_examinations',
+          method: 'GET',
+          header:{
+            'Authorization': `Bearer ${uni.getStorageSync('token')}`
+          },
           success: (res) => {
-            this.exams = this.transformExams(res.data.exams);
+            this.finishedExams = this.transformExams(res.data.exams);
           }
         });
       },
