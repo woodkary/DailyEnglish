@@ -215,12 +215,7 @@
 					}
 				}
 			},
-			preventSelect(event) {
-				// 阻止长按事件的默认行为
-				event.preventDefault();
-				// 在这里可以添加长按的额外逻辑，比如显示一个提示框
-			},
-			getClass(index) {
+      getClass(index) {
 				// 根据选中状态和答案正确与否返回相应的样式类
 				if (this.selectedChoice) {
 					console.log(this.currentQuestionIndex);
