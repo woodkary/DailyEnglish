@@ -16,7 +16,7 @@
     </view>
     <view class="container2">
       <view class="header-container">
-        <h3>考试题目</h3>
+        <h3 style="font-size:24px">考试题目</h3>
         <view class="search">
           <img class="search-icon" src="/static/search.svg">
           <input v-model="searchQuery" placeholder="搜索">
