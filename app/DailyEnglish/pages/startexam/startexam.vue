@@ -38,7 +38,7 @@ export default {
     this.name=startExam.name;
     this.time=this.formatTimeRange(startExam.start_time, startExam.duration);
     this.examDuration=startExam.duration;
-    this.questionNum=startExam.questionNum;
+    this.questionNum=startExam.question_num;
   },
 		methods: {
     // 格式化时间范围字符串(20:00),60分钟=(20:00 ~ 20:59)
@@ -56,7 +56,7 @@ export default {
       },
       startExam() {
         uni.navigateTo({
-          url: `/pages/exam/exam?exam_id=${this.exam_id}`
+          url: `/pages/exam/exam?exam_id=${this.exam_id}&name=${this.name}`
         });
       }
 		}

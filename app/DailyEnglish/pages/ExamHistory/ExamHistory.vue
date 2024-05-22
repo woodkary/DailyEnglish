@@ -122,6 +122,12 @@
 					url: `../startexam/startexam`
 				});
 			},
+      //由date类型转为类似于'2022-01-03'字符串类型
+      getExamDate(date){
+        const isoString = date.toISOString(); // "2022-01-03T00:00:00.000Z"
+         // "2022-01-03"
+        return isoString.split('T')[0];
+      },
 			getTodayExams() {
 				// 从服务器获取今天的考试记录
 				uni.request({
@@ -130,6 +136,9 @@
 					header: {
 						'Authorization': `Bearer ${uni.getStorageSync('token')}`
 					},
+          data: {
+            date: this.getExamDate(new Date())
+          },
 					success: (res) => {
 						if (res.data.code == 200) {
 							this.exams = res.data.exams;

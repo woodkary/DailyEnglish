@@ -59,9 +59,11 @@
 					preventClicksPropagation: true, // 阻止点击事件冒泡
 					// 其他 Swiper 配置...
 				},
+        exam_id:null,
+        exam_name:null,
 				progress: 1, // 进度条的初始值
 				current: 0, // 当前进度
-				currentQuestionIndex: 0,
+				currentQuestionIndex: 0,//当前正在做的题目序号
 				selectedIndex: -1, // 当前题目的选中按钮序号
 				questionButtonIndex: 0, // 当前题目的按钮序号
 				isShow: false, //是否显示全部题目
@@ -72,19 +74,22 @@
 						question: `__ is your brother?
 									-He is a doctor.`,
             activeButtonIndex: null, // 用于存储当前激活的按钮索引
-						choices: ['1', '2', '2', '放弃']
+						choices: ['1', '2', '2', '放弃'],
+            fullScore: 5 // 题目满分
 					},
 					{
 						question_id: 2,
 						question: 'abandon',
             activeButtonIndex: null, // 用于存储当前激活的按钮索引
-						choices: ['1', '选项B', '选项C', '选项D']
+						choices: ['1', '选项B', '选项C', '选项D'],
+            fullScore: 5 // 题目满分
 					},
 					{
 						question_id: 3,
 						question: 'abandon2',
             activeButtonIndex: null, // 用于存储当前激活的按钮索引
-						choices: ['1', '选项B', '选项C', '选项D']
+						choices: ['1', '选项B', '选项C', '选项D'],
+            fullScore: 5 // 题目满分
 					},
 					// ...更多题目
 				], // 这里可以根据需要修改选项内容
@@ -94,6 +99,7 @@
 				maxButtonsPerRow: 6, // 每行的最大元素个数
 				buttonMargin: 35, // 元素间隔
 				selectedChoiceAndScore: {
+          //key为question_id
 					1: {
             selectedChoice: null, // 用于存储当前选择的选项
             score: 0 // 用于存储当前题目的分数
@@ -108,17 +114,19 @@
           },
 				},
 				isFinished: {
-					1: false,
-					2: false,
-					3: false
+					1: true,
+					2: true,
+					3: true
 				}, // 是否完成答题
 				hasShownSubmitPrompt: false, // 是否已显示提交提示
 			}
 		},
     onLoad(event){
       let exam_id=parseInt(event.exam_id);
+      this.exam_name=event.name;
+      this.exam_id=exam_id;
       uni.request({
-        url: '/api/exams/getExamQuestions',
+        url: '/api/exams/take_examination',
         method: 'POST',
         data: {
           exam_id: exam_id
@@ -131,11 +139,13 @@
           let questionAndAnswer=this.transformQuestions(res.data.question_list);
           this.questions=questionAndAnswer.questions;
           this.realAnswer=questionAndAnswer.realAnswer;
-          for(let i=0;i<res.data.question_num;i++){
-            this.isFinished[i+1]=false;
-            this.selectedChoiceAndScore[i+1].selectedChoice=null;
-            this.selectedChoiceAndScore[i+1].score=0;
-          }
+          questionAndAnswer.questions.forEach((question, index) => {
+            this.isFinished[question.question_id]=false;
+            this.selectedChoiceAndScore[question.question_id]={
+              selectedChoice: null, // 用于存储当前选择的选项
+              score: 0 // 用于存储当前题目的分数
+            };
+          });
         },
         fail: (res) => {
           uni.showToast({
@@ -176,7 +186,8 @@
               question_id: item.question_id,
               question: item.question_content,
               activeButtonIndex: null, // 初始化激活按钮索引
-              choices: item.question_choices
+              choices: item.question_choices,
+              fullScore: item.full_score // 题目满分
             });
 
             // 将正确答案添加到 realAnswer 数组中
@@ -224,6 +235,18 @@
 				let selectedChoice = this.questions[index].choices[this.selectedIndex];
 				console.log("第"+index+"题你选择了" + selectedChoice);
 
+        // 更新当前题目的选择和分数
+        let question_id=this.questions[index].question_id;//获取当前题目的id
+        //将当前题目的选择和分数保存到selectedChoiceAndScore中
+        this.selectedChoiceAndScore[question_id].selectedChoice=selectedChoice;
+        if(selectedChoice===this.realAnswer[index]){
+          // 如果选择正确，则加满分
+          this.selectedChoiceAndScore[question_id].score=this.questions[index].fullScore;
+        }else{
+          // 如果选择错误，则扣除分数
+          this.selectedChoiceAndScore[question_id].score=0;
+        }
+
 				if (!this.isFinished[this.questions[index].question_id]) {
 					// 保存是否完成到 map 中
 					this.isFinished[this.questions[index].question_id] = true;
@@ -237,16 +260,7 @@
 				// 检查是否完成所有题目
 				if (this.currentQuestionIndex === this.questions.length && !this.hasShownSubmitPrompt) {
 					this.hasShownSubmitPrompt = true; // 设置为已显示提交提示
-					uni.showModal({
-						title: '提示',
-						content: this.isAllFinished() ? '您已完成全部题目，是否确认提交' : '您还有题目未完成，是否确认提交',
-						showCancel: true,
-						success: (res) => {
-							if (res.confirm) {
-								this.handleJump();
-							}
-						}
-					});
+					this.submitExam();
 				} else {
 					// 切换到下一题
 					this.swiperChange({
@@ -257,15 +271,61 @@
 					});
 				}
 			},
-
-			submitExam() {
+      getTotalScore(){
+          let totalScore=0;
+          for(let key in this.selectedChoiceAndScore){
+            totalScore+=this.selectedChoiceAndScore[key].score;
+          }
+          return totalScore;
+      },
+      getCorrectAnswers(){
+          let correctAnswers=0;
+          for(let key in this.selectedChoiceAndScore){
+            if(this.selectedChoiceAndScore[key].selectedChoice===this.realAnswer[key-1]){
+              correctAnswers++;
+            }
+          }
+          return correctAnswers;
+      },
+      submitExam() {
 				uni.showModal({
 					title: '提示',
 					content: this.isAllFinished() ? '您已完成全部题目，是否确认提交' : '您还有题目未完成，是否确认提交',
 					showCancel: true,
 					success: (res) => {
 						if (res.confirm) {
-							this.handleJump();
+              //计算并保存考试结果到本地
+              let examResult= {
+                exam_id: this.exam_id,
+                examTitle: this.exam_name,
+                score: this.getTotalScore(),//考试总分
+                totalQuestions: this.questions.length,//总题目数
+                correctAnswers: this.getCorrectAnswers(),//正确答案数
+              };
+              console.log(examResult);
+              uni.setStorageSync('examResult', examResult);
+              //todo 提交考试结果到服务器
+              uni.request({
+                url: `/api/exams/submitExamResult`,
+                method: 'POST',
+                data: this.selectedChoiceAndScore,
+                header: {
+                  'Authorization': `Bearer ${uni.getStorageSync('token')}`
+                },
+                success: (res) => {
+                  uni.showToast({
+                    title: '提交成功',
+                    icon: 'none'
+                  });
+                  this.handleJump();
+                },
+                fail: (res) => {
+                  uni.showToast({
+                    title: '提交失败',
+                    icon: 'none'
+                  });
+                }
+              });
 						}
 					}
 				})
@@ -275,17 +335,6 @@
 				uni.navigateTo({
 					url: '/pages/finishexam/finishexam?progress=' + this.getProgress()
 				});
-				//todo 提交考试结果到服务器
-				uni.request({
-					url: 'xxvcav',
-					method: 'post',
-					data: {
-						//data
-					},
-					success: (res) => {
-						//success
-					},
-				})
 			},
 			swiperChange(event) {
 				const current = event.detail.current;
