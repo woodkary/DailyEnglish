@@ -33,27 +33,27 @@ export default {
     };
   },
   onLoad(){
-    let startExam=Json.parse(uni.getStorageSync('startExam'));
+    let startExam=JSON.parse(uni.getStorageSync('startExam'));
     this.exam_id=startExam.exam_id;
     this.name=startExam.name;
-    this.time=startExam.time;
-    this.examDuration=this.fromTimeToDuration(startExam.time);
+    this.time=this.formatTimeRange(startExam.start_time, startExam.duration);
+    this.examDuration=startExam.duration;
     this.questionNum=startExam.questionNum;
   },
 		methods: {
-    fromTimeToDuration(timeString) {
-      // 解析时间字符串
-      const times = timeString.split(' ~ ');
-      const startTime = times[0];
-      const endTime = times[1];
+    // 格式化时间范围字符串(20:00),60分钟=(20:00 ~ 20:59)
+      formatTimeRange(start_time, duration) {
+        // 解析开始时间
+        const [startHour, startMinute] = start_time.split(':').map(Number);
 
-      // 将开始时间和结束时间转换为分钟数
-      const startMinutes = parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1]);
-      const endMinutes = parseInt(endTime.split(':')[0]) * 60 + parseInt(endTime.split(':')[1]);
+        // 计算结束时间
+        const endMinute = (startMinute + duration) % 60;
+        const endHour = startHour + Math.floor((startMinute + duration) / 60);
+        const endTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
 
-      // 计算总分钟数
-      return endMinutes - startMinutes;
-    },
+        // 返回格式化的时间范围字符串
+        return `${start_time} ~${endTime}`;
+      },
       startExam() {
         uni.navigateTo({
           url: `/pages/exam/exam?exam_id=${this.exam_id}`
