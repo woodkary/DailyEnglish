@@ -21,10 +21,10 @@
 				<input />
 			</view>
 			<view class="_row2">
-				<button class="choice selected">时间顺序</button>
-				<button class="choice">时间逆序</button>
-				<button class="choice">成绩顺序</button>
-				<button class="choice">成绩逆序</button>
+				<button class="choice selected" @click="sortExamsBy('date')">时间顺序</button>
+				<button class="choice" @click="sortExamsReverse('date')">时间逆序</button>
+				<button class="choice" @click="sortExamsBy('score')">成绩顺序</button>
+				<button class="choice" @click="sortExamsReverse('score')">成绩逆序</button>
 			</view>
 			<view class="finished-exam" v-for="exam in finishedExams" :key="exam.date">
 				<image class="level" src="@/static/score1.svg" v-if="exam.score>= 80"></image>
@@ -104,6 +104,40 @@
 			this.getPreviousExams();
 		},
 		methods: {
+      getDateByString(dateStr){
+        // 正则表达式匹配中文字符串中的年、月、日
+        const regex = /(\d+)年(\d+)月(\d+)日/;
+        const match = dateStr.match(regex);
+
+        if (!match) {
+          // 如果字符串不匹配预期的格式，则返回null
+          return null;
+        }
+
+        // 提取年、月、日
+        const year = parseInt(match[1], 10);
+        const month = parseInt(match[2], 10) - 1; // 月份是从0开始计数的
+        const day = parseInt(match[3], 10);
+
+        // 使用提取的年、月、日创建Date对象
+        return new Date(year, month, day);
+      },
+      sortExamsBy(param){
+        this.finishedExams.sort((a, b) => {
+          if(param === 'date')
+            return this.getDateByString(a.date) - this.getDateByString(b.date);
+          else if(param ==='score')
+            return b.score - a.score;
+        });
+      },
+      sortExamsReverse(param){
+        this.finishedExams.sort((a, b) => {
+          if(param === 'date')
+            return this.getDateByString(b.date) - this.getDateByString(a.date);
+          else if(param ==='score')
+            return a.score - b.score;
+        });
+      },
 			formatTimeRange(start_time, duration) {
 				// 解析开始时间
 				const [startHour, startMinute] = start_time.split(':').map(Number);
