@@ -386,5 +386,6 @@
 	}
   .active{
     background-color: #e74c3c;
+	color:white;
   }
 </style>
