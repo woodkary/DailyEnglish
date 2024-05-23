@@ -99,7 +99,7 @@
 				maxButtonsPerRow: 6, // 每行的最大元素个数
 				buttonMargin: 35, // 元素间隔
 				selectedChoiceAndScore: {
-          //key为question_id
+          /*//key为question_id
 					1: {
             selectedChoice: null, // 用于存储当前选择的选项
             score: 0 // 用于存储当前题目的分数
@@ -111,7 +111,7 @@
 					3: {
             selectedChoice: null, // 用于存储当前选择的选项
             score: 0 // 用于存储当前题目的分数
-          },
+          },*/
 				},
 				isFinished: {
 					1: true,
@@ -119,6 +119,7 @@
 					3: true
 				}, // 是否完成答题
 				hasShownSubmitPrompt: false, // 是否已显示提交提示
+        correctAnswers:0, // 正确答案数
 			}
 		},
     onLoad(event){
@@ -242,6 +243,7 @@
         if(selectedChoice===this.realAnswer[index]){
           // 如果选择正确，则加满分
           this.selectedChoiceAndScore[question_id].score=this.questions[index].fullScore;
+          this.correctAnswers++;
         }else{
           // 如果选择错误，则扣除分数
           this.selectedChoiceAndScore[question_id].score=0;
@@ -278,15 +280,6 @@
           }
           return totalScore;
       },
-      getCorrectAnswers(){
-          let correctAnswers=0;
-          for(let key in this.selectedChoiceAndScore){
-            if(this.selectedChoiceAndScore[key].selectedChoice===this.realAnswer[key-1]){
-              correctAnswers++;
-            }
-          }
-          return correctAnswers;
-      },
       submitExam() {
 				uni.showModal({
 					title: '提示',
@@ -300,7 +293,7 @@
                 examTitle: this.exam_name,
                 score: this.getTotalScore(),//考试总分
                 totalQuestions: this.questions.length,//总题目数
-                correctAnswers: this.getCorrectAnswers(),//正确答案数
+                correctAnswers: this.correctAnswers,//正确答案数
               };
               console.log(examResult);
               uni.setStorageSync('examResult', examResult);

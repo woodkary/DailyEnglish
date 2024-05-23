@@ -67,7 +67,7 @@ export default {
         this.score=examResult.score;
         this.totalQuestions=examResult.totalQuestions;
         this.correctAnswers=examResult.correctAnswers;
-        this.progress=parseInt(examResult.score/examResult.totalQuestions*100);
+        this.progress=parseInt(examResult.correctAnswers/examResult.totalQuestions*100);
       }
     },
     toDetail() {
