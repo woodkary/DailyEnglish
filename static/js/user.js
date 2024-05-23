@@ -7,7 +7,7 @@ let allTeams = [];
 
 function getPersonalInfo(){
     let token=localStorage.getItem('token');
-    fetch('http://localhost:8080/api/team_manage/personal_center/data',{
+    fetch('http://localhost:8081/api/team_manage/personal_center/data',{
         method: 'GET',
         headers: {
             'Authorization': 'Bearer '+token

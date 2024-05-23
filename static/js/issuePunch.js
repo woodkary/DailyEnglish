@@ -119,3 +119,34 @@ prevNextIcon.forEach(icon => { // getting prev and next icons
         renderCalendar(); // calling renderCalendar function
     });
 });
+/*"questions": [
+    {
+        "question_id": "example001",
+        "question_type": "1",
+        "question_difficulty": "3",
+        "question_grade": "13",
+        "question_content": "Are u OK?",
+        "question_choices": [
+            "Yes",
+            "No",
+            "I dont know",
+            "貴様のナメクジ野郎"
+        ],
+        "question_answer": "Yes",
+        "full_score": 5
+    }
+]*/
+getQuestionTable=(questions)=>{
+    let tableBody=document.querySelector("#tableBody");
+    let questionIdArray=[];//创建表格，并返回问题id的数组
+    for(let i=0;i<questions.length;i++){
+        let questionId=questions[i].question_id;
+        questionIdArray.push(questionId);
+        let tr=document.createElement("tr");
+        let tdInput=document.createElement("td");
+        let input=document.createElement("input");
+        input.type="checkbox";
+        input.name="checkbox";
+        input.value=questionId;
+    }
+}

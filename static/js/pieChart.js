@@ -14,7 +14,7 @@ let finishedAngle = 0;//已完成任务的角度
 window.onload = function () {
     //获取token
     let token = sessionStorage.getItem("token");
-    fetch("http://localhost:8080/api/team_manager/index", {
+    fetch("http://localhost:8081/api/team_manager/index", {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
