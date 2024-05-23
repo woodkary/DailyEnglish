@@ -261,6 +261,7 @@
 
 				// 检查是否完成所有题目
 				if (this.currentQuestionIndex === this.questions.length && !this.hasShownSubmitPrompt) {
+          this.currentQuestionIndex--; // 回退到上一题
 					this.hasShownSubmitPrompt = true; // 设置为已显示提交提示
 					this.submitExam();
 				} else {

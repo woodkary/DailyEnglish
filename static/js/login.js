@@ -85,7 +85,7 @@ function login(event) {
         username: username,
         password: password
     };
-    fetch('http://47.113.117.103:8080/api/team_manager/login', {
+    fetch('http://localhost:8080/api/team_manager/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -102,7 +102,7 @@ function login(event) {
             localStorage.setItem("team_info", data.team_info);
             let token = data.token;
             console.log(token);
-           /* let url = 'http://47.113.117.103:8080/api/team_manage/personal_center/data';*/
+           /* let url = 'http://localhost:8080/api/team_manage/personal_center/data';*/
 /*            fetch(url, {
                 method: 'GET',
                 headers: {
@@ -126,7 +126,7 @@ function login(event) {
             }).catch(error => {
                 console.log(error);
             })*/
-            /*window.location.href = 'http://47.113.117.103:8080/api/team_manager/index';*/
+            /*window.location.href = 'http://localhost:8080/api/team_manager/index';*/
             window.location.href = 'user.html';//跳转到主页,为了能展示，先暂存
         } else {
             var message = document.getElementById("verification-message");
@@ -166,7 +166,7 @@ function register(event) {
         toggleToast("提示","两次密码输入不一致");
         return;
     }
-    fetch('http://47.113.117.103:8080/api/team_manager/register', {
+    fetch('http://localhost:8080/api/team_manager/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -192,7 +192,7 @@ function sendCode(event) {
     event.preventDefault();
     let button = event.target;
     let email = document.getElementById("email-register").value;
-    fetch("http://47.113.117.103:8080/api/team_manager/send_code", {
+    fetch("http://localhost:8080/api/team_manager/send_code", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
