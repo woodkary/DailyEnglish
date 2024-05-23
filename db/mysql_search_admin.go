@@ -8,7 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func EmailIsRegistered(db *sql.DB, email string) bool {
+func EmailIsRegistered_TeamManager(db *sql.DB, email string) bool {
 	var count int
 	err := db.QueryRow("SELECT COUNT(*) FROM manager_info WHERE email =?", email).Scan(&count)
 	if err != nil {
@@ -20,7 +20,7 @@ func EmailIsRegistered(db *sql.DB, email string) bool {
 	return true
 }
 
-func UserExists(db *sql.DB, username string) bool {
+func AdminManagerExists(db *sql.DB, username string) bool {
 	var count int
 	err := db.QueryRow("SELECT COUNT(*) FROM manager_info WHERE manager_name =?", username).Scan(&count)
 	if err != nil {
@@ -54,7 +54,7 @@ func RegisterUser(db *sql.DB, username, email, password string, phone string) er
 }
 
 // 验证用户密码正确性
-func CheckUser(db *sql.DB, username, password string) bool {
+func CheckTeamManager(db *sql.DB, username, password string) bool {
 	var row string
 	db.QueryRow("SELECT pwd FROM manager_info WHERE manager_name =?", username).Scan(&row)
 	utils.TestAES()
@@ -67,19 +67,18 @@ func CheckUser(db *sql.DB, username, password string) bool {
 	return password == decryptrow
 }
 
-// 根据username获取userid和teamid[]
-func GetTokenParams(db *sql.DB, username string) (int, []int, error) {
+// 根据username获取map[user_id]username和map[team_id]team_name
+func GetTokenParams_TeamManager(db *sql.DB, username string) (int, map[int]string, error) {
 	var managerID int
-	var teamIDs []int
+	team := make(map[int]string)
 
 	// 查询数据库以获取 manager_id
 	err := db.QueryRow("SELECT manager_id FROM manager_info WHERE manager_name = ?", username).Scan(&managerID)
 	if err != nil {
 		return 0, nil, err
 	}
-
 	// 查询数据库以获取与 manager_id 相关的 team_id 列表
-	rows, err := db.Query("SELECT team_id FROM team_info WHERE manager_id = ?", managerID)
+	rows, err := db.Query("SELECT team_id,team_name FROM team_info WHERE manager_id = ?", managerID)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -88,14 +87,15 @@ func GetTokenParams(db *sql.DB, username string) (int, []int, error) {
 	// 遍历结果集，将 team_id 存储到数组中
 	for rows.Next() {
 		var teamID int
-		if err := rows.Scan(&teamID); err != nil {
+		var teamName string
+		if err := rows.Scan(&teamID, &teamName); err != nil {
 			return 0, nil, err
 		}
-		teamIDs = append(teamIDs, teamID)
+		team[teamID] = teamName
 	}
 	if err := rows.Err(); err != nil {
 		return 0, nil, err
 	}
 
-	return managerID, teamIDs, nil
+	return managerID, team, nil
 }

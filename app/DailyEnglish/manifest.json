@@ -79,5 +79,17 @@
         "enable" : false
     },
     "vueVersion" : "3",
-    "locale" : "zh-Hans"
+    "locale" : "zh-Hans",
+    "h5": {
+        "devServer": {
+            "proxy": {
+                "/api": {
+                    "target": "http://localhost:8080",
+                    "changeOrigin": true,
+                    "secure": false
+                }
+            }
+        }
+    }
+
 }

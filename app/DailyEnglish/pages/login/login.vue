@@ -88,7 +88,7 @@
         }
 				let remember = this.remember;
 				uni.request({
-					url: 'http://47.113.117.103:8080/api/users/login',
+					url: '/api/user/login',
 					data: {
 						username: username,
 						password: password,
@@ -107,7 +107,7 @@
 
               uni.navigateTo({
                 //TODO: 跳转到首页，或处理其他逻辑
-                url: '/pages/index/index'
+                url: res.data.have_word_book? '../home/home': '../Welcome/Welcome'+`?operation=${res.data.have_word_book?1:0}`
               });
             }else if(res.statusCode == 400){//用户名或密码错误
               let usernameInput = document.getElementById('username');

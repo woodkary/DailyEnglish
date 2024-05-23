@@ -1,171 +1,208 @@
 {
-  "pages" : [
-    {
-      "path" : "pages/Examination/Examination",
-      "style" : {
-        "enablePullDownRefresh" : false,
-        "navigationBarTitleText" : "答题测验"
-      }
+    "pages" : [
+        {
+            "path" : "pages/home/home",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : "首页"
+            }
+        },
+        {
+            "path" : "pages/word_details/word_details",
+            "style" : {
+                "enablePullDownRefresh" : true,
+                "navigationBarTitleText" : "单词详情"
+            }
+        },
+        {
+            "path" : "pages/Examination/Examination",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : "答题测验"
+            }
+        },
+        {
+            "path" : "pages/index/index",
+            "style" : {
+                "navigationBarTitleText" : "uni-app"
+            }
+        },
+        {
+            "path" : "pages/index/HelloWorld",
+            "style" : {
+                "navigationBarTitleText" : "helloworld"
+            }
+        },
+        {
+            "path" : "pages/user/user",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : "个人中心"
+            }
+        },
+        {
+            "path" : "pages/Vocab/Vocab",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : "vocabulary book"
+            }
+        },
+        {
+            "path" : "pages/example/example",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : ""
+            }
+        },
+        {
+            "path" : "pages/login/login",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : ""
+            }
+        },
+        {
+            "path" : "pages/register/register",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : ""
+            }
+        },
+        {
+            "path" : "pages/Welcome/Welcome",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : ""
+            }
+        },
+        {
+            "path" : "pages/Loading/Loading",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : ""
+            }
+        },
+        {
+            "path" : "pages/PopUp/PopUp",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : ""
+            }
+        },
+        {
+            "path" : "pages/WordBlock/WordBlock",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : ""
+            }
+        },
+        {
+            "path" : "pages/personal-information/personal-information",
+            "style" : {
+                "app-plus" : {
+                    "titleNView" : {
+                        "autoBackButton" : false
+                    }
+                },
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : "用户信息"
+            }
+        },
+        {
+            "path" : "pages/Calendar/Calendar",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : ""
+            }
+        },
+        {
+            "path" : "pages/exam_details/exam_details",
+            "style" : {
+                "enablePullDownRefresh" : false,
+                "navigationBarTitleText" : "考试详情"
+            }
+        },
+        {
+            "path" : "pages/exam/exam",
+            "style" : {
+                "navigationBarTitleText" : ""
+            }
+        },
+        {
+            "path" : "pages/ExamHistory/ExamHistory",
+            "style" : {
+                "navigationBarTitleText" : ""
+            }
+        },
+        {
+            "path" : "pages/finishexam/finishexam",
+            "style" : {}
+        },
+        {
+            "path" : "pages/questionDetail/questionDetail",
+            "style" : {}
+        },
+        {
+            "path" : "pages/startexam/startexam",
+            "style" : {}
+        },
+        {
+            "path" : "pages/finishClockin/finishClockin",
+            "style" : {}
+        }
+    ],
+    "globalStyle" : {
+        "navigationBarTextStyle" : "black",
+        "navigationBarTitleText" : "uni-app",
+        "navigationBarBackgroundColor" : "#F8F8F8",
+        "backgroundColor" : "#F8F8F8"
     },
-    {
-      "path" : "pages/index/index",
-      "style" : {
-        "navigationBarTitleText" : "uni-app"
-      }
+    "uniIdRouter" : {},
+    "tabBar" : {
+        //凡是在tabBar内的页面，都不能由默认的navigateTo，navigateBack跳转，只能通过switchTab跳转
+        "color" : "#333",
+        "selectedColor" : "#02afff",
+        "backgroundColor" : "#ffffff",
+        "fontSize" : "20rpx",
+        "borderStyle" : "black",
+        "list" : [
+            {
+                "pagePath" : "pages/home/home",
+                "iconPath" : "static/homepage.png",
+                "selectedIconPath" : "static/homepage_active.png",
+                "text" : "主页"
+            },
+            {
+                "pagePath" : "pages/ExamHistory/ExamHistory",
+                "iconPath" : "static/exampage.png",
+                "selectedIconPath" : "static/exampage_active.png",
+                "text" : "考试"
+            },
+            {
+                "pagePath" : "pages/Vocab/Vocab",
+                "iconPath" : "static/vocpage.png",
+                "selectedIconPath" : "static/vocpage_active.png",
+                "text" : "单词本"
+            },
+            {
+                "pagePath" : "pages/user/user",
+                "iconPath" : "static/userpage.png",
+                "selectedIconPath" : "static/userpage_active.png",
+                "text" : "我的"
+            }
+        ]
     },
-    {
-      "path" : "pages/index/HelloWorld",
-      "style" : {
-        "navigationBarTitleText" : "helloworld"
-      }
-    },
-    {
-      "path" : "pages/user/user",
-      "style" : {
-        "enablePullDownRefresh" : false,
-        "navigationBarTitleText" : "个人中心"
-      }
-    },
-    {
-      "path" : "pages/Vocab/Vocab",
-      "style" : {
-        "enablePullDownRefresh" : false,
-        "navigationBarTitleText" : "vocabulary book"
-      }
-    },
-    {
-      "path" : "pages/example/example",
-      "style" : {
-        "enablePullDownRefresh" : false,
-        "navigationBarTitleText" : ""
-      }
-    },
-    {
-      "path" : "pages/login/login",
-      "style" : {
-        "enablePullDownRefresh" : false,
-        "navigationBarTitleText" : ""
-      }
-    },
-    {
-      "path" : "pages/register/register",
-      "style" : {
-        "enablePullDownRefresh" : false,
-        "navigationBarTitleText" : ""
-      }
-    },
-	{
-	  "path" : "pages/Welcome/Welcome",
-	  "style" : {
-	    "enablePullDownRefresh" : false,
-	    "navigationBarTitleText" : ""
-	  }
-	},
-    {
-      "path" : "pages/Loading/Loading",
-      "style" : {
-        "enablePullDownRefresh" : false,
-        "navigationBarTitleText" : ""
-      }
-    },
-    {
-      "path" : "pages/PopUp/PopUp",
-      "style" : {
-        "enablePullDownRefresh" : false,
-        "navigationBarTitleText" : ""
-      }
-    },
-    {
-      "path" : "pages/WordBlock/WordBlock",
-      "style" : {
-        "enablePullDownRefresh" : false,
-        "navigationBarTitleText" : ""
-      }
-    },
-    {
-    	"path" : "pages/personal-information/personal-information",
-    	"style" : 
-    	{
-    		"navigationBarTitleText" : "用户信息",
-    		"enablePullDownRefresh" : false,
-			"app-plus": {
-				"titleNView": {
-					"autoBackButton": false
-				}
-			}
-			
-    	}
-    },
-    {
-    	"path" : "pages/home/home",
-    	"style" : 
-    	{
-    		"navigationBarTitleText" : "首页",
-    		"enablePullDownRefresh" : false
-    	}
-    },
-    {
-    	"path" : "pages/Calendar/Calendar",
-    	"style" : 
-    	{
-    		"navigationBarTitleText" : "",
-    		"enablePullDownRefresh" : false
-    	}
+    // "iconPath": "static/tabbar/user.png",
+    // "selectedIconPath": "static/tabbar/user-active.png"
+    "condition" : {
+        //模式配置，仅开发期间生效
+        "current" : 0, //当前激活的模式(list 的索引项)
+        "list" : [
+            {
+                "name" : "", //模式名称
+                "path" : "", //启动页面，必选
+                "query" : "" //启动参数，在页面的onLoad函数里面得到
+            }
+        ]
     }
-    
-  ],
-  "globalStyle" : {
-    "navigationBarTextStyle" : "black",
-    "navigationBarTitleText" : "uni-app",
-    "navigationBarBackgroundColor" : "#F8F8F8",
-    "backgroundColor" : "#F8F8F8"
-  },
-  "uniIdRouter" : {},
-  "tabBar" : {
-    //凡是在tabBar内的页面，都不能由默认的navigateTo，navigateBack跳转，只能通过switchTab跳转
-    "color" : "#333",
-    "selectedColor" : "#007AFF",
-    "list" : [
-      {
-        "pagePath" : "pages/login/login",
-        "text" : "登录"
-      },
-      // "iconPath": "static/tabbar/home.png",
-      // "selectedIconPath": "static/tabbar/home-active.png"
-      {
-        "pagePath" : "pages/Vocab/Vocab",
-        "text" : "词汇书"
-      },
-      // "iconPath": "static/tabbar/vocab.png",
-      // "selectedIconPath": "static/tabbar/vocab-active.png"
-      {
-        "pagePath" : "pages/Examination/Examination",
-        "text" : "答题测验"
-      },
-      // "iconPath": "static/tabbar/exam.png",
-      // "selectedIconPath": "static/tabbar/exam-active.png"
-      {
-        "pagePath" : "pages/register/register",
-        "text" : "注册"
-      },
-	  {
-		  "pagePath": "pages/user/user",
-		  "text": "个人中心"
-	  }
-    ]
-  },
-  // "iconPath": "static/tabbar/user.png",
-  // "selectedIconPath": "static/tabbar/user-active.png"
-  "condition" : {
-    //模式配置，仅开发期间生效
-    "current" : 0, //当前激活的模式(list 的索引项)
-    "list" : [
-      {
-        "name" : "", //模式名称
-        "path" : "", //启动页面，必选
-        "query" : "" //启动参数，在页面的onLoad函数里面得到
-      }
-    ]
-  }
-  }
-  
+}

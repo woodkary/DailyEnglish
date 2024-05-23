@@ -1,7 +1,7 @@
 <template>
   <view class="word-card">
     <view class="word-container">
-      <view class="word">{{ word }}</view>
+      <view class="word" @click="navigation">{{ word }}</view>
       <view class="pronunciation-meaning" @click="togglePronunciationAndMeaning">
         {{ showPronunciationMeaning ? `${pronunciation} - ${meaning}` : '点击显示音标和释义' }}
       </view>
@@ -22,7 +22,9 @@ export default {
     word: String,
     pronunciation: String,
     meaning: String,
-    reviewCount: Number
+    reviewCount: Number,
+    details: Object,
+    id: Number,
   },
   // 组件的其他逻辑
   data() {
@@ -31,12 +33,24 @@ export default {
       pronunciation: this.pronunciation,
       meaning: this.meaning,
       showPronunciationMeaning: false,
-      reviewCount: this.reviewCount
+      reviewCount: this.reviewCount,
+      details: this.details,
+      id: this.id,
     };
   },
   methods: {
     togglePronunciationAndMeaning() {
       this.showPronunciationMeaning =!this.showPronunciationMeaning;
+    },
+    navigation(){
+      let localDetails=uni.getStorageSync(this.id);
+      if(!localDetails){
+        uni.setStorageSync(this.id,this.details);
+      }
+      // 实现页面跳转的逻辑
+      uni.navigateTo({
+        url: '/pages/word_details/word_details?word_id='+this.id+'&word='+this.word
+      });
     },
     readWord() {
       // 实现系统朗读的逻辑
@@ -61,6 +75,7 @@ export default {
 .word-container {
   display: flex;
   flex-direction: column;
+  width: 70%;
 }
 
 .action-container {
@@ -83,6 +98,7 @@ export default {
   font-family: Calibri, sans-serif;
   cursor: pointer;
   margin-left: 30rpx;
+  white-space: pre-wrap;
 }
 
 .read-button {

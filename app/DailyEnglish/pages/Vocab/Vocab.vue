@@ -19,11 +19,13 @@
     <view class="word-blocks" @touchend="handleTouchEnd()">
       <word-block
         v-for="word in words"
-        :key="word"
-        :word="word"
-        pronunciation="/ˈæpəl/"
-        meaning="苹果"
-        review-count="5"
+        :key="word.id"
+        :word="word.spelling"
+        :id="word.word_id"
+        :pronunciation="word.pronunciation"
+        :meaning="getMeaningStr(word.meanings)"
+        :details="word"
+        :review-count="5"
       >
       </word-block>
     </view>
@@ -47,15 +49,49 @@ export default {
 
   data() {
     return {
+      //词性简写
+      simplifiedSpeech:{
+        verb: "v.",
+        adjective: "adj.",
+        noun: "n.",
+        pronoun: "pron.",
+        adverb: "adv.",
+        conjunction: "conj.",
+        preposition: "prep.",
+        interjection: "int."
+      },
       words: [
-        "moral",
-        "abandon",
-        "banana",
-        "apple",
-        "cat",
-        "dog",
-        "site",
-        "lagrg",
+        {
+          word_id: 1,
+          spelling: "moral",
+          pronunciation: "/ˈmɔːrəl/",
+          meanings:{
+            verb:null,
+            adjective:["道德的","品行端正的","伦理的"," 精神上的"],
+            noun: ["道德教训","寓意","品德","品行"],
+            pronoun:null,
+            adverb:null,
+            conjunction:null,
+            preposition:null,
+            interjection:null
+          },
+          sound:"https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
+        },
+        {
+          word_id: 2,
+          spelling: "abandon",
+          pronunciation: "/əˈbændən/",
+          meanings:{
+            verb:["抛弃","放弃","弃置","放弃治疗"],
+            noun:["放弃物","放弃的事物","放弃的念头","放弃的决定"],
+            pronoun:null,
+            adverb:null,
+            conjunction:null,
+            preposition:null,
+            interjection:null
+          },
+          sound:"https://ssl.gstatic.com/dictionary/static/sounds/oxford/abandon--_gb_1.mp3"
+        },
       ], // 单词列表
       cnt: 0,
       book: "cet4",
@@ -64,6 +100,21 @@ export default {
       showBackTop: false, //是否显示返回顶部按钮
     };
   },
+/*  onLoad() {
+    uni.request({
+      url: "/api/words/get_starbk",
+      method: "POST",
+      header: {
+        'Authorization': 'Bearer ' + uni.getStorageSync('token')
+      },
+      success: (res) => {
+        this.words = res.data.words;
+      },
+      fail: (res) => {
+        console.log("请求失败");
+      }
+    });
+  },*/
 
   onPageScroll(e) {
     // 获取滚动的距离
@@ -77,6 +128,38 @@ export default {
     }
   },
   methods: {
+    getMeaningStr(meanings) {
+      let meaningStr = "";
+      let foundFirst = false; // 标志是否找到了第一个非空词性的意思
+
+      for (let key in meanings) {
+        if (meanings[key] && meanings[key].length > 0) {
+          if (!foundFirst) {
+            // 如果是第一个非空词性，添加词性前缀
+            meaningStr += this.simplifiedSpeech[key];
+            foundFirst = true;
+          } else {
+            // 如果不是第一个非空词性，则不再添加词性前缀
+            meaningStr += "、";
+          }
+
+          // 只添加前两个意思
+          meaningStr += meanings[key].slice(0, 2).join("、");
+
+          // 如果意思多于两个，添加 "..."
+          if (meanings[key].length > 2) {
+            meaningStr += "..."
+            break; // 找到了第一个非空词性的前两个意思，结束循环
+          } else if (meanings[key].length === 2) {
+            meaningStr += "\n"; // 添加换行符，但只有当添加了两个意思时
+            break; // 找到了第一个非空词性的前两个意思，结束循环
+          }
+        }
+      }
+
+      return meaningStr;
+    },
+
     handleBack() {
       uni.navigateBack();
     },
@@ -85,24 +168,6 @@ export default {
     },
     Export() {
       //预计导出生词，后续再写
-    },
-    fetchWords() {
-      // 使用 axios 或其他 HTTP 客户端来发送请求
-      axios
-        .get("/api/words", {
-          params: {
-            start: this.startIndex,
-            end: this.endIndex,
-          },
-        })
-        .then((response) => {
-          // 假设 API 返回的是一个新的单词数组
-          // todo根据需要合并新旧单词列表
-          this.words = [...this.words, ...response.data];
-          // 更新起始索引和结束索引
-          this.startIndex += 20;
-          this.endIndex += 20;
-        });
     },
     handleTouchEnd(e) {
       // 获取scroll-view的滚动高度
@@ -127,11 +192,6 @@ export default {
 </script>
 
 <style>
-html,
-body {
-  height: 100%;
-  overflow: auto;
-}
 
 .container {
   display: grid;
@@ -141,7 +201,7 @@ body {
   /*水平居中 */
   justify-content: center;
   /*垂直居中 */
-
+	height:100vh;
   background-image: linear-gradient(
     -190deg,
     #fff669 0%,
@@ -166,7 +226,7 @@ body {
 }
 
 .vocabook {
-  position: relative;
+  position:absolute;
   width: 100%;
   /*宽度100%*/
   display: flex;
@@ -174,7 +234,7 @@ body {
   border-bottom: thick groove #ffff00;
   /*改一下颜色*/
   height: 10rem;
-  margin-top: 2rem;
+  top: 1rem;
 }
 
 .vocabook-img {
@@ -196,7 +256,6 @@ body {
   font-size: 0.9rem;
   margin-left: -3.7rem;
   margin-top: 3.8rem;
-  margin-bottom: 17rem;
 }
 
 .button-container {
@@ -204,7 +263,7 @@ body {
   justify-content: center;
   /*水平居中*/
   align-items: center;
-  /*垂直居中*/
+
 }
 
 .review {
@@ -234,15 +293,16 @@ body {
 }
 
 .word-blocks {
+	position: absolute;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
   /* 或使用 'center', 'flex-end' 等 */
   align-content: flex-start;
   width: 100%;
-  margin-top: -0.1rem;
   /* height: auto; 移除这一行，或者使用 min-height */
-  min-height: 50vh;
+  /* min-height: 50vh; */
   /* 根据需要设置最小高度 */
+  top: 11.1rem;
 }
 </style>
