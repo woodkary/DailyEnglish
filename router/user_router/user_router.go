@@ -2,6 +2,7 @@ package userrouter
 
 import (
 	controlsql "DailyEnglish/db"
+	middlewares "DailyEnglish/middlewares"
 	utils "DailyEnglish/utils"
 	"database/sql"
 	"fmt"
@@ -10,6 +11,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func tokenAuthMiddleware() gin.HandlerFunc {
+	return middlewares.TokenAuthMiddleware("User")
+}
 func InitUserRouter(r *gin.Engine, db *sql.DB) {
 	//发送验证码
 	r.POST("/api/register/sendCode", func(c *gin.Context) {
@@ -71,6 +75,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		var data regdata
 		fmt.Println("Username:", data.Username, "Pwd:", data.Pwd, "Email:", data.Email)
 		if err := c.ShouldBind(&data); err != nil {
+			fmt.Print("not bind data\n")
 			c.JSON(http.StatusBadRequest, gin.H{
 				"code": "400",
 				"msg":  "请求参数错误",
@@ -78,18 +83,20 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		//验证用户是否已注册
-		if controlsql.UserExists_User(db, data.Username) {
+		if controlsql.UserExists_User(db, data.Email) {
 			c.JSON(http.StatusConflict, gin.H{
 				"code": "409",
 				"msg":  "用户已注册",
 			})
 			return
 		}
+		fmt.Print("nonono")
 		Key := "123456781234567812345678" //密钥
 		cryptoPwd := utils.AesEncrypt(data.Pwd, Key)
 		//注册用户
 		err := controlsql.RegisterUser_User(db, data.Username, cryptoPwd, data.Email)
 		if err != nil {
+			fmt.Print(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
 				"msg":  "服务器内部错误",
@@ -157,4 +164,237 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			"token": token,
 		})
 	})
+	//主页面
+	r.GET("/api/punch/main_menu", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		//查询用户信息
+		Item, err := controlsql.GetUserStudy(db, UserClaims.UserID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+			return
+		}
+		type TaskToday struct {
+			BookLearning   string `json:"book_learning"`
+			WordNumLearned int    `json:"word_num_learned"`
+			WordNumTotal   int    `json:"word_num_total"`
+			DaysLeft       int    `json:"days_left"`
+			PunchNum       int    `json:"punch_num"`
+			ReviewNum      int    `json:"review_num"`
+			IsPunched      bool   `json:"ispunched"`
+		}
+		type Response struct {
+			Code      string    `json:"code"`
+			Msg       string    `json:"msg"`
+			TaskToday TaskToday `json:"task_today"`
+		}
+		var response Response
+		response.TaskToday.BookLearning = Item.BookLearning
+		response.TaskToday.WordNumLearned = Item.WordNumLearned
+		response.TaskToday.WordNumTotal = Item.WordNumTotal
+		response.TaskToday.DaysLeft = Item.Days_left
+		response.TaskToday.PunchNum = Item.PunchNum
+		response.TaskToday.ReviewNum = 10 //这里写死的@TODO去找那些单词需要复习
+		response.TaskToday.IsPunched = Item.IsPunched
+		response.Code = "200"
+		response.Msg = "成功"
+		c.JSON(200, response)
+	})
+	//打卡
+	r.GET("/api/main/take_punch", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
+		_, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		//查询打卡单词，这里写死先
+		//打卡单词
+		type Word struct {
+			WordID       int               `json:"word_id"`
+			Word         string            `json:"word"`
+			PhoneticUS   string            `json:"phonetic_us"`
+			WordQuestion map[string]string `json:"word_question"`
+			Answer       string            `json:"answer"`
+		}
+		type Response struct {
+			Code     int    `json:"code"`
+			Msg      string `json:"msg"`
+			WordList []Word `json:"word_list"`
+		}
+		var response Response
+		var word Word
+		word.WordID = 1
+		word.Word = "apple"
+		word.PhoneticUS = "[ˈæpl]"
+		word.WordQuestion = make(map[string]string)
+		word.WordQuestion["A"] = "苹果"
+		word.WordQuestion["B"] = "香蕉"
+		word.WordQuestion["C"] = "橘子"
+		word.WordQuestion["D"] = "梨"
+		word.Answer = "A"
+		response.WordList = append(response.WordList, word)
+		word.WordID = 2
+		word.Word = "banana"
+		word.PhoneticUS = "[bəˈnænə]"
+		word.WordQuestion = make(map[string]string)
+		word.WordQuestion["A"] = "苹果"
+		word.WordQuestion["B"] = "香蕉"
+		word.WordQuestion["C"] = "橘子"
+		word.WordQuestion["D"] = "梨"
+		word.Answer = "B"
+		response.WordList = append(response.WordList, word)
+		word.WordID = 3
+		word.Word = "orange"
+		word.PhoneticUS = "[ˈɔːrɪndʒ]"
+		word.WordQuestion = make(map[string]string)
+		word.WordQuestion["A"] = "苹果"
+		word.WordQuestion["B"] = "香蕉"
+		word.WordQuestion["C"] = "橘子"
+		word.WordQuestion["D"] = "梨"
+		word.Answer = "C"
+		response.WordList = append(response.WordList, word)
+		word.WordID = 4
+		word.Word = "pear"
+		word.PhoneticUS = "[per]"
+		word.WordQuestion = make(map[string]string)
+		word.WordQuestion["A"] = "苹果"
+		word.WordQuestion["B"] = "香蕉"
+		word.WordQuestion["C"] = "橘子"
+		word.WordQuestion["D"] = "梨"
+		word.Answer = "D"
+		response.WordList = append(response.WordList, word)
+		word.WordID = 5
+		word.Word = "grape"
+		word.PhoneticUS = "[ɡreɪp]"
+		word.WordQuestion = make(map[string]string)
+		word.WordQuestion["A"] = "苹果"
+		word.WordQuestion["B"] = "香蕉"
+		word.WordQuestion["C"] = "葡萄"
+		word.WordQuestion["D"] = "梨"
+		word.Answer = "C"
+		response.WordList = append(response.WordList, word)
+		response.Code = 200
+		response.Msg = "成功"
+		c.JSON(200, response)
+	})
+	//历次考试页面
+	r.GET("/api/exams/previous_examinations", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		Item, err := controlsql.GetExamInfo(db, UserClaims.UserID, UserClaims.TeamID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+			return
+		}
+		type Exam struct {
+			ExamID      int    `json:"exam_id"`
+			ExamName    string `json:"exam_name"`
+			ExamDate    string `json:"exam_date"`
+			ExamScore   int    `json:"exam_score"`
+			ExamRank    int    `json:"exam_rank"`
+			QuestionNum int    `json:"question_num"`
+		}
+		type Response struct {
+			Code  int    `json:"code"`
+			Msg   string `json:"msg"`
+			Exams []Exam `json:"exams"`
+		}
+		var response Response
+		for _, item := range Item {
+			var exam Exam
+			exam.ExamDate = item.ExamDate
+			exam.ExamID = item.ExamID
+			exam.ExamName = item.ExamName
+			exam.ExamRank = item.ExamRank
+			exam.ExamScore = item.ExamScore
+			exam.QuestionNum = item.QuestionNum
+			response.Exams = append(response.Exams, exam)
+		}
+		response.Code = 200
+		response.Msg = "成功"
+		c.JSON(200, response)
+	})
+	//单次考试详情
+	r.GET("/api/exams/examination_details", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			ExamID   int    `json:"exam_id"`
+			ExamName string `json:"exam_name"`
+			ExamDate string `json:"exam_date"`
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		//查询考试信息
+		Item, err := controlsql.GetExamDetail(db, UserClaims.UserID, request.ExamID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+			return
+		}
+		type Question struct {
+			QuestionID    int      `json:"question_id"`
+			QuestionIndex int      `json:"question_index"`
+			QuestionDesc  string   `json:"question_decription"`
+			Options       []string `json:"choices"`
+			MyAnswer      string   `json:"my_answer"`
+			CorrectAnswer string   `json:"correct_answer"`
+			Score         int      `json:"score"`
+			FullScore     int      `json:"full_score"`
+		}
+		type Response struct {
+			ExamDate    string     `json:"exam_date"`
+			QuestionNum int        `json:"question_num"`
+			CorrectNum  int        `json:"correct_num"`
+			Score       int        `json:"score"`
+			Questions   []Question `json:"questions"`
+		}
+		var response Response
+		response.ExamDate = request.ExamDate
+		response.QuestionNum = len(Item)
+		response.CorrectNum = 0
+		response.Score = 0
+		for i, item := range Item {
+			var question Question
+			question.QuestionID = item.Question_id
+			question.QuestionIndex = i + 1
+			question.QuestionDesc = item.Question
+			question.Options = item.Options
+			question.MyAnswer = item.UserAnswer
+			question.CorrectAnswer = item.Answer
+			question.Score = item.Score
+			response.Score += item.Score
+			if item.UserAnswer == item.Answer {
+				response.CorrectNum++
+			}
+			question.FullScore = 5
+			response.Questions = append(response.Questions, question)
+		}
+		c.JSON(200, response)
+	})
+
 }
