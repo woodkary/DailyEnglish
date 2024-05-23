@@ -11,7 +11,7 @@
 		<view class="word-blocks" @touchend="handleTouchEnd()">
 			<word-block v-for="word in words" :key="word.id" :word="word.spelling" :id="word.word_id"
 				:pronunciation="word.pronunciation" :meaning="getMeaningStr(word.meanings)" :details="word"
-				:review-count="5">
+				:review-count="5" :sound="word.sound">
 			</word-block>
 		</view>
 		<view>
