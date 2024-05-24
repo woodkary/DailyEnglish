@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>email</title>
+</head>
+
+<body>
+    <div class="sms-code-input">
+        <input type="text" id="input1" maxlength="1" />
+        <input type="text" id="input2" maxlength="1" />
+        <input type="text" id="input3" maxlength="1" />
+        <input type="text" id="input4" maxlength="1" />
+        <input type="text" id="input5" maxlength="1" />
+        <input type="text" id="input6" maxlength="1" />
+    </div>
+
+</body>
+<style>
+    .sms-code-input input {
+        width: 40px;
+        height: 40px;
+        font-size: 24px;
+        text-align: center;
+        margin: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .sms-code-input input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+    }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const inputs = document.querySelectorAll('.sms-code-input input');
+
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', (event) => {
+                const value = event.target.value;
+                if (value.length > 1) {
+                    event.target.value = value.charAt(0);
+                }
+                if (value.length === 1 && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+            });
+
+            input.addEventListener('keydown', (event) => {
+                if (event.key === 'Backspace' && index > 0 && event.target.value === '') {
+                    inputs[index - 1].focus();
+                }
+            });
+        });
+    });
+</script>
+
+</html>
