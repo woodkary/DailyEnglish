@@ -5,7 +5,7 @@ import (
 	middlewares "DailyEnglish/middlewares"
 	utils "DailyEnglish/utils"
 	"database/sql"
-	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -30,7 +30,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			})
 			return
 		}
-		fmt.Print("data.Email: ", data.Email, "\n")
 		// 验证邮箱是否已注册
 		if controlsql.EmailIsRegistered_User(db, data.Email) {
 			c.JSON(http.StatusConflict, gin.H{
@@ -75,9 +74,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		}
 
 		var data regdata
-		fmt.Println("Username:", data.Username, "Pwd:", data.Pwd, "Email:", data.Email)
 		if err := c.ShouldBind(&data); err != nil {
-			fmt.Print("not bind data\n")
 			c.JSON(http.StatusBadRequest, gin.H{
 				"code": "400",
 				"msg":  "请求参数错误",
@@ -92,13 +89,11 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			})
 			return
 		}
-		fmt.Print("nonono")
 		Key := "123456781234567812345678" //密钥
 		cryptoPwd := utils.AesEncrypt(data.Pwd, Key)
 		//注册用户
 		err := controlsql.RegisterUser_User(db, data.Username, cryptoPwd, data.Email)
 		if err != nil {
-			fmt.Print(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
 				"msg":  "服务器内部错误",
@@ -144,6 +139,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		//生成token
 		userid, err := controlsql.GetUserID(db, data.Username)
 		if err != nil {
+			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
 				"msg":  "服务器内部错误",
@@ -151,8 +147,8 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		team_id, team_name, err := controlsql.GetTokenParams_User(db, userid)
-
 		if err != nil && err.Error() != "sql: no rows in result set" {
+			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
 				"msg":  "服务器内部错误"})
@@ -165,6 +161,59 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			"msg":   "登录成功",
 			"token": token,
 		})
+	})
+	//选择词书界面
+	r.GET("/api/users/navigate_books", tokenAuthMiddleware(), func(c *gin.Context) {
+		//查询词书信息
+		Item, err := controlsql.GetAllBooks(db)
+		if err != nil {
+			log.Panic(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+			return
+		}
+		type Book struct {
+			BookID            int    `json:"book_id"`
+			BookName          string `json:"book_name"`
+			WordNum           int    `json:"word_num"`
+			Grade_description string `json:"grade_description"`
+			Describe          string `json:"description"`
+		}
+		type Response struct {
+			Code  int    `json:"code"`
+			Msg   string `json:"msg"`
+			Books []Book `json:"books"`
+		}
+		var response Response
+		var gradeDescriptions = map[int]string{
+			1:  "小学一年级",
+			2:  "小学二年级",
+			3:  "小学三年级",
+			4:  "小学四年级",
+			5:  "小学五年级",
+			6:  "小学六年级",
+			7:  "初中一年级",
+			8:  "初中二年级",
+			9:  "初中三年级",
+			10: "高中一年级",
+			11: "高中二年级",
+			12: "高中三年级",
+			13: "四级",
+			14: "六级",
+		}
+		for _, item := range Item {
+			var book Book
+			book.BookID = item.BookID
+			book.BookName = item.BookName
+			book.WordNum = item.WordNum
+			book.Grade_description = gradeDescriptions[item.Grade]
+			book.Describe = item.Describe
+			response.Books = append(response.Books, book)
+		}
+		response.Code = 200
+		response.Msg = "成功"
+		c.JSON(200, response)
 	})
 	//主页面
 	r.GET("/api/punch/main_menu", tokenAuthMiddleware(), func(c *gin.Context) {
@@ -210,12 +259,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 	})
 	//打卡
 	r.GET("/api/main/take_punch", tokenAuthMiddleware(), func(c *gin.Context) {
-		user, _ := c.Get("user")
-		_, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
-		if !ok {
-			c.JSON(500, "服务器错误")
-			return
-		}
 		//查询打卡单词，这里写死先
 		//打卡单词
 		type Word struct {
@@ -288,12 +331,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 	})
 	//复习
 	r.GET("/api/main/take_review", tokenAuthMiddleware(), func(c *gin.Context) {
-		user, _ := c.Get("user")
-		_, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
-		if !ok {
-			c.JSON(500, "服务器错误")
-			return
-		}
 		//查询复习单词，这里写死先
 		//复习单词
 		type Word struct {
@@ -364,7 +401,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
-
 	//历次考试页面
 	r.GET("/api/exams/previous_examinations", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
@@ -490,12 +526,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			})
 			return
 		}
-		user, _ := c.Get("user")
-		_, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
-		if !ok {
-			c.JSON(500, "服务器错误")
-			return
-		}
 		type Question struct {
 			QuestionID         int               `json:"question_id"`
 			QuestionType       int               `json:"question_type"`
@@ -555,4 +585,5 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
+
 }

@@ -13,7 +13,6 @@ func TokenAuthMiddleware(usertype string) gin.HandlerFunc {
 	if usertype == "TeamManager" {
 		return func(c *gin.Context) {
 			authHeader := c.Request.Header.Get("Authorization")
-			fmt.Println(authHeader)
 			if authHeader == "" {
 				c.JSON(http.StatusUnauthorized, "未提供令牌")
 				c.Abort()
@@ -28,7 +27,6 @@ func TokenAuthMiddleware(usertype string) gin.HandlerFunc {
 			// 提取令牌
 			token := strings.TrimPrefix(authHeader, "Bearer ")
 			user, err := service.ParseToken_TeamManager(token)
-			fmt.Println(user, token)
 			if err != nil {
 				fmt.Println(err)
 				c.JSON(http.StatusUnauthorized, "令牌无效")
@@ -43,7 +41,6 @@ func TokenAuthMiddleware(usertype string) gin.HandlerFunc {
 	}
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
-		fmt.Println(authHeader)
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, "未提供令牌")
 			c.Abort()
@@ -58,7 +55,6 @@ func TokenAuthMiddleware(usertype string) gin.HandlerFunc {
 		// 提取令牌
 		token := strings.TrimPrefix(authHeader, "Bearer ")
 		user, err := service.ParseToken_User(token)
-		fmt.Println(user, token)
 		if err != nil {
 			fmt.Println(err)
 			c.JSON(http.StatusUnauthorized, "令牌无效")
