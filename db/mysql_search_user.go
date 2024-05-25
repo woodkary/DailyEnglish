@@ -132,6 +132,17 @@ type Exam struct {
 	QuestionNum int
 	ExamScore   int
 	ExamRank    int
+	QuestionID  string
+}
+
+// 根据exam_id查询exam_info
+func GetExamInfoByExamID(db *sql.DB, exam_id int) (Exam, error) {
+	var exam Exam
+	err := db.QueryRow("SELECT exam_name,exam_date,exam_clock,question_num,question_id FROM exam_info WHERE exam_id =?", exam_id).Scan(&exam.ExamName, &exam.ExamDate, &exam.Exam_clock, &exam.QuestionNum, &exam.QuestionID)
+	if err != nil {
+		return exam, err
+	}
+	return exam, nil
 }
 
 // 根据user_id,team_id查询考试信息
@@ -164,6 +175,42 @@ type QuestionDetail struct {
 	UserAnswer  string
 	Options     []string
 	Score       int
+}
+type QuestionInfo struct {
+	Question_id        int
+	Questiontype       int
+	QuestionDifficulty int
+	QuestionContent    string
+	QuestionAnswer     string
+	QuestionGrade      int
+	Options            map[string]string
+}
+
+// 根据question_id查询questiondetail
+func GetQuestionInfo(db *sql.DB, question_id int) (QuestionInfo, error) {
+	var question_info QuestionInfo
+	var question_type, question_diffculty, question_grade int
+	var content string
+	var answer string
+	err := db.QueryRow("SELECT question_type,question_diffculty,question_grade,question_content,quetion_answer FROM question_info WHERE question_id =?", question_id).Scan(&question_type, &question_diffculty, &question_grade, &content, &answer)
+	if err != nil {
+		return QuestionInfo{}, err
+	}
+	content_list := strings.Split(content, "：")
+	question_info.QuestionContent = content_list[0]
+	question_info.Options = make(map[string]string)
+	options := strings.Split(content_list[1], " ")
+	for _, option := range options {
+		m := strings.Split(option, ".")
+		question_info.Options[m[0]] = m[1]
+	}
+	question_info.QuestionAnswer = answer
+	question_info.Question_id = question_id
+	question_info.Questiontype = question_type
+	question_info.QuestionDifficulty = question_diffculty
+	question_info.QuestionGrade = question_grade
+	return question_info, nil
+
 }
 
 // 根据user_id和exam_id查询单场考试详情

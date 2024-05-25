@@ -7,6 +7,8 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -284,6 +286,85 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
+	//复习
+	r.GET("/api/main/take_review", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
+		_, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		//查询复习单词，这里写死先
+		//复习单词
+		type Word struct {
+			WordID       int               `json:"word_id"`
+			Word         string            `json:"word"`
+			PhoneticUS   string            `json:"phonetic_us"`
+			WordQuestion map[string]string `json:"word_question"`
+			Answer       string            `json:"answer"`
+		}
+		type Response struct {
+			Code     int    `json:"code"`
+			Msg      string `json:"msg"`
+			WordList []Word `json:"word_list"`
+		}
+		var response Response
+		var word Word
+		word.WordID = 1
+		word.Word = "abondon"
+		word.PhoneticUS = "[əˈbændən]"
+		word.WordQuestion = make(map[string]string)
+		word.WordQuestion["A"] = "放弃"
+		word.WordQuestion["B"] = "保留"
+		word.WordQuestion["C"] = "拒绝"
+		word.WordQuestion["D"] = "接受"
+		word.Answer = "A"
+		response.WordList = append(response.WordList, word)
+		word.WordID = 2
+		word.Word = "abroad"
+		word.PhoneticUS = "[əˈbrɔːd]"
+		word.WordQuestion = make(map[string]string)
+		word.WordQuestion["A"] = "国内"
+		word.WordQuestion["B"] = "国外"
+		word.WordQuestion["C"] = "国际"
+		word.WordQuestion["D"] = "国内外"
+		word.Answer = "B"
+		response.WordList = append(response.WordList, word)
+		word.WordID = 3
+		word.Word = "absorb"
+		word.PhoneticUS = "[əbˈzɔːrb]"
+		word.WordQuestion = make(map[string]string)
+		word.WordQuestion["A"] = "吸收"
+		word.WordQuestion["B"] = "排放"
+		word.WordQuestion["C"] = "吸引"
+		word.WordQuestion["D"] = "排斥"
+		word.Answer = "A"
+		response.WordList = append(response.WordList, word)
+		word.WordID = 4
+		word.Word = "bargain"
+		word.PhoneticUS = "[ˈbɑːrɡɪn]"
+		word.WordQuestion = make(map[string]string)
+		word.WordQuestion["C"] = "讨价还价"
+		word.WordQuestion["B"] = "交易"
+		word.WordQuestion["A"] = "协商"
+		word.WordQuestion["D"] = "交易"
+		word.Answer = "C"
+		response.WordList = append(response.WordList, word)
+		word.WordID = 5
+		word.Word = "satisfy"
+		word.PhoneticUS = "[ˈsætɪsfaɪ]"
+		word.WordQuestion = make(map[string]string)
+		word.WordQuestion["C"] = "满足"
+		word.WordQuestion["B"] = "满意"
+		word.WordQuestion["A"] = "满足"
+		word.WordQuestion["D"] = "满足"
+		word.Answer = "C"
+		response.WordList = append(response.WordList, word)
+		response.Code = 200
+		response.Msg = "成功"
+		c.JSON(200, response)
+	})
+
 	//历次考试页面
 	r.GET("/api/exams/previous_examinations", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
@@ -396,5 +477,82 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		}
 		c.JSON(200, response)
 	})
-
+	//考试页面,用户开始考试需要向用户发送考试题目
+	r.POST("/api/exams/take_examination", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			ExamID int `json:"exam_id"`
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+		user, _ := c.Get("user")
+		_, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		type Question struct {
+			QuestionID         int               `json:"question_id"`
+			QuestionType       int               `json:"question_type"`
+			QuestionDifficulty int               `json:"question_difficulty"`
+			QuestionGrade      int               `json:"question_grade"`
+			QuestionContent    string            `json:"question_content"`
+			QuestionChoices    map[string]string `json:"question_choices"`
+			QuestionAnswer     string            `json:"question_answer"`
+			FullScore          int               `json:"full_score"`
+		}
+		type Response struct {
+			Code         string     `json:"code"`
+			Msg          string     `json:"msg"`
+			QuestionNum  int        `json:"question_num"`
+			QuestionList []Question `json:"question_list"`
+		}
+		var response Response
+		//查询考试信息
+		Item1, err := controlsql.GetExamInfoByExamID(db, request.ExamID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+			return
+		}
+		response.QuestionNum = Item1.QuestionNum
+		//查询考试题目
+		questionIds := strings.Split(Item1.QuestionID, ",")
+		for _, questionId := range questionIds {
+			questionId = strings.TrimSpace(questionId)
+			questionID, err := strconv.Atoi(questionId)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"code": "500",
+					"msg":  "服务器内部错误"})
+				return
+			}
+			Item2, err := controlsql.GetQuestionInfo(db, questionID)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"code": "500",
+					"msg":  "服务器内部错误"})
+				return
+			}
+			var question Question
+			question.QuestionID = Item2.Question_id
+			question.QuestionType = Item2.Questiontype
+			question.QuestionDifficulty = Item2.QuestionDifficulty
+			question.QuestionGrade = Item2.QuestionGrade
+			question.QuestionContent = Item2.QuestionContent
+			question.QuestionChoices = Item2.Options
+			question.QuestionAnswer = Item2.QuestionAnswer
+			question.FullScore = 5
+			response.QuestionList = append(response.QuestionList, question)
+		}
+		response.Code = "200"
+		response.Msg = "成功"
+		c.JSON(200, response)
+	})
 }
