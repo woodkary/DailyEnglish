@@ -24,7 +24,7 @@ func EmailIsRegistered_User(db *sql.DB, email string) bool {
 // 根据username查询user是否存在
 func UserExists_User(db *sql.DB, username string) bool {
 	var count int
-	err := db.QueryRow("SELECT COUNT(*) FROM user_info WHERE email =?", username).Scan(&count)
+	err := db.QueryRow("SELECT COUNT(*) FROM user_info WHERE username =?", username).Scan(&count)
 	if err != nil {
 		return false
 	}
@@ -59,7 +59,6 @@ func RegisterUser_User(db *sql.DB, username string, password string, email strin
 func CheckUser_User(db *sql.DB, username, password string) bool {
 	var row string
 	db.QueryRow("SELECT pwd FROM user_info WHERE username =?", username).Scan(&row)
-	utils.TestAES()
 
 	decryptrow := utils.AesDecrypt(row, "123456781234567812345678")
 
@@ -80,7 +79,7 @@ func GetUserID(db *sql.DB, username string) (int, error) {
 func GetTokenParams_User(db *sql.DB, user_id int) (int, string, error) {
 	var team_id int
 	var team_name string
-	err := db.QueryRow("SELECT team_id FROM user_team WHERE use_id =?", user_id).Scan(&team_id)
+	err := db.QueryRow("SELECT team_id FROM `user-team` WHERE user_id =?", user_id).Scan(&team_id)
 	if err != nil {
 		return 0, "", err
 	}
@@ -89,6 +88,34 @@ func GetTokenParams_User(db *sql.DB, user_id int) (int, string, error) {
 		return 0, "", err
 	}
 	return team_id, team_name, nil
+}
+
+// 词书
+type BookInfo struct {
+	BookID    int
+	BookName  string
+	WordNum   int
+	Diffculty int
+	Grade     int
+	Describe  string
+}
+
+// 查询所有词书
+func GetAllBooks(db *sql.DB) ([]BookInfo, error) {
+	var books []BookInfo
+	rows, err := db.Query("SELECT book_id,book_name,grade,word_num,difficulty,`describe` FROM book_info")
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var book BookInfo
+		err := rows.Scan(&book.BookID, &book.BookName, &book.Grade, &book.WordNum, &book.Diffculty, &book.Describe)
+		if err != nil {
+			return nil, err
+		}
+		books = append(books, book)
+	}
+	return books, nil
 }
 
 // 根据user_id查询user_study用户学习信息
@@ -132,6 +159,17 @@ type Exam struct {
 	QuestionNum int
 	ExamScore   int
 	ExamRank    int
+	QuestionID  string
+}
+
+// 根据exam_id查询exam_info
+func GetExamInfoByExamID(db *sql.DB, exam_id int) (Exam, error) {
+	var exam Exam
+	err := db.QueryRow("SELECT exam_name,exam_date,exam_clock,question_num,question_id FROM exam_info WHERE exam_id =?", exam_id).Scan(&exam.ExamName, &exam.ExamDate, &exam.Exam_clock, &exam.QuestionNum, &exam.QuestionID)
+	if err != nil {
+		return exam, err
+	}
+	return exam, nil
 }
 
 // 根据user_id,team_id查询考试信息
@@ -164,6 +202,42 @@ type QuestionDetail struct {
 	UserAnswer  string
 	Options     []string
 	Score       int
+}
+type QuestionInfo struct {
+	Question_id        int
+	Questiontype       int
+	QuestionDifficulty int
+	QuestionContent    string
+	QuestionAnswer     string
+	QuestionGrade      int
+	Options            map[string]string
+}
+
+// 根据question_id查询questiondetail
+func GetQuestionInfo(db *sql.DB, question_id int) (QuestionInfo, error) {
+	var question_info QuestionInfo
+	var question_type, question_diffculty, question_grade int
+	var content string
+	var answer string
+	err := db.QueryRow("SELECT question_type,question_diffculty,question_grade,question_content,quetion_answer FROM question_info WHERE question_id =?", question_id).Scan(&question_type, &question_diffculty, &question_grade, &content, &answer)
+	if err != nil {
+		return QuestionInfo{}, err
+	}
+	content_list := strings.Split(content, "：")
+	question_info.QuestionContent = content_list[0]
+	question_info.Options = make(map[string]string)
+	options := strings.Split(content_list[1], " ")
+	for _, option := range options {
+		m := strings.Split(option, ".")
+		question_info.Options[m[0]] = m[1]
+	}
+	question_info.QuestionAnswer = answer
+	question_info.Question_id = question_id
+	question_info.Questiontype = question_type
+	question_info.QuestionDifficulty = question_diffculty
+	question_info.QuestionGrade = question_grade
+	return question_info, nil
+
 }
 
 // 根据user_id和exam_id查询单场考试详情
