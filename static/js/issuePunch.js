@@ -228,38 +228,38 @@ function setAlarm() {
 }
 setAlarmBtn.addEventListener("click", setAlarm);
 
-/*"questions": [
-    {
-        "question_id": "example001",
-        "question_type": "1",
-        "question_difficulty": "3",
-        "question_grade": "13",
-        "question_content": "Are u OK?",
-        "question_choices": [
-            "Yes",
-            "No",
-            "I dont know",
-            "貴様のナメクジ野郎"
-        ],
+
+const questionTypeDict = {
+    1: "单选题",
+    2: "多选题",
+    3: "判断题",
+    4: "填空题",
+    5: "简答题"
+};
+const difficultyDescriptions = {
+    1: "容易",
+    2: "中等",
+    3: "困难",
+}
+/*{
+    "code": 200,
+    "msg": "成功",
+    "questions": [
+        {
+            "question_id": "example001",
+            "question_type": "1",
+            "question_difficulty": "3",
+            "question_grade": "13",
+            "question_content": "Are u OK?",
+            "question_choices":{
+                "A": "Yes",
+                "B": "No",
+                "C": "I dont know",
+                "D": "Hi"
+            },
+        ,
         "question_answer": "Yes",
         "full_score": 5
-    }
-]*/
-getQuestionTable=(questions)=>{
-    let tableBody=document.querySelector("#tableBody");
-    let questionIdArray=[];//创建表格，并返回问题id的数组
-    for(let i=0;i<questions.length;i++){
-        let questionId=questions[i].question_id;
-        questionIdArray.push(questionId);
-        let tr=document.createElement("tr");
-        //先创建选择按钮
-        let tdInput=document.createElement("td");
-        let input=document.createElement("input");
-        input.type="checkbox";
-        input.name="checkbox";
-        input.value=questionId;
-        tdInput.appendChild(input);
-        tr.appendChild(tdInput);
-
-    }
-}
+        }
+    ]
+}*/

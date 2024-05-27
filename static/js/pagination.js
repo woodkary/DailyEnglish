@@ -16,6 +16,7 @@ function createPaginationButtons() {
     startBtn.addEventListener("click", () => {
         page = 1;
         updatePagination(BUTTON_NUM);
+        getQuestion(page);
     });
     startBtns.appendChild(startBtn);
     let prevButton = document.createElement("button");
@@ -29,6 +30,7 @@ function createPaginationButtons() {
             page = 1;
         }
         updatePagination(BUTTON_NUM);
+        getQuestion(page);
     });
     startBtns.appendChild(prevButton);
     updatePagination(BUTTON_NUM);
@@ -44,6 +46,7 @@ function createPaginationButtons() {
             page = totalPage;
         }
         updatePagination(BUTTON_NUM);
+        getQuestion(page);
     });
     endBtns.appendChild(nextButton);
 
@@ -54,7 +57,10 @@ function createPaginationButtons() {
     endBtn.appendChild(i4);
     endBtn.addEventListener("click", () => {
         page = totalPage;
+        //更新分页按钮
         updatePagination(BUTTON_NUM);
+        //根据page请求题目
+        getQuestion(page);
     });
     endBtns.appendChild(endBtn);
 }
@@ -77,6 +83,7 @@ function updatePagination(pageSize) {
         a.addEventListener('click', () => {
             page = i;
             updatePagination(BUTTON_NUM);
+            getQuestion(page);
         });
 
         if (i === page) {
@@ -85,4 +92,59 @@ function updatePagination(pageSize) {
 
         pagination.appendChild(a);
     }
+}
+//请求体参数为index，以page传入，向后端请求所有题目
+function getQuestion(index) {
+    fetch('/api/team_manage/new_exam/all_questions', {
+        method: 'POST',
+        body: JSON.stringify({
+            index: index,
+        }),
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer '+localStorage.getItem('token')
+        }
+    }).then(res => res.json()).then(data => {
+        if(data.code === 200){
+            //获取到题目后，创建表格
+            createQuestionTableAndGetQuestionIds(data.questions);
+        }
+    }).catch(err => {
+        console.log(err);
+    })
+}
+function createQuestionTableAndGetQuestionIds(questions) {
+    let tableBody=document.querySelector("#tableBody");
+    //先清空原有内容
+    tableBody.innerHTML="";
+    let questionIdArray=[];//创建表格，并返回问题id的数组
+    for(let i=0;i<questions.length;i++){
+        let questionId=questions[i].question_id;
+        questionIdArray.push(questionId);
+        let tr=document.createElement("tr");
+        //先创建选择按钮
+        let tdInput=document.createElement("td");
+        let input=document.createElement("input");
+        input.type="checkbox";
+        input.name="checkbox";
+        input.value=questionId;
+        tdInput.appendChild(input);
+        tr.appendChild(tdInput);
+        //再创建题目类型展示框
+        let tdType=document.createElement("td");
+        //从字典中获取题目类型对应的文字
+        tdType.innerText=questionTypeDict[questions[i].question_type];
+        tr.appendChild(tdType);
+        //再创建题目内容展示框
+        let tdContent=document.createElement("td");
+        tdContent.innerText=questions[i].question_content;
+        tr.appendChild(tdContent);
+        //再创建题目难度展示框
+        let tdDifficulty=document.createElement("td");
+        //从字典中获取题目难度对应的文字
+        tdDifficulty.innerText=difficultyDescriptions[questions[i].question_difficulty];
+        tr.appendChild(tdDifficulty);
+    }
+    //将问题id数组返回
+    return questionIdArray;
 }
