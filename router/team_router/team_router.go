@@ -436,6 +436,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			ExamName    string `json:"exam_name"`    // 考试名称
 			ExamDate    string `json:"exam_date"`    // 考试日期
 			TeamName    string `json:"team_name"`    // 团队名称
+			Exam_clock  string `json:"exam_clock"`   // 考试时间
 			QuestionIDs []int  `json:"question_ids"` // 题目ID
 		}
 		var request Request
@@ -464,7 +465,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 				question_id += "-"
 			}
 		}
-		err := controlsql.InsertExamInfo(db, request.ExamName, request.ExamDate, question_num, question_id, teamID)
+		err := controlsql.InsertExamInfo(db, request.ExamName, request.ExamDate, request.Exam_clock, question_num, question_id, teamID)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			return
