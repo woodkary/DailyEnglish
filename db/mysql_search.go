@@ -337,13 +337,13 @@ func SearchTeamInfoByTeamID(db *sql.DB, teamID int) (string, int, error) {
 }
 
 // 12 插入考试
-func InsertExamInfo(db *sql.DB, exam_name string, exam_date string, question_num int, question_id string, team_id int) error {
+func InsertExamInfo(db *sql.DB, exam_name string, exam_date string, exam_clock string, question_num int, question_id string, team_id int) error {
 	stmt, err := db.Prepare("INSERT INTO exam_info(exam_name,exam_date,exam_clock,question_num,question_id,team_id) VALUES(?,?,?,?,?,?)")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec(exam_name, exam_date, "9:00-11:00", question_num, question_id, team_id)
+	_, err = stmt.Exec(exam_name, exam_date, exam_clock, question_num, question_id, team_id)
 	if err != nil {
 		return err
 	}
