@@ -431,7 +431,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		c.JSON(200, Response)
 	})
 	//发布考试
-	r.POST("/api/team_manage/new_exam/api/team_manage/new_exam", tokenAuthMiddleware(), func(c *gin.Context) {
+	r.POST("/api/team_manage/new_exam", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
 			ExamName    string `json:"exam_name"`    // 考试名称
 			ExamDate    string `json:"exam_date"`    // 考试日期
