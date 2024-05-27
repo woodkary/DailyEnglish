@@ -37,7 +37,7 @@ func AdminManagerExists(db *sql.DB, username string) bool {
 func RegisterUser(db *sql.DB, username, email, password string, phone string) error {
 	// 准备插入语句
 	//userid := utils.GenerateID()
-	userid := 114514
+	userid := 4
 	stmt, err := db.Prepare("INSERT INTO manager_info(manager_id ,manager_name, email, phone, pwd) VALUES( ?, ?, ?, ?, ?)")
 	if err != nil {
 		return err
