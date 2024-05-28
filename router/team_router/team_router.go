@@ -376,7 +376,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			FullScore          int               `json:"full_score"`
 		}
 		type response struct {
-			Code      string     `json:"code"`      // 状态码
+			Code      int        `json:"code"`      // 状态码
 			Msg       string     `json:"msg"`       // 消息
 			Questions []Question `json:"questions"` // 题目列表
 		}
@@ -427,7 +427,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			q.FullScore = 5
 			Response.Questions = append(Response.Questions, q)
 		}
-		Response.Code = "200"
+		Response.Code = 200
 		Response.Msg = "成功"
 		c.JSON(200, Response)
 	})
