@@ -12,7 +12,7 @@ import (
 func TestGenerateID(t *testing.T) {
 	ids := make([]int64, 100)
 	for i := range ids {
-		ids[i] = snowflake.GenerateID()
+		ids[i] = snowflake.GenerateID(time.Now(), 1145141919810)
 	}
 
 	uniqueIDs := make(map[int64]bool)
