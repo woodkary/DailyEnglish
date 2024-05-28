@@ -45,5 +45,6 @@ func main() {
 		r1.Use(middlewares.Cors())
 		r1.Run(":8080")
 	}()
+	r.Use(middlewares.Cors())
 	r.Run(":8081")
 }
