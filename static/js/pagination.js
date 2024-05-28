@@ -7,22 +7,20 @@ let totalPage = 100; // 总页数，不知道怎么获取，先写死
 const QUESTION_PER_PAGE = 10; // 每页题目数
 let pageAndQuestionsMap={};//存放每页题目的字典，key为页数，value为题目数组
 let allQuestionIds=new Set();//存放所有确认选择的题目的id集合
-const questionTypeDict = {
-    1: "单选题",
-    2: "多选题",
-    3: "判断题",
-    4: "填空题",
-    5: "简答题"
-};
-const difficultyDescriptions = {
-    1: "容易",
-    2: "中等",
-    3: "困难",
-}
+// const questionTypeDict = {
+//     1: "单选题",
+//     2: "多选题",
+//     3: "判断题",
+//     4: "填空题",
+//     5: "简答题"
+// };
+// const difficultyDescriptions = {
+//     1: "容易",
+//     2: "中等",
+//     3: "困难",
+// }
 //页面加载时，先获取第一页到第五页道题目，共50道题目
-document.addEventListener("DOMContentLoaded",()=>{
-    getQuestion(1);
-});
+getQuestion(1);
 //分页按钮
 createPaginationButtons();
 function createPaginationButtons() {
@@ -199,7 +197,7 @@ function createQuestionTable(questions) {
         //再创建题目类型展示框
         let tdType=document.createElement("td");
         //从字典中获取题目类型对应的文字
-        tdType.innerText=questionTypeDict[questions[i].question_type];
+        tdType.innerText=questions[i].question_type;
         tr.appendChild(tdType);
         //再创建题目内容展示框
         let tdContent=document.createElement("td");
@@ -208,8 +206,9 @@ function createQuestionTable(questions) {
         //再创建题目难度展示框
         let tdDifficulty=document.createElement("td");
         //从字典中获取题目难度对应的文字
-        tdDifficulty.innerText=difficultyDescriptions[questions[i].question_difficulty];
+        tdDifficulty.innerText=questions[i].question_difficulty;
         tr.appendChild(tdDifficulty);
+        tableBody.appendChild(tr);
     }
 }
 //提交按钮

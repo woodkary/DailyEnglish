@@ -355,5 +355,122 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
-
+	//获取考试题目
+	r.POST("/api/team_manage/new_exam/all_questions", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			Index int `json:"index"` // 要获取的题目的索引
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(400, "请求参数错误")
+			return
+		}
+		type Question struct {
+			QuestionID         int               `json:"question_id"`
+			QuestionType       string            `json:"question_type"`
+			QuestionDifficulty string            `json:"question_difficulty"`
+			QuestionGrade      string            `json:"question_grade"`
+			QuestionContent    string            `json:"question_content"`
+			QuestionChoices    map[string]string `json:"question_choices"`
+			QuestionAnswer     string            `json:"question_answer"`
+			FullScore          int               `json:"full_score"`
+		}
+		type response struct {
+			Code      int        `json:"code"`      // 状态码
+			Msg       string     `json:"msg"`       // 消息
+			Questions []Question `json:"questions"` // 题目列表
+		}
+		var Response response
+		var QuestionTypeDict = map[int]string{
+			1: "单选题",
+			2: "填空题",
+			3: "写作题",
+			4: "填空题",
+			5: "简答题",
+		}
+		var gradeDescriptions = map[int]string{
+			1:  "小学一年级",
+			2:  "小学二年级",
+			3:  "小学三年级",
+			4:  "小学四年级",
+			5:  "小学五年级",
+			6:  "小学六年级",
+			7:  "初中一年级",
+			8:  "初中二年级",
+			9:  "初中三年级",
+			10: "高中一年级",
+			11: "高中二年级",
+			12: "高中三年级",
+			13: "四级",
+			14: "六级",
+		}
+		var difficultyDescriptions = map[int]string{
+			1: "容易",
+			2: "中等",
+			3: "困难",
+		}
+		for i := request.Index; i < request.Index+50; i++ {
+			question, err := controlsql.GetQuestionInfo(db, i)
+			if err != nil {
+				log.Panic(err)
+				c.JSON(500, "服务器错误")
+				return
+			}
+			var q Question
+			q.QuestionID = question.Question_id
+			q.QuestionType = QuestionTypeDict[question.Questiontype]
+			q.QuestionDifficulty = difficultyDescriptions[question.QuestionDifficulty]
+			q.QuestionGrade = gradeDescriptions[question.QuestionGrade]
+			q.QuestionContent = question.QuestionContent
+			q.QuestionChoices = question.Options
+			q.QuestionAnswer = question.QuestionAnswer
+			q.FullScore = 5
+			Response.Questions = append(Response.Questions, q)
+		}
+		Response.Code = 200
+		Response.Msg = "成功"
+		c.JSON(200, Response)
+	})
+	//发布考试
+	r.POST("/api/team_manage/new_exam", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			ExamName    string `json:"exam_name"`    // 考试名称
+			ExamDate    string `json:"exam_date"`    // 考试日期
+			TeamName    string `json:"team_name"`    // 团队名称
+			Exam_clock  string `json:"exam_clock"`   // 考试时间
+			QuestionIDs []int  `json:"question_ids"` // 题目ID
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(400, "请求参数错误")
+			return
+		}
+		user, _ := c.Get("user")
+		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		var teamID int
+		for id, name := range TeamManagerClaims.Team {
+			if name == request.TeamName {
+				teamID = id
+				break
+			}
+		}
+		question_num := len(request.QuestionIDs)
+		var question_id string
+		for i := 0; i < question_num; i++ {
+			question_id += strconv.Itoa(request.QuestionIDs[i])
+			if i != question_num-1 {
+				question_id += "-"
+			}
+		}
+		err := controlsql.InsertExamInfo(db, request.ExamName, request.ExamDate, request.Exam_clock, question_num, question_id, teamID)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		c.JSON(200, "发布成功")
+	})
 }

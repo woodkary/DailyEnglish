@@ -160,9 +160,10 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 			}
 
 			c.JSON(http.StatusOK, gin.H{
-				"code":  "200",
-				"msg":   "登录成功",
-				"token": token,
+				"code":      "200",
+				"msg":       "登录成功",
+				"token":     token,
+				"team_info": item2s,
 			})
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{
