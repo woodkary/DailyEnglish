@@ -467,6 +467,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		}
 		err := controlsql.InsertExamInfo(db, request.ExamName, request.ExamDate, request.Exam_clock, question_num, question_id, teamID)
 		if err != nil {
+			log.Panic(err)
 			c.JSON(500, "服务器错误")
 			return
 		}
