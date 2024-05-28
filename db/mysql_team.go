@@ -52,8 +52,10 @@ func DeleteTeam(db *sql.DB, teamid int) error {
 // 删除团队成员
 func DeleteTeammember(db *sql.DB, teamid int, username string) error {
 
-	userid, err := GetUserID(db, username)
-
+	userid, errr := GetUserID(db, username)
+	if errr != nil {
+		return errr
+	}
 	stmt, err := db.Prepare("DELETE FROM user-team WHERE user_id = ? AND team_id = ?")
 	if err != nil {
 		return err
@@ -66,4 +68,24 @@ func DeleteTeammember(db *sql.DB, teamid int, username string) error {
 	}
 
 	return nil
+}
+
+// 查找成员是否存在，返回bool
+func CheckTeammember(db *sql.DB, username string, teamid int) (bool, error) {
+	userid, errr := GetUserID(db, username)
+	if errr != nil {
+		return false, errr
+	}
+	// SQL 查询语句
+	query := "SELECT COUNT(*) FROM user-team WHERE user_id = ? AND team_id = ?"
+
+	var count int
+	// 执行查询
+	err := db.QueryRow(query, userid, teamid).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+
+	// 如果 count 大于 0，说明记录存在
+	return count > 0, nil
 }

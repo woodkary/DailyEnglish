@@ -10,12 +10,6 @@ import (
 )
 
 func TestGenerateID(t *testing.T) {
-	err := snowflake.Init("2023-01-01", 1)
-	if err != nil {
-		t.Errorf("Failed to initialize snowflake node: %v", err)
-		return
-	}
-
 	ids := make([]int64, 100)
 	for i := range ids {
 		ids[i] = snowflake.GenerateID()
