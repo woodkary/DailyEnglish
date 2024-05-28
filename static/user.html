@@ -181,14 +181,6 @@
                                             <div class="tabs__tab active" id="tab_1" data-tab-info>
                                                 <div class="row">
                                                     <div class="col-md-6">
-                                                        <label>用户id</label>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <p>Kshiti123</p>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-6">
                                                         <label>姓名</label>
                                                     </div>
                                                     <div class="col-md-6">
@@ -222,7 +214,7 @@
                                             </div>
                                             <div class="tabs__tab" id="tab_2" data-tab-info>
                                                 <card class="team-card">
-                                                    <image class="group-img" src="./image/team.svg"></image>
+                                                    <img class="group-img" src="./image/team.svg">
                                                     <div class="group-details">
                                                         <div class="group-info">
                                                             <span class="group-name">team1</span>
@@ -240,7 +232,7 @@
                                                 </card>
 
                                                 <card class="team-card">
-                                                    <image class="group-img" src="./image/team.svg"></image>
+                                                    <img class="group-img" src="./image/team.svg">
                                                     <div class="group-details">
                                                         <div class="group-info">
                                                             <span class="group-name">team2</span>
@@ -256,9 +248,8 @@
                                                         </div>
                                                     </div>
                                                 </card>
-                                                <button id="openModalButton">添加新团队</button>
-                                               
                                             </div>
+                                            <button id="openModalButton">添加新团队</button>
                                         </div>
                                     </div>
                                     <script>
@@ -342,8 +333,8 @@
     });
 
     //以下是表单验证
-    const teamName = document.querySelector('.input[teamName]');
-    const amount = document.querySelector('.input[amount]');
+    let teamName = document.querySelector('.input[teamName]');
+    let amount = document.querySelector('.input[amount]');
     
     modalAccept.addEventListener('click', () => {
         let isValid = true;
@@ -359,6 +350,35 @@
             isValid = false;
         } else {
             amount.style.borderColor = '#818CF8';
+        }
+        if(isValid){
+            //发送请求，创建团队
+            console.log(`teamName:${teamName.value},amount:${amount.value}`);
+            fetch('http://localhost:8081/api/team_manage/create_team', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer '+localStorage.getItem('token')
+                },
+                body: JSON.stringify({
+                    team_name: teamName.value,
+                    max_num: amount.value
+                })
+            }).then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return Promise.reject(response.status);
+                }
+            }).then(data => {
+                console.log(data);
+                if(data.code === 200) {
+                    //创建成功
+                    alert('团队创建成功');
+                }
+            }).catch(error => {
+                console.log(error);
+            });
         }
     });
 </script>
