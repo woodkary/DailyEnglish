@@ -474,3 +474,6 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		c.JSON(200, "发布成功")
 	})
 }
+
+//创建团队 加入团队 删除成员 搜索成员
+// utils- 每日更新打卡内容
