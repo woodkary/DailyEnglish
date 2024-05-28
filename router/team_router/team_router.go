@@ -383,8 +383,8 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		var Response response
 		var QuestionTypeDict = map[int]string{
 			1: "单选题",
-			2: "多选题",
-			3: "判断题",
+			2: "填空题",
+			3: "写作题",
 			4: "填空题",
 			5: "简答题",
 		}
@@ -412,6 +412,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		for i := request.Index; i < request.Index+50; i++ {
 			question, err := controlsql.GetQuestionInfo(db, i)
 			if err != nil {
+				log.Panic(err)
 				c.JSON(500, "服务器错误")
 				return
 			}
