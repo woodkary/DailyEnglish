@@ -13,101 +13,78 @@ function getPersonalInfo(){
             'Authorization': 'Bearer '+token
         }
     })
-   .then(response => response.json())
-   .then(data => {
-        console.log(data);
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            let nameP = document.getElementById('name');
+            let emailP = document.getElementById('email');
+            let phoneP = document.getElementById('phone');
+            nameP.textContent = data.name;
+            emailP.textContent = data.email;
+            phoneP.textContent = data.phone;
+            data.team.forEach(t => {
+                //假设每个团队10人，这里可以根据实际情况调整
+                allTeams.push({teamName:t.team_name,memberNum:t.member_num});
+            });
+            renderTeamInfo();
+        }).catch(error => {
+        //初始化默认的个人信息
+        console.log(error);
         let nameP = document.getElementById('name');
         let emailP = document.getElementById('email');
         let phoneP = document.getElementById('phone');
-        nameP.textContent = data.user.name;
-        emailP.textContent = data.user.email;
-        phoneP.textContent = data.user.phone;
-        data.user.teams.forEach(team => {
-            //假设每个团队10人，这里可以根据实际情况调整
-            //TODO 如果后端更新了查人数，就要用team来查，而不是用10
-            allTeams.push({team:team,num:10});
-        })
-    })
-}
-
-window.onload=function(){
-    console.log('这里什么都没有，骗你的，哈哈哈！');
-    let aboutSpan=document.querySelector('.tabs').querySelector('#about');
-    aboutSpan.dispatchEvent(new Event('click'));
-    closeIcon.addEventListener("click", () => {
-        toast.classList.remove("active");
-
-        setTimeout(() => {
-            progress.classList.remove("active");
-        }, 300);
-
-        clearTimeout(timer1);
-    });
-    initializeCodeMap();
-    initializeTeamCode();
-    initializeInput();
-    /*toggleToast();*/
-}
-//先放入一个map存储所有的code和过期时间
-function initializeCodeMap () {
-    let codeMap = JSON.parse(localStorage.getItem('codeMap'));
-    if (codeMap == null) {
-        codeMap = {};
-        localStorage.setItem('codeMap', JSON.stringify(codeMap));
-    }
-    let groupInfos = document.querySelectorAll('.team-card');
-    groupInfos.forEach(groupInfo => {
-        let teamname = groupInfo.querySelector('.group-name').textContent;
-        let code = getInvitationCode(teamname);
-        let teamcode = groupInfo.querySelector('.teamcode');
-        teamcode.querySelector('span').textContent = code;
+        nameP.textContent = '未登录';
+        emailP.textContent = '未登录';
+        phoneP.textContent = '未登录';
+        allTeams.push({teamName:'未加入任何团队',memberNum:0});
+        renderTeamInfo();
     });
 }
-function initializeInput () {
-    var editBtn = document.getElementById('editProfileBtn');
-    var saveBtn = document.getElementById('saveBtn');
-    var profileContent = document.getElementById('myTabContent');
-
-    if(editBtn!== null) {
-        editBtn.addEventListener('click', function (evt) {
-            evt.preventDefault();
-            // 将所有的p元素变为输入框
-            var ps = profileContent.getElementsByTagName('p');
-            for (var i = ps.length - 1; i >= 0; i--) { // 使用倒序循环
-                var p = ps[i];
-                var input = document.createElement('input');
-                input.type = 'text';
-                input.value = p.textContent;
-                input.classList.add('message-input');
-                p.parentNode.replaceChild(input, p);
-            }
-            // 显示保存按钮
-            if(saveBtn!== null) {
-                saveBtn.style.display = 'block';
-                saveBtn.addEventListener('click', function (evt) {
-                    evt.preventDefault();
-                    // 将所有的输入框变回p元素，并保存输入框中的文本
-                    var inputs = profileContent.getElementsByTagName('input');
-                    for (var i = inputs.length - 1; i >= 0; i--) {
-                        var input = inputs[i];
-                        var p = document.createElement('p');
-                        p.textContent = input.value;
-                        input.parentNode.replaceChild(p, input);
-                    }
-
-                    // 隐藏保存按钮
-                    saveBtn.style.display = 'none';
-                });
-            }
-        });
-    }
-}
-/*document.addEventListener('DOMContentLoaded', );*/
-
-function initializeTeamCode () {
-    let copyBtns = document.querySelectorAll('.copyBtn');
-    for(let i=0;i<copyBtns.length;i++) {
-        let copyBtn = copyBtns[i];
+function renderTeamInfo(){
+    let teamInfoChart=document.querySelector('#tab_2');
+    teamInfoChart.innerHTML='';//清空原有内容
+    allTeams.forEach(t => {
+        let card = document.createElement('card');
+        card.classList.add('team-card');
+        let img=document.createElement('img');
+        img.src='./image/team.svg';
+        img.classList.add('group-img');
+        img.alt='team';
+        card.appendChild(img);
+        //显示团队信息
+        let teamDetails=document.createElement('div');
+        teamDetails.classList.add('group-details');
+        let teamInfo=document.createElement('div');
+        teamInfo.classList.add('group-info');
+        let teamNameSpan=document.createElement('span');
+        teamNameSpan.classList.add('group-name');
+        teamNameSpan.textContent=t.teamName;
+        let memberNumSpan=document.createElement('span');
+        memberNumSpan.classList.add('col-md-6');
+        memberNumSpan.classList.add('group-peopleAmount');
+        memberNumSpan.textContent=t.memberNum+'人';
+        teamInfo.appendChild(teamNameSpan);
+        teamInfo.appendChild(memberNumSpan);
+        teamDetails.appendChild(teamInfo);
+        //显示邀请码
+        let teamCodeDiv=document.createElement('div');
+        teamCodeDiv.classList.add('group-code');
+        let teamCodeP=document.createElement('p');
+        teamCodeP.classList.add('teamcode');
+        teamCodeP.textContent='邀请码：';
+        let teamCodeSpan=document.createElement('span');
+        let codeMap = JSON.parse(localStorage.getItem('codeMap'));
+        //创建map保存团队名和邀请码
+        if (codeMap == null) {
+            codeMap = {};
+            localStorage.setItem('codeMap', JSON.stringify(codeMap));
+        }
+        teamCodeSpan.textContent=getInvitationCode(t.teamName);
+        teamCodeP.appendChild(teamCodeSpan);
+        let copyBtn=document.createElement('i');
+        copyBtn.classList.add('uil');
+        copyBtn.classList.add('uil-copy');
+        copyBtn.classList.add('copyBtn');
         copyBtn.addEventListener('click', () => {
             let code = copyBtn.parentNode.querySelector('span').textContent;
             navigator.clipboard.writeText(code).then(r => { // 复制成功
@@ -151,10 +128,11 @@ function initializeTeamCode () {
 
             });
         });
-    }
-    let generateBtns = document.querySelectorAll('.generateBtn');
-    for(let i=0;i<generateBtns.length;i++) {
-        let generateBtn = generateBtns[i];
+        teamCodeP.appendChild(copyBtn);
+        let generateBtn=document.createElement('i');
+        generateBtn.classList.add('uil');
+        generateBtn.classList.add('uil-redo');
+        generateBtn.classList.add('generateBtn');
         generateBtn.addEventListener('click', () => {
             let teamname = generateBtn.parentNode.parentNode.parentNode.querySelector('.group-name').textContent;
             let newCode = generateTeamCode(teamname);
@@ -194,11 +172,74 @@ function initializeTeamCode () {
                     progress.classList.remove("active");
                 },5000);
             }
-        })
+        });
+        teamCodeP.appendChild(generateBtn);
+        teamCodeDiv.appendChild(teamCodeP);
+        teamDetails.appendChild(teamCodeDiv);
+        card.appendChild(teamDetails);
+        teamInfoChart.appendChild(card);
+    });
+}
+
+window.onload=function(){
+    console.log('这里什么都没有，骗你的，哈哈哈！');
+    let aboutSpan=document.querySelector('.tabs').querySelector('#about');
+    aboutSpan.dispatchEvent(new Event('click'));
+    closeIcon.addEventListener("click", () => {
+        toast.classList.remove("active");
+
+        setTimeout(() => {
+            progress.classList.remove("active");
+        }, 300);
+
+        clearTimeout(timer1);
+    });
+    getPersonalInfo();
+    initializeInput();
+    /*toggleToast();*/
+}
+//初始化输入框
+function initializeInput () {
+    var editBtn = document.getElementById('editProfileBtn');
+    var saveBtn = document.getElementById('saveBtn');
+    var profileContent = document.getElementById('myTabContent');
+
+    if(editBtn!== null) {
+        editBtn.addEventListener('click', function (evt) {
+            evt.preventDefault();
+            // 将所有的p元素变为输入框
+            var ps = profileContent.getElementsByTagName('p');
+            for (var i = ps.length - 1; i >= 0; i--) { // 使用倒序循环
+                var p = ps[i];
+                var input = document.createElement('input');
+                input.type = 'text';
+                input.value = p.textContent;
+                input.classList.add('message-input');
+                p.parentNode.replaceChild(input, p);
+            }
+            // 显示保存按钮
+            if(saveBtn!== null) {
+                saveBtn.style.display = 'block';
+                saveBtn.addEventListener('click', function (evt) {
+                    evt.preventDefault();
+                    // 将所有的输入框变回p元素，并保存输入框中的文本
+                    var inputs = profileContent.getElementsByTagName('input');
+                    for (var i = inputs.length - 1; i >= 0; i--) {
+                        var input = inputs[i];
+                        var p = document.createElement('p');
+                        p.textContent = input.value;
+                        input.parentNode.replaceChild(p, input);
+                    }
+
+                    // 隐藏保存按钮
+                    saveBtn.style.display = 'none';
+                });
+            }
+        });
     }
 }
-// Toggling invitation code generation
-
+/*document.addEventListener('DOMContentLoaded', );*/
+//TODO 改为向后端请求邀请码，而不是自己生成
 function generateInvitationCode() {
     let code = "#";
     let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -237,24 +278,3 @@ function generateTeamCode(teamname) {
     localStorage.setItem('codeMap', JSON.stringify(codeMap));
     return newCode;
 }
-
-function toggleToast(){
-    let toast = document.getElementById('toast');
-    let overlay = document.getElementById('overlay');
-    let showToastBtn = document.getElementById('showToast');
-    let toastClose=document.getElementById('toastClose');
-    showToastBtn.addEventListener('click', function () {
-        overlay.style.display = 'block';
-        toast.style.display = 'block';
-        /*//两秒后自动关闭toast
-        setTimeout(() => {
-            toast.style.display = 'none';
-            overlay.style.display = 'none';
-        }, 2000);*/
-    });
-    toastClose.addEventListener('click', function () {
-        toast.style.display = 'none';
-        overlay.style.display = 'none';
-    });
-}
-

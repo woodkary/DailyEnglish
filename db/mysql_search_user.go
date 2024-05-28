@@ -219,24 +219,37 @@ func GetQuestionInfo(db *sql.DB, question_id int) (QuestionInfo, error) {
 	var question_type, question_diffculty, question_grade int
 	var content string
 	var answer string
-	err := db.QueryRow("SELECT question_type,question_diffculty,question_grade,question_content,quetion_answer FROM question_info WHERE question_id =?", question_id).Scan(&question_type, &question_diffculty, &question_grade, &content, &answer)
+	err := db.QueryRow("SELECT question_type,question_difficulty,question_grade,question_content,question_answer FROM question_info WHERE question_id =?", question_id).Scan(&question_type, &question_diffculty, &question_grade, &content, &answer)
 	if err != nil {
 		return QuestionInfo{}, err
 	}
-	content_list := strings.Split(content, "：")
-	question_info.QuestionContent = content_list[0]
-	question_info.Options = make(map[string]string)
-	options := strings.Split(content_list[1], " ")
-	for _, option := range options {
-		m := strings.Split(option, ".")
-		question_info.Options[m[0]] = m[1]
+	if question_type == 1 { //选择题
+		content_list := strings.Split(content, "：")
+		question_info.QuestionContent = content_list[0]
+		question_info.Options = make(map[string]string)
+		options := strings.Split(content_list[1], " ")
+		for _, option := range options {
+			m := strings.Split(option, ".")
+			question_info.Options[m[0]] = m[1]
+		}
+		question_info.QuestionAnswer = answer
+		question_info.Question_id = question_id
+		question_info.Questiontype = question_type
+		question_info.QuestionDifficulty = question_diffculty
+		question_info.QuestionGrade = question_grade
+		return question_info, nil
+	} else if question_type == 2 { //填空题
+		content_list := strings.Split(content, "：")
+		question_info.QuestionContent = content_list[0]
+		question_info.QuestionAnswer = answer
+		question_info.Question_id = question_id
+		question_info.Questiontype = question_type
+		question_info.QuestionDifficulty = question_diffculty
+		question_info.QuestionGrade = question_grade
+		question_info.Options = make(map[string]string)
+		return question_info, nil
 	}
-	question_info.QuestionAnswer = answer
-	question_info.Question_id = question_id
-	question_info.Questiontype = question_type
-	question_info.QuestionDifficulty = question_diffculty
-	question_info.QuestionGrade = question_grade
-	return question_info, nil
+	return QuestionInfo{}, nil
 
 }
 

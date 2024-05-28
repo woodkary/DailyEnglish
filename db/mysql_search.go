@@ -1,9 +1,11 @@
 package db
 
 import (
+	service "DailyEnglish/utils"
 	"database/sql"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // 1根据manager_id查所有team_id和team_name
@@ -338,12 +340,14 @@ func SearchTeamInfoByTeamID(db *sql.DB, teamID int) (string, int, error) {
 
 // 12 插入考试
 func InsertExamInfo(db *sql.DB, exam_name string, exam_date string, exam_clock string, question_num int, question_id string, team_id int) error {
-	stmt, err := db.Prepare("INSERT INTO exam_info(exam_name,exam_date,exam_clock,question_num,question_id,team_id) VALUES(?,?,?,?,?,?)")
+	now := time.Now()
+	exam_id := service.GenerateID(now, 123)
+	stmt, err := db.Prepare("INSERT INTO exam_info(exam_id,exam_name,exam_date,exam_clock,question_num,question_id,team_id) VALUES(?,?,?,?,?,?,?)")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec(exam_name, exam_date, exam_clock, question_num, question_id, team_id)
+	_, err = stmt.Exec(exam_id, exam_name, exam_date, exam_clock, question_num, question_id, team_id)
 	if err != nil {
 		return err
 	}

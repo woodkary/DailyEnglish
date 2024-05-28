@@ -96,7 +96,6 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			c.JSON(500, "服务器错误")
 			return
 		}
-		//TODO这里是查询数据库获取数据
 		Item := make(map[int][]controlsql.ExamInfo)
 		for teamID := range TeamManagerClaims.Team {
 			examInfo, err := controlsql.SearchExamInfoByTeamIDAndDate(db, teamID, request.Date)
@@ -223,12 +222,12 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		}
 
 		type response struct {
-			Code       string     `json:"code"`        // 状态码
+			Code       int        `json:"code"`        // 状态码
 			Msg        string     `json:"msg"`         // 消息
 			ExamDetail ExamDetail `json:"exam_detail"` // 考试详情
 		}
 		var Response response
-		Response.Code = "200"
+		Response.Code = 200
 		Response.Msg = "成功"
 		Response.ExamDetail.ID = strconv.Itoa(request.ExamID)
 		Response.ExamDetail.Name = ExamName
@@ -376,15 +375,15 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			FullScore          int               `json:"full_score"`
 		}
 		type response struct {
-			Code      string     `json:"code"`      // 状态码
+			Code      int        `json:"code"`      // 状态码
 			Msg       string     `json:"msg"`       // 消息
 			Questions []Question `json:"questions"` // 题目列表
 		}
 		var Response response
 		var QuestionTypeDict = map[int]string{
 			1: "单选题",
-			2: "多选题",
-			3: "判断题",
+			2: "填空题",
+			3: "写作题",
 			4: "填空题",
 			5: "简答题",
 		}
@@ -412,6 +411,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		for i := request.Index; i < request.Index+50; i++ {
 			question, err := controlsql.GetQuestionInfo(db, i)
 			if err != nil {
+				log.Panic(err)
 				c.JSON(500, "服务器错误")
 				return
 			}
@@ -426,12 +426,12 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			q.FullScore = 5
 			Response.Questions = append(Response.Questions, q)
 		}
-		Response.Code = "200"
+		Response.Code = 200
 		Response.Msg = "成功"
 		c.JSON(200, Response)
 	})
 	//发布考试
-	r.POST("/api/team_manage/new_exam/api/team_manage/new_exam", tokenAuthMiddleware(), func(c *gin.Context) {
+	r.POST("/api/team_manage/new_exam", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
 			ExamName    string `json:"exam_name"`    // 考试名称
 			ExamDate    string `json:"exam_date"`    // 考试日期
@@ -467,9 +467,13 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		}
 		err := controlsql.InsertExamInfo(db, request.ExamName, request.ExamDate, request.Exam_clock, question_num, question_id, teamID)
 		if err != nil {
+			log.Panic(err)
 			c.JSON(500, "服务器错误")
 			return
 		}
 		c.JSON(200, "发布成功")
 	})
 }
+
+//创建团队 加入团队 删除成员 搜索成员
+// utils- 每日更新打卡内容

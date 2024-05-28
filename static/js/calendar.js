@@ -17,8 +17,8 @@ function getExamDates(){
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
             },
             body: JSON.stringify({
-                year: year,
-                month: month
+                year: String.toString(year),
+                month: String.toString(month)
             })
         }).then(response => {
             if (response.ok) {
@@ -27,7 +27,7 @@ function getExamDates(){
                 throw new Error('Network response was not ok');
             }
         }).then(data => {
-            if (data.code === 200) {
+            if (data.code == 200||String.toString(data.code)=="200") {
                 let exam_date = data.exam_date;
                 for (let i = 0; i < exam_date.length; i++) {
                     exam_dates.add(exam_date[i]);
