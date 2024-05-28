@@ -96,7 +96,6 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			c.JSON(500, "服务器错误")
 			return
 		}
-		//TODO这里是查询数据库获取数据
 		Item := make(map[int][]controlsql.ExamInfo)
 		for teamID := range TeamManagerClaims.Team {
 			examInfo, err := controlsql.SearchExamInfoByTeamIDAndDate(db, teamID, request.Date)
@@ -223,12 +222,12 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		}
 
 		type response struct {
-			Code       string     `json:"code"`        // 状态码
+			Code       int        `json:"code"`        // 状态码
 			Msg        string     `json:"msg"`         // 消息
 			ExamDetail ExamDetail `json:"exam_detail"` // 考试详情
 		}
 		var Response response
-		Response.Code = "200"
+		Response.Code = 200
 		Response.Msg = "成功"
 		Response.ExamDetail.ID = strconv.Itoa(request.ExamID)
 		Response.ExamDetail.Name = ExamName
@@ -468,6 +467,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		}
 		err := controlsql.InsertExamInfo(db, request.ExamName, request.ExamDate, request.Exam_clock, question_num, question_id, teamID)
 		if err != nil {
+			log.Panic(err)
 			c.JSON(500, "服务器错误")
 			return
 		}

@@ -6,16 +6,9 @@ import (
 	sf "github.com/bwmarrin/snowflake"
 )
 
-var node *sf.Node
+func GenerateID(st time.Time, machineID int64) int64 {
 
-func Init(st time.Time, machineID int64) (err error, node *sf.Node) {
 	sf.Epoch = st.UnixNano() / 1000000
-	node, err = sf.NewNode(machineID)
-	return nil, node
-}
-
-func GenerateID() int64 {
-	st := time.Now()
-	_, node := Init(st, 1145141919810)
+	node, _ := sf.NewNode(machineID)
 	return node.Generate().Int64()
 }

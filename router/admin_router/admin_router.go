@@ -148,7 +148,7 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 				})
 				return
 			}
-
+			fmt.Println(item2s)
 			//生成token
 			token, err := utils.GenerateToken_TeamManager(item1, item2s)
 			if err != nil {
