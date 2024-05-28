@@ -171,5 +171,4 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 			})
 		}
 	})
-
 }
