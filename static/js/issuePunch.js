@@ -1,32 +1,62 @@
-const modal=document.querySelector('.modal');
+const calendarModal=document.querySelector('#calendar-modal');
+const clockModals=[document.querySelector('#clock-modal1'),document.querySelector('#clock-modal2')]
 const modelOverlay=document.querySelector('.modal-overlay');
 const calendarContainer=document.querySelector('.calendar-container');
+const clockContainers = document.querySelectorAll(".clock-container");
 const examSelectBtn=document.querySelector('.exam-select-btn');
+const timeSelectBtns=document.querySelectorAll('.time-select-btn');
 let isDisplay=false;
-document.addEventListener('keydown',(event)=>{
+/*document.addEventListener('keydown',(event)=>{
     if(event.keyCode===77) {//if the key pressed is M
-        if(modal.style.display==='none'){
-            modal.style.display='flex';//show
+        if(calendarModal.style.display==='none'){
+            calendarModal.style.display='flex';//show
             modelOverlay.style.display='flex';//show
             isDisplay=true;
         }else{
-            modal.style.display='none';//hide
+            calendarModal.style.display='none';//hide
             modelOverlay.style.display='none';//hide
             isDisplay=false;
         }
+    }else if(event.keyCode===84) {//if the key pressed is T
+        if(clockModal.style.display==='none') {
+            clockModal.style.display = 'flex';//show
+            modelOverlay.style.display = 'flex';//show
+            isDisplay = true;
+        }else{
+            clockModal.style.display = 'none';//hide
+            modelOverlay.style.display = 'none';//hide
+            isDisplay = false;
+        }
     }
-});
+});*/
 document.addEventListener('click', (event) => {
     if (isDisplay&&event.target === calendarContainer) {
-        modal.style.display = 'none';
+        calendarModal.style.display = 'none';
         modelOverlay.style.display = 'none';
         isDisplay=false;
     }
-});
+    if(isDisplay&&Array.from(clockContainers).includes(event.target)){
+        clockModals.forEach(clockModal=>{
+            clockModal.style.display = 'none';
+        });
+        modelOverlay.style.display = 'none';
+        isDisplay=false;
+    }
+})
 examSelectBtn.addEventListener('click',()=>{
-    modal.style.display='flex';//show
+    calendarModal.style.display='flex';//show
     modelOverlay.style.display='flex';//show
     isDisplay=true;
+});
+timeSelectBtns.forEach((btn,index)=>{
+    btn.addEventListener('click',()=> {
+        clockModals[index].style.display = 'flex';//show
+        modelOverlay.style.display = 'flex';//show
+        isDisplay = true;
+        // 获取点击的按钮的id，用于给弹出窗标记应该将选择后的时间赋予哪一个元素
+        let spanId = btn.children.item(0).id;
+        clockModals[index].setAttribute("value", spanId);
+    });
 });
 
 const daysTag = document.querySelector(".days"),
@@ -85,11 +115,12 @@ daysTag.addEventListener('click', (event) => {
         // 在这里添加您的点击处理逻辑
         examSelectBtn.children.item(0).textContent=toDateString(newDate);
         // 关闭弹窗
-        modal.style.display='none';
+        calendarModal.style.display='none';
         modelOverlay.style.display='none';
         isDisplay=false;
     }
 });
+//获取本地存储的团队信息
 const getAllTeamInfo=()=>{
     let teamInfoJson=localStorage.getItem("team_info");
     if(teamInfoJson){
@@ -98,6 +129,34 @@ const getAllTeamInfo=()=>{
         return null;
     }
 }
+const teamSelect=document.querySelector("#team-select");
+document.addEventListener("DOMContentLoaded",()=>{
+    /*alert("wwefse");*/
+    let teamInfo=getAllTeamInfo();
+    let teamNameArray;
+    if(teamInfo) {
+        //从本地获取
+        teamNameArray = Object.values(teamInfo);
+    }else{
+        //默认选项
+        teamNameArray = ["团队1","团队2","团队3","团队4","团队5","团队6","团队7","团队8","团队9","团队10"];
+    }
+    // 清空原有选项
+    teamSelect.innerHTML="<option value=\"\" disabled selected id=\"selected-team\">请选择团队</option>";
+
+    // 重新渲染选项
+    for (let i = 0; i < teamNameArray.length; i++) {
+        let option = document.createElement("option");
+        option.value = teamNameArray[i];
+        option.text = teamNameArray[i];
+        teamSelect.add(option);
+    }
+});
+teamSelect.addEventListener("change",()=>{
+    teamSelect.name=teamSelect.options[teamSelect.selectedIndex].value;
+    console.log(teamSelect.name);
+});
+// 选择团队后显示选择的团队名称
 const toDateString=(date)=>{
     return date.getFullYear() + "年" + (date.getMonth() + 1) + "月" + date.getDate()+"日";
 }
@@ -119,34 +178,44 @@ prevNextIcon.forEach(icon => { // getting prev and next icons
         renderCalendar(); // calling renderCalendar function
     });
 });
-/*"questions": [
-    {
-        "question_id": "example001",
-        "question_type": "1",
-        "question_difficulty": "3",
-        "question_grade": "13",
-        "question_content": "Are u OK?",
-        "question_choices": [
-            "Yes",
-            "No",
-            "I dont know",
-            "貴様のナメクジ野郎"
-        ],
-        "question_answer": "Yes",
-        "full_score": 5
+// 点击弹出窗关闭按钮关闭弹窗
+clockContainers.forEach((clockContainer,index) => {
+    const content = clockContainer.querySelector(".content"),
+        selectMenu = clockContainer.querySelectorAll("select"),
+        setAlarmBtn = clockContainer.querySelector("button");
+    let alarmTime;
+    /*ringtone = new Audio("./files/ringtone.mp3");*/
+    for (let i = 12; i > 0; i--) {
+        i = i < 10 ? `0${i}` : i;
+        let option = `<option value="${i}">${i}</option>`;
+        selectMenu[0].firstElementChild.insertAdjacentHTML("afterend", option);
     }
-]*/
-getQuestionTable=(questions)=>{
-    let tableBody=document.querySelector("#tableBody");
-    let questionIdArray=[];//创建表格，并返回问题id的数组
-    for(let i=0;i<questions.length;i++){
-        let questionId=questions[i].question_id;
-        questionIdArray.push(questionId);
-        let tr=document.createElement("tr");
-        let tdInput=document.createElement("td");
-        let input=document.createElement("input");
-        input.type="checkbox";
-        input.name="checkbox";
-        input.value=questionId;
+    for (let i = 59; i >= 0; i--) {
+        i = i < 10 ? `0${i}` : i;
+        let option = `<option value="${i}">${i}</option>`;
+        selectMenu[1].firstElementChild.insertAdjacentHTML("afterend", option);
     }
-}
+    for (let i = 2; i > 0; i--) {
+        let ampm = i == 1 ? "AM" : "PM";
+        let option = `<option value="${ampm}">${ampm}</option>`;
+        selectMenu[2].firstElementChild.insertAdjacentHTML("afterend", option);
+    }
+    const setAlarm = () => {
+        let time = `${selectMenu[0].value}:${selectMenu[1].value} ${selectMenu[2].value}`;
+        if (time.includes("Hour") || time.includes("Minute") || time.includes("AM/PM")) {
+            return alert("请选择正确的时间！");
+        }
+        alarmTime = time;
+        //将选择的时间写入到对应的span标签中
+        let clockModal = document.querySelector(`#clock-modal${index+1}`);
+        let spanId = clockModal.getAttribute("value");
+        let span = document.querySelector(`#${spanId}`);
+        span.textContent = time;
+        //关闭弹窗
+
+        clockModal.style.display = 'none';
+        modelOverlay.style.display = 'none';
+        isDisplay = false;
+    }
+    setAlarmBtn.addEventListener("click", setAlarm);
+});

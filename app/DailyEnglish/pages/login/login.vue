@@ -98,13 +98,12 @@
 					success: (res) => {
             if(res.statusCode == 200){
               if (remember) {
-                let token = res.data.token;
                 uni.setStorageSync('username');
                 uni.setStorageSync('password');
                 uni.setStorageSync('remember');
-                uni.setStorageSync('token', token);
               }
-
+			  let token = res.data.token;
+			  uni.setStorageSync('token', token);
               uni.navigateTo({
                 //TODO: 跳转到首页，或处理其他逻辑
                 url: res.data.have_word_book? '../home/home': '../Welcome/Welcome'+`?operation=${res.data.have_word_book?1:0}`
