@@ -98,6 +98,8 @@ function login(event) {
         console.log(data);
         if (data.code == 200) {
             localStorage.setItem("token", data.token);
+            //存储用户名
+            sessionStorage.setItem("username", username);
             //获取管理员所管理的团队id和团队名称，这是个map类型的json数据
             localStorage.setItem("team_info", JSON.stringify(data.team_info));
             let token = data.token;
