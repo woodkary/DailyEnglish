@@ -45,7 +45,7 @@
 						<image src="../../static/not-done.svg" style="margin-left: 48rpx;"></image>
 						<text class="title">打卡计划:</text>
 						<text class="state">未完成</text>
-						<button @click="sign_again">补签</button>
+<!--						<button @click="sign_again">补签</button>-->
 					</view>
           <view v-else-if="getChosenDateFromDates()==0">
             <view  class="card" id="daka">

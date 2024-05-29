@@ -156,6 +156,13 @@
         	{
         		"navigationBarTitleText" : "加入团队"
         	}
+        },
+        {
+        	"path" : "pages/MyTeam/MyTeam",
+        	"style" : 
+        	{
+        		"navigationBarTitleText" : ""
+        	}
         }
     ],
     "globalStyle" : {
