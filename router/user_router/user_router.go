@@ -602,7 +602,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		//查询用户所属团队
-		Item, err := controlsql.GetTeamInfo(db, UserClaims.TeamID)
+		Item, err := controlsql.SearchTeamInfo(db, UserClaims.TeamID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
@@ -612,7 +612,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		type User struct {
 			UserID   int    `json:"user_id"`
 			UserName string `json:"user_name"`
-			UserSex  string `json:"user_sex"`
+			UserSex  int    `json:"user_sex"`
 		}
 		type TeamInfo struct {
 			TeamID      int    `json:"team_id"`
@@ -630,18 +630,18 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 
 		var response Response
 		var teamInfo TeamInfo
-		teamInfo.TeamID = Item.TeamID
-		teamInfo.TeamName = Item.TeamName
-		teamInfo.ManagerID = Item.ManagerID
-		teamInfo.ManagerName = Item.ManagerName
-		teamInfo.TeamSize = Item.TeamSize
+		teamInfo.TeamID = Item.Teamid
+		teamInfo.TeamName = Item.Teamname
+		teamInfo.ManagerID = Item.Managerid
+		teamInfo.ManagerName = Item.Managername
+		teamInfo.TeamSize = Item.Teamsize
 		teamInfo.MemberList = make([]User, 0)
 
-		for _, member := range Item.MemberList {
+		for _, member := range Item.Memberlist {
 			var user User
-			user.UserID = member.UserID
-			user.UserName = member.UserName
-			user.UserSex = member.UserSex
+			user.UserID = member.Userid
+			user.UserName = member.Username
+			user.UserSex = member.Usersex
 			teamInfo.MemberList = append(teamInfo.MemberList, user)
 		}
 		response.Code = 200
@@ -669,7 +669,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		//解密邀请码
-		TargetTeamID, err := utils.DecryptIC(request.InvitationCode, 114514)
+		TargetTeamID, _ := utils.DecryptIC(request.InvitationCode, 114514)
 		utils.TestICD()
 
 		//查询是否有该ID的团队
