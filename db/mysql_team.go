@@ -77,7 +77,7 @@ func CheckTeammember(db *sql.DB, username string, teamid int) (bool, error) {
 		return false, errr
 	}
 	// SQL 查询语句
-	query := "SELECT COUNT(*) FROM user-team WHERE user_id = ? AND team_id = ?"
+	query := "SELECT COUNt(*) FROM user-team WHERE user_id = ? AND team_id = ?"
 
 	var count int
 	// 执行查询
@@ -88,4 +88,53 @@ func CheckTeammember(db *sql.DB, username string, teamid int) (bool, error) {
 
 	// 如果 count 大于 0，说明记录存在
 	return count > 0, nil
+}
+
+// 用户加入团队
+func JoinTeam(db *sql.DB, username string, teamid int) (bool, error) {
+	//先判断团队是否满人
+	// SQL 查询语句
+	query1 := "SELECT COUNt(*) FROM user-team WHERE  team_id = ?"
+
+	var count1 int
+	// 执行查询
+	err := db.QueryRow(query1, teamid).Scan(&count1)
+	if err != nil {
+		return false, err
+	}
+	// SQL 查询语句
+	query2 := "SELECT member_num FROM team_info WHERE  team_id = ?"
+
+	var count2 int
+	// 执行查询
+	err = db.QueryRow(query2, teamid).Scan(&count2)
+	if err != nil {
+		return false, err
+	}
+	//团队已满不可加入
+	if count1 == count2 {
+		return false, err
+	}
+
+	//未满则用户可加团队
+	userid, errr := GetUserID(db, username)
+	if errr != nil {
+		return false, errr
+	}
+	// 获取当前日期
+	now := time.Now()
+	// 格式化日期为字符串
+	today := now.Format("2006-01-02")
+	stmt, err := db.Prepare("INSERT INTO user-team(user_id,team_id,join_date) values (?,?,?)")
+	if err != nil {
+		return false, err
+	}
+	defer stmt.Close()
+	// 执行插入语句
+	_, err = stmt.Exec(userid, teamid, today)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
