@@ -411,6 +411,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		}
 		Item, err := controlsql.GetExamInfo(db, UserClaims.UserID, UserClaims.TeamID)
 		if err != nil {
+			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
 				"msg":  "服务器内部错误"})
