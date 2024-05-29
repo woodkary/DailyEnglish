@@ -24,7 +24,7 @@ function getPersonalInfo(){
             phoneP.textContent = data.phone;
             data.team.forEach(t => {
                 //假设每个团队10人，这里可以根据实际情况调整
-                allTeams.push({teamName:t.team_name,memberNum:t.member_num});
+                allTeams.push({teamName:t.team_name,memberNum:t.member_num,teamId:t.team_id});
             });
             renderTeamInfo();
         }).catch(error => {
@@ -36,7 +36,7 @@ function getPersonalInfo(){
         nameP.textContent = '未登录';
         emailP.textContent = '未登录';
         phoneP.textContent = '未登录';
-        allTeams.push({teamName:'未加入任何团队',memberNum:0});
+        allTeams.push({teamName:'未加入任何团队',memberNum:0,teamId:0});
         renderTeamInfo();
     });
 }
@@ -79,7 +79,7 @@ function renderTeamInfo(){
             codeMap = {};
             localStorage.setItem('codeMap', JSON.stringify(codeMap));
         }
-        teamCodeSpan.textContent=getInvitationCode(t.teamName);
+        teamCodeSpan.textContent=getInvitationCode(t.teamName,t.team_id);
         teamCodeP.appendChild(teamCodeSpan);
         let copyBtn=document.createElement('i');
         copyBtn.classList.add('uil');
@@ -240,12 +240,7 @@ function initializeInput () {
 }
 /*document.addEventListener('DOMContentLoaded', );*/
 //TODO 改为向后端请求邀请码，而不是自己生成
-async function generateInvitationCode(teamname) {
-    let code = "#";
-    let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for (let i = 0; i < 10; i++) {
-        code += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
+async function generateInvitationCode(teamId) {
     const response = await fetch('http://localhost:8081/api/team_manage/refresh_team_code', {
         method: 'POST',
         headers: {
@@ -253,17 +248,17 @@ async function generateInvitationCode(teamname) {
             'Authorization': 'Bearer ' + localStorage.getItem('token')
         },
         body: JSON.stringify({
-            team_name: teamname,
+            team_id: teamId,
         })
     });
-    code = (await response.json()).code;
+    code = (await response.json()).invitation_code;
     return code;
 }
-function getInvitationCode(teamname) {
+function getInvitationCode(teamname,teamId) {
     let codeMap = JSON.parse(localStorage.getItem('codeMap'));
     let codeAndExpiry = codeMap[teamname];
     if (codeAndExpiry == null) {
-        let code = generateInvitationCode(teamname);
+        let code = generateInvitationCode(teamId);
         let expiry = new Date();
         expiry.setDate(expiry.getTime() + 1000*60*5); // 设置5分钟后过期
         codeMap[teamname] = { code: code, expiry: expiry };
