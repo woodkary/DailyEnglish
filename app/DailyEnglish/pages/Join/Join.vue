@@ -7,8 +7,8 @@
 		</view>
 
 		<view class="input-wrapper">
-			<input class="uni-input" placeholder="请输入团队码" :value="inputClearValue" @input="clearInput" />
-			<image class="uni-icon" src="/static/not-done2.svg" v-if="showClearIcon" @click="clearIcon">
+			<input class="uni-input" placeholder="请输入团队码" v-model="inputClearValue" @input="clearInput" />
+			<image class="uni-icon" src="../../static/not-done2.svg" v-if="showClearIcon" @click="clearIcon">
 			</image>
 		</view>
 	</view>
@@ -28,8 +28,7 @@
 					delta: 1
 				})
 			},
-			clearInput(event) { // 添加event参数以获取输入框的值
-				this.inputClearValue = event.target.value;
+			clearInput() {
 				this.showClearIcon = this.inputClearValue.length > 0;
 			},
 			clearIcon() {
