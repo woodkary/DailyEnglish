@@ -5,6 +5,7 @@ import (
 	middlewares "DailyEnglish/middlewares"
 	utils "DailyEnglish/utils"
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -147,6 +148,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		team_id, team_name, err := controlsql.GetTokenParams_User(db, userid)
+		fmt.Println(team_id, team_name)
 		if err != nil && err.Error() != "sql: no rows in result set" {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -433,6 +435,10 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		var response Response
 		for _, item := range Item {
 			var exam Exam
+			//选择今日以前的考试
+			if item.ExamDate >= utils.GetCurrentDate() {
+				continue
+			}
 			exam.ExamDate = item.ExamDate
 			exam.ExamID = item.ExamID
 			exam.ExamName = item.ExamName
@@ -445,30 +451,103 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
-	//单次考试详情
-	r.GET("/api/exams/examination_details", tokenAuthMiddleware(), func(c *gin.Context) {
+	//查询今日考试
+	r.POST("api/exams/exam_date", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
-			ExamID   int    `json:"exam_id"`
-			ExamName string `json:"exam_name"`
-			ExamDate string `json:"exam_date"`
+			ExamDate string `json:"date"`
 		}
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
+				"code": 400,
 				"msg":  "请求参数错误",
 			})
 			return
 		}
+
 		user, _ := c.Get("user")
 		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
 		}
-		//查询考试信息
-		Item, err := controlsql.GetExamDetail(db, UserClaims.UserID, request.ExamID)
+		fmt.Println(request.ExamDate, UserClaims.UserID, UserClaims.TeamID)
+		Item, err := controlsql.GetExamInfo(db, UserClaims.UserID, UserClaims.TeamID)
 		if err != nil {
+			log.Panic(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": 500,
+				"msg":  "服务器内部错误"})
+			return
+		}
+		type Exam struct {
+			ExamID      int    `json:"exam_id"`
+			ExamName    string `json:"exam_name"`
+			ExamDate    string `json:"exam_date"`
+			ExamScore   int    `json:"exam_score"`
+			ExamRank    int    `json:"exam_rank"`
+			QuestionNum int    `json:"question_num"`
+		}
+		type Response struct {
+			Code  int    `json:"code"`
+			Msg   string `json:"msg"`
+			Exams []Exam `json:"exams"`
+		}
+		var response Response
+		for _, item := range Item {
+			var exam Exam
+			//选择今日的考试
+			if item.ExamDate != request.ExamDate {
+				continue
+			}
+			fmt.Println(item.ExamDate, request.ExamDate)
+			exam.ExamDate = item.ExamDate
+			exam.ExamID = item.ExamID
+			exam.ExamName = item.ExamName
+			exam.ExamRank = item.ExamRank
+			exam.ExamScore = item.ExamScore
+			exam.QuestionNum = item.QuestionNum
+			response.Exams = append(response.Exams, exam)
+		}
+		response.Code = 200
+		response.Msg = "成功"
+		c.JSON(200, response)
+	})
+
+	//单次考试详情
+	r.POST("/api/exams/examination_details", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			ExamID string `json:"exam_id"`
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			log.Panic(err)
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+		fmt.Println(request.ExamID)
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		examId, _ := strconv.Atoi(request.ExamID)
+		//查询考试信息
+		Item, err := controlsql.GetExamDetail(db, UserClaims.UserID, examId)
+		if err != nil {
+			log.Panic(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+			return
+		}
+		Item2, err := controlsql.GetExamInfoByExamID(db, examId)
+		if err != nil {
+			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
 				"msg":  "服务器内部错误"})
@@ -492,7 +571,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			Questions   []Question `json:"questions"`
 		}
 		var response Response
-		response.ExamDate = request.ExamDate
+		response.ExamDate = Item2.ExamDate
 		response.QuestionNum = len(Item)
 		response.CorrectNum = 0
 		response.Score = 0

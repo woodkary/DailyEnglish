@@ -1,11 +1,11 @@
-const calendarModal=document.querySelector('#calendar-modal');
-const clockModals=[document.querySelector('#clock-modal1'),document.querySelector('#clock-modal2')]
-const modelOverlay=document.querySelector('.modal-overlay');
-const calendarContainer=document.querySelector('.calendar-container');
+const calendarModal = document.querySelector('#calendar-modal');
+const clockModals = [document.querySelector('#clock-modal1'), document.querySelector('#clock-modal2')]
+const modelOverlay = document.querySelector('.modal-overlay');
+const calendarContainer = document.querySelector('.calendar-container');
 const clockContainers = document.querySelectorAll(".clock-container");
-const examSelectBtn=document.querySelector('.exam-select-btn');
-const timeSelectBtns=document.querySelectorAll('.time-select-btn');
-let isDisplay=false;
+const examSelectBtn = document.querySelector('.exam-select-btn');
+const timeSelectBtns = document.querySelectorAll('.time-select-btn');
+let isDisplay = false;
 /*document.addEventListener('keydown',(event)=>{
     if(event.keyCode===77) {//if the key pressed is M
         if(calendarModal.style.display==='none'){
@@ -30,26 +30,26 @@ let isDisplay=false;
     }
 });*/
 document.addEventListener('click', (event) => {
-    if (isDisplay&&event.target === calendarContainer) {
+    if (isDisplay && event.target === calendarContainer) {
         calendarModal.style.display = 'none';
         modelOverlay.style.display = 'none';
-        isDisplay=false;
+        isDisplay = false;
     }
-    if(isDisplay&&Array.from(clockContainers).includes(event.target)){
-        clockModals.forEach(clockModal=>{
+    if (isDisplay && Array.from(clockContainers).includes(event.target)) {
+        clockModals.forEach(clockModal => {
             clockModal.style.display = 'none';
         });
         modelOverlay.style.display = 'none';
-        isDisplay=false;
+        isDisplay = false;
     }
 })
-examSelectBtn.addEventListener('click',()=>{
-    calendarModal.style.display='flex';//show
-    modelOverlay.style.display='flex';//show
-    isDisplay=true;
+examSelectBtn.addEventListener('click', () => {
+    calendarModal.style.display = 'flex';//show
+    modelOverlay.style.display = 'flex';//show
+    isDisplay = true;
 });
-timeSelectBtns.forEach((btn,index)=>{
-    btn.addEventListener('click',()=> {
+timeSelectBtns.forEach((btn, index) => {
+    btn.addEventListener('click', () => {
         clockModals[index].style.display = 'flex';//show
         modelOverlay.style.display = 'flex';//show
         isDisplay = true;
@@ -86,7 +86,7 @@ const renderCalendar = () => {
     for (let i = 1; i <= lastDateofMonth; i++) { // creating li of all days of current month
         // adding active class to li if the current day, month, and year matched
         let isToday = i === date.getDate() && currMonth === new Date().getMonth()
-        && currYear === new Date().getFullYear() ? "active" : "";
+            && currYear === new Date().getFullYear() ? "active" : "";
         liTag += `<li class="${isToday}">${i}</li>`;
     }
 
@@ -104,45 +104,45 @@ daysTag.addEventListener('click', (event) => {
         // 获取点击的日期
         const clickedDate = parseInt(event.target.innerText);
         let newDate = new Date(currYear, currMonth, clickedDate); // creating new date object with clicked date
-        let today=new Date();
-        // 检查是否选择了过去的时间
-        if(newDate.getTime()<today.getTime()){
+        let today = new Date();
+        // 比较日期而不是时间戳
+        if (newDate.setHours(0, 0, 0, 0) < today.setHours(0, 0, 0, 0)) {
             alert("不能选择过去的时间！");
             return;
         }
         // 执行点击事件的处理逻辑
         console.log(`Clicked date: ${toDateString(newDate)}`);
         // 在这里添加您的点击处理逻辑
-        examSelectBtn.children.item(0).textContent=toDateString(newDate);
+        examSelectBtn.children.item(0).textContent = toDateString(newDate);
         // 关闭弹窗
-        calendarModal.style.display='none';
-        modelOverlay.style.display='none';
-        isDisplay=false;
+        calendarModal.style.display = 'none';
+        modelOverlay.style.display = 'none';
+        isDisplay = false;
     }
 });
 //获取本地存储的团队信息
-const getAllTeamInfo=()=>{
-    let teamInfoJson=localStorage.getItem("team_info");
-    if(teamInfoJson){
+const getAllTeamInfo = () => {
+    let teamInfoJson = localStorage.getItem("team_info");
+    if (teamInfoJson) {
         return JSON.parse(teamInfoJson);
-    }else {
+    } else {
         return null;
     }
 }
-const teamSelect=document.querySelector("#team-select");
-document.addEventListener("DOMContentLoaded",()=>{
+const teamSelect = document.querySelector("#team-select");
+document.addEventListener("DOMContentLoaded", () => {
     /*alert("wwefse");*/
-    let teamInfo=getAllTeamInfo();
+    let teamInfo = getAllTeamInfo();
     let teamNameArray;
-    if(teamInfo) {
+    if (teamInfo) {
         //从本地获取
         teamNameArray = Object.values(teamInfo);
-    }else{
+    } else {
         //默认选项
-        teamNameArray = ["团队1","团队2","团队3","团队4","团队5","团队6","团队7","团队8","团队9","团队10"];
+        teamNameArray = ["团队1", "团队2", "团队3", "团队4", "团队5", "团队6", "团队7", "团队8", "团队9", "团队10"];
     }
     // 清空原有选项
-    teamSelect.innerHTML="<option value=\"\" disabled selected id=\"selected-team\">请选择团队</option>";
+    teamSelect.innerHTML = "<option value=\"\" disabled selected id=\"selected-team\">请选择团队</option>";
 
     // 重新渲染选项
     for (let i = 0; i < teamNameArray.length; i++) {
@@ -152,13 +152,13 @@ document.addEventListener("DOMContentLoaded",()=>{
         teamSelect.add(option);
     }
 });
-teamSelect.addEventListener("change",()=>{
-    teamSelect.name=teamSelect.options[teamSelect.selectedIndex].value;
+teamSelect.addEventListener("change", () => {
+    teamSelect.name = teamSelect.options[teamSelect.selectedIndex].value;
     console.log(teamSelect.name);
 });
 // 选择团队后显示选择的团队名称
-const toDateString=(date)=>{
-    return date.getFullYear() + "年" + (date.getMonth() + 1) + "月" + date.getDate()+"日";
+const toDateString = (date) => {
+    return date.getFullYear() + "年" + (date.getMonth() + 1) + "月" + date.getDate() + "日";
 }
 renderCalendar();
 
@@ -167,7 +167,7 @@ prevNextIcon.forEach(icon => { // getting prev and next icons
         // if clicked icon is previous icon then decrement current month by 1 else increment it by 1
         currMonth = icon.id === "prev" ? currMonth - 1 : currMonth + 1;
 
-        if(currMonth < 0 || currMonth > 11) { // if current month is less than 0 or greater than 11
+        if (currMonth < 0 || currMonth > 11) { // if current month is less than 0 or greater than 11
             // creating a new date of current year & month and pass it as date value
             date = new Date(currYear, currMonth, new Date().getDate());
             currYear = date.getFullYear(); // updating current year with new date year
@@ -179,7 +179,7 @@ prevNextIcon.forEach(icon => { // getting prev and next icons
     });
 });
 // 点击弹出窗关闭按钮关闭弹窗
-clockContainers.forEach((clockContainer,index) => {
+clockContainers.forEach((clockContainer, index) => {
     const content = clockContainer.querySelector(".content"),
         selectMenu = clockContainer.querySelectorAll("select"),
         setAlarmBtn = clockContainer.querySelector("button");
@@ -207,7 +207,7 @@ clockContainers.forEach((clockContainer,index) => {
         }
         alarmTime = time;
         //将选择的时间写入到对应的span标签中
-        let clockModal = document.querySelector(`#clock-modal${index+1}`);
+        let clockModal = document.querySelector(`#clock-modal${index + 1}`);
         let spanId = clockModal.getAttribute("value");
         let span = document.querySelector(`#${spanId}`);
         span.textContent = time;
