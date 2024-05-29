@@ -112,3 +112,21 @@ func JoinTeam(db *sql.DB, userid string, teamid int) (bool, error) {
 
 	return true, nil
 }
+
+// 根据团队id查询团队是否存在
+func CheckTeam(db *sql.DB, teamid int) (bool, error) {
+
+	// SQL 查询语句
+	query := "SELECT COUNt(*) FROM user-team WHERE  team_id = ?"
+
+	var count int
+	// 执行查询
+	err := db.QueryRow(query, teamid).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+
+	// 如果 count 大于 0，说明team存在
+	return count > 0, nil
+
+}
