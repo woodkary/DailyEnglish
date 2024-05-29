@@ -709,4 +709,58 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			"msg":  "成功加入团队",
 		})
 	})
+
+	// 获取某一天的所有考试信息
+	r.POST("/api/exams/exams_date", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			Date string `json:"date"`
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims)
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		//查询该日期的考试信息
+		Item, err := controlsql.GetExamInfoByTeamIDAndDate(db, UserClaims.UserID, request.Date)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+			return
+		}
+		type Exam struct {
+			ExamID      int    `json:"exam_id"`
+			ExamName    string `json:"name"`
+			StartTime   string `json:"start_time"`
+			Duration    int    `json:"duration"`
+			QuestionNum int    `json:"question_num"`
+		}
+		type Response struct {
+			Code  int    `json:"code"`
+			Msg   string `json:"msg"`
+			Exams []Exam `json:"exams"`
+		}
+		var response Response
+		for _, item := range Item {
+			var exam Exam
+			exam.ExamID = item.ExamID
+			exam.ExamName = item.ExamName
+			exam.StartTime = item.StartTime
+			exam.Duration = item.Duration
+			exam.QuestionNum = item.QuestionNum
+			response.Exams = append(response.Exams, exam)
+		}
+		response.Code = 200
+		response.Msg = "成功"
+		c.JSON(200, response)
+	})
 }
