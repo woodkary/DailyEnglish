@@ -652,7 +652,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 	// 加入团队
 	r.POST("/api/users/my_team/join_team", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
-			InvitationCode int `json:"invitation_code"`
+			InvitationCode string `json:"invitation_code"`
 		}
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
@@ -669,8 +669,8 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		//解密邀请码
-		//TargetTeamID := utils.DecryptInvitationCode(request.InvitationCode)
-		TargetTeamID := request.InvitationCode
+		TargetTeamID, err := utils.DecryptIC(request.InvitationCode, 114514)
+		utils.TestICD()
 
 		//查询是否有该ID的团队
 		exist, _ := controlsql.CheckTeam(db, TargetTeamID)
@@ -690,9 +690,15 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			})
 			return
 		}
-		// 加入团队
-		_, err := controlsql.JoinTeam(db, UserClaims.UserID, TargetTeamID)
+		// 插入该成员
+		insertOK, err := controlsql.JoinTeam(db, UserClaims.UserID, TargetTeamID)
 		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+			return
+		}
+		if !insertOK {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
 				"msg":  "服务器内部错误"})
