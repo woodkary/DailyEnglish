@@ -625,7 +625,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		// 加入团队
-		err := controlsql.JoinTeam(db, UserClaims.UserID, TargetTeamID)
+		_, err := controlsql.JoinTeam(db, UserClaims.UserID, TargetTeamID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",

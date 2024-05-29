@@ -91,9 +91,7 @@ func CheckTeammember(db *sql.DB, username string, teamid int) (bool, error) {
 }
 
 // 用户加入团队
-func JoinTeam(db *sql.DB, userid string, teamid int) (bool, error) {
-
-	//查询团队是否已满
+func JoinTeam(db *sql.DB, userid int, teamid int) (bool, error) {
 
 	// 获取当前日期
 	now := time.Now()
