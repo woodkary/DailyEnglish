@@ -3,6 +3,7 @@
 import (
 	controlsql "DailyEnglish/db"
 	middlewares "DailyEnglish/middlewares"
+	"DailyEnglish/utils"
 	service "DailyEnglish/utils"
 	"database/sql"
 	"log"
@@ -354,6 +355,28 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
+	// 刷新团队码
+	r.POST("/api/team_manage/refresh_team_code", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			TeamID int `json:"team_id"` // 团队ID
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(400, "请求参数错误")
+			return
+		}
+		NewCode := utils.EncryptIC(request.TeamID, 114514)
+		var response struct {
+			Code           string `json:"code"`            // 状态码
+			Msg            string `json:"msg"`             // 消息
+			InvitationCode string `json:"invitation_code"` // 团队码
+		}
+		response.Code = "200"
+		response.Msg = "成功"
+		response.InvitationCode = NewCode
+		c.JSON(200, response)
+	})
+
 	//获取考试题目
 	r.POST("/api/team_manage/new_exam/all_questions", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {

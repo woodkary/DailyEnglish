@@ -730,7 +730,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		//查询该日期的考试信息
-		Item, err := controlsql.GetExamInfoByTeamIDAndDate(db, UserClaims.UserID, request.Date)
+		Item, err := controlsql.GetexaminfoByTeamIDAndDate222(db, UserClaims.UserID, request.Date)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
