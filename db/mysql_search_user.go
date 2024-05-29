@@ -186,7 +186,7 @@ func GetExamInfo(db *sql.DB, use_id int, team_id int) ([]Exam, error) {
 			return nil, err
 		}
 		//每个exam_id查examRank和examScore
-		err = db.QueryRow("SELECT exam_score,exam_rank from user-exam score WHERE user_id =?,exam_id =?", use_id, exam.ExamID).Scan(&exam.ExamScore, exam.ExamRank)
+		err = db.QueryRow("SELECT exam_score,exam_rank from `user-exam_score` WHERE user_id =? AND exam_id =?", use_id, exam.ExamID).Scan(&exam.ExamScore, exam.ExamRank)
 		if err != nil {
 			return nil, err
 		}

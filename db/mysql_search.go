@@ -3,6 +3,7 @@ package db
 import (
 	service "DailyEnglish/utils"
 	"database/sql"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -353,7 +354,7 @@ func SearchManagerInfoByManagerID(db *sql.DB, managerID int) (ManagerInfo, error
 	var managerInfo ManagerInfo
 
 	// 查询数据库以获取管理员信息
-	err := db.QueryRow("SELECT manager_name, manager_phone, manager_email, manager_partment FROM manager_info WHERE manager_id = ?", managerID).Scan(&managerInfo.ManagerName, &managerInfo.ManagerPhone, &managerInfo.ManagerEmail, &managerInfo.ManagerPartment)
+	err := db.QueryRow("SELECT manager_name, phone, email, partment FROM manager_info WHERE manager_id = ?", managerID).Scan(&managerInfo.ManagerName, &managerInfo.ManagerPhone, &managerInfo.ManagerEmail, &managerInfo.ManagerPartment)
 	if err != nil {
 		return ManagerInfo{}, err
 	}
@@ -391,7 +392,8 @@ func SearchTeamInfoByTeamID(db *sql.DB, teamID int) (string, int, error) {
 // 12 插入考试
 func InsertExamInfo(db *sql.DB, exam_name string, exam_date string, exam_clock string, question_num int, question_id string, team_id int) error {
 	now := time.Now()
-	exam_id := service.GenerateID(now, 123)
+	exam_id := service.GenerateID(now, 114514)
+	fmt.Println(exam_id)
 	stmt, err := db.Prepare("INSERT INTO exam_info(exam_id,exam_name,exam_date,exam_clock,question_num,question_id,team_id) VALUES(?,?,?,?,?,?,?)")
 	if err != nil {
 		return err

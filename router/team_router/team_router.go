@@ -333,6 +333,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		// 查询用户信息
 		ManageInfo, err := controlsql.SearchManagerInfoByManagerID(db, TeamManagerClaims.ManagerID)
 		if err != nil {
+			log.Panic(err)
 			c.JSON(500, "服务器错误")
 			return
 		}
@@ -470,7 +471,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		user, _ := c.Get("user")
 		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
-			c.JSON(500, "服务器错误")
+			c.JSON(500, "服务器错误,请联系管理员")
 			return
 		}
 		var teamID int
