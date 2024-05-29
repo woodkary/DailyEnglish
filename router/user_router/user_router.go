@@ -586,4 +586,55 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		c.JSON(200, response)
 	})
 	//提交考试@TODO
+
+	//加入团队
+	r.POST("/api/users/my_team/join_team", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			InvitationCode int `json:"invitation_code"`
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		//解密邀请码
+		TargetTeamID := utils.DecryptInvitationCode(request.InvitationCode)
+		//查询是否有该ID的团队
+		exist := controlsql.TeamExists(db, TargetTeamID)
+		if !exist {
+			c.JSON(http.StatusNotFound, gin.H{
+				"code": "404",
+				"msg":  "邀请码错误",
+			})
+			return
+		} else if controlsql.IsTeamFull(db, TargetTeamID) {
+			// 该团队是否已满
+			c.JSON(http.StatusForbidden, gin.H{
+				"code": "403",
+				"msg":  "该团队已满",
+			})
+			return
+		}
+		// 加入团队
+		_, err := controlsql.JoinTeam(db, UserClaims.UserID, TargetTeamID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+			return
+		}
+		c.JSON(200, gin.H{
+			"code": "200",
+			"msg":  "成功加入团队",
+		})
+	})
 }

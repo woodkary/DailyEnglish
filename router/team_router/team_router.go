@@ -485,7 +485,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		user, _ := c.Get("user")
-		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
+		TeamManagerClaims, ok := user.(*service.TeamManagerClaims)
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return

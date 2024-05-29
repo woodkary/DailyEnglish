@@ -366,3 +366,17 @@ func InsertExamInfo(db *sql.DB, exam_name string, exam_date string, exam_clock s
 	}
 	return nil
 }
+
+// 13 查询用户打卡信息
+func SearchUserpunch(db *sql.DB, userid int) (int, string, error) {
+	var lastdate string
+	var ispunch int
+
+	// 查询数据库以获取信息
+	err := db.QueryRow("SELECT is_punch,last_punchdate FROM user_punch WHERE user_id = ?", userid).Scan(&ispunch, &lastdate)
+	if err != nil {
+		return 0, "", err
+	}
+
+	return ispunch, lastdate, err
+}
