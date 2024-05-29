@@ -164,7 +164,13 @@ export default {
         this.questionNum = res.data.question_num;
         this.correctNum = res.data.correct_num;
         this.score = res.data.score;
-
+        this.questions = this.transformQuestions(res.data.questions);
+      },
+      fail: (res) => {
+        uni.showToast({
+          title: '获取考试详情失败',
+          icon: 'none'
+        });
       }
     });
   },
