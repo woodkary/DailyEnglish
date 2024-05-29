@@ -39,7 +39,7 @@ func RegisterUser_User(db *sql.DB, username string, password string, email strin
 	fmt.Print("RegisterUser_User")
 	// 准备插入语句
 	// userid := utils.GenerateID()
-	userid := 31
+	userid := 32
 	stmt, err := db.Prepare("INSERT INTO user_info(user_id ,username, email, pwd,sex,phone,birthday,register_date) VALUES( ?, ?, ?, ?,?,?,?,?)")
 	if err != nil {
 		return err

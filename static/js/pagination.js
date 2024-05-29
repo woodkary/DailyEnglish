@@ -257,7 +257,7 @@ publishBtn.addEventListener("click",()=>{
             'Authorization': 'Bearer '+localStorage.getItem('token')
         }
     }).then(res => res.json()).then(data => {
-        if (data.code === 200) {
+        if (data.code == 200||data.code=="200") {
             alert("发布成功！");
         }
     }).catch(err => {

@@ -240,19 +240,30 @@ function initializeInput () {
 }
 /*document.addEventListener('DOMContentLoaded', );*/
 //TODO 改为向后端请求邀请码，而不是自己生成
-function generateInvitationCode() {
+async function generateInvitationCode(teamname) {
     let code = "#";
     let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     for (let i = 0; i < 10; i++) {
         code += possible.charAt(Math.floor(Math.random() * possible.length));
     }
+    const response = await fetch('http://localhost:8081/api/team_manage/refresh_team_code', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+        },
+        body: JSON.stringify({
+            team_name: teamname,
+        })
+    });
+    code = (await response.json()).code;
     return code;
 }
 function getInvitationCode(teamname) {
     let codeMap = JSON.parse(localStorage.getItem('codeMap'));
     let codeAndExpiry = codeMap[teamname];
     if (codeAndExpiry == null) {
-        let code = generateInvitationCode();
+        let code = generateInvitationCode(teamname);
         let expiry = new Date();
         expiry.setDate(expiry.getTime() + 1000*60*5); // 设置5分钟后过期
         codeMap[teamname] = { code: code, expiry: expiry };
