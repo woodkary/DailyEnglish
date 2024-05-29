@@ -607,16 +607,20 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		//解密邀请码
-		TargetTeamID := utils.DecryptInvitationCode(request.InvitationCode)
+		//TargetTeamID := utils.DecryptInvitationCode(request.InvitationCode)
+		TargetTeamID := request.InvitationCode
+
 		//查询是否有该ID的团队
-		exist := controlsql.TeamExists(db, TargetTeamID)
+		exist, _ := controlsql.CheckTeam(db, TargetTeamID)
+		full, _ := controlsql.IsTeamFull(db, TargetTeamID)
+
 		if !exist {
 			c.JSON(http.StatusNotFound, gin.H{
 				"code": "404",
-				"msg":  "邀请码错误",
+				"msg":  "邀请码无效",
 			})
 			return
-		} else if controlsql.IsTeamFull(db, TargetTeamID) {
+		} else if full {
 			// 该团队是否已满
 			c.JSON(http.StatusForbidden, gin.H{
 				"code": "403",
