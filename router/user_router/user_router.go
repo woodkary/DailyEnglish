@@ -474,14 +474,14 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		type Question struct {
-			QuestionID    int      `json:"question_id"`
-			QuestionIndex int      `json:"question_index"`
-			QuestionDesc  string   `json:"question_decription"`
-			Options       []string `json:"choices"`
-			MyAnswer      string   `json:"my_answer"`
-			CorrectAnswer string   `json:"correct_answer"`
-			Score         int      `json:"score"`
-			FullScore     int      `json:"full_score"`
+			QuestionID    int               `json:"question_id"`
+			QuestionIndex int               `json:"question_index"`
+			QuestionDesc  string            `json:"question_decription"`
+			Options       map[string]string `json:"choices"`
+			MyAnswer      string            `json:"my_answer"`
+			CorrectAnswer string            `json:"correct_answer"`
+			Score         int               `json:"score"`
+			FullScore     int               `json:"full_score"`
 		}
 		type Response struct {
 			ExamDate    string     `json:"exam_date"`
@@ -500,7 +500,13 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			question.QuestionID = item.Question_id
 			question.QuestionIndex = i + 1
 			question.QuestionDesc = item.Question
-			question.Options = item.Options
+			// 扩展item中的Questions内的Choices List["","","",""]为map[["A","B","C","D"],["","","",""]]
+			question.Options = make(map[string]string)
+			for i, option := range item.Options {
+				key := string(i + 65) // 65是'A'的ASCII码
+				question.Options[key] = option
+			}
+
 			question.MyAnswer = item.UserAnswer
 			question.CorrectAnswer = item.Answer
 			question.Score = item.Score
@@ -587,10 +593,66 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 	})
 	//提交考试@TODO
 
-	//加入团队
+	// 我的团队
+	r.GET("/api/users/my_team", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		//查询用户所属团队
+		Item, err := controlsql.SearchTeamInfo(db, UserClaims.TeamID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+			return
+		}
+		type User struct {
+			UserID   int    `json:"user_id"`
+			UserName string `json:"user_name"`
+			UserSex  int    `json:"user_sex"`
+		}
+		type TeamInfo struct {
+			TeamID      int    `json:"team_id"`
+			TeamName    string `json:"team_name"`
+			ManagerID   int    `json:"manager_id"`
+			ManagerName string `json:"manager_name"`
+			TeamSize    int    `json:"member_num"`
+			MemberList  []User `json:"member_list"`
+		}
+		type Response struct {
+			Code     int      `json:"code"`
+			Msg      string   `json:"msg"`
+			TeamInfo TeamInfo `json:"team"`
+		}
+
+		var response Response
+		var teamInfo TeamInfo
+		teamInfo.TeamID = Item.Teamid
+		teamInfo.TeamName = Item.Teamname
+		teamInfo.ManagerID = Item.Managerid
+		teamInfo.ManagerName = Item.Managername
+		teamInfo.TeamSize = Item.Teamsize
+		teamInfo.MemberList = make([]User, 0)
+
+		for _, member := range Item.Memberlist {
+			var user User
+			user.UserID = member.Userid
+			user.UserName = member.Username
+			user.UserSex = member.Usersex
+			teamInfo.MemberList = append(teamInfo.MemberList, user)
+		}
+		response.Code = 200
+		response.Msg = "成功"
+		c.JSON(http.StatusOK, response)
+	})
+
+	// 加入团队
 	r.POST("/api/users/my_team/join_team", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
-			InvitationCode int `json:"invitation_code"`
+			InvitationCode string `json:"invitation_code"`
 		}
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
@@ -607,8 +669,8 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		//解密邀请码
-		//TargetTeamID := utils.DecryptInvitationCode(request.InvitationCode)
-		TargetTeamID := request.InvitationCode
+		TargetTeamID, _ := utils.DecryptIC(request.InvitationCode, 114514)
+		utils.TestICD()
 
 		//查询是否有该ID的团队
 		exist, _ := controlsql.CheckTeam(db, TargetTeamID)
@@ -628,9 +690,15 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			})
 			return
 		}
-		// 加入团队
-		_, err := controlsql.JoinTeam(db, UserClaims.UserID, TargetTeamID)
+		// 插入该成员
+		insertOK, err := controlsql.JoinTeam(db, UserClaims.UserID, TargetTeamID)
 		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+			return
+		}
+		if !insertOK {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
 				"msg":  "服务器内部错误"})

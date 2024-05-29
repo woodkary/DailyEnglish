@@ -147,3 +147,63 @@ func IsTeamFull(db *sql.DB, teamid int) (bool, error) {
 	}
 	return count == member_num, nil
 }
+
+// 查询团队信息
+
+type Team struct {
+	Teamid      int
+	Managerid   int
+	Teamname    string
+	Managername string
+	Teamsize    int
+	Memberlist  []Member
+}
+type Member struct {
+	Userid   int
+	Username string
+	Usersex  int
+}
+
+func SearchTeamInfo(db *sql.DB, teamid int) (Team, error) {
+	var team Team
+
+	// 查询数据库以获取信息
+	err := db.QueryRow("SELECT team_id,manager_id,team_name FROM manager_info WHERE team_id = ?", teamid).Scan(&team.Teamid, &team.Managerid, &team.Teamname)
+	if err != nil {
+		return Team{}, err
+	}
+	err = db.QueryRow("SELECT manager_name FROM manager_info WHERE manager_id = ?", team.Managerid).Scan(&team.Managername)
+	if err != nil {
+		return Team{}, err
+	}
+	err = db.QueryRow("SELECT COUNT(*) FROM user-team WHERE team_id = ?", teamid).Scan(&team.Teamsize)
+	if err != nil {
+		return Team{}, err
+	}
+
+	var users []Member
+	// 查询数据库以获取用户名称
+	rows, err := db.Query("SELECT user_id  FROM user-team WHERE team_id = ?", teamid)
+	if err != nil {
+		return Team{}, err
+	}
+	defer rows.Close()
+	var user Member
+	// 遍历结果集并收集
+	for rows.Next() {
+		var userID int
+
+		if err := rows.Scan(&userID); err != nil {
+			return Team{}, err
+		}
+		err = db.QueryRow("SELECT user_id,username,sex FROM user_info WHERE user_id = ?", userID).Scan(&user.Userid, &user.Username, &user.Usersex)
+		if err != nil {
+			return Team{}, err
+		}
+
+		users = append(users, user)
+	}
+	team.Memberlist = users
+	return team, nil
+
+}

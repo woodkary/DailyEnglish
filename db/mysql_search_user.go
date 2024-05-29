@@ -47,7 +47,7 @@ func RegisterUser_User(db *sql.DB, username string, password string, email strin
 	defer stmt.Close()
 
 	// 执行插入语句
-	_, err = stmt.Exec(userid, username, email, password, 0, "12345678901", "2000-01-01", utils.GetCurrentDate())
+	_, err = stmt.Exec(userid, username, email, password, -1, "12345678901", "2000-01-01", utils.GetCurrentDate())
 	if err != nil {
 		return err
 	}
