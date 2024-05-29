@@ -670,7 +670,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		}
 		//解密邀请码
 		TargetTeamID, _ := utils.DecryptIC(request.InvitationCode, 114514)
-		utils.TestICD()
+		//utils.TestICD()
 
 		//查询是否有该ID的团队
 		exist, _ := controlsql.CheckTeam(db, TargetTeamID)
