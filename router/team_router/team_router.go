@@ -473,6 +473,56 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		}
 		c.JSON(200, "发布成功")
 	})
+	//创建团队
+	r.POST("/api/team_manage/create_team", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			TeamName string `json:"team_name"` // 团队名称
+			MaxNum   int    `json:"max_num"`   // 最大成员数量
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(400, "请求参数错误")
+			return
+		}
+		user, _ := c.Get("user")
+		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		err := controlsql.RegisterTeam(db, request.TeamName, TeamManagerClaims.ManagerID, request.MaxNum)
+		if err != nil {
+			log.Panic(err)
+			c.JSON(500, "服务器错误")
+			return
+		}
+		c.JSON(200, "创建成功")
+	})
+	r.DELETE("/api/team_manage/member_manage/delete", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			TeamName string `json:"team_name"` // 团队名
+			UserName string `json:"user_name"` // 用户名
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(400, "请求参数错误")
+			return
+		}
+		// 从TeamName找到对应TeamID
+		TargetTeamID, err := controlsql.SearchTeamIDByTeamName(db, request.TeamName)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		// 以TeamID和UserName删除对应团队中的用户
+
+		err = controlsql.DeleteTeammember(db, TargetTeamID, request.UserName)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		c.JSON(200, "删除成员成功")
+	})
 }
 
 //创建团队 加入团队 删除成员 搜索成员
