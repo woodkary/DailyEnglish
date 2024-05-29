@@ -150,8 +150,45 @@ export default {
   onLoad(event){
     this.examId=event.exam_id;
     this.examName=event.exam_name;
+    uni.request({
+      url: '/api/exams/examination_details',
+      data: {
+        exam_id: this.examId
+      },
+      header: {
+        'content-type': 'application/json',
+        'Authorization': `Bearer ${uni.getStorageSync('token')}`
+      },
+      success: (res) => {
+        this.examDate = res.data.exam_date;
+        this.questionNum = res.data.question_num;
+        this.correctNum = res.data.correct_num;
+        this.score = res.data.score;
+
+      }
+    });
   },
   methods: {
+    // 转换函数
+    transformQuestions(questions) {
+      return questions.map(question => {
+        return {
+          id: question.question_id, // 使用原始的question_id作为id
+          index: question.question_index, // 添加index属性
+          sentences: question.question_decription.split("\n"), // 将题目描述按换行符分割成句子数组
+          options: {
+            A: question.choices.A,
+            B: question.choices.B,
+            C: question.choices.C,
+            D: question.choices.D
+          },
+          correctAnswer: question.correct_answer, // 正确答案
+          correctPoints: question.score, // 正确得分
+          totalPoints: question.full_score, // 总分
+          userAnswer: question.my_answer // 用户答案
+        };
+      });
+    },
     formatDate(date) {
       // 格式化日期
       return date.replace('-', '年').replace('-', '月').replace('-', '日');

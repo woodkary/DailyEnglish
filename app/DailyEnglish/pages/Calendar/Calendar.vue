@@ -150,6 +150,9 @@
         if(dateIndex<0||dateIndex>=this.dates.length){
           return -1;
         }
+        if(this.dates[dateIndex].afterLastPunchDay){
+          return 1;
+        }
         if(this.dates[dateIndex].expired){
           return -1;
         }
@@ -221,6 +224,7 @@
           let today = this.lastPunchDate;
           //计算当前日期与今天的差值，并判断是否有考试
           let diffDays = Math.floor((today - date) / (24 * 60 * 60 * 1000));
+          let d=new Date();
           let expired = diffDays >= 32||diffDays<0;
           let hasExam = !expired ? this.punchMsg >> diffDays & 1 : false;
           this.dates.push({
@@ -228,7 +232,8 @@
             value: i,
             dayOfWeek: dayOfWeek,
             hasExam: hasExam, // 判断当前日期是否有考试
-            expired: expired //判断当前日期是否过期
+            expired: expired, //判断当前日期是否过期
+            afterLastPunchDay: date>today&&date<d
           });
         }
         //添加空白日期（用于填充最后一天之后的空白）
