@@ -324,6 +324,19 @@ func SearchManagerInfoByManagerID(db *sql.DB, managerID int) (ManagerInfo, error
 	return managerInfo, nil
 }
 
+// 10.2 根据teamName查teamId
+func SearchTeamIDByTeamName(db *sql.DB, teamName string) (int, error) {
+	var teamID int
+
+	// 查询数据库以获取团队ID
+	err := db.QueryRow("SELECT team_id FROM team_info WHERE team_name = ?", teamName).Scan(&teamID)
+	if err != nil {
+		return 0, err
+	}
+
+	return teamID, nil
+}
+
 // 11 根据team_id查询team_info数据表里team_name,member_num
 func SearchTeamInfoByTeamID(db *sql.DB, teamID int) (string, int, error) {
 	var teamName string
