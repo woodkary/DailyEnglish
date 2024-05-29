@@ -12,7 +12,7 @@
 				</view>
 				<view class="button-group">
 					<div v-for="(choice, choiceIndex) in question.choices" :key="choiceIndex" class="choice-container">
-						<button class="option" :class="{ 'active': choiceIndex === question.activeButtonIndex }" @click="selectChoice(choiceIndex,index)">
+						<button class="option" :class="{ 'active': choiceIndex === question.activeButtonIndex }" @click="selectChoice(choiceIndex,currentQuestionIndex)">
 						    {{ getLabel(choiceIndex) }}
 						</button>
 
@@ -36,7 +36,7 @@
 			<view class="xuanxiang-container" v-show="isShow">
 				<view v-for="(thisRowQuestions,rowIndex) in rows" :key="rowIndex" class="row">
 					<button v-for="(thisRowQuestion,index) in thisRowQuestions" :key="index" class="option" @click="setCurrentQuestionIndexByQuestionId(thisRowQuestion.question.question_id)"
-						:class="{ 'finished': isFinished[thisRowQuestion.question.question_id], 'selected': thisRowQuestion.index === current }"
+						:class="{ 'finished': isFinished[thisRowQuestion.question.question_id]}"
 						:style="{margin:buttonMargin+'rpx'}">
 						{{thisRowQuestion.index+1}}
 					</button>
@@ -96,7 +96,7 @@
 				realAnswer: [
 					'放弃', '选项B', '选项C' // 正确答案
 				],
-				maxButtonsPerRow: 6, // 每行的最大元素个数
+				maxButtonsPerRow: 5, // 每行的最大元素个数
 				buttonMargin: 35, // 元素间隔
 				selectedChoiceAndScore: {
           /*//key为question_id

@@ -632,6 +632,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		//查询考试信息
 		Item1, err := controlsql.GetExamInfoByExamID(db, request.ExamID)
 		if err != nil {
+			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
 				"msg":  "服务器内部错误"})
@@ -639,11 +640,12 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		}
 		response.QuestionNum = Item1.QuestionNum
 		//查询考试题目
-		questionIds := strings.Split(Item1.QuestionID, ",")
+		questionIds := strings.Split(Item1.QuestionID, "-")
 		for _, questionId := range questionIds {
 			questionId = strings.TrimSpace(questionId)
 			questionID, err := strconv.Atoi(questionId)
 			if err != nil {
+				log.Panic(err)
 				c.JSON(http.StatusInternalServerError, gin.H{
 					"code": "500",
 					"msg":  "服务器内部错误"})
@@ -651,6 +653,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			}
 			Item2, err := controlsql.GetQuestionInfo(db, questionID)
 			if err != nil {
+				log.Panic(err)
 				c.JSON(http.StatusInternalServerError, gin.H{
 					"code": "500",
 					"msg":  "服务器内部错误"})
