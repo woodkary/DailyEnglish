@@ -149,6 +149,13 @@
         {
             "path" : "pages/finishClockin/finishClockin",
             "style" : {}
+        },
+        {
+        	"path" : "pages/Join/Join",
+        	"style" : 
+        	{
+        		"navigationBarTitleText" : "加入团队"
+        	}
         }
     ],
     "globalStyle" : {
