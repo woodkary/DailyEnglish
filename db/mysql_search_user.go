@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // 根据email查询user是否存在
@@ -38,8 +39,7 @@ func UserExists_User(db *sql.DB, username string) bool {
 func RegisterUser_User(db *sql.DB, username string, password string, email string) error {
 	fmt.Print("RegisterUser_User")
 	// 准备插入语句
-	// userid := utils.GenerateID()
-	userid := 32
+	userid := utils.GenerateID(time.Now(), 1145141919810)
 	stmt, err := db.Prepare("INSERT INTO user_info(user_id ,username, email, pwd,sex,phone,birthday,register_date) VALUES( ?, ?, ?, ?,?,?,?,?)")
 	if err != nil {
 		return err
