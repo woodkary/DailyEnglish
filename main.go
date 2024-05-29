@@ -30,13 +30,11 @@ func main() {
 		panic(err.Error())
 	}
 	defer db.Close()
-
 	r := gin.Default()
 	r.Static("static/team_manager", "./static")
 	// r.Static("static/team_manager/css", "./static/css")
 	// r.Static("static/team_manager/js", "./static/js")
 	// r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html", "./static/404.html")
-
 	adminrouter.InitAdminRouter(r, db)
 	teamrouter.InitTeamRouter(r, db)
 	go func() {
