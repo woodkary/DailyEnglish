@@ -125,7 +125,7 @@ func SearchExaminfoByTeamIDAndDate222(db *sql.DB, teamID int, date string) ([]Ex
 	// 遍历结果集并收集考试信息
 	for rows.Next() {
 		var examInfo Examinfo
-		if err := rows.Scan(&examInfo.ExamID, &examInfo.ExamName, &examInfo.ExamDate, &examInfo, &examInfo.StartTime, &examInfo.Duration, &examInfo.QuestionNum); err != nil {
+		if err := rows.Scan(&examInfo.ExamID, &examInfo.ExamName, &examInfo.ExamDate, &examInfo.StartTime, &examInfo.Duration, &examInfo.QuestionNum); err != nil {
 			return nil, err
 		}
 		examInfos = append(examInfos, examInfo)
