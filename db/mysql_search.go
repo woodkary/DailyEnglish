@@ -102,6 +102,43 @@ func SearchExamInfoByTeamIDAndDate(db *sql.DB, teamID int, date string) ([]ExamI
 	return examInfos, nil
 }
 
+// 2.3 clock duration questionnum
+type Examinfo struct {
+	ExamID      int
+	ExamName    string
+	ExamDate    string
+	StartTime   string
+	Duration    int
+	QuestionNum int
+}
+
+func SearchExaminfoByTeamIDAndDate222(db *sql.DB, teamID int, date string) ([]Examinfo, error) {
+	var examInfos []Examinfo
+
+	// 查询数据库以获取考试信息
+	rows, err := db.Query("SELECT exam_id, exam_name, exam_date,exam_clock,exam_duration,quetion_num FROM exam_info WHERE team_id = ? AND exam_date = ?", teamID, date)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// 遍历结果集并收集考试信息
+	for rows.Next() {
+		var examInfo Examinfo
+		if err := rows.Scan(&examInfo.ExamID, &examInfo.ExamName, &examInfo.ExamDate, &examInfo, &examInfo.StartTime, &examInfo.Duration, &examInfo.QuestionNum); err != nil {
+			return nil, err
+		}
+		examInfos = append(examInfos, examInfo)
+	}
+
+	// 检查遍历过程中是否出错
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return examInfos, nil
+}
+
 // 3 根据exam_id查询exam_score数据表里的exam_score字段
 func SearchExamScoreByExamID(db *sql.DB, examID int) (string, error) {
 	var examScore string
