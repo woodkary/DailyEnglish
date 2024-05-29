@@ -171,7 +171,7 @@ export default {
           title: '获取考试详情失败',
           icon: 'none'
         });
-      }
+        }
     });
   },
   methods: {
