@@ -3,12 +3,12 @@
 		<view class="head">
 			<image class="back-icon" src="../../static/back.svg" @click="handleBack"></image>
 			<span>加入团队</span>
-			<button>确认</button>
+			<button @click="joinTeam">确认</button>
 		</view>
 
 		<view class="input-wrapper">
-			<input class="uni-input" placeholder="请输入团队码" v-model="inputClearValue" @input="clearInput" />
-			<image class="uni-icon" src="../../static/not-done2.svg" v-if="showClearIcon" @click="clearIcon">
+			<input class="uni-input" placeholder="请输入团队码" v-model="inputClearValue" />
+			<image class="uni-icon" src="../../static/not-done2.svg" v-if="inputClearValue.length>0" @click="clearIcon">
 			</image>
 		</view>
 	</view>
@@ -19,7 +19,6 @@
 		data() {
 			return {
 				inputClearValue: '',
-				showClearIcon: false
 			}
 		},
 		methods: {
@@ -28,13 +27,47 @@
 					delta: 1
 				})
 			},
-			clearInput() {
-				this.showClearIcon = this.inputClearValue.length > 0;
-			},
 			clearIcon() {
 				this.inputClearValue = '';
-				this.showClearIcon = false;
-			}
+			},
+      joinTeam() {
+        uni.request({
+          url: '/api/users/my_team/join_team',
+          method: 'POST',
+          data: {
+            Invitation_Code: this.inputClearValue
+          },
+          header: {
+            'content-type': 'application/json', // 默认值
+            'Authorization': `Bearer ${uni.getStorageSync('token')}`
+          },
+          success: (res) => {
+            if (res.data.code === 200) {
+              uni.showToast({
+                title: '加入成功',
+                icon: 'success',
+                duration: 2000
+              });
+              uni.navigateBack({
+                delta: 1
+              });
+            } else {
+              uni.showToast({
+                title: '加入失败',
+                icon: 'none',
+                duration: 2000
+              });
+            }
+          },
+          fail: (res) => {
+            uni.showToast({
+              title: '加入失败',
+              icon: 'none',
+              duration: 2000
+            });
+          }
+        });
+      },
 		}
 	}
 </script>

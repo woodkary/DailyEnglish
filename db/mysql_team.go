@@ -93,8 +93,6 @@ func CheckTeammember(db *sql.DB, username string, teamid int) (bool, error) {
 // 用户加入团队
 func JoinTeam(db *sql.DB, userid int, teamid int) (bool, error) {
 
-	//查询团队是否已满
-
 	// 获取当前日期
 	now := time.Now()
 	// 格式化日期为字符串
@@ -128,7 +126,26 @@ func CheckTeam(db *sql.DB, teamid int) (bool, error) {
 
 	// 如果 count 大于 0，说明team存在
 	return count > 0, nil
+}
 
+// 查询团队是否已满
+func IsTeamFull(db *sql.DB, teamid int) (bool, error) {
+	// 查询member_num
+	query := "SELECT member_num FROM team_info WHERE  team_id = ?"
+	var member_num int
+	err := db.QueryRow(query, teamid).Scan(&member_num)
+	if err != nil {
+		return false, err
+	}
+
+	// count team内成员数量
+	query = "SELECT COUNT(*) FROM user-team WHERE  team_id = ?"
+	var count int
+	err = db.QueryRow(query, teamid).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+	return count == member_num, nil
 }
 
 // 查询团队信息

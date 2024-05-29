@@ -39,7 +39,7 @@
 			<span class="word3">我的单词本</span>
 			<image class="right" src="../../static/back.svg"></image>
 		</view>
-		<view class="container3">
+		<view class="container3" @click="goToTeam">
 			<image class="team" src="../../static/team.svg"></image>
 			<span class="word31">我的团队</span>
 			<image class="right" src="../../static/back.svg"></image>
@@ -71,26 +71,13 @@
 				consecutive_punch_day: 7
 			}
 		},
-		// onLoad() {
-		//   //获取一些打卡数据
-		//   uni.request({
-		//     url: '/api/users/my_punches',
-		//     method: 'GET',
-		//     header: {
-		//       'Authorization': 'Bearer '+ uni.getStorageSync('token')
-		//     },
-		//     success: (res) => {
-		//       console.log(res.data);
-		//       this.punch_word_num = res.data.punch_word_num;
-		//       this.total_punch_day = res.data.total_punch_day;
-		//       this.consecutive_punch_day = res.data.consecutive_punch_day;
-		//     },
-		//     fail: (err) => {
-		//       console.log(err);
-		//     }
-		//   });
-		// },
+
 		methods: {
+      goToTeam() {
+          uni.navigateTo({
+            url: '../Team/Team'//Todo: 跳转到团队页面
+          });
+      },
 			goToCalendar() {
 				// 使用 uniapp 提供的路由跳转方法进行跳转
 				uni.navigateTo({
