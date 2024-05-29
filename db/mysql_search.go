@@ -392,7 +392,8 @@ func SearchTeamInfoByTeamID(db *sql.DB, teamID int) (string, int, error) {
 // 12 插入考试
 func InsertExamInfo(db *sql.DB, exam_name string, exam_date string, exam_clock string, question_num int, question_id string, team_id int) error {
 	now := time.Now()
-	exam_id := service.GenerateID(now, 114514)
+	var id int64 = 1
+	exam_id := service.GenerateID(now, id)
 	fmt.Println(exam_id)
 	stmt, err := db.Prepare("INSERT INTO exam_info(exam_id,exam_name,exam_date,exam_clock,question_num,question_id,team_id) VALUES(?,?,?,?,?,?,?)")
 	if err != nil {
