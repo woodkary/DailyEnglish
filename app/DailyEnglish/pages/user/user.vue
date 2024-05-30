@@ -75,7 +75,7 @@
 		methods: {
       goToTeam() {
           uni.navigateTo({
-            url: '../Team/Team'//Todo: 跳转到团队页面
+            url: '../MyTeam/MyTeam'//Todo: 跳转到团队页面
           });
       },
 			goToCalendar() {

@@ -582,6 +582,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			question.QuestionDesc = item.Question
 			// 扩展item中的Questions内的Choices List["","","",""]为map[["A","B","C","D"],["","","",""]]
 			question.Options = make(map[string]string)
+			i = 0
 			for i, option := range item.Options {
 				key := string(i + 65) // 65是'A'的ASCII码
 				question.Options[key] = option
@@ -729,9 +730,11 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			c.JSON(500, "服务器错误")
 			return
 		}
+		fmt.Println("now searching teamid ", UserClaims.TeamID)
 		//查询用户所属团队
 		Item, err := controlsql.SearchTeamInfo(db, UserClaims.TeamID)
 		if err != nil {
+			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
 				"msg":  "服务器内部错误"})
