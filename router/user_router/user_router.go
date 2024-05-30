@@ -676,7 +676,52 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		c.JSON(200, response)
 	})
 	//提交考试@TODO
-
+	r.POST("/api/exams/submitExamResult", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Exam_score struct {
+			UserAnswer string `json:"selectedChoice"`
+			UserScore  int    `json:"score"`
+		}
+		type Request struct {
+			Exam_result map[int]Exam_score `json:"selectedChoiceAndScore"`
+			Exam_id     int                `json:"exam_id"`
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+		fmt.Println(request)
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		//计算总分
+		var totalScore int
+		var user_answer string
+		for _, item := range request.Exam_result {
+			totalScore += item.UserScore
+			user_answer += item.UserAnswer + "-"
+		}
+		user_answer = strings.TrimRight(user_answer, "-")
+		//插入考试信息
+		err := controlsql.InsertUserScore(db, UserClaims.UserID, request.Exam_id, user_answer, totalScore)
+		if err != nil {
+			log.Panic(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+			return
+		}
+		c.JSON(200, gin.H{
+			"code": "200",
+			"msg":  "提交成功",
+		})
+	})
 	// 我的团队
 	r.GET("/api/users/my_team", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
