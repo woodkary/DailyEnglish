@@ -157,11 +157,20 @@
 				});
 			},
       //由date类型转为类似于'2022-01-03'字符串类型
-      getExamDate(date){
-        const isoString = date.toISOString(); // "2022-01-03T00:00:00.000Z"
-         // "2022-01-03"
-        return isoString.split('T')[0];
-      },
+      getExamDate(date) {
+        // 获取年、月、日
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1; // 月份是从0开始的，所以需要+1
+        const day = date.getDate();
+      
+        // 格式化月份和日期，确保它们总是两位数
+        const formattedMonth = month < 10 ? '0' + month : month;
+        const formattedDay = day < 10 ? '0' + day : day;
+      
+        // 拼接成"YYYY-MM-DD"格式的字符串
+        return `${year}-${formattedMonth}-${formattedDay}`;
+      }
+,
 			getTodayExams() {
 				// 从服务器获取今天的考试记录
 				uni.request({
@@ -175,7 +184,7 @@
           },
 					success: (res) => {
 						if (res.data.code == 200) {
-							this.exams = res.data.exams;
+							this.exams = this.transformExams(res.data.exams);
 						}
 					},
 					fail: (err) => {
@@ -207,7 +216,7 @@
 			transformExams(exams) {
 				return exams.map(exam => {
 					// 将日期从 "yyyy/mm/dd" 转换为 "年月日"
-					const dateParts = exam.exam_date.split('/');
+					const dateParts = exam.exam_date.split('-');
 					const dateInChineseFormat = `${dateParts[0]}年${dateParts[1]}月${dateParts[2]}日`;
 
 					return {

@@ -5,6 +5,57 @@ progress = document.querySelector(".progress");
 let allTeams = [];
 //TODO 在team选项卡打开时，把allTeam的内容更新上去
 
+let teamName = document.querySelector('.input[teamName]');
+let amount = document.querySelector('.input[amount]');
+const modalAccept = document.querySelector('.button.accept');
+const modal = document.querySelector('.modal');
+modalAccept.addEventListener('click', () => {
+    let isValid = true;
+    if(teamName.value.trim() === '') {
+        teamName.style.borderColor = '#e55d50';
+        isValid = false;
+    } else {
+        teamName.style.borderColor = '#818CF8';
+    }
+    if(amount.value<5){
+        amount.style.borderColor = '#e55d50';
+        modal.querySelector('.tip').style.display = 'block';
+        isValid = false;
+    } else {
+        amount.style.borderColor = '#818CF8';
+    }
+    if(isValid){
+        //发送请求，创建团队
+        console.log(`teamName:${teamName.value},amount:${amount.value}`);
+        fetch('http://localhost:8081/api/team_manage/create_team', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer '+localStorage.getItem('token')
+            },
+            body: JSON.stringify({
+                team_name: teamName.value,
+                max_num: parseInt(amount.value)
+            })
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return Promise.reject(response.status);
+            }
+        }).then(data => {
+            console.log(data);
+            if(data.code === 200) {
+                //创建成功
+                alert('团队创建成功');
+                getPersonalInfo();
+            }
+        }).catch(error => {
+            console.log(error);
+        });
+    }
+});
+
 function getPersonalInfo(){
     let token=localStorage.getItem('token');
     fetch('http://localhost:8081/api/team_manage/personal_center/data',{
@@ -22,10 +73,13 @@ function getPersonalInfo(){
             nameP.textContent = data.name;
             emailP.textContent = data.email;
             phoneP.textContent = data.phone;
+            let teamInfo={}
             data.team.forEach(t => {
                 //假设每个团队10人，这里可以根据实际情况调整
                 allTeams.push({teamName:t.team_name,memberNum:t.member_num,teamId:t.team_id});
+                teamInfo[t.team_id]=t.team_name;
             });
+            localStorage.setItem('team_info',JSON.stringify(teamInfo));
             renderTeamInfo();
         }).catch(error => {
         //初始化默认的个人信息
@@ -40,10 +94,10 @@ function getPersonalInfo(){
         renderTeamInfo();
     });
 }
-function renderTeamInfo(){
+async function renderTeamInfo(){
     let teamInfoChart=document.querySelector('#tab_2');
     teamInfoChart.innerHTML='';//清空原有内容
-    allTeams.forEach(t => {
+    for (const t of allTeams) {
         let card = document.createElement('card');
         card.classList.add('team-card');
         let img=document.createElement('img');
@@ -73,13 +127,13 @@ function renderTeamInfo(){
         teamCodeP.classList.add('teamcode');
         teamCodeP.textContent='邀请码：';
         let teamCodeSpan=document.createElement('span');
-        let codeMap = JSON.parse(localStorage.getItem('codeMap'));
+        let codeMap = JSON.parse(sessionStorage.getItem('codeMap'));
         //创建map保存团队名和邀请码
         if (codeMap == null) {
             codeMap = {};
-            localStorage.setItem('codeMap', JSON.stringify(codeMap));
+            sessionStorage.setItem('codeMap', JSON.stringify(codeMap));
         }
-        teamCodeSpan.textContent=getInvitationCode(t.teamName,t.team_id);
+        teamCodeSpan.textContent=await getInvitationCode(t.teamName,t.teamId);
         teamCodeP.appendChild(teamCodeSpan);
         let copyBtn=document.createElement('i');
         copyBtn.classList.add('uil');
@@ -133,16 +187,16 @@ function renderTeamInfo(){
         generateBtn.classList.add('uil');
         generateBtn.classList.add('uil-redo');
         generateBtn.classList.add('generateBtn');
-        generateBtn.addEventListener('click', () => {
+        generateBtn.addEventListener('click', async () => {
             let teamname = generateBtn.parentNode.parentNode.parentNode.querySelector('.group-name').textContent;
-            let newCode = generateTeamCode(teamname);
+            let newCode = await generateTeamCode(teamname, t.teamId);
             let code = generateBtn.parentNode.querySelector('span');
             code.textContent = newCode;
-            let title=toast.querySelector('.text-1');
-            let message=toast.querySelector('.text-2');
-            title.textContent='重置邀请码成功';
-            message.textContent='邀请码已重置';
-            if(toast.classList.contains("active")){
+            let title = toast.querySelector('.text-1');
+            let message = toast.querySelector('.text-2');
+            title.textContent = '重置邀请码成功';
+            message.textContent = '邀请码已重置';
+            if (toast.classList.contains("active")) {
                 toast.classList.remove("active");
                 progress.classList.remove("active");
                 clearTimeout(timer1);
@@ -151,26 +205,26 @@ function renderTeamInfo(){
                     progress.classList.add("active");
                     timer1 = setTimeout(() => {
                         progress.style.width = "100%";
-                        let title=toast.querySelector('.text-1');
-                        let message=toast.querySelector('.text-2');
-                        title.textContent='';
-                        message.textContent='';
+                        let title = toast.querySelector('.text-1');
+                        let message = toast.querySelector('.text-2');
+                        title.textContent = '';
+                        message.textContent = '';
                         toast.classList.remove("active");
                         progress.classList.remove("active");
-                    },5000)
-                },300);
-            }else{
+                    }, 5000)
+                }, 300);
+            } else {
                 toast.classList.add("active");
                 progress.classList.add("active");
                 timer1 = setTimeout(() => {
                     progress.style.width = "100%";
-                    let title=toast.querySelector('.text-1');
-                    let message=toast.querySelector('.text-2');
-                    title.textContent='';
-                    message.textContent='';
+                    let title = toast.querySelector('.text-1');
+                    let message = toast.querySelector('.text-2');
+                    title.textContent = '';
+                    message.textContent = '';
                     toast.classList.remove("active");
                     progress.classList.remove("active");
-                },5000);
+                }, 5000);
             }
         });
         teamCodeP.appendChild(generateBtn);
@@ -178,7 +232,7 @@ function renderTeamInfo(){
         teamDetails.appendChild(teamCodeDiv);
         card.appendChild(teamDetails);
         teamInfoChart.appendChild(card);
-    });
+    }
 }
 
 window.onload=function(){
@@ -254,33 +308,33 @@ async function generateInvitationCode(teamId) {
     code = (await response.json()).invitation_code;
     return code;
 }
-function getInvitationCode(teamname,teamId) {
-    let codeMap = JSON.parse(localStorage.getItem('codeMap'));
+async function getInvitationCode(teamname, teamId) {
+    let codeMap = JSON.parse(sessionStorage.getItem('codeMap'));
     let codeAndExpiry = codeMap[teamname];
     if (codeAndExpiry == null) {
-        let code = generateInvitationCode(teamId);
+        let code = await generateInvitationCode(teamId);
         let expiry = new Date();
-        expiry.setDate(expiry.getTime() + 1000*60*5); // 设置5分钟后过期
-        codeMap[teamname] = { code: code, expiry: expiry };
-        localStorage.setItem('codeMap', JSON.stringify(codeMap));
+        expiry.setDate(expiry.getTime() + 1000 * 60 * 5); // 设置5分钟后过期
+        codeMap[teamname] = {code: code, expiry: expiry};
+        sessionStorage.setItem('codeMap', JSON.stringify(codeMap));
         return code;
     } else {
         let expiry = new Date(codeAndExpiry.expiry);
         let now = new Date();
         if (expiry < now) { // 过期
-            let code = generateInvitationCode();
-            codeMap[teamname] = { code: code, expiry: new Date(now.getTime() + 1000*60*5) }; // 续期5分钟
-            localStorage.setItem('codeMap', JSON.stringify(codeMap));
+            let code = await generateInvitationCode(teamId);
+            codeMap[teamname] = {code: code, expiry: new Date(now.getTime() + 1000 * 60 * 5)}; // 续期5分钟
+            sessionStorage.setItem('codeMap', JSON.stringify(codeMap));
             return code;
         } else {
             return codeAndExpiry.code;
         }
     }
 }
-function generateTeamCode(teamname) {
-    let newCode = generateInvitationCode();
-    let codeMap = JSON.parse(localStorage.getItem('codeMap'));
-    codeMap[teamname] = { code: newCode, expiry: new Date(new Date().getTime() + 1000*60*5) }; // 5分钟后过期
-    localStorage.setItem('codeMap', JSON.stringify(codeMap));
+async function generateTeamCode(teamname, teamId) {
+    let newCode = await generateInvitationCode(teamId);
+    let codeMap = JSON.parse(sessionStorage.getItem('codeMap'));
+    codeMap[teamname] = {code: newCode, expiry: new Date(new Date().getTime() + 1000 * 60 * 5)}; // 5分钟后过期
+    sessionStorage.setItem('codeMap', JSON.stringify(codeMap));
     return newCode;
 }

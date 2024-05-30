@@ -187,7 +187,7 @@ func GetExamInfo(db *sql.DB, use_id int, team_id int) ([]Exam, error) {
 		}
 		//每个exam_id查examRank和examScore
 		err = db.QueryRow("SELECT exam_score,exam_rank from `user-exam_score` WHERE user_id =? AND exam_id =?", use_id, exam.ExamID).Scan(&exam.ExamScore, exam.ExamRank)
-		if err != nil {
+		if err != nil && err.Error() != "sql: no rows in result set" {
 			return nil, err
 		}
 		exams = append(exams, exam)
@@ -257,43 +257,76 @@ func GetQuestionInfo(db *sql.DB, question_id int) (QuestionInfo, error) {
 func GetExamDetail(db *sql.DB, user_id int, exam_id int) ([]QuestionDetail, error) {
 	var questionDetails []QuestionDetail
 	var questions string
-	err := db.QueryRow("SELECT question_id FROM question_info WHERE exam_id =?", exam_id).Scan(&questions)
+	err := db.QueryRow("SELECT question_id FROM exam_info WHERE exam_id =?", exam_id).Scan(&questions)
+	fmt.Println(exam_id)
 	if err != nil {
 		return nil, err
 	}
 	questions_list := strings.Split(questions, "-")
 	userAnwser := make(map[int]string)
 	var ans string
-	err = db.QueryRow("SELECT user_answer from user-exam_score WHERE user_id =?,exam_id =?", user_id, exam_id).Scan(&ans)
-	if err != nil {
+	err = db.QueryRow("SELECT user_answer from `user-exam_score` WHERE user_id =? AND exam_id =?", user_id, exam_id).Scan(&ans)
+	if err != nil && err.Error() != "sql: no rows in result set" {
 		return nil, err
 	}
-	ans_list := strings.Split(ans, "-")
-	for _, item := range ans_list {
-		a := strings.Split(item, ":")
-		question_id, _ := strconv.Atoi(a[0])
-		answer := a[1]
-		userAnwser[question_id] = answer
+	if err.Error() != "sql: no rows in result set" {
+		ans_list := strings.Split(ans, "-")
+		for _, item := range ans_list {
+			a := strings.Split(item, ":")
+			question_id, _ := strconv.Atoi(a[0])
+			answer := a[1]
+			userAnwser[question_id] = answer
+		}
+		for _, question := range questions_list {
+			var questionDetail QuestionDetail
+			questionid, _ := strconv.Atoi(question)
+			questionDetail.Question_id = questionid
+			var content string
+			var questionType int //1选择题 2填空题
+			err := db.QueryRow("SELECT question_type,question_content,quetion_answer FROM question_info WHERE question_id =?", questionid).Scan(&questionType, &content, &questionDetail.Answer)
+			if err != nil {
+				return nil, err
+			}
+			if questionType == 1 {
+				content_list := strings.Split(content, "：")
+				questionDetail.Question = content_list[0]
+				questionDetail.Options = strings.Split(content_list[1], " ")
+			} else if questionType == 2 {
+				questionDetail.Question = content
+				questionDetail.Options = []string{""}
+			}
+			questionDetail.UserAnswer = userAnwser[questionid]
+			//每个question_id查score
+			if userAnwser[questionid] == questionDetail.Answer {
+				questionDetail.Score = 5
+			} else {
+				questionDetail.Score = 0
+			}
+			questionDetails = append(questionDetails, questionDetail)
+		}
+		return questionDetails, nil
 	}
 	for _, question := range questions_list {
 		var questionDetail QuestionDetail
 		questionid, _ := strconv.Atoi(question)
 		questionDetail.Question_id = questionid
 		var content string
-		err := db.QueryRow("SELECT question_content,quetion_answer FROM question_info WHERE question_id =?", questionid).Scan(&content, &questionDetail.Answer)
-		content_list := strings.Split(content, "：")
-		questionDetail.Question = content_list[0]
-		questionDetail.Options = strings.Split(content_list[1], " ")
+		var questionType int //1选择题 2填空题
+		err := db.QueryRow("SELECT question_type,question_content,question_answer FROM question_info WHERE question_id =?", questionid).Scan(&questionType, &content, &questionDetail.Answer)
 		if err != nil {
 			return nil, err
 		}
-		questionDetail.UserAnswer = userAnwser[questionid]
-		//每个question_id查score
-		if userAnwser[questionid] == questionDetail.Answer {
-			questionDetail.Score = 5
-		} else {
-			questionDetail.Score = 0
+		if questionType == 1 {
+			content_list := strings.Split(content, "：")
+			questionDetail.Question = content_list[0]
+			questionDetail.Options = strings.Split(content_list[1], " ")
+		} else if questionType == 2 {
+			questionDetail.Question = content
+			questionDetail.Options = []string{""}
 		}
+		questionDetail.UserAnswer = "未作答"
+		//每个question_id查score
+		questionDetail.Score = 0
 		questionDetails = append(questionDetails, questionDetail)
 	}
 	return questionDetails, nil

@@ -35,7 +35,7 @@
           url: '/api/users/my_team/join_team',
           method: 'POST',
           data: {
-            Invitation_Code: this.inputClearValue
+            invitation_code: this.inputClearValue
           },
           header: {
             'content-type': 'application/json', // 默认值

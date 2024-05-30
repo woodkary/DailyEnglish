@@ -3,6 +3,8 @@ package db
 import (
 	utils "DailyEnglish/utils"
 	"database/sql"
+	"fmt"
+	"log"
 	"time"
 )
 
@@ -97,7 +99,7 @@ func JoinTeam(db *sql.DB, userid int, teamid int) (bool, error) {
 	now := time.Now()
 	// 格式化日期为字符串
 	today := now.Format("2006-01-02")
-	stmt, err := db.Prepare("INSERT INTO user-team(user_id,team_id,join_date) values (?,?,?)")
+	stmt, err := db.Prepare("INSERT INTO `user-team` (user_id,team_id,join_date) values (?,?,?)")
 	if err != nil {
 		return false, err
 	}
@@ -115,12 +117,13 @@ func JoinTeam(db *sql.DB, userid int, teamid int) (bool, error) {
 func CheckTeam(db *sql.DB, teamid int) (bool, error) {
 
 	// SQL 查询语句
-	query := "SELECT COUNt(*) FROM user-team WHERE  team_id = ?"
+	query := "SELECT COUNT(*) FROM team_info WHERE team_id = ?"
 
 	var count int
 	// 执行查询
 	err := db.QueryRow(query, teamid).Scan(&count)
 	if err != nil {
+		log.Panic(err)
 		return false, err
 	}
 
@@ -166,18 +169,22 @@ type Member struct {
 
 func SearchTeamInfo(db *sql.DB, teamid int) (Team, error) {
 	var team Team
+	fmt.Println("teamId是", teamid)
 
 	// 查询数据库以获取信息
 	err := db.QueryRow("SELECT team_id,manager_id,team_name FROM manager_info WHERE team_id = ?", teamid).Scan(&team.Teamid, &team.Managerid, &team.Teamname)
 	if err != nil {
+		log.Panic(err)
 		return Team{}, err
 	}
 	err = db.QueryRow("SELECT manager_name FROM manager_info WHERE manager_id = ?", team.Managerid).Scan(&team.Managername)
 	if err != nil {
+		log.Panic(err)
 		return Team{}, err
 	}
 	err = db.QueryRow("SELECT COUNT(*) FROM user-team WHERE team_id = ?", teamid).Scan(&team.Teamsize)
 	if err != nil {
+		log.Panic(err)
 		return Team{}, err
 	}
 
@@ -185,6 +192,7 @@ func SearchTeamInfo(db *sql.DB, teamid int) (Team, error) {
 	// 查询数据库以获取用户名称
 	rows, err := db.Query("SELECT user_id  FROM user-team WHERE team_id = ?", teamid)
 	if err != nil {
+		log.Panic(err)
 		return Team{}, err
 	}
 	defer rows.Close()
@@ -198,6 +206,7 @@ func SearchTeamInfo(db *sql.DB, teamid int) (Team, error) {
 		}
 		err = db.QueryRow("SELECT user_id,username,sex FROM user_info WHERE user_id = ?", userID).Scan(&user.Userid, &user.Username, &user.Usersex)
 		if err != nil {
+			log.Panic(err)
 			return Team{}, err
 		}
 

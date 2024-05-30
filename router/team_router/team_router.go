@@ -6,6 +6,7 @@ import (
 	"DailyEnglish/utils"
 	service "DailyEnglish/utils"
 	"database/sql"
+	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -366,7 +367,9 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			c.JSON(400, "请求参数错误")
 			return
 		}
+		fmt.Println("获取的团队ID为:", request.TeamID)
 		NewCode := utils.EncryptIC(request.TeamID, 114514)
+		fmt.Println("获取的邀请码为:", NewCode)
 		var response struct {
 			Code           string `json:"code"`            // 状态码
 			Msg            string `json:"msg"`             // 消息

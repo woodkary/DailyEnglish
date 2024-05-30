@@ -147,11 +147,12 @@ export default {
       return this.questions;
     }
   },
-  onLoad(event){
-    this.examId=event.exam_id;
-    this.examName=event.exam_name;
+  onLoad(options){
+    this.examId=options.exam_id;
+    this.examName=options.exam_name;
     uni.request({
       url: '/api/exams/examination_details',
+	  method:'POST',
       data: {
         exam_id: this.examId
       },

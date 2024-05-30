@@ -1,11 +1,46 @@
 <template>
-  <view class="container">
-    <view class="head">
-      <image class="back-icon" src="../../static/back.svg" @click="handleBack"></image>
-      <span>我的团队</span>
-    </view>
-
-  </view>
+	<view class="container">
+		<view class="head">
+			<image class="back-icon" src="../../static/back.svg" @click="handleBack"></image>
+			<span class="title">我的团队</span>
+			<button @click="goToJoin">加入团队</button>
+		</view>
+		<view class="container1">
+			<view class="team-icon-container">
+				<span class="team-initial">M</span>
+			</view>
+			<view class="team-info">
+				<view class="team-name">
+					<text class="team-name-text">{{teamName}}</text>
+				</view>
+				<view class="people">
+					<text class="people-text">团队人数：{{memberNum}}</text>
+				</view>
+			</view>
+		</view>
+		<view class="container2">
+			<view class="team-captain-row">
+				<span>团队队长</span>
+			</view>
+			<view class="name-row">
+				<view class="people-icon-container">
+					<span class="people-initial">{{firstLetter}}</span>
+				</view>
+				<span class="manager-name">{{managerName}}</span>
+			</view>
+		</view>
+		<view class="container3">
+			<view class="team-captain-row">
+				<span>团队成员</span>
+			</view>
+			<view v-for="(item, index) in members" :key="index" class="name-row">
+				<view class="people-icon-container">
+					<span class="people-initial">{{item.userName[0]}}</span>
+				</view>
+				<span class="manager-name">{{item.userName}}</span>
+			</view>
+		</view>
+	</view>
 </template>
 
 <script>
@@ -13,77 +48,221 @@
 		data() {
 			return {
 				teamName: "春田花花幼稚园",
-        managerName: "佐藤太郎",
-        memberNum: 50,
-        members: [
-          {
-            userName: "张三",
-            userSex: 1,//1:男 0:女
-          },
-          {
-            userName: "李四",
-            userSex: 0,//1:男 0:女
-          }
-        ]
+				managerName: "佐藤太郎",
+				memberNum: 50,
+				members: [{
+						userName: "张三",
+						userSex: 1, //1:男 0:女
+					},
+					{
+						userName: "李四",
+						userSex: 0, //1:男 0:女
+					}
+				]
 
 			}
 		},
+		onLoad() {
+			//获取所有团队成员
+			uni.request({
+				url: "/api/users/my_team",
+				method:'GET',
+				header:{
+					'content-type': 'application/json', // 默认值
+					'Authorization': `Bearer ${uni.getStorageSync('token')}`
+				},
+				success: (res) => {
+					if(res.data.code==200){
+						//获取成功
+						let teamInfo=res.data.team_info;
+						this.teamName=teamInfo.team_name;
+						this.managerName=teamInfo.manager_name;
+						this.memberNum=teamInfo.member_num;
+						this.members=[];
+						this.member_list.forEach((member)=>{
+							this.members.push({
+								userName: member.user_name,
+								userSex: member.user_sex
+							});
+						});
+						// 获取managerName的第一个字符并更新到data中
+						this.setData({
+							firstLetter: this.data.managerName[0]
+						});
+					}
+				},
+				fail: (error) => {
+					console.log(error);
+				}
+			})
+			// // 获取managerName的第一个字符并更新到data中
+			// this.setData({
+			// 	firstLetter: this.data.managerName[0]
+			// });
+		},
 		methods: {
-			
+			goToJoin(){
+				uni.navigateTo({
+					url: '../Join/Join'
+				})
+			}
 		}
 	}
 </script>
 
 <style>
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100vh;
-  width: 100vw;
-}
+	.container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		height: 100vh;
+		width: 100vw;
+		background-color: #fafafa;
+	}
 
-.head {
-  display: flex;
-  height: 2rem;
-  width: 100vw;
-  background-color: transparent;
-}
+	.head {
+		display: flex;
+		height: 2rem;
+		width: 100vw;
+		background-color: white;
+	}
 
-.back-icon {
-  width: 2rem;
-  /*图标宽度 */
-  height: 2rem;
+	.back-icon {
+		width: 2rem;
+		/*图标宽度 */
+		height: 2rem;
 
-}
+	}
 
-span {
-  margin-left: 7rem;
-  font-size: 40rpx;
-  font-weight: bold;
-  margin-top: 2rpx;
-}
-.container1 {
-  height: 7rem;
-  width:100%;
-  margin-bottom:20px;
-  display: flex;
-  /* 使用 flexbox 以方便布局 */
+	.title {
+		margin-left: 7rem;
+		font-size: 48rpx;
+		font-weight: bold;
+		margin-top: 2rpx;
+	}
 
-  border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.45) 0px 10px 20px -20px;
-  background-color: white;
-}
-.team-name{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
+	.container1 {
+		display: flex;
+		width: 100vw;
+		padding: 20px;
+		/* 调整容器内边距 */
+	}
 
-}
-.team-name-text{
-  font-size: 20rpx;
-  font-weight: lighter;
-}
+	.team-icon-container {
+		width: 50px;
+		/* 设置圆圈的直径 */
+		height: 50px;
+		/* 设置圆圈的直径 */
+		border-radius: 50%;
+		/* 使其成为圆形 */
+		background-color: #4CAF50;
+		/* 圆圈的背景颜色 */
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-right: 10px;
+		/* 圆圈和文字之间的间距 */
+		margin-left: 30px;
+	}
 
+	.team-initial {
+		color: white;
+		/* 文字颜色 */
+		font-size: 24px;
+		/* 文字大小 */
+		font-weight: bold;
+		/* 文字加粗 */
+	}
+
+
+	.team-info {
+		margin-left: 20px;
+		/* 调整图片和文字之间的间距 */
+		display: flex;
+		flex-direction: column;
+	}
+
+	.team-name-text,
+	{
+	font-size: 16px;
+	/* 调整文字大小 */
+	color: black;
+	}
+
+	.people {
+		margin-top: 5px;
+		/* 调整文字和文字之间的间距 */
+	}
+
+	.people-text {
+		font-size: 14px;
+		/* 调整文字大小 */
+	}
+
+	.container2 {
+		display: flex;
+		flex-direction: column;
+		width: 100vw;
+		padding: 20px;
+	}
+
+	.team-captain-row {
+		margin-bottom: 10px;
+		margin-left: 20px;
+	}
+
+	.name-row {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		background-color: white;
+		padding: 10px;
+	}
+
+	.people-icon-container {
+		width: 50px;
+		/* 设置圆圈的直径 */
+		height: 50px;
+		/* 设置圆圈的直径 */
+		border-radius: 50%;
+		/* 使其成为圆形 */
+		background-color: white;
+		/* 圆圈的背景颜色 */
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-right: 10px;
+		/* 圆圈和文字之间的间距 */
+		margin-left: 30px;
+		border: 1px solid #b2b2b2;
+	}
+
+	.people-initial {
+		color:black;
+		/* 文字颜色 */
+		font-size: 24px;
+		/* 文字大小 */
+		/* font-weight: bold; */
+		/* 文字加粗 */
+	}
+
+	.manager-name {
+		font-size: 18px;
+		margin-left: 10px;
+	}
+	
+	.container3 {
+		display: flex;
+		flex-direction: column;
+		width: 100vw;
+		padding: 20px;
+		.name-row {
+			display: flex;
+			align-items: center;
+			width: 100%;
+			background-color: white;
+			padding: 10px;
+			border-bottom: 1px solid #e6e6e6;
+		}
+	}
 </style>
