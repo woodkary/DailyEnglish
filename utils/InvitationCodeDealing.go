@@ -18,12 +18,12 @@ func EncryptIC(teamID int, key int) string {
 	fmt.Println("Long string bytes:", []byte(longStr))
 	// 使用 Base64 编码来混淆字符串
 	encoded := base64.StdEncoding.EncodeToString([]byte(longStr))
-	// 确保输出为 8 位，如果不足则填充，如果超出则截断
-	if len(encoded) < 8 {
-		encoded = encoded + strings.Repeat("A", 8-len(encoded))
-	} else if len(encoded) > 8 {
-		encoded = encoded[:8]
-	}
+	// // 确保输出为 8 位，如果不足则填充，如果超出则截断
+	// if len(encoded) < 8 {
+	// 	encoded = encoded + strings.Repeat("A", 8-len(encoded))
+	// } else if len(encoded) > 8 {
+	// 	encoded = encoded[:8]
+	// }
 	return encoded
 }
 

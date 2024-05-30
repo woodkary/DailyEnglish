@@ -3,6 +3,7 @@ package db
 import (
 	utils "DailyEnglish/utils"
 	"database/sql"
+	"log"
 	"time"
 )
 
@@ -97,7 +98,7 @@ func JoinTeam(db *sql.DB, userid int, teamid int) (bool, error) {
 	now := time.Now()
 	// 格式化日期为字符串
 	today := now.Format("2006-01-02")
-	stmt, err := db.Prepare("INSERT INTO user-team(user_id,team_id,join_date) values (?,?,?)")
+	stmt, err := db.Prepare("INSERT INTO `user-team` (user_id,team_id,join_date) values (?,?,?)")
 	if err != nil {
 		return false, err
 	}
@@ -115,12 +116,13 @@ func JoinTeam(db *sql.DB, userid int, teamid int) (bool, error) {
 func CheckTeam(db *sql.DB, teamid int) (bool, error) {
 
 	// SQL 查询语句
-	query := "SELECT COUNt(*) FROM user-team WHERE  team_id = ?"
+	query := "SELECT COUNT(*) FROM team_info WHERE team_id = ?"
 
 	var count int
 	// 执行查询
 	err := db.QueryRow(query, teamid).Scan(&count)
 	if err != nil {
+		log.Panic(err)
 		return false, err
 	}
 

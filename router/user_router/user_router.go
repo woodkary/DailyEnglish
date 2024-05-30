@@ -778,6 +778,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		// 插入该成员
 		insertOK, err := controlsql.JoinTeam(db, UserClaims.UserID, TargetTeamID)
 		if err != nil {
+			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
 				"msg":  "服务器内部错误"})
