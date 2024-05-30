@@ -5,6 +5,57 @@ progress = document.querySelector(".progress");
 let allTeams = [];
 //TODO 在team选项卡打开时，把allTeam的内容更新上去
 
+let teamName = document.querySelector('.input[teamName]');
+let amount = document.querySelector('.input[amount]');
+const modalAccept = document.querySelector('.button.accept');
+const modal = document.querySelector('.modal');
+modalAccept.addEventListener('click', () => {
+    let isValid = true;
+    if(teamName.value.trim() === '') {
+        teamName.style.borderColor = '#e55d50';
+        isValid = false;
+    } else {
+        teamName.style.borderColor = '#818CF8';
+    }
+    if(amount.value<5){
+        amount.style.borderColor = '#e55d50';
+        modal.querySelector('.tip').style.display = 'block';
+        isValid = false;
+    } else {
+        amount.style.borderColor = '#818CF8';
+    }
+    if(isValid){
+        //发送请求，创建团队
+        console.log(`teamName:${teamName.value},amount:${amount.value}`);
+        fetch('http://localhost:8081/api/team_manage/create_team', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer '+localStorage.getItem('token')
+            },
+            body: JSON.stringify({
+                team_name: teamName.value,
+                max_num: parseInt(amount.value)
+            })
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return Promise.reject(response.status);
+            }
+        }).then(data => {
+            console.log(data);
+            if(data.code === 200) {
+                //创建成功
+                alert('团队创建成功');
+                getPersonalInfo();
+            }
+        }).catch(error => {
+            console.log(error);
+        });
+    }
+});
+
 function getPersonalInfo(){
     let token=localStorage.getItem('token');
     fetch('http://localhost:8081/api/team_manage/personal_center/data',{
@@ -22,10 +73,13 @@ function getPersonalInfo(){
             nameP.textContent = data.name;
             emailP.textContent = data.email;
             phoneP.textContent = data.phone;
+            let teamInfo={}
             data.team.forEach(t => {
                 //假设每个团队10人，这里可以根据实际情况调整
                 allTeams.push({teamName:t.team_name,memberNum:t.member_num,teamId:t.team_id});
+                teamInfo[t.team_id]=t.team_name;
             });
+            localStorage.setItem('team_info',JSON.stringify(teamInfo));
             renderTeamInfo();
         }).catch(error => {
         //初始化默认的个人信息
