@@ -68,7 +68,6 @@
 				url: "/api/users/my_team",
 				method:'GET',
 				header:{
-					'content-type': 'application/json', // 默认值
 					'Authorization': `Bearer ${uni.getStorageSync('token')}`
 				},
 				success: (res) => {
