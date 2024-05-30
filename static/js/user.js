@@ -135,7 +135,7 @@ async function renderTeamInfo(){
         generateBtn.classList.add('generateBtn');
         generateBtn.addEventListener('click', async () => {
             let teamname = generateBtn.parentNode.parentNode.parentNode.querySelector('.group-name').textContent;
-            let newCode = await generateTeamCode(teamname, t.team_id);
+            let newCode = await generateTeamCode(teamname, t.teamId);
             let code = generateBtn.parentNode.querySelector('span');
             code.textContent = newCode;
             let title = toast.querySelector('.text-1');

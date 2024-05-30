@@ -752,7 +752,9 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		//解密邀请码
+		fmt.Println("邀请码为:", request.InvitationCode)
 		TargetTeamID, _ := utils.DecryptIC(request.InvitationCode, 114514)
+		fmt.Println("解密的团队码为:", TargetTeamID)
 		//utils.TestICD()
 
 		//查询是否有该ID的团队
