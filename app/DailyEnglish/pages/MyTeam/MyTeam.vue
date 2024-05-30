@@ -73,12 +73,12 @@
 				success: (res) => {
 					if(res.data.code==200){
 						//获取成功
-						let teamInfo=res.data.team_info;
+						let teamInfo=res.data.team;
 						this.teamName=teamInfo.team_name;
 						this.managerName=teamInfo.manager_name;
 						this.memberNum=teamInfo.member_num;
 						this.members=[];
-						this.member_list.forEach((member)=>{
+						teamInfo.member_list.forEach((member)=>{
 							this.members.push({
 								userName: member.user_name,
 								userSex: member.user_sex
