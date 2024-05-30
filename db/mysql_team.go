@@ -170,9 +170,9 @@ type Member struct {
 func SearchTeamInfo(db *sql.DB, teamid int) (Team, error) {
 	var team Team
 	fmt.Println("teamId是", teamid)
-
+	err := db.QueryRow("SELECT manager_id,team_name FROM team_info WHERE team_id = ?").Scan(&team.Managerid, &team.Teamname)
 	// 查询数据库以获取信息
-	err := db.QueryRow("SELECT team_id,manager_id,team_name FROM manager_info WHERE team_id = ?", teamid).Scan(&team.Teamid, &team.Managerid, &team.Teamname)
+	team.Teamid = teamid
 	if err != nil {
 		log.Panic(err)
 		return Team{}, err

@@ -777,6 +777,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		}
 		response.Code = 200
 		response.Msg = "成功"
+		fmt.Println(response)
 		c.JSON(http.StatusOK, response)
 	})
 
