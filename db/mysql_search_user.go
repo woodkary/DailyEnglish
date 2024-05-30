@@ -186,7 +186,7 @@ func GetExamInfo(db *sql.DB, use_id int, team_id int) ([]Exam, error) {
 			return nil, err
 		}
 		//每个exam_id查examRank和examScore
-		err = db.QueryRow("SELECT exam_score,exam_rank from `user-exam_score` WHERE user_id =? AND exam_id =?", use_id, exam.ExamID).Scan(&exam.ExamScore, exam.ExamRank)
+		err = db.QueryRow("SELECT exam_score,exam_rank from `user-exam_score` WHERE user_id =? AND exam_id =?", use_id, exam.ExamID).Scan(&exam.ExamScore, &exam.ExamRank)
 		if err != nil && err.Error() != "sql: no rows in result set" {
 			return nil, err
 		}
@@ -330,4 +330,27 @@ func GetExamDetail(db *sql.DB, user_id int, exam_id int) ([]QuestionDetail, erro
 		questionDetails = append(questionDetails, questionDetail)
 	}
 	return questionDetails, nil
+}
+func InsertUserScore(db *sql.DB, user_id int, exam_id int, user_answer string, score int) error {
+	stmt, err := db.Prepare("INSERT INTO `user-exam_score`(user_id,exam_id,exam_score,user_answer,exam_rank) VALUES(?,?,?,?,?)")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(user_id, exam_id, score, user_answer, 0)
+	if err != nil && err.Error() != "Error 1062 (23000): Duplicate entry '32-29364224' for key 'user-exam_score.PRIMARY'" {
+		return err
+	}
+	if err.Error() == "Error 1062 (23000): Duplicate entry '32-29364224' for key 'user-exam_score.PRIMARY'" {
+		stmt, err := db.Prepare("UPDATE `user-exam_score` SET exam_score = ?,user_answer = ? WHERE user_id = ? AND exam_id = ?")
+		if err != nil {
+			return err
+		}
+		defer stmt.Close()
+		_, err = stmt.Exec(score, user_answer, user_id, exam_id)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
