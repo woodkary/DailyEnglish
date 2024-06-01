@@ -20,7 +20,7 @@ let allQuestionIds=new Set();//存放所有确认选择的题目的id集合
 //     3: "困难",
 // }
 //页面加载时，先获取第一页到第五页道题目，共50道题目
-getQuestion(1);
+getQuestion(page);
 //分页按钮
 createPaginationButtons();
 function createPaginationButtons() {
@@ -136,7 +136,8 @@ function getQuestion(page) {
                 let endIndex=startIndex+QUESTION_PER_PAGE;
                 let questionSubset=questions.slice(startIndex,endIndex);
                 //创建表格
-                createQuestionTable(questionSubset);
+                if(i==0)
+                    createQuestionTable(questionSubset);
                 //获取当前题目数组的开始页数
                 let startPage=i+page;
                 //存入pageAndQuestionsMap
@@ -257,7 +258,7 @@ publishBtn.addEventListener("click",()=>{
             'Authorization': 'Bearer '+localStorage.getItem('token')
         }
     }).then(res => res.json()).then(data => {
-        if (data.code == 200||data.code=="200") {
+        if (data.code == 200||data.code=="200"||data=="发布成功") {
             alert("发布成功！");
         }
     }).catch(err => {

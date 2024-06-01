@@ -584,7 +584,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			question.Options = make(map[string]string)
 			i = 0
 			for i, option := range item.Options {
-				key := string(i + 65) // 65是'A'的ASCII码
+				key := (string)(i + 65) // 65是'A'的ASCII码
 				question.Options[key] = option
 			}
 

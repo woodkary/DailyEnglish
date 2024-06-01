@@ -182,7 +182,7 @@ func SearchTeamInfo(db *sql.DB, teamid int) (Team, error) {
 		log.Panic(err)
 		return Team{}, err
 	}
-	err = db.QueryRow("SELECT COUNT(*) FROM user-team WHERE team_id = ?", teamid).Scan(&team.Teamsize)
+	err = db.QueryRow("SELECT COUNT(*) FROM `user-team` WHERE team_id = ?", teamid).Scan(&team.Teamsize)
 	if err != nil {
 		log.Panic(err)
 		return Team{}, err
@@ -190,7 +190,7 @@ func SearchTeamInfo(db *sql.DB, teamid int) (Team, error) {
 
 	var users []Member
 	// 查询数据库以获取用户名称
-	rows, err := db.Query("SELECT user_id  FROM user-team WHERE team_id = ?", teamid)
+	rows, err := db.Query("SELECT user_id  FROM `user-team` WHERE team_id = ?", teamid)
 	if err != nil {
 		log.Panic(err)
 		return Team{}, err
