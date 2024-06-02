@@ -42,7 +42,7 @@
             'Authorization': `Bearer ${uni.getStorageSync('token')}`
           },
           success: (res) => {
-            if (res.data.code === 200) {
+            if (res.data.code === 200||res.data.code === "200") {
               uni.showToast({
                 title: '加入成功',
                 icon: 'success',

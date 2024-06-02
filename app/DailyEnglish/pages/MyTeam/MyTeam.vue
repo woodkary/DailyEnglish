@@ -3,6 +3,7 @@
 		<view class="head">
 			<image class="back-icon" src="../../static/back.svg" @click="handleBack"></image>
 			<span class="title">我的团队</span>
+			<button @click="goToJoin">加入团队</button>
 		</view>
 		<view class="container1">
 			<view class="team-icon-container">
@@ -61,12 +62,48 @@
 
 			}
 		},
+		onLoad() {
+			//获取所有团队成员
+			uni.request({
+				url: "/api/users/my_team",
+				method:'GET',
+				header:{
+					'Authorization': `Bearer ${uni.getStorageSync('token')}`
+				},
+				success: (res) => {
+					if(res.data.code==200){
+						//获取成功
+						let teamInfo=res.data.team;
+						this.teamName=teamInfo.team_name;
+						this.managerName=teamInfo.manager_name;
+						this.memberNum=teamInfo.member_num;
+						this.members=[];
+						teamInfo.member_list.forEach((member)=>{
+							this.members.push({
+								userName: member.user_name,
+								userSex: member.user_sex
+							});
+						});
+						// 获取managerName的第一个字符并更新到data中
+						this.setData({
+							firstLetter: this.data.managerName[0]
+						});
+					}
+				},
+				fail: (error) => {
+					console.log(error);
+				}
+			})
+			// // 获取managerName的第一个字符并更新到data中
+			// this.setData({
+			// 	firstLetter: this.data.managerName[0]
+			// });
+		},
 		methods: {
-			onLoad() {
-				// 获取managerName的第一个字符并更新到data中
-				this.setData({
-					firstLetter: this.data.managerName[0]
-				});
+			goToJoin(){
+				uni.navigateTo({
+					url: '../Join/Join'
+				})
 			}
 		}
 	}

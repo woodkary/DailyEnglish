@@ -239,8 +239,9 @@
         // 更新当前题目的选择和分数
         let question_id=this.questions[index].question_id;//获取当前题目的id
         //将当前题目的选择和分数保存到selectedChoiceAndScore中
-        this.selectedChoiceAndScore[question_id].selectedChoice=selectedChoice;
-        if(selectedChoice===this.realAnswer[index]){
+        this.selectedChoiceAndScore[question_id].selectedChoice=this.selectedIndex;
+        if(this.selectedIndex===this.realAnswer[index]){
+			
           // 如果选择正确，则加满分
           this.selectedChoiceAndScore[question_id].score=this.questions[index].fullScore;
           this.correctAnswers++;
@@ -302,7 +303,10 @@
               uni.request({
                 url: `/api/exams/submitExamResult`,
                 method: 'POST',
-                data: this.selectedChoiceAndScore,
+                data: {
+					selectedChoiceAndScore:this.selectedChoiceAndScore,
+					exam_id:this.exam_id,
+				},
                 header: {
                   'Authorization': `Bearer ${uni.getStorageSync('token')}`
                 },
