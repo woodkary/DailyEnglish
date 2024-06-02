@@ -27,32 +27,66 @@ func AdminManagerExists(db *sql.DB, username string) bool {
 	if err != nil {
 		return false
 	}
-	if count == 0 {
-		return false
-	}
-	return true
+	return count>0
 }
 
 // 插入用户 数据库字段有username string, email string, pwd string, sex int, phone string, birthday date, register_date date
 // RegisterUser 向 user_info 表中插入用户数据
-func RegisterUser(db *sql.DB, username, email, password string, phone string) error {
-	// 准备插入语句
-	var machineID int64 = 1
-	userid := utils.GenerateID(time.Now(), machineID)
-	stmt, err := db.Prepare("INSERT INTO manager_info(manager_id ,manager_name, email, phone, pwd) VALUES( ?, ?, ?, ?, ?)")
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
+func RegisterUser(db *sql.DB, username, email, password, phone string) error {
+    // 开始事务，事务方法好像有点卡，没找到为什么 todo
+    tx, err := db.Begin()
+    if err != nil {
+        return err
+    }
+	// 事务处理,如果出现异常则回滚，否则提交事务
+    defer func() {
+        if p := recover(); p != nil {
+            tx.Rollback()
+            panic(p) // 重新抛出panic
+        } else if err != nil {
+            tx.Rollback()
+        } else {
+            err = tx.Commit()
+        }
+    }()
 
-	// 执行插入语句
-	_, err = stmt.Exec(userid, username, email, phone, password)
-	if err != nil {
-		return err
-	}
+    // 生成用户ID
+    var machineID int64 = 1
+    userid := utils.GenerateID(time.Now(), machineID)
 
-	return nil
+    // 准备插入语句
+    stmt, err := tx.Prepare("INSERT INTO manager_info(manager_id, manager_name, email, phone, pwd) VALUES(?, ?, ?, ?, ?)")
+    if err != nil {
+        return err
+    }
+    defer stmt.Close()
+
+    // 执行插入语句
+    _, err = stmt.Exec(userid, username, email, phone, password)
+    if err != nil {
+        return err
+    }
+
+    return nil
 }
+// func RegisterUser(db *sql.DB, username, email, password string, phone string) error {
+// 	// 准备插入语句
+// 	var machineID int64 = 1
+// 	userid := utils.GenerateID(time.Now(), machineID)
+// 	stmt, err := db.Prepare("INSERT INTO manager_info(manager_id ,manager_name, email, phone, pwd) VALUES( ?, ?, ?, ?, ?)")
+// 	if err != nil {
+// 		return err
+// 	}
+// 	defer stmt.Close()
+
+// 	// 执行插入语句
+// 	_, err = stmt.Exec(userid, username, email, phone, password)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	return nil
+// }
 
 // 验证用户密码正确性
 func CheckTeamManager(db *sql.DB, username, password string) bool {
