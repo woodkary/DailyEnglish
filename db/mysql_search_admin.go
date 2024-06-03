@@ -132,9 +132,6 @@ func GetTokenParams_TeamManager(db *sql.DB, username string) (int, map[int]strin
 	if err := rows.Err(); err != nil {
 		return 0, nil, err
 	}
-	fmt.Println("这是根据Username获取的Token参数")
-	fmt.Println("管理员id为：", managerID)
-	fmt.Println("管理的团队为：", team)
 
 	return managerID, team, nil
 }
@@ -160,9 +157,6 @@ func GetTokenParamsByManagerId(db *sql.DB, managerID int) (int, map[int]string, 
 	if err := rows.Err(); err != nil {
 		return 0, nil, err
 	}
-	fmt.Println("这是根据ManagerId获取的Token参数")
-	fmt.Println("管理员id为：", managerID)
-	fmt.Println("管理的团队为：", team)
 
 	return managerID, team, nil
 }

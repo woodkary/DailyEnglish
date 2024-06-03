@@ -179,6 +179,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			BookID            int    `json:"book_id"`
 			BookName          string `json:"book_name"`
 			WordNum           int    `json:"word_num"`
+			Grade             int    `json:"grade"`
 			Grade_description string `json:"grade_description"`
 			Describe          string `json:"description"`
 		}
@@ -209,6 +210,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			book.BookID = item.BookID
 			book.BookName = item.BookName
 			book.WordNum = item.WordNum
+			book.Grade = item.Grade
 			book.Grade_description = gradeDescriptions[item.Grade]
 			book.Describe = item.Describe
 			response.Books = append(response.Books, book)
@@ -217,6 +219,52 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
+	//选择单词界面
+	//选择词书
+	r.POST("/api/users/navigate_books", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			BookID int `json:"book_id"`
+		}
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+		//添加用户词书
+		err := controlsql.AddUserBook(db, UserClaims.UserID, request.BookID)
+		if err != nil {
+			// 检查错误是否为"已完成"
+			if err.Error() == "已完成" {
+				c.JSON(200, gin.H{
+					"code": "200",
+					"msg":  "您已设置词书",
+				})
+			} else {
+				// 其他错误
+				log.Println(err)
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"code": "500",
+					"msg":  "服务器内部错误",
+				})
+			}
+			return
+		}
+		c.JSON(200, gin.H{
+			"code": "200",
+			"msg":  "设置词书成功",
+		})
+
+	})
+
 	//主页面
 	r.GET("/api/punch/main_menu", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")

@@ -26,7 +26,6 @@ func TokenAuthMiddleware(usertype string) gin.HandlerFunc {
 			}
 			// 提取令牌
 			token := strings.TrimPrefix(authHeader, "Bearer ")
-			fmt.Println("????????????????????????这是原来的token:", token)
 			user, err := service.ParseToken_TeamManager(token)
 			if err != nil {
 				fmt.Println(err)

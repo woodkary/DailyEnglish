@@ -65,6 +65,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			Exam_date []string `json:"exam_date"` // 有考试的日期
 		}
 		var Response response
+		Response.Exam_date = make([]string, 0)
 
 		//TODO 将查询到的考试信息转换为响应的结构体
 		for _, exam := range Item {
@@ -558,7 +559,6 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			c.JSON(500, "服务器错误")
 			return
 		}
-		fmt.Println("这是新的token:", newToken)
 		var response CreateTeamResponse
 		response.Code = 200
 		response.Msg = "创建成功"

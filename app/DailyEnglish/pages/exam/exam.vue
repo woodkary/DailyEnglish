@@ -10,7 +10,8 @@
 					<!-- 以上是题目序号 -->
 					<text class="question">{{ question.question }}</text>
 				</view>
-				<view class="button-group">
+<!--        如果是单选题，则显示选项按钮，否则显示输入框-->
+				<view class="button-group" v-show="question.question_type==1">
 					<div v-for="(choice, choiceIndex) in question.choices" :key="choiceIndex" class="choice-container">
 						<button class="option" :class="{ 'active': choiceIndex === question.activeButtonIndex }" @click="selectChoice(choiceIndex,currentQuestionIndex)">
 						    {{ getLabel(choiceIndex) }}
@@ -20,8 +21,10 @@
 					</div>
 <!--					<button class="confirm" @click="finishQuestion(index)">确认答案</button>-->
 				</view>
-
-
+<!--        TODO 填空题的输入框的样式-->
+        <view class="input-container" v-show="question.question_type==2">
+          <input type="text" placeholder="请输入答案" v-model="currentFillAnswer" @blur="inputFillAnswer(currentQuestionIndex)" @confirm="nextQuestionForFills(currentQuestionIndex)" />
+        </view>
 			</swiper-item>
 		</swiper>
 		<view class="footer">
@@ -67,10 +70,12 @@
 				selectedIndex: -1, // 当前题目的选中按钮序号
 				questionButtonIndex: 0, // 当前题目的按钮序号
 				isShow: false, //是否显示全部题目
+        currentFillAnswer:null, //当前填空题输入的答案
 				questions: [
 					// 题目和选项
 					{
 						question_id: 1,
+            question_type: 1,//1单选2填空
 						question: `__ is your brother?
 									-He is a doctor.`,
             activeButtonIndex: null, // 用于存储当前激活的按钮索引
@@ -79,6 +84,7 @@
 					},
 					{
 						question_id: 2,
+            question_type: 1,//1单选2填空
 						question: 'abandon',
             activeButtonIndex: null, // 用于存储当前激活的按钮索引
 						choices: ['1', '选项B', '选项C', '选项D'],
@@ -86,6 +92,7 @@
 					},
 					{
 						question_id: 3,
+            question_type: 1,//1单选2填空
 						question: 'abandon2',
             activeButtonIndex: null, // 用于存储当前激活的按钮索引
 						choices: ['1', '选项B', '选项C', '选项D'],
@@ -101,15 +108,15 @@
 				selectedChoiceAndScore: {
           /*//key为question_id
 					1: {
-            selectedChoice: null, // 用于存储当前选择的选项
+            selectedChoice: null, // 用于存储当前选择的选项，或者是输入的答案
             score: 0 // 用于存储当前题目的分数
           },
 					2: {
-            selectedChoice: null, // 用于存储当前选择的选项
+            selectedChoice: null, // 用于存储当前选择的选项，或者是输入的答案
             score: 0 // 用于存储当前题目的分数
           },
 					3: {
-            selectedChoice: null, // 用于存储当前选择的选项
+            selectedChoice: null, // 用于存储当前选择的选项，或者是输入的答案
             score: 0 // 用于存储当前题目的分数
           },*/
 				},
@@ -177,6 +184,45 @@
 
 		},
 		methods: {
+        //输入填空题的逻辑
+        inputFillAnswer(currentQuestionIndex){
+          //判断当前输入的答案是否正确
+          let correct=this.currentFillAnswer===this.realAnswer[currentQuestionIndex];
+          // 记录用户的答案
+          this.selectedChoiceAndScore[this.questions[currentQuestionIndex].question_id].selectedChoice=this.currentFillAnswer;
+          if(correct){
+            this.selectedChoiceAndScore[this.questions[currentQuestionIndex].question_id].score=this.questions[currentQuestionIndex].fullScore;
+            this.correctAnswers++;
+          }else{
+            this.selectedChoiceAndScore[this.questions[currentQuestionIndex].question_id].score=0;
+          }
+        },
+        nextQuestionForFills(currentQuestionIndex){
+          if (!this.isFinished[this.questions[currentQuestionIndex].question_id]) {
+            // 保存是否完成到 map 中
+            this.isFinished[this.questions[currentQuestionIndex].question_id] = true;
+
+            // 更新当前题目索引
+            this.currentQuestionIndex++;
+            this.current++;
+          }
+          this.selectedIndex=-1;
+          this.currentFillAnswer=null;
+          // 检查是否完成所有题目
+          if (this.currentQuestionIndex === this.questions.length && !this.hasShownSubmitPrompt) {
+            this.currentQuestionIndex--; // 回退到上一题
+            this.hasShownSubmitPrompt = true; // 设置为已显示提交提示
+            this.submitExam();
+          } else {
+            // 切换到下一题
+            this.swiperChange({
+              detail: {
+                current: this.currentQuestionIndex,
+                source: 'touch'
+              }
+            });
+          }
+        },
         transformQuestions(questionList) {
           let questions = [];
           let realAnswer = [];
@@ -185,6 +231,7 @@
             // 为每个问题创建一个新的对象，并添加到 questions 数组中
             questions.push({
               question_id: item.question_id,
+              question_type: item.question_type,
               question: item.question_content,
               activeButtonIndex: null, // 初始化激活按钮索引
               choices: item.question_choices,
@@ -259,6 +306,7 @@
 					this.current++;
 				}
 				this.selectedIndex=-1;
+        this.currentFillAnswer=null;
 
 				// 检查是否完成所有题目
 				if (this.currentQuestionIndex === this.questions.length && !this.hasShownSubmitPrompt) {
