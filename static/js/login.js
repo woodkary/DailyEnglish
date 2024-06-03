@@ -134,8 +134,20 @@ function toggleToast(t,m){
         progress.classList.remove("active");
     },5000)
 }
+let initialEmail="";
+//输入的邮箱
+let inputEmail="";
+//准备用于注册的邮箱
+let registerEmail="";
+
 function register(event) {
     event.preventDefault();
+    //判断输入的邮箱是否等于用于注册的邮箱
+    if(inputEmail!==registerEmail){
+        //TODO 不应使用toast，应使用文本提示
+        toggleToast("提示","邮箱重新输入，请再次发送验证码");
+        return;
+    }
     let username = document.getElementById("username-register").value;
     let email = document.getElementById("email-register").value;
     let password = document.getElementById("password-register").value;
@@ -213,6 +225,7 @@ function sendCode(event) {
                     button.textContent = `发送验证码`;
                 }
             }, 1000);
+            registerEmail = email;
         }else if(data.code==409){//邮箱已注册
             //TODO 不应使用toast，应使用文本提示
             toggleToast("提示","邮箱已注册");
@@ -228,7 +241,6 @@ function sendCode(event) {
         console.log(error);
     })
 }
-let initialEmail="";
 
 let emailInput = document.getElementById("email-register");
 emailInput.addEventListener("focus", function () {
@@ -239,6 +251,9 @@ emailInput.addEventListener("blur", function () {
         if(!checkEmail(emailInput.value)){
             //TODO 不应使用toast，应使用文本提示
             toggleToast("提示","邮箱格式错误");
+        }else{
+            //保存输入成功的邮箱
+            inputEmail = emailInput.value;
         }
     }
 })
