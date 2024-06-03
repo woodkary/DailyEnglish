@@ -3,8 +3,8 @@
 import (
 	controlsql "DailyEnglish/db"
 	middlewares "DailyEnglish/middlewares"
-	"DailyEnglish/utils"
 	service "DailyEnglish/utils"
+	utils "DailyEnglish/utils"
 	"database/sql"
 	"fmt"
 	"log"
@@ -342,7 +342,21 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		response.Phone = ManageInfo.ManagerPhone
 		response.Partment = ManageInfo.ManagerPartment
 		response.Email = ManageInfo.ManagerEmail
-		// 查询团队信息
+		// //输入manager_id，返回manager_Id,teamMap
+		// managerId, teams, err := controlsql.GetTokenParamsByManagerId(db, TeamManagerClaims.ManagerID)
+		// if err != nil {
+		// 	log.Panic(err)
+		// 	c.JSON(500, "服务器错误")
+		// 	return
+		// }
+		// //根据manager_id和teamMap，生成新的token
+		// newToken, err := utils.GenerateToken_TeamManager(managerId, teams)
+		// if err != nil {
+		// 	log.Panic(err)
+		// 	c.JSON(500, "服务器错误")
+		// 	return
+		// }
+		// 查询团队信息，主要为了获取团队人数
 		for teamID := range TeamManagerClaims.Team {
 			var team Team
 			team.TeamID = teamID
@@ -353,12 +367,14 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			}
 			response.Team = append(response.Team, team)
 		}
+
 		response.Code = "200"
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
 	// 刷新团队码
 	r.POST("/api/team_manage/refresh_team_code", tokenAuthMiddleware(), func(c *gin.Context) {
+		fmt.Println("刷新团队码")
 		type Request struct {
 			TeamID int `json:"team_id"` // 团队ID
 		}
@@ -523,7 +539,31 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			c.JSON(500, "服务器错误")
 			return
 		}
-		c.JSON(200, "创建成功")
+		type CreateTeamResponse struct {
+			Code  int    `json:"code"`  // 状态码
+			Msg   string `json:"msg"`   // 消息
+			Token string `json:"token"` // 创建团队后产生新的的token
+		}
+		//输入manager_id，返回manager_Id,teamMap
+		managerId, teams, err := controlsql.GetTokenParamsByManagerId(db, TeamManagerClaims.ManagerID)
+		if err != nil {
+			log.Panic(err)
+			c.JSON(500, "服务器错误")
+			return
+		}
+		//根据manager_id和teamMap，生成新的token
+		newToken, err := utils.GenerateToken_TeamManager(managerId, teams)
+		if err != nil {
+			log.Panic(err)
+			c.JSON(500, "服务器错误")
+			return
+		}
+		fmt.Println("这是新的token:", newToken)
+		var response CreateTeamResponse
+		response.Code = 200
+		response.Msg = "创建成功"
+		response.Token = newToken
+		c.JSON(200, response)
 	})
 	r.DELETE("/api/team_manage/member_manage/delete", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {

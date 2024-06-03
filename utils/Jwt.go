@@ -48,13 +48,18 @@ func ParseToken_User(tokenString string) (*UserClaims, error) {
 }
 
 func GenerateToken_TeamManager(ManagerID int, team map[int]string) (string, error) {
+	temp := time.Now()
+	// 使用当前日期和时间创建一个Time对象，时间为凌晨零点
+	startOfDay := time.Date(temp.Year(), temp.Month(), temp.Day(), 0, 0, 0, 0, temp.Location())
+	// 使用当前日期和时间创建一个Time对象，时间为今天的23:59:59.999999999
+	endOfDay := time.Date(temp.Year(), temp.Month(), temp.Day(), 23, 59, 59, 999999999, temp.Location())
 	claims := TeamManagerClaims{
 		ManagerID: ManagerID,
 		Team:      team,
 		StandardClaims: jwt.StandardClaims{
 			Issuer:    "DailyEnglish",
-			IssuedAt:  time.Now().Unix(), // token will be valid for 1 hour
-			ExpiresAt: time.Now().Add(60 * 60 * time.Second).Unix(),
+			IssuedAt:  startOfDay.Unix(), // token will be valid for 1 hour
+			ExpiresAt: endOfDay.Unix(),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

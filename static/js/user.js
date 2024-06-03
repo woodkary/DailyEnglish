@@ -2,13 +2,35 @@ const toast = document.querySelector(".toast")
 closeIcon = document.querySelector(".close")
 progress = document.querySelector(".progress");
 
+const openModalButton = document.getElementById('openModalButton');
+openModalButton.addEventListener('click', () => {
+    modal.style.display = 'flex';
+});
+
+const modal = document.querySelector('.modal');
+const modalClose = document.querySelector('.icon-button');
+const modalDecline = document.querySelector('.button.cancel');
+
+function hideModal() {
+    modal.style.display = 'none';
+}
+
+modalClose.addEventListener('click', hideModal);
+modalDecline.addEventListener('click', hideModal);
+
+document.addEventListener('click', (event) => {
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+});
+
 let allTeams = [];
+
 //TODO 在team选项卡打开时，把allTeam的内容更新上去
 
 let teamName = document.querySelector('.input[teamName]');
 let amount = document.querySelector('.input[amount]');
 const modalAccept = document.querySelector('.button.accept');
-const modal = document.querySelector('.modal');
 modalAccept.addEventListener('click', () => {
     let isValid = true;
     if(teamName.value.trim() === '') {
@@ -45,10 +67,14 @@ modalAccept.addEventListener('click', () => {
             }
         }).then(data => {
             console.log(data);
-            if(data.code === 200) {
+            if(data.code === 200||data=="200") {
                 //创建成功
                 alert('团队创建成功');
-                getPersonalInfo();
+                localStorage.setItem("token",data.token);
+                const timer = setTimeout(() => {
+                    getPersonalInfo();
+                }, 1000);
+
             }
         }).catch(error => {
             console.log(error);
@@ -68,11 +94,16 @@ function getPersonalInfo(){
         .then(data => {
             console.log(data);
             let nameP = document.getElementById('name');
+            let managerNameH5 = document.getElementById('managerName');
             let emailP = document.getElementById('email');
             let phoneP = document.getElementById('phone');
+            let departmentH6 = document.getElementById('department');
             nameP.textContent = data.name;
+            managerNameH5.textContent = data.name;
             emailP.textContent = data.email;
             phoneP.textContent = data.phone;
+            departmentH6.textContent = data.partment;
+            document.getElementById('department2').textContent = data.partment;
             let teamInfo={}
             data.team.forEach(t => {
                 //假设每个团队10人，这里可以根据实际情况调整
