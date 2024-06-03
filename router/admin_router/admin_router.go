@@ -83,7 +83,6 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 		}
 
 		var data regdata
-		fmt.Println("Username:", data.Username, "Pwd:", data.Pwd, "Email:", data.Email)
 		if err := c.ShouldBind(&data); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"code": "400",
@@ -93,10 +92,10 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 		}
 		if !controlsql.AdminManagerExists(db, data.Username) {
 			//验证码由前端完成判定
-			fmt.Println("Pwd:", data.Pwd)
+			// fmt.Println("Pwd:", data.Pwd)
 			Key := "123456781234567812345678" //密钥
 			cryptoPwd := utils.AesEncrypt(data.Pwd, Key)
-			fmt.Println("cryptoPwd:", cryptoPwd)
+			// fmt.Println("cryptoPwd:", cryptoPwd)
 			//获取系统当前日期
 			//RegisterDate := utils.GetCurrentDate()
 
