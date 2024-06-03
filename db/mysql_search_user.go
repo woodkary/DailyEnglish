@@ -3,6 +3,7 @@ package db
 import (
 	utils "DailyEnglish/utils"
 	"database/sql"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -128,6 +129,34 @@ type UserStudy struct {
 	IsPunched      bool
 }
 
+// 添加用户学习信息
+func AddUserBook(db *sql.DB, user_id int, book_id int) error {
+	// 首先检查是否已经存在相同的记录
+	var count int
+	err := db.QueryRow("SELECT COUNT(*) FROM user_study WHERE user_id = ? AND book_id = ?", user_id, book_id).Scan(&count)
+	if err != nil {
+		return err
+	}
+
+	// 如果已经存在记录，则返回"已完成"
+	if count > 0 {
+		return errors.New("已完成")
+	}
+
+	// 如果不存在，则准备并执行插入语句
+	stmt, err := db.Prepare("INSERT INTO user_study(user_id,book_id,plan_num,study_day) VALUES(?,?,?,?)")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(user_id, book_id, 20, 0)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 func GetUserStudy(db *sql.DB, user_id int) (UserStudy, error) {
 	var userStudy UserStudy
 	var book_id int

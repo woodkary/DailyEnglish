@@ -31,6 +31,7 @@ func main() {
 	}
 	defer db.Close()
 	r := gin.Default()
+	r.Use(middlewares.Cors())
 	r.Static("static/team_manager", "./static")
 	// r.Static("static/team_manager/css", "./static/css")
 	// r.Static("static/team_manager/js", "./static/js")
@@ -43,6 +44,5 @@ func main() {
 		r1.Use(middlewares.Cors())
 		r1.Run(":8080")
 	}()
-	r.Use(middlewares.Cors())
 	r.Run(":8081")
 }

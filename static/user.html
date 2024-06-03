@@ -158,10 +158,10 @@
 
                         <div class="col-md-6">
                             <div class="profile-head">
-                                <h5>
+                                <h5 id="managerName">
                                     CarryWood
                                 </h5>
-                                <h6>
+                                <h6 id="department">
                                     SZU 软工学院
                                 </h6>
 
@@ -208,11 +208,11 @@
                                                         <label>从属</label>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <p>SZU 软件工程学院</p>
+                                                        <p id="department2">SZU 软件工程学院</p>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="tabs__tab" id="tab_2" data-tab-info>
+                                            <div class="tabs__tab" style="max-height: 200px;margin-bottom: 20px;overflow-y:scroll" id="tab_2" data-tab-info>
                                                 <card class="team-card">
                                                     <img class="group-img" src="./image/team.svg">
                                                     <div class="group-details">
@@ -309,27 +309,6 @@
 <script src="./js/navSidebar.js"></script>
 <script src="./js/user.js"></script>
 <script>
-    const openModalButton = document.getElementById('openModalButton');
-    openModalButton.addEventListener('click', () => {
-        modal.style.display = 'flex';
-    });
-
-    const modal = document.querySelector('.modal');
-    const modalClose = document.querySelector('.icon-button');
-    const modalDecline = document.querySelector('.button.cancel');
-
-    function hideModal() {
-        modal.style.display = 'none';
-    }
-
-    modalClose.addEventListener('click', hideModal);
-    modalDecline.addEventListener('click', hideModal);
-
-    document.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
 
 </script>
 <style>
@@ -836,10 +815,13 @@
         font-weight: 800;
         font-size: 20px;
         color: #0062cc;
+        white-space: nowrap;
     }
     .group-peopleAmount{
         color: #818182;
         font-size: 16px;
+        margin-left: 10px;
+        white-space: nowrap;
     }
     :root{
         --toast-background-color: #fff;

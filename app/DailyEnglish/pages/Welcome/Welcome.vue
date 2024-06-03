@@ -19,16 +19,16 @@
 
 		<!-- 添加按钮行 -->
 		<view class="button-row">
-			<view class="button" v-for="(desc, id) in buttonIdMap" :key="id" :class="{ 'active': activeButton === id }" @click="scrollToIdButton(id)">
-        {{ desc }}
+			<view class="button" v-for="(defaultGrade, defaultGradeId) in defaultGradeDescription" :key="defaultGradeId" :class="{ 'active': activeButton === defaultGradeId }" @click="scrollToIdButton(defaultGradeId)">
+        {{ defaultGradeDescription[defaultGradeId] }}
 			</view>
 			<!-- 添加其他按钮 -->
 		</view>
 
 		<view class="book-list">
-			<view class="book-type" v-for="(desc, id) in buttonIdMap" :key="id" :id="id">
-				<view class="book-container" v-for="(book, index) in filteredBooks(id)" :key="index" @click="bookConfirm(book.book_id,book.title)">
-					<image :src="getImageUrl(id)"></image>
+			<view class="book-type" v-for="(defaultDesc,defaultId) in defaultGradeDescription" :key="defaultId" :id="defaultId">
+				<view class="book-container" v-for="(book, index) in filteredBooks(defaultId)" :key="index" @click="bookConfirm(book.book_id,book.title)">
+					<image :src="getImageUrl(defaultId)"></image>
 					<view class="text-container">
 						<span class="book-title">{{book.title}}</span>
 						<span class="discrip">{{book.decsrip}}</span>
@@ -45,9 +45,33 @@ export default {
   data() {
     return {
       // 按钮id映射表
-      buttonIdMap: {
-        'cet4': '四级',
-        'cet6': '六级'
+      buttonIds: [
+        'cet4',
+        'cet6'
+      ],
+      gradeDescriptions: {
+        1:  "小学一年级",
+        2:  "小学二年级",
+        3:  "小学三年级",
+        4:  "小学四年级",
+        5:  "小学五年级",
+        6:  "小学六年级",
+        7:  "初中一年级",
+        8:  "初中二年级",
+        9:  "初中三年级",
+        10: "高中一年级",
+        11: "高中二年级",
+        12: "高中三年级",
+        13: "四级",
+        14: "六级",
+      },
+      defaultGradeDescription: {
+        1: "小学",
+        2: "初中",
+        3: "高中",
+        4: "四级",
+        5: "六级",
+        6: "其他"
       },
       books: [
         {
@@ -55,6 +79,7 @@ export default {
           title: '四级词汇大全',
           decsrip: '四级最新考纲单词全收录，时候所有备考四级的同学',
           grade: '四级',
+          gradeId: 1,
           num: '共4440词'
         },
         {
@@ -62,6 +87,7 @@ export default {
           title: '四级高频',
           decsrip: '精选四级真题超高频词',
           grade: '四级',
+          gradeId: 1,
           num: '共739词'
         },
         {
@@ -69,6 +95,7 @@ export default {
           title: '四级高频',
           decsrip: '精选四级真题超高频词',
           grade: '四级',
+          gradeId: 1,
           num: '共739词'
         },
         {
@@ -76,6 +103,7 @@ export default {
           title: '四级高频',
           decsrip: '精选四级真题超高频词',
           grade: '四级',
+          gradeId: 1,
           num: '共739词'
         },
         {
@@ -83,6 +111,7 @@ export default {
           title: '四级高频',
           decsrip: '精选四级真题超高频词',
           grade: '四级',
+          gradeId: 1,
           num: '共739词'
         },
         {
@@ -90,6 +119,7 @@ export default {
           title: '四级高频',
           decsrip: '精选四级真题超高频词',
           grade: '四级',
+          gradeId: 1,
           num: '共739词'
         },
         {
@@ -97,6 +127,7 @@ export default {
           title: '六级词汇大全',
           decsrip: '六级最新考纲单词全收录，时候所有备考六级的同学',
           grade: '六级',
+          gradeId: 2,
           num: '共6204词'
         },
         {
@@ -104,6 +135,7 @@ export default {
           title: '六级核心（过考版）',
           decsrip: '精选六级真题超高频词',
           grade: '六级',
+          gradeId: 2,
           num: '共2551词'
         },
         {
@@ -111,6 +143,7 @@ export default {
           title: '六级核心（过考版）',
           decsrip: '精选六级真题超高频词',
           grade: '六级',
+          gradeId: 2,
           num: '共2551词'
         },
         {
@@ -118,6 +151,7 @@ export default {
           title: '六级核心（过考版）',
           decsrip: '精选六级真题超高频词',
           grade: '六级',
+          gradeId: 2,
           num: '共2551词'
         },
         {
@@ -125,6 +159,7 @@ export default {
           title: '六级核心（过考版）',
           decsrip: '精选六级真题超高频词',
           grade: '六级',
+          gradeId: 2,
           num: '共2551词'
         },
         {
@@ -132,6 +167,7 @@ export default {
           title: '六级核心（过考版）',
           decsrip: '精选六级真题超高频词',
           grade: '六级',
+          gradeId: 2,
           num: '共2551词'
         },
         {
@@ -139,6 +175,7 @@ export default {
           title: '六级核心（过考版）',
           decsrip: '精选六级真题超高频词',
           grade: '六级',
+          gradeId: 2,
           num: '共2551词'
         },
         {
@@ -146,6 +183,7 @@ export default {
           title: '六级核心（过考版）',
           decsrip: '精选六级真题超高频词',
           grade: '六级',
+          gradeId: 2,
           num: '共2551词'
         },
         {
@@ -153,6 +191,7 @@ export default {
           title: '六级核心（过考版）',
           decsrip: '精选六级真题超高频词',
           grade: '六级',
+          gradeId: 2,
           num: '共2551词'
         },
         {
@@ -160,6 +199,7 @@ export default {
           title: '六级核心（过考版）',
           decsrip: '精选六级真题超高频词',
           grade: '六级',
+          gradeId: 2,
           num: '共2551词'
         },
         {
@@ -167,6 +207,7 @@ export default {
           title: '六级核心（过考版）',
           decsrip: '精选六级真题超高频词',
           grade: '六级',
+          gradeId: 2,
           num: '共2551词'
         },
         {
@@ -174,6 +215,7 @@ export default {
           title: '六级核心（过考版）',
           decsrip: '精选六级真题超高频词',
           grade: '六级',
+          gradeId: 2,
           num: '共2551词'
         },
         {
@@ -181,6 +223,7 @@ export default {
           title: '六级核心（过考版）',
           decsrip: '精选六级真题超高频词',
           grade: '六级',
+          gradeId: 2,
           num: '共2551词'
         }
       ], // 词书列表
@@ -195,7 +238,7 @@ export default {
     //清空books数组
     this.books = [];
     //清空按钮id映射表
-    this.buttonIdMap = {};
+    this.buttonIds = [];
     //获取所有词书
     uni.request({
       url: '/api/users/navigate_books',
@@ -205,7 +248,7 @@ export default {
       },
       success: (res) => {
         console.log(res.data);
-        let books = res.data.data;
+        let books = res.data.books;
         //将词书信息添加到books数组中
         books.forEach(book => {
           this.books.push({
@@ -213,10 +256,11 @@ export default {
             title: book.book_name,
             decsrip: book.description,
             grade: book.grade_description,
+            gradeId: book.grade,
             num: book.word_num,
           });
           // 按钮id映射表，书的等级对应按钮的id
-          this.buttonIdMap[book.grade] = book.grade_description;
+          this.buttonIds.push(book.grade);
         });
       },
       fail: (err) => {
@@ -228,8 +272,40 @@ export default {
     getImageUrl(id){
       return `../../static/${id}.jpg`;
     },
-    filteredBooks(grade){
-      return this.books.filter(book => book.grade === this.buttonIdMap[grade]);
+    filteredBooks(defaultId){
+      defaultId = parseInt(defaultId);
+      let returnBookIds;
+      switch (defaultId) {
+        case 1:
+          returnBookIds = [1,2,3,4,5,6];
+          break;
+
+        case 2:
+          returnBookIds = [7,8,9];
+          break;
+
+        case 3:
+          returnBookIds = [10,11,12];
+          break;
+
+        case 4:
+          returnBookIds = [13];
+          break;
+
+        case 5:
+          returnBookIds = [14];
+          break;
+        default:
+          returnBookIds = [0];
+          break;
+      }
+      let returnBooks = [];
+      this.books.forEach(book => {
+        if(returnBookIds.includes(book.gradeId)){
+          returnBooks.push(book);
+        }
+      });
+      return returnBooks;
     },
     changeTab(tabNumber) {
       this.activeTab = tabNumber;
@@ -258,8 +334,8 @@ export default {
         success: (res) => {
           if (res.confirm) {
             uni.request({
-              url: '/api/users/confirm_book_to_learn',
-              method: 'PUT',
+              url: '/api/users/navigate_books',
+              method: 'POST',
               header: {
                 'Authorization': 'Bearer '+uni.getStorageSync('token')
               },
@@ -268,7 +344,7 @@ export default {
               },
               success: (res) => {
                 console.log(res.data);
-                if (res.data.code === 200) {
+                if (res.data.code === 200||res.data.code === "200") {
                   uni.showToast({
                     title: '选择词库成功',
                     icon: 'none'
