@@ -177,8 +177,9 @@
         "color" : "#333",
         "selectedColor" : "#02afff",
         "backgroundColor" : "#ffffff",
-        "fontSize" : "20rpx",
+        "fontSize" : "24rpx",
         "borderStyle" : "black",
+		
         "list" : [
             {
                 "pagePath" : "pages/home/home",

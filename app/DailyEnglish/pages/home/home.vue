@@ -4,7 +4,7 @@
 			<view class="search-head" style="display: flex;">
 				<view class="search" :class="{active:isHistoryVisible}" @click="handleSearchShow()">
 					<image class="search-icon" src="/static/search.svg"></image>
-					<input placeholder="搜索" v-model:value="searchInput" @confirm="handleSearchRouter">
+					<input placeholder="搜索" v-model="searchInput" @confirm="handleSearchRouter">
 				</view>
 				<button class="cancel" v-if="isHistoryVisible" @click="cancelSearch">取消</button>
 				<image class="Msg-icon" v-else src="/static/email.png"></image>

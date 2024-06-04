@@ -140,10 +140,11 @@
 
 	body {
 		background-color: #f3f2f5;
-
+		overflow-y: hidden;
 	}
 
 	.body-head {
+		margin-top: 1.3rem;
 		height: 2rem;
 		width: 100%;
 		background-color: transparent;
