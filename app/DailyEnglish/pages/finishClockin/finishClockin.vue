@@ -3,25 +3,25 @@
 		<view class="background">
 			<span>Go for it！</span>
 			<span style="color: grey;font-weight: lighter;margin-top: 20rpx;font-size: 20px;">今日已学<span
-					class="study-num">10</span>个单词</span>
+					class="study-num">{{ todayLearned }}</span>个单词</span>
 			<image src="../../static/sanyueqi.png" class="sanyueqi"></image>
 		</view>
 		<view class="center-container">
 			<view class="border1">
 				<span style="font-size: 20px;margin-left: -160px;">你已连续学习</span><br>
-				<span class="study-day">10</span>
+				<span class="study-day">{{ consecutivePunchDay }}</span>
 				<span style="color: #6200EE;font-size: 20px;margin-left:-10px;">天</span>
 				<image src="../../static/flash.png" class="flash"></image>
 				<view class="btn">查看我的足迹</view>
 			</view>
 		</view>
-		<h3 v-show="haveExam" style="margin-left: 40px;margin-top:20px;">你今天有<span>{{examcnt}}</span>场考试</h3>
+		<h3 v-show="haveExam" style="margin-left: 40px;margin-top:20px;">你今天有<span>{{examCnt}}</span>场考试</h3>
 		<view class="center-container2" v-show="haveExam">
 		    <view class="border2" v-for="exam in exams" :key="exam.id">
 		      <view class="exam-info">
 		        <h3>{{ exam.title }}</h3> <!-- 使用考试标题 -->
 		        <h4>开始时间：{{ exam.time }}</h4> <!-- 使用考试时间 -->
-		        <view class="small-btn" @click="toexam">去考试</view>
+		        <view class="small-btn" @click="toExam">去考试</view>
 		      </view>
 		      <image src="../../static/gotoexam.png" style="width: 150px;height: 150px;"></image>
 		    </view>
@@ -34,8 +34,15 @@
 	export default {
 		data() {
 			return {
+        // 今天学了多少个单词
+        todayLearned: 10,
+        // 今天是否有考试
 				haveExam: true,
-				examcnt: 1,
+        // 连续学习天数
+        consecutivePunchDay: 10,
+        // 今天考试数量
+				examCnt: 2,
+        // 考试列表
 				exams: [
 				        { id: 1, title: '第一单元第一次小测', time: '20:00 ' },
 				        { id: 2, title: '第二单元第一次小测', time: '21:00 ' }
@@ -44,7 +51,7 @@
 			}
 		},
 		methods: {
-			toexam() {
+			toExam() {
 				this.$router.push('/exam')
 			}
 		}

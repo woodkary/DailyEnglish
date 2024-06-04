@@ -108,21 +108,26 @@
                 //TODO: 跳转到首页，或处理其他逻辑
                 url: res.data.have_word_book? '../home/home': '../Welcome/Welcome'+`?operation=${res.data.have_word_book?1:0}`
               });
-            }else if(res.statusCode == 400){//用户名或密码错误
-              let usernameInput = document.getElementById('username');
-              usernameInput.classList.add('inputActive');
-              setTimeout(() => {
-                usernameInput.classList.remove('inputActive');
-              }, 2000);
+            }else if(res.statusCode == 401){//密码错误
               let passwordInput = document.getElementById('password');
               passwordInput.classList.add('inputActive');
               setTimeout(() => {
                 passwordInput.classList.remove('inputActive');
               }, 2000);
               uni.showToast({
-                title: '用户名或密码错误',
+                title: '密码错误',
                 icon: 'none'
               });
+            }else if(res.statusCode == 403){//用户不存在
+              let usernameInput = document.getElementById('username');
+              usernameInput.classList.add('inputActive');
+              setTimeout(() => {
+                usernameInput.classList.remove('inputActive');
+              });
+              uni.showToast({
+                title: '用户不存在',
+                icon: 'none'
+              },1000);
             }
 					},
 					fail: (res) => {
