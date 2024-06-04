@@ -1,3 +1,4 @@
 node_modules/
 package-lock.json
 app/DailyEnglish/unpackage/dist/cache/
+app/DailyEnglish/unpackage/dist/cache/.vite/deps/_metadata.json
