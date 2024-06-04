@@ -40,8 +40,8 @@ func main() {
 	teamrouter.InitTeamRouter(r, db)
 	go func() {
 		r1 := gin.Default()
-		userrouter.InitUserRouter(r1, db)
 		r1.Use(middlewares.Cors())
+		userrouter.InitUserRouter(r1, db)
 		r1.Run(":8080")
 	}()
 	r.Run(":8081")
