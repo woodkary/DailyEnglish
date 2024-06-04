@@ -68,7 +68,7 @@
 						<view class="number">{{ isDaka?wordNumPunched:wordNumToPunch }}</view>
 						<text>词</text>
 					</view>
-					<view class="plan-num" style="margin-left:100px">
+					<view class="plan-num" style="margin-left:50px">
 						<view class="number">{{ isReview?wordNumReviewed:wordNumToReview }}</view>
 						<text>词</text>
 					</view>
