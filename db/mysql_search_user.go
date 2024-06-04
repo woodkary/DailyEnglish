@@ -9,8 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 // 根据email查询user是否存在
@@ -160,7 +158,7 @@ func AddUserBook(db *sql.DB, user_id int, book_id int) error {
 
 	return nil
 }
-func GetUserStudy(db *sql.DB, user_id int, c *gin.Context) (UserStudy, error) {
+func GetUserStudy(db *sql.DB, user_id int) (UserStudy, error) {
 	var userStudy UserStudy
 	var book_id int
 	err := db.QueryRow("SELECT book_id,plan_num,study_day FROM user_study WHERE user_id =?", user_id).Scan(&book_id, &userStudy.PunchNum, &userStudy.WordNumLearned)
@@ -389,5 +387,72 @@ func InsertUserScore(db *sql.DB, user_id int, exam_id int, user_answer string, s
 			return err
 		}
 	}
+	return nil
+}
+
+// 更新一次打卡信息
+func UpdateUserPunch(db *sql.DB, userID int, today string) error {
+	// 查询当前用户的打卡记录
+	query := "SELECT is_punch, last_punchdate FROM user_punch WHERE user_id = ?"
+	var isPunch int64
+	var lastPunchdate string
+	err := db.QueryRow(query, userID).Scan(&isPunch, &lastPunchdate)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// 说明当前用户没有打卡记录，则插入一条新的记录
+			insertQuery, err := db.Prepare("INSERT INTO user_punch(user_id, is_punch, last_punchdate) VALUES(?,?,?)")
+			if err != nil {
+				log.Panic(err)
+				return err
+			}
+			defer insertQuery.Close()
+			_, err = insertQuery.Exec(userID, 0x01, today)
+			if err != nil {
+				log.Panic(err)
+				return err
+			}
+		}
+		log.Panic(err)
+		return err
+	}
+
+	// 解析最后打卡日期
+	lastPunchTime, err := time.Parse("2006-01-02", lastPunchdate)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+
+	// 计算今天和最后打卡日期之间的天数差
+	todayTime, err := time.Parse("2006-01-02", today)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	dayDiff := int(todayTime.Sub(lastPunchTime).Hours() / 24)
+	fmt.Println("dayDiff:", dayDiff)
+
+	// 根据天数差移位
+	isPunch <<= (dayDiff + 1)
+	//把最低位设为1，表示今天打卡
+	isPunch |= 1
+	fmt.Println("isPunch:", isPunch)
+
+	// 更新数据库中的记录
+	updateQuery, err := db.Prepare("UPDATE user_punch SET is_punch = ?, last_punchdate = ? WHERE user_id = ?")
+	fmt.Println("00000000", updateQuery)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	fmt.Println("1111111", updateQuery)
+	defer updateQuery.Close()
+	_, err = updateQuery.Exec(isPunch, today, userID)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+
+	fmt.Printf("User %d punch record updated successfully.\n", userID)
 	return nil
 }
