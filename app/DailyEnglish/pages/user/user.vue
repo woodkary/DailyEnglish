@@ -98,12 +98,12 @@ export default {
         'Authorization': `Bearer ${uni.getStorageSync('token')}` // 这里需要将 token 放到 header 中
       },
       success: (res) => {
-        if(res.statusCode === 200){
+        if (res.statusCode === 200) {
           const data = res.data;
           this.punch_word_num = data.punch_word_num;
           this.total_punch_day = data.total_punch_day;
           this.consecutive_punch_day = data.consecutive_punch_day;
-          uni.setStorageSync("consecutivePunchDay",data.consecutive_punch_day);
+          uni.setStorageSync("consecutivePunchDay", data.consecutive_punch_day);
         }
       },
       fail: (err) => {
@@ -235,7 +235,7 @@ body {
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
   width: 100%;
-  margin-top:20px;
+  margin-top: 20px;
 }
 
 .container1 {
@@ -415,6 +415,7 @@ body {
   box-sizing: border-box;
   /* 确保padding和border包含在宽高内 */
 }
+
 .setting {
   width: 2rem;
   height: 2rem;
@@ -452,6 +453,7 @@ body {
   box-sizing: border-box;
   /* 确保padding和border包含在宽高内 */
 }
+
 .feedback {
   width: 2rem;
   height: 2rem;

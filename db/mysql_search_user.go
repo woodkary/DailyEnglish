@@ -412,7 +412,6 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 				return err
 			}
 		}
-		log.Panic(err)
 		return err
 	}
 
@@ -433,7 +432,7 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 	fmt.Println("dayDiff:", dayDiff)
 
 	// 根据天数差移位
-	isPunch <<= (dayDiff + 1)
+	isPunch <<= int64(dayDiff)
 	//把最低位设为1，表示今天打卡
 	isPunch |= 1
 	fmt.Println("isPunch:", isPunch)
