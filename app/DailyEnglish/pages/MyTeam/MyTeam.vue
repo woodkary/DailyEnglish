@@ -3,7 +3,7 @@
 		<view class="head">
 			<image class="back-icon" src="../../static/back.svg" @click="handleBack"></image>
 			<span class="title">我的团队</span>
-			<button @click="goToJoin">加入团队</button>
+			<image class="join" src="../../static/add.png"  @click="goToJoin">+</image>
 		</view>
 		<view class="container1">
 			<view class="team-icon-container">
@@ -173,7 +173,18 @@
 		/* 文字加粗 */
 	}
 
-
+	.join{
+		width: 25px;
+		/* 设置圆圈的直径 */
+		height: 25px;
+		/* 设置圆圈的直径 */
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-left: 25%;
+		margin-top: 2%;
+	}
+	
 	.team-info {
 		margin-left: 20px;
 		/* 调整图片和文字之间的间距 */
