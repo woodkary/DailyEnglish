@@ -403,11 +403,9 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		type Request struct {
-			PunchResult []struct {
-				WordID int    `json:"word_id"`
-				Result string `json:"result"`
-			}
+			PunchResult map[int]string `json:"punch_result"`
 		}
+		fmt.Println("接收到的打卡结果为", c.PostForm("punch_result"))
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{

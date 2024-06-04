@@ -103,6 +103,7 @@
                 uni.setStorageSync('remember');
               }
 			  let token = res.data.token;
+        console.log(token);
 			  uni.setStorageSync('token', token);
               uni.navigateTo({
                 //TODO: 跳转到首页，或处理其他逻辑
