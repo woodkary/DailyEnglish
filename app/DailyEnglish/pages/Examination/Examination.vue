@@ -72,7 +72,7 @@
         },
 				questions: [
 					// 题目和选项
-					{
+					/*{
             word_id: 1,
 						word: 'abandon',
 						phonetic: '[ə\'bændən]',
@@ -89,12 +89,12 @@
 						word: 'abandon2',
 						phonetic: '[ə\'bændən]',
 						choices: ['1', '选项B', '选项C', '选项D']
-					},
+					},*/
 					// ...更多题目
 				], // 这里可以根据需要修改选项内容
 				selectedChoice: '', // 用于存储用户选择的答案
 				realAnswer: [
-					'放弃', '选项B', '选项C' // 正确答案
+					/*'放弃', '选项B', '选项C' // 正确答案*/
 				],
 
 			}
