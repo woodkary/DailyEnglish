@@ -543,7 +543,7 @@
 				items: [{
 					word: 'apple',
 					phonetic: '/ˈæpl/',
-					meaning: '苹果111111111111111111111111111111111111111111111111'
+					meaning: '苹果'
 				}, {
 					word: 'banana',
 					phonetic: '/bəˈnɑː.nə/',
@@ -551,6 +551,10 @@
 				}]
 			}
 		},
+    onLoad() {
+      this.fetchData();
+      console.log("hi");
+    },
 		methods: {
 			handleDaka() {
 				//operation 0：打卡，1：复习
@@ -566,24 +570,27 @@
 			fetchData() {
 				uni.request({
 					url: "/api/punch/main_menu",
+					header: {
+						'Authorization': `Bearer ${uni.getStorageSync('token')}`
+					},
 					method: 'GET',
 					success: (res) => {
-						if (res.statusCode === 200) {
-							this.daka_book = res.data.task_doday.book_learning;
-							this.wordNumLearned = res.data.task_doday.word_num_learned;
-							this.wordNumTotal = res.data.task_doday.word_num_total;
-							this.daysLeft = res.data.task_doday.days_left;
-							this.wordNumToPunch = res.data.task_doday.word_num_to_punch;
+						if (res.statusCode === 200||res.statusCode === 404) {
+							this.daka_book = res.data.task_today.book_learning;
+							this.wordNumLearned = res.data.task_today.word_num_learned;
+							this.wordNumTotal = res.data.task_today.word_num_total;
+							this.daysLeft = res.data.task_today.days_left;
+							this.wordNumToPunch = res.data.task_today.punch_num;
 							if (this.wordNumToPunch == 0) {
 								this.isDaka = true;
 							}
-							this.wordNumPunched = res.data.task_doday.word_num_punched;
-							this.wordNumToReview = res.data.task_doday.word_num_to_review;
+							this.wordNumPunched = res.data.task_today.word_num_punched;//todo 没有
+							this.wordNumToReview = res.data.task_today.review_num;
 							if (this.wordNumToReview == 0) {
 								this.isReview = true;
 							}
-							this.wordNumReviewed = res.data.task_doday.word_num_reviewed;
-						} else {
+							this.wordNumReviewed = res.data.task_today.word_num_reviewed;//todo 没有
+            } else {
 							console.error("请求失败", res);
 							this.daka_book = "词汇书123"
 						}
@@ -593,10 +600,6 @@
 						this.daka_book = "词汇书123"
 					}
 				});
-			},
-			onLoad() {
-				this.fetchData();
-				console.log("hi");
 			},
 			handleSearchShow() {
 				this.isHistoryVisible = true;

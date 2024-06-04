@@ -112,6 +112,9 @@
 			}
 		},
 		methods: {
+			getSoundUrl(word){
+				return `https://ssl.gstatic.com/dictionary/static/sounds/oxford/${word.spelling}--_gb_1.mp3`;
+			},
 			getMeaningStr(meanings) {
 				let meaningStr = "";
 				let foundFirst = false; // 标志是否找到了第一个非空词性的意思

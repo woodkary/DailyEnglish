@@ -5,9 +5,12 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 // 根据email查询user是否存在
@@ -157,10 +160,10 @@ func AddUserBook(db *sql.DB, user_id int, book_id int) error {
 
 	return nil
 }
-func GetUserStudy(db *sql.DB, user_id int) (UserStudy, error) {
+func GetUserStudy(db *sql.DB, user_id int, c *gin.Context) (UserStudy, error) {
 	var userStudy UserStudy
 	var book_id int
-	err := db.QueryRow("SELECT book_id,plan_num,learned_num FROM user_study WHERE user_id =?", user_id).Scan(&book_id, &userStudy.PunchNum, &userStudy.WordNumLearned)
+	err := db.QueryRow("SELECT book_id,plan_num,study_day FROM user_study WHERE user_id =?", user_id).Scan(&book_id, &userStudy.PunchNum, &userStudy.WordNumLearned)
 	if err != nil {
 		return userStudy, err
 	}
@@ -172,6 +175,11 @@ func GetUserStudy(db *sql.DB, user_id int) (UserStudy, error) {
 	var date string
 	err = db.QueryRow("SELECT last_punchdate FROM user_punch WHERE user_id =?", user_id).Scan(&date)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			// 说明当前用户没有打卡记录，则返回默认值
+			log.Println("当前的用户可能一次打卡都没有")
+			userStudy.IsPunched = false
+		}
 		return userStudy, err
 	}
 	userStudy.IsPunched = date == utils.GetCurrentDate()

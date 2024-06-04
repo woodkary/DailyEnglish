@@ -274,8 +274,8 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		//查询用户信息
-		Item, err := controlsql.GetUserStudy(db, UserClaims.UserID)
-		if err != nil {
+		Item, err := controlsql.GetUserStudy(db, UserClaims.UserID, c)
+		if err != sql.ErrNoRows {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
 				"msg":  "服务器内部错误"})
@@ -291,7 +291,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			IsPunched      bool   `json:"ispunched"`
 		}
 		type Response struct {
-			Code      string    `json:"code"`
+			Code      int       `json:"code"`
 			Msg       string    `json:"msg"`
 			TaskToday TaskToday `json:"task_today"`
 		}
@@ -303,8 +303,12 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		response.TaskToday.PunchNum = Item.PunchNum
 		response.TaskToday.ReviewNum = 10 //这里写死的@TODO去找那些单词需要复习
 		response.TaskToday.IsPunched = Item.IsPunched
-		response.Code = "200"
+		response.Code = 200
 		response.Msg = "成功"
+		if err == sql.ErrNoRows {
+			response.Code = 404
+			response.Msg = "您还没有打卡"
+		}
 		c.JSON(200, response)
 	})
 	//打卡
