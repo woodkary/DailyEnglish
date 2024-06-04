@@ -259,6 +259,16 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			}
 			return
 		}
+		//todo 向user_punch-learn表插入或者更新一项数据
+		/*[
+		{
+			"user_id": 1,
+			"learned_index": 50,//目前打卡到的单词本的下标
+			"punch_num": 20,//打卡总单词数
+			"review_num": 20,//复习总单词数
+			"date": "2024-05-22"//第一次选择词书的日期
+		}
+		]*/
 		c.JSON(200, gin.H{
 			"code": "200",
 			"msg":  "设置词书成功",
