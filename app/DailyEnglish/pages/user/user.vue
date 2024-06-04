@@ -71,6 +71,27 @@
 				consecutive_punch_day: 7
 			}
 		},
+    onLoad() {
+      // 页面加载完成后，获取用户信息
+      uni.request({
+        url: 'http://localhost:8080/api/users/my_punches',
+        method: 'GET',
+        header: {
+          'Authorization': `Bearer ${uni.getStorageSync('token')}` // 这里需要将 token 放到 header 中
+        },
+        success: (res) => {
+          if(res.statusCode === 200){
+            const data = res.data;
+            this.punch_word_num = data.punch_word_num;
+            this.total_punch_day = data.total_punch_day;
+            this.consecutive_punch_day = data.consecutive_punch_day;
+          }
+        },
+        fail: (err) => {
+          console.log(err);
+        }
+      });
+    },
 
 		methods: {
       goToTeam() {
