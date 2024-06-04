@@ -52,7 +52,7 @@
 	export default {
 		data() {
 			return {
-				exams: [{
+				exams: [/*{
 						exam_id: 1,
 						name: '第一单元第一次小测',
 						start_time: '20:00',
@@ -68,9 +68,9 @@
 						info: '共20题',
 						questionNum: 20
 					},
-					// ...更多的考试对象
+					// ...更多的考试对象*/
 				],
-				finishedExams: [{
+				finishedExams: [/*{
 						exam_id: 3,
 						name: '第一单元第一次小测',
 						date: '2023年1月1日',
@@ -94,7 +94,7 @@
 						questionNum: 20,
 						score: 70
 					},
-					// ...更多的考试结果对象
+					// ...更多的考试结果对象*/
 				]
 			}
 
@@ -174,7 +174,7 @@
 			getTodayExams() {
 				// 从服务器获取今天的考试记录
 				uni.request({
-					url: '/api/exams/exam_date',
+					url: '/api/exams/exams_date',
 					method: 'POST',
 					header: {
 						'Authorization': `Bearer ${uni.getStorageSync('token')}`
@@ -214,6 +214,9 @@
 			},
 
 			transformExams(exams) {
+        if(exams==null){//防止空数组报错
+          return [];
+        }
 				return exams.map(exam => {
 					// 将日期从 "yyyy/mm/dd" 转换为 "年月日"
 					const dateParts = exam.exam_date.split('-');

@@ -4,6 +4,7 @@ import (
 	service "DailyEnglish/utils"
 	"database/sql"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -117,8 +118,9 @@ func SearchExaminfoByTeamIDAndDate222(db *sql.DB, teamID int, date string) ([]Ex
 	var examInfos []Examinfo
 
 	// 查询数据库以获取考试信息
-	rows, err := db.Query("SELECT exam_id, exam_name, exam_date,exam_clock,exam_duration,quetion_num FROM exam_info WHERE team_id = ? AND exam_date = ?", teamID, date)
+	rows, err := db.Query("SELECT exam_id, exam_name, exam_date,exam_clock,exam_duration,question_num FROM exam_info WHERE team_id = ? AND exam_date = ?", teamID, date)
 	if err != nil {
+		log.Panic(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -127,6 +129,7 @@ func SearchExaminfoByTeamIDAndDate222(db *sql.DB, teamID int, date string) ([]Ex
 	for rows.Next() {
 		var examInfo Examinfo
 		if err := rows.Scan(&examInfo.ExamID, &examInfo.ExamName, &examInfo.ExamDate, &examInfo.StartTime, &examInfo.Duration, &examInfo.QuestionNum); err != nil {
+			log.Panic(err)
 			return nil, err
 		}
 		examInfos = append(examInfos, examInfo)
@@ -134,6 +137,7 @@ func SearchExaminfoByTeamIDAndDate222(db *sql.DB, teamID int, date string) ([]Ex
 
 	// 检查遍历过程中是否出错
 	if err := rows.Err(); err != nil {
+		log.Panic(err)
 		return nil, err
 	}
 

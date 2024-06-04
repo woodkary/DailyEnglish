@@ -8,7 +8,7 @@
 			<view class="progress-bar" :style="{ width:progress + '%' }"></view>
 		</view>
 		<image class="back-icon" src="../../static/back.svg" @click="handleBack"></image>
-		<swiper class="question-container" :options="swiperOptions" :easing-function="'linear'" :duration="250" @before-change="swiperChange"    >
+		<swiper class="question-container" :options="swiperOptions" :easing-function="'linear'" :duration="250" @before-change="swiperChange" :current="currentQuestionIndex"   >
 			<swiper-item v-for="(question, index) in questions" :key="index">
 				<view class="text-info">
 					<text class="word">{{ question.word }}</text>
@@ -156,7 +156,7 @@
 					url: '../Vocab/Vocab'
 				}) //跳转到生词本页面，注意此处暂时用了switchTab，因为跳转到生词本页面后，需要刷新页面，所以用了switchTab
 				//后面会讲到如何刷新页面，记得改啊！！！！！！11
-				//todo:refresh the page
+				/*//todo:refresh the page
 				uni.request({
 					url:'xxvcav',
 					method:'post',
@@ -166,7 +166,7 @@
 					success:(res)=>{
 						//success
 					},
-				})
+				})*/
 			},
 			swiperChange(event) {
 				const current = event.detail.current;
@@ -216,52 +216,51 @@
 
 					let nextIndex = this.currentQuestionIndex; // 切换到下一题
 					/*this.currentQuestionIndex++; // 先增加索引*/
-					this.updateProgressBar(); // 更新进度条
 					this.$nextTick(() => {
 						this.showCorrectAnswer(this.realAnswer[nextIndex],nextIndex);
 					});
-          // 增加索引并判断是否是最后一题
-          //TODO 这个逻辑应该在完成打卡页面中做，而打卡页面中做
-          if(++this.currentQuestionIndex==this.questions.length) {
-            uni.request({
-              //判断操作类型并发送请求
-              url:!this.operation?'/api/main/punched':'/api/main/reviewed',
-              method:'POST',
-              header:{
-                'Authorization':`Bearer ${uni.getStorageSync('token')}`
-              },
-              data:{
-                punch_result:this.isCorrects,
-              },
-              success:(res)=> {
-                console.log(res);
-                if(res.data.code==200){
-                  uni.showToast({
-                    title: this.operation? '复习结束':'打卡结束',
-                    icon: 'none',
-                    duration: 2000,
-                    success:()=> {
-                      uni.switchTab({
-                        url: '../home/home'
-                      })
-                    }
-                  });
-                }
-              },
-              fail:(err)=> {
-                console.log(err);
-              }
-            });
-          }
-
 				} else {
 					let currIndex = this.currentQuestionIndex;
 					// 错误答案的逻辑
 					this.$nextTick(() => {
 						this.showIncorrectAnswer(index);
-						this.showCorrectAnswer(this.realAnswer[currIndex]);
+						this.showCorrectAnswer(this.realAnswer[currIndex],currIndex);
 					});
 				}
+        this.updateProgressBar(); // 更新进度条
+        // 增加索引并判断是否是最后一题
+        //TODO 这个逻辑应该在完成打卡页面中做，而打卡页面中做
+        if(++this.currentQuestionIndex==this.questions.length) {
+          uni.request({
+            //判断操作类型并发送请求
+            url:!this.operation?'/api/main/punched':'/api/main/reviewed',
+            method:'POST',
+            header:{
+              'Authorization':`Bearer ${uni.getStorageSync('token')}`
+            },
+            data:{
+              punch_result:this.isCorrects,
+            },
+            success:(res)=> {
+              console.log(res);
+              if(res.data.code==200){
+                uni.showToast({
+                  title: this.operation? '复习结束':'打卡结束',
+                  icon: 'none',
+                  duration: 2000,
+                  success:()=> {
+                    uni.navigateTo({
+                      url: `../finishClockin/finishClockin?questionNum=${this.questions.length}&operation=${this.operation}}`
+                    })
+                  }
+                });
+              }
+            },
+            fail:(err)=> {
+              console.log(err);
+            }
+          });
+        }
 			},
 			showCorrectAnswer(answer,index) {
 				// 找到正确答案的索引

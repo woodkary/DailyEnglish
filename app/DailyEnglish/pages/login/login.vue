@@ -106,7 +106,7 @@
 			  uni.setStorageSync('token', token);
               uni.navigateTo({
                 //TODO: 跳转到首页，或处理其他逻辑
-                url: res.data.have_word_book? '../home/home': '../Welcome/Welcome'+`?operation=${res.data.have_word_book?1:0}`
+                url: res.data.isChoosed? '../home/home': '../Welcome/Welcome'+`?operation=${res.data.isChoosed?1:0}`
               });
             }else if(res.statusCode == 401){//密码错误
               let passwordInput = document.getElementById('password');

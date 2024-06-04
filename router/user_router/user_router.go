@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -274,7 +275,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		//查询用户信息
-		Item, err := controlsql.GetUserStudy(db, UserClaims.UserID, c)
+		Item, err := controlsql.GetUserStudy(db, UserClaims.UserID)
 		if err != sql.ErrNoRows {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
@@ -382,6 +383,53 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		response.Code = 200
 		response.Msg = "成功"
 		c.JSON(200, response)
+	})
+	// 打卡结果提交
+	r.POST("/api/main/punched", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		type Request struct {
+			PunchResult []struct {
+				WordID int    `json:"word_id"`
+				Result string `json:"result"`
+			}
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+
+		//TODO 将打卡结果存入数据库
+		userId := UserClaims.UserID //获取用户id
+		fmt.Println("打卡的用户id为", userId)
+		//更新用户学习进度
+		err := controlsql.UpdateUserPunch(db, userId, time.Now().Format("2006-01-02"))
+		if err != nil && err != sql.ErrNoRows {
+			log.Panic(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": 500,
+				"msg":  "服务器内部错误",
+			})
+			return
+		}
+
+		type Response struct {
+			Code int    `json:"code"`
+			Msg  string `json:"msg"`
+		}
+		var response Response
+		response.Code = 200
+		response.Msg = "成功"
+		c.JSON(http.StatusOK, response)
+
 	})
 
 	//复习
