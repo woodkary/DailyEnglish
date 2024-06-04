@@ -1,6 +1,7 @@
 <template>
 	<view class="container">
 		<image class="back-icon" src="../../static/back.svg" @click="GotoUser"></image>
+		<span class="title">个人信息</span>
 		<view class="edit">
 			<image class="photo" src="../../static/logo.png"></image>
 			<view class="items">
@@ -73,10 +74,14 @@
 </script>
 
 <style>
+	body{
+		background-color: white;
+	}
 	.container {
 		display: flex;
 		width: 100%;
 		height: 100%;
+		
 	}
 
 	.back-icon {
@@ -93,7 +98,15 @@
 		cursor: pointer;
 		/*鼠标移上去显示小手 */
 	}
-
+	
+	.title{
+		position: absolute;
+		top: 0.8rem;
+		left: 40%;
+		font-size: 1.2rem;
+		font-weight: 500;
+		
+	}
 	.edit {
 		position: absolute;
 		top: 80px;
