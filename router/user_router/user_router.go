@@ -383,6 +383,35 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
+	// 打卡结果提交
+	r.POST("/api/main/punched", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			PunchResult []struct {
+				WordID int    `json:"word_id"`
+				Result string `json:"result"`
+			}
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+
+		//TODO 将打卡结果存入数据库
+		type Response struct {
+			Code int    `json:"code"`
+			Msg  string `json:"msg"`
+		}
+		var response Response
+		response.Code = 200
+		response.Msg = "成功"
+		c.JSON(http.StatusOK, response)
+
+	})
+
 	//复习
 	r.GET("/api/main/take_review", tokenAuthMiddleware(), func(c *gin.Context) {
 		//查询复习单词，这里写死先
