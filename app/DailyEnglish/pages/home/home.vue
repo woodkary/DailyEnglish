@@ -569,7 +569,7 @@
 			},
 			fetchData() {
 				uni.request({
-					url: "/api/punch/main_menu",
+					url: "http://localhost:8080/api/punch/main_menu",
 					header: {
 						'Authorization': `Bearer ${uni.getStorageSync('token')}`
 					},

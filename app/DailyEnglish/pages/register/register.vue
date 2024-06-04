@@ -170,7 +170,7 @@
         let email=this.email;
         let password=this.password;
         uni.request({
-          url: '/api/user/register',
+          url: 'http://localhost:8080/api/user/register',
           data: {
             username: username,
             email: email,

@@ -114,8 +114,8 @@
         "enable" : false
     },
     "vueVersion" : "3",
-    "locale" : "zh-Hans",
-    "h5" : {
+    "locale" : "zh-Hans"
+/*    "h5" : {
         "devServer" : {
             "proxy" : {
                 "/api" : {
@@ -125,5 +125,5 @@
                 }
             }
         }
-    }
+    }*/
 }

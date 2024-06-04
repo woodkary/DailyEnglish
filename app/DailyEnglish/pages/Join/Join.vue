@@ -32,7 +32,7 @@
 			},
       joinTeam() {
         uni.request({
-          url: '/api/users/my_team/join_team',
+          url: 'http://localhost:8080/api/users/my_team/join_team',
           method: 'POST',
           data: {
             invitation_code: this.inputClearValue
