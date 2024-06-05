@@ -125,6 +125,13 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			})
 			return
 		}
+		// 验证码验证成功后尝试删除验证码，即使删除失败也不会影响流程
+        err = rdb.Del(ctx, key).Err()
+        if err != nil {
+            fmt.Printf("删除验证码失败：%v\n", err)
+        }
+		
+		//验证用户名是否已被注册
 		if !controlsql.AdminManagerExists(db, data.Username) {
 			
 			// fmt.Println("Pwd:", data.Pwd)
