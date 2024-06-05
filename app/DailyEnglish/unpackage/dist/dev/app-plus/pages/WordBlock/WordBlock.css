@@ -1,0 +1,49 @@
+
+.word-card {
+		display: flex;
+		justify-content: space-between;
+		border: 0.09375rem solid #ccc;
+		padding: 0.625rem;
+		position: relative;
+		width: 100%;
+		background: #fff;
+}
+.word-container {
+		display: flex;
+		flex-direction: column;
+		width: 70%;
+}
+.action-container {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+}
+.word {
+		font-size: 1.40625rem;
+		font-weight: bold;
+		margin-bottom: 0.3125rem;
+		margin-left: 0.9375rem;
+}
+.pronunciation-meaning {
+		background-color: lightgrey;
+		padding: 0.3125rem;
+		font-size: 1.25rem;
+		font-family: Calibri, sans-serif;
+		cursor: pointer;
+		margin-left: 0.9375rem;
+		white-space: pre-wrap;
+}
+.read-button {
+		width: 1.5rem;
+		height: 1.5rem;
+		cursor: pointer;
+		margin-right: 0.625rem;
+}
+.review-count {
+		margin-top: 0.9375rem;
+		display: flex;
+		font-size: 1.09375rem;
+		justify-content: space-between;
+		align-items: center;
+		margin-right: 0.625rem;
+}

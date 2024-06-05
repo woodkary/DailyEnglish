@@ -3,7 +3,6 @@
 import (
 	controlsql "DailyEnglish/db"
 	middlewares "DailyEnglish/middlewares"
-	service "DailyEnglish/utils"
 	utils "DailyEnglish/utils"
 	"database/sql"
 	"fmt"
@@ -12,13 +11,14 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 )
 
 func tokenAuthMiddleware() gin.HandlerFunc {
 	return middlewares.TokenAuthMiddleware("TeamManager")
 }
 
-func InitTeamRouter(r *gin.Engine, db *sql.DB) {
+func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	//考试情况数据
 	r.POST("/api/team_manage/exam_situation/calendar", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
@@ -30,25 +30,27 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			c.JSON(400, "请求参数错误")
 			return
 		}
-		requestYear, err := strconv.Atoi(request.Year)
+
+		yyyy, err := strconv.Atoi(request.Year)
 		if err != nil {
-			log.Println("Error parsing year:", err)
+			c.JSON(400, "请求参数错误")
+			return
 		}
-
-		requestMonth, err := strconv.Atoi(request.Month)
+		mm, err := strconv.Atoi(request.Month)
 		if err != nil {
-			log.Println("Error parsing month:", err)
-
+			c.JSON(400, "请求参数错误")
+			return
 		}
 		user, _ := c.Get("user")
-		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
+		TeamManagerClaims, ok := user.(*utils.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
 		}
-		//TODO这里是查询数据库获取数据
+		// 查询每个团队
 		var Item []controlsql.ExamInfo
 		for teamID := range TeamManagerClaims.Team {
+			// 查询该团队所有考试信息 包括ID Name Date
 			examInfo, err := controlsql.SearchExamInfoByTeamID(db, teamID)
 			if err != nil {
 				c.JSON(500, "服务器错误")
@@ -58,7 +60,9 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			Item = append(Item, examInfo...)
 		}
 
-		// ExamsResponse 结构体表示包含多个考试的响应
+		fmt.Println(Item)
+		fmt.Println("year = ", yyyy, "month = ", mm)
+
 		type response struct {
 			Code      string   `json:"code"`      // 响应代码
 			Msg       string   `json:"msg"`       // 响应消息
@@ -67,22 +71,25 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 		var Response response
 		Response.Exam_date = make([]string, 0)
 
-		//TODO 将查询到的考试信息转换为响应的结构体
+		// 找到所有团队中所有考试时间为request所给参数的考试对应的日期
 		for _, exam := range Item {
 			examDate, err := time.Parse("2006-01-02", exam.ExamDate)
 			if err != nil {
 				log.Println("Error parsing date:", err)
 				continue
 			}
+			fmt.Println("now parsing: ", examDate.Year(), examDate.Month())
 
-			if examDate.Year() == requestYear && examDate.Month() == time.Month(requestMonth) {
+			if examDate.Year() == yyyy && examDate.Month() == time.Month(mm) {
 				Response.Exam_date = append(Response.Exam_date, exam.ExamDate)
 			}
 		}
+		fmt.Println(Response.Exam_date)
 		Response.Code = "200"
 		Response.Msg = "成功"
 		c.JSON(200, Response)
 	})
+
 	//获取某日管理的团队的所有考试信息
 	r.POST("/api/team_manage/exam_situation/exam_date", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
@@ -94,7 +101,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		user, _ := c.Get("user")
-		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
+		TeamManagerClaims, ok := user.(*utils.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
@@ -160,7 +167,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			log.Panic(err)
 			return
 		}
-		levelNums := service.CalculateUserLevel(ScoresInExam)
+		levelNums := utils.CalculateUserLevel(ScoresInExam)
 
 		type UserResult struct {
 			Username string `json:"username"` // 用户名
@@ -244,7 +251,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 	//成员管理页面
 	r.GET("/api/team_manage/member_manage/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
-		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *TeamManagerClaims 类型
+		TeamManagerClaims, ok := user.(*utils.TeamManagerClaims) // 将 user 转换为 *TeamManagerClaims 类型
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
@@ -310,7 +317,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 	//获取个人中心界面所需信息
 	r.GET("/api/team_manage/personal_center/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
-		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
+		TeamManagerClaims, ok := user.(*utils.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
@@ -489,7 +496,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		user, _ := c.Get("user")
-		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
+		TeamManagerClaims, ok := user.(*utils.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			c.JSON(500, "服务器错误,请联系管理员")
 			return
@@ -529,7 +536,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		user, _ := c.Get("user")
-		TeamManagerClaims, ok := user.(*service.TeamManagerClaims)
+		TeamManagerClaims, ok := user.(*utils.TeamManagerClaims)
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
@@ -593,7 +600,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 	//根据Token中的ManagerID和Team，获取所有team的所有学生所有题型平均分，以及学生其各题型平均分、排名变化
 	r.GET("/api/team_manage/exam_situation/teams_and_students_grade", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
-		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *TeamManagerClaims 类型
+		TeamManagerClaims, ok := user.(*utils.TeamManagerClaims) // 将 user 转换为 *TeamManagerClaims 类型
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return

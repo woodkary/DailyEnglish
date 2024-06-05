@@ -1,0 +1,74 @@
+
+body {
+		background-image: url(../../static/daka-background.png);
+		background-size: cover;
+}
+.title-container {
+		display: flex;
+		line-height: 2.5rem;
+}
+.back-icon {
+		width: 1.875rem;
+		margin-right: 2.5rem;
+		height: 2.5rem;
+		margin-top: 0.625rem;
+		margin-bottom: 0.625rem;
+}
+.title-container span {
+		font-family: 'Source Han Sans', 'Microsoft YaHei', Arial, sans-serif;
+		font-weight: bold;
+		font-size: 18px;
+		margin-top: 0.625rem;
+		margin-left: 5.625rem;
+}
+.exam-info {
+		text-align: center;
+		/* 将文本水平居中 */
+}
+.exam-info h2 {
+		margin-top: 3.125rem;
+}
+.exam-info h3 {
+		margin-top: 0.9375rem;
+		color: #456DE7;
+}
+.circle {
+		position: relative;
+		display: flex;
+		/* 使用 Flexbox 布局 */
+		align-items: center;
+		/* 垂直居中 */
+		justify-content: center;
+		/* 水平居中 */
+		flex-direction: column;
+		/* 垂直排列 */
+		padding: 20px;
+		width: 200px;
+		/* 设置相等的宽高 */
+		height: 200px;
+		border-radius: 50%;
+		border: 35px solid rgba(213, 251, 252, 0.7);
+		/* 圆形边框，透明度为 0.7 */
+		color: #000;
+		/* 文本颜色 */
+		margin: 0.625rem auto; /* 水平居中 */
+}
+.exam-time,
+	.exam-num {
+		text-align: center;
+		font-size: 24px;
+}
+.exam-num{
+		color: #b0b0b0;
+}
+.start-exam-btn {
+			background-color: #0276ff; /* 蓝色背景 */
+			color: #fff; /* 白色文字 */
+			padding: 10px 20px; /* 添加适当的内边距 */
+			border-radius: 5px; /* 圆角 */ 
+			margin: 50px 40px; /* 与 .circle 之间的间距 */
+			text-align: center; /* 文本居中 */
+			cursor: pointer; /* 鼠标指针样式 */
+			font-size: 26px;
+			 box-shadow: 0 2px 10px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.1);
+}

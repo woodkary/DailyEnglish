@@ -9,7 +9,14 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/go-redis/redis/v8"
 )
+
+type Exam_score struct {
+	UserAnswer string `json:"selectedChoice"`
+	UserScore  int    `json:"score"`
+}
 
 // 根据email查询user是否存在
 func EmailIsRegistered_User(db *sql.DB, email string) bool {
@@ -454,4 +461,9 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 
 	fmt.Printf("User %d punch record updated successfully.\n", userID)
 	return nil
+}
+
+// redis------studentId:question_type:["score","num"]
+func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, examResult map[int]Exam_score) {
+
 }

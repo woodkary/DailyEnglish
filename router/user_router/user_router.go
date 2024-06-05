@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/net/context"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
+	"golang.org/x/net/context"
 )
 
 func tokenAuthMiddleware() gin.HandlerFunc {
@@ -63,8 +63,8 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			return
 		}
 		//将验证码存入 Redis
-		ctx := context.Background()// 创建一个空的 context
-		key := fmt.Sprintf("%s:%s", "app", data.Email)// key前缀为web:邮箱
+		ctx := context.Background()                         // 创建一个空的 context
+		key := fmt.Sprintf("%s:%s", "app", data.Email)      // key前缀为web:邮箱
 		err = rdb.Set(ctx, key, Vcode, time.Minute*5).Err() // 验证码有效期5分钟,更新时替换
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -73,7 +73,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			})
 			return
 		}
-		
+
 		// 返回成功响应
 		c.JSON(http.StatusOK, gin.H{
 			"code": "200",
@@ -81,7 +81,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			"data": Vcode,
 		})
 	})
-
 
 	//注册
 	r.POST("/api/user/register", func(c *gin.Context) {
@@ -826,14 +825,11 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		c.JSON(200, response)
 	})
 	//提交考试@TODO
+	//redis------studentId:question_type:["score","num"]
 	r.POST("/api/exams/submitExamResult", tokenAuthMiddleware(), func(c *gin.Context) {
-		type Exam_score struct {
-			UserAnswer string `json:"selectedChoice"`
-			UserScore  int    `json:"score"`
-		}
 		type Request struct {
-			Exam_result map[int]Exam_score `json:"selectedChoiceAndScore"`
-			Exam_id     int                `json:"exam_id"`
+			Exam_result map[int]controlsql.Exam_score `json:"selectedChoiceAndScore"`
+			Exam_id     int                           `json:"exam_id"`
 		}
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {

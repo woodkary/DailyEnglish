@@ -281,8 +281,8 @@ function fetchExamDetails(){
             "Authorization": "Bearer " + localStorage.getItem("token")
         },
         body: JSON.stringify({
-            "team_id": team_id,
-            "exam_id": exam_id
+            "team_id": parseInt(team_id),
+            "exam_id": parseInt(exam_id)
         })
     }).then(response => response.json())
    .then(data => {

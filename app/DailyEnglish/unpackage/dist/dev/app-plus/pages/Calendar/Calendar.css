@@ -1,0 +1,236 @@
+
+.body {
+		height: 100vh;
+		z-index: -1;
+}
+.color {
+		background-color: #144de4;
+		position: absolute;
+		top: 0;
+		width: 100%;
+		height: 15.625rem;
+		z-index: -1;
+}
+.calendar {
+		position: absolute;
+		width: 90%;
+		height: 23.4375rem;
+		top: 2.8125rem;
+		margin-left: 5%;
+		background-color: transparent;
+		z-index: 1;
+
+		box-shadow: 5px 5px 25px rgb(0, 0, 0, 0.1);
+}
+.head {
+		display: flex;
+		margin-top: 0.9375rem;
+		margin-bottom: 1.25rem;
+		font-size: 1.875rem;
+		font-weight: 500;
+		color: #fff;
+		/*不换行*/
+		white-space: nowrap;
+}
+.head .date {
+		white-space: nowrap;
+}
+.week {
+		display: flex;
+		justify-content: space-around;
+		text-align: center;
+		/* margin-bottom: 30rpx; */
+		font-size: 1.40625rem;
+		font-weight: 550;
+		background-color: white;
+		border-top-left-radius: 0.3125rem;
+		border-top-right-radius: 0.3125rem;
+}
+.week {
+.week1,
+		.week7 {
+			color: #aa916e;
+}
+.week2,
+		.week3,
+		.week4,
+		.week5,
+		.week6 {
+			color: #b58b4b;
+}
+}
+.day {
+		display: flex;
+		flex-wrap: wrap;
+		background-color: white;
+}
+.date-item {
+		/* 设置盒模型为 border-box，这样边框和内边距都不会影响元素的最终宽度 */
+		box-sizing: border-box;
+		width: 3.0125rem;
+		/* 每个日期占据日历宽度的1/7 */
+		text-align: center;
+		/* 设置日期元素之间的垂直间距 */
+		font-size: 1.25rem;
+		height: 3.0125rem;
+		margin-bottom: 0.3125rem;
+		line-height: 3.0125rem;
+		color: #919597;
+
+		position: relative;
+}
+.not-this-month{
+    color: #d7d7d7;
+}
+.not_finish {
+		color: black;
+		/* border: 1px solid red;
+		border-radius: 50%; */
+		z-index: 1;
+}
+.not_finish::before {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 70%;
+		/* 调整圆圈的大小 */
+		height: 70%;
+		border-radius: 50%;
+		background-color: #f1f4fb;
+		/* 设置圆圈的颜色 */
+		z-index: -1;
+		/* 将圆圈置于日期数字下方 */
+		/* opacity: 0.5; */
+		/* 设置透明度，以便可以看到下方的数字 */
+}
+.selected::after{
+		 content: '';
+		    position: absolute;
+		    top: 50%;
+		    left: 50%;
+		    transform: translate(-50%, -50%);
+		    width: 90%;
+		    height: 90%;
+		    border: 2px solid;
+			border-color: #293eff;
+		    border-radius: 50%;
+		    box-sizing: border-box;
+		    pointer-events: none; /* 防止阻碍点击事件 */
+		    z-index: -2;
+}
+.finish {
+		color: aliceblue;
+		/* border: 1px solid red;
+		border-radius: 50%; */
+		z-index: 1;
+}
+.finish::before {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 70%;
+		/* 调整圆圈的大小 */
+		height: 70%;
+		border-radius: 50%;
+		background-color: 	#0055ff;
+		/* 设置圆圈的颜色 */
+		z-index: -1;
+		/* 将圆圈置于日期数字下方 */
+		 opacity: 0.5; 
+		/* 设置透明度，以便可以看到下方的数字 */
+}
+.examMsg {
+		background-color: #fff;
+		position: absolute; 
+		top: 30.625rem;
+		/* 初始位置 */
+		width: 100%;
+		/* height: calc(100vh - 100rpx); */
+		/* 设置高度 */
+		justify-content: space-between;
+		/* 使图片和文本之间有空间 */
+		display: flex;
+		flex-direction: column;
+}
+.examMsg .title {
+		margin-left: 0.9375rem;
+		
+		font-size: 1.25rem;
+		font-weight: 550;
+}
+.examMsg .card-container {
+		display: flex;
+		flex-direction: column;
+		position: absolute;
+		top: 4.0625rem;
+		width: 100%;
+}
+.examMsg .card {
+		display: flex;
+		width: 90%;
+		/* border: 0.1px solid #d7d7d7; */
+		margin-bottom: 1.25rem;
+		margin-left: 5%;
+		height: 4.375rem;
+
+		  align-items: center; /* 垂直居中 */
+		  justify-content: center; /* 水平居中 */
+		/* 		  box-shadow: 0 4px 4px rgba(192, 192, 192, 0.2), 4px 0 4px rgba(191, 191, 191, 0.2); */
+		/* box-shadow: 10px 10px 25px rgb(0, 0, 0, 0.1); */
+}
+.examMsg .card uni-image {
+		width: 2.1875rem;
+		height: 2.1875rem;
+}
+.examMsg .card uni-button {
+		background-color: #144de4;
+		color: aliceblue;
+}
+#daka {
+		background-color: #f1f4fb;
+}
+#daka .title {
+		margin-left: 1.25rem;
+		
+		font-size: 1.09375rem;
+		font-weight: 500;
+}
+#daka .state {
+		margin-left: 1.25rem;
+		
+		font-size:1.09375rem;
+}
+ /* .badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: red;
+  } */
+.last-or-next {
+    background-color: transparent;
+    border: none;
+    outline: none;
+}
+.icon {
+    margin-top: 0.625rem;
+    width: 1.875rem;
+    height: 1.875rem;
+    filter: invert(1);
+}
+.words{
+	  font-size: 1.25rem;
+}
+.words span{
+    display: block;
+    margin-left: 1.25rem;
+    margin-top: 0.625rem;
+	white-space: nowrap;
+	border-bottom: 1px solid #d7d7d7;
+}

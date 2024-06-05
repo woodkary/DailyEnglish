@@ -6,7 +6,6 @@ getExamDates();
 //这个是主要函数
 function getExamDates(){
     let exam_dates;
-    exam_dates=sessionStorage.getItem(year+"-"+month);
     //如果本地存储中没有考试日期，则从后端获取考试日期
     if(!exam_dates) {
         exam_dates = new Set();
@@ -17,8 +16,8 @@ function getExamDates(){
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
             },
             body: JSON.stringify({
-                year: String.toString(year),
-                month: String.toString(month)
+                year: year+"",
+                month: month+""
             })
         }).then(response => {
             if (response.ok) {
@@ -27,7 +26,7 @@ function getExamDates(){
                 throw new Error('Network response was not ok');
             }
         }).then(data => {
-            if (data.code == 200||String.toString(data.code)=="200") {
+            if (data.code == 200||data.code=="200") {
                 let exam_date = data.exam_date;
                 for (let i = 0; i < exam_date.length; i++) {
                     exam_dates.add(exam_date[i]);
@@ -35,7 +34,6 @@ function getExamDates(){
                 dates = generateDates();
                 renderCalendar(dates,exam_dates);
                 getTodayExamData();
-                sessionStorage.setItem(year + "-" + month, JSON.stringify(Array.from(exam_dates)));
             } else {
                 console.log(data.msg);
                 console.log("错误码为：" + data.code)
@@ -56,8 +54,9 @@ function getExamDates(){
 function fromDateToStr(date) {
     let year = date.getFullYear();
     let month = date.getMonth() + 1;
+    let zero=month<10?'0':'';
     let day = date.getDate();
-    return year + "-" + month + "-" + day;
+    return year + "-" + +zero + month + "-" + day;
 }
 
 
@@ -132,13 +131,7 @@ function renderCalendar(dates,exam_dates) {
             });
         }else{
             dayDiv.addEventListener('click', () => {
-                let eventDiv = document.querySelector('.event');
-                eventDiv.innerHTML = '';
-                // 清空之前的考试信息
-                let dateH1 = document.createElement('h1');
-                // 设置日期标题
-                dateH1.textContent = "今天没有考试";
-                eventDiv.appendChild(dateH1);
+                renderDefaultExamData(date);
             });
         }
         dayDiv.className = 'day'; // 设置类名
@@ -256,10 +249,10 @@ function fetchExamData(date){
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + sessionStorage.getItem('token')
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
         },
         body: JSON.stringify({
-            date: date
+            date: fromDateToStr(date)
         })
     }).then(response  =>{
         if(response.ok){
@@ -381,7 +374,7 @@ function getTodayExamData(){
     }
 }
 function renderDefaultExamData(date){
-    let eventDiv=document.querySelector('.event');
+/*    let eventDiv=document.querySelector('.event');
     eventDiv.innerHTML='';
     // 清空之前的考试信息
     let dateH1=document.createElement('h1');
@@ -409,11 +402,11 @@ function renderDefaultExamData(date){
         teamP.textContent = exams[i].team_name+"\t"+exams[i].exam_name;
         teamP.className = 'team';
         cardDiv.appendChild(teamP);
-        /*// 创建一个 p 元素作为考试时间
+        /!*!// 创建一个 p 元素作为考试时间
         let timeP = document.createElement('p');
         timeP.textContent = exams[i].time;
         timeP.className = 'time';
-        cardDiv.appendChild(timeP);*/
+        cardDiv.appendChild(timeP);*!/
         //创建跳转按钮
         let jumpBtn = document.createElement('button');
         jumpBtn.className = 'toDetail';
@@ -426,5 +419,12 @@ function renderDefaultExamData(date){
             window.location.href = './test-statistics.html?date=' + date.toLocaleDateString()+"&team_id="+exams[i].team_id+"&exam_id="+exams[i].exam_id;
         });
     }
-    
+    */
+    let eventDiv = document.querySelector('.event');
+    eventDiv.innerHTML = '';
+    // 清空之前的考试信息
+    let dateH1 = document.createElement('h1');
+    // 设置日期标题
+    dateH1.textContent = "今天没有考试";
+    eventDiv.appendChild(dateH1);
 }

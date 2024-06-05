@@ -55,8 +55,8 @@ func main() {
 	// r.Static("static/team_manager/css", "./static/css")
 	// r.Static("static/team_manager/js", "./static/js")
 	// r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html", "./static/404.html")
-	adminrouter.InitAdminRouter(r, db,rdb)
-	teamrouter.InitTeamRouter(r, db)
+	adminrouter.InitAdminRouter(r, db, rdb)
+	teamrouter.InitTeamRouter(r, db, rdb)
 	go func() {
 		r1 := gin.Default()
 		r1.Use(middlewares.Cors())
