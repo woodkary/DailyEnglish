@@ -1,3 +1,6 @@
+/*
+ * @Date: 2024-04-04 14:28:51
+ */
 package main
 
 import (
@@ -52,7 +55,7 @@ func main() {
 	// r.Static("static/team_manager/css", "./static/css")
 	// r.Static("static/team_manager/js", "./static/js")
 	// r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html", "./static/404.html")
-	adminrouter.InitAdminRouter(r, db)
+	adminrouter.InitAdminRouter(r, db,rdb)
 	teamrouter.InitTeamRouter(r, db)
 	go func() {
 		r1 := gin.Default()

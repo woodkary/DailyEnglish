@@ -5,3 +5,5 @@ app/DailyEnglish/unpackage/dist/cache/.vite/deps/_metadata.json
 tmp/runner-build.exe~
 tmp/runner-build.exe
 tmp/runner-build.exe
+tmp/runner-build-errors.log
+tmp/runner-build.exe

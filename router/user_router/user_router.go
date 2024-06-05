@@ -64,7 +64,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		}
 		//将验证码存入 Redis
 		ctx := context.Background()// 创建一个空的 context
-		key := fmt.Sprintf("%s:%s", "web", data.Email)// key前缀为web:邮箱
+		key := fmt.Sprintf("%s:%s", "app", data.Email)// key前缀为web:邮箱
 		err = rdb.Set(ctx, key, Vcode, time.Minute*5).Err() // 验证码有效期5分钟,更新时替换
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -102,7 +102,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		}
 		//验证验证码
 		ctx := context.Background()
-		key := fmt.Sprintf("%s:%s", "web", data.Email)
+		key := fmt.Sprintf("%s:%s", "app", data.Email)
 		code, rerr := rdb.Get(ctx, key).Result()
 		if rerr != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
