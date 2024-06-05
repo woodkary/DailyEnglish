@@ -195,10 +195,19 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		}
 
 		token, _ := utils.GenerateToken_User(userid, team_id, team_name)
+		isChoosed, err := controlsql.GetPunchPlan(db, userid)
+		if err != nil {
+			log.Panic(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+			return
+		}
 		c.JSON(http.StatusOK, gin.H{
-			"code":  "200",
-			"msg":   "登录成功",
-			"token": token,
+			"code":      "200",
+			"msg":       "登录成功",
+			"token":     token,
+			"isChoosed": isChoosed,
 		})
 	})
 	//选择词书界面
@@ -922,6 +931,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		}
 		response.Code = 200
 		response.Msg = "成功"
+		fmt.Println(response)
 		c.JSON(http.StatusOK, response)
 	})
 

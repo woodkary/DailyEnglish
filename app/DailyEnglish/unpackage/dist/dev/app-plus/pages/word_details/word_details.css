@@ -1,0 +1,122 @@
+
+.collapsible-view[data-v-4b4aa2b3] {
+	width: 90%;
+	margin: 0 auto;
+	display: flex;  
+	flex-direction: column; /* 设置为列方向，实现从上往下排列 */  
+	align-items: stretch; /* 子项默认拉伸以填充整个容器 */ 
+	
+	margin-top: 10px;/*这是稍微的改动*/
+	margin-bottom: 10px;/*这是稍微的改动*/
+}
+.content[data-v-4b4aa2b3] {  
+	  overflow: hidden; /* 隐藏超出内容区域的内容 */
+	   border-bottom: 2px solid #e6e6e6; /* 固定的底部边框 */
+}  
+
+
+.word-list-container {
+  width: 90%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  /* 设置为列方向，实现从上往下排列 */
+  align-items: stretch;
+  /* 子项默认拉伸以填充整个容器 */
+  border-bottom: 2px solid #e6e6e6;
+}
+.word-card {
+  display: flex;
+  /* 设置为 flex 容器，以便子元素可以水平排列 */
+  justify-content: space-between;
+  /* 子元素在主轴上均匀分布，左边和右边有空间 */
+  align-items: flex-start;
+  /* 子元素在交叉轴上对齐到开始位置 */
+}
+.pronunciation-card {
+  display: flex;
+  /* 设置为 flex 容器，以便子元素可以水平排列 */
+  align-items: flex-start;
+  /* 子元素在交叉轴上对齐到开始位置 */
+}
+.collection {
+  margin-top: 3.5rem;
+  margin-right: 1rem;
+  width: 1.3rem;
+  height: 1.3rem;
+}
+.word {
+  margin-top: 3rem;
+  margin-bottom: 10px;
+  font-size: 2rem;
+}
+.pronunciation {
+  margin-top: -0.2rem;
+  margin-left: 0.5rem;
+  width: 1.6rem;
+  height: 1.6rem;
+}
+p {
+  margin-bottom: 10px;
+}
+.book {
+  font-size: 14px;
+  color: #A7A7A7;
+}
+.container {
+  width: 90%;
+  margin: 0 auto;
+  height: 5rem;
+  padding: 10px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  /* 让子元素在主轴上均匀分布，第一个在左边，最后一个在右边 */
+  align-items: center;
+  /* 交叉轴上居中，使得文本和图片垂直对齐 */
+  margin-bottom: 10px;
+}
+.header-text {
+  /* 文本样式 */
+}
+.up-arrow {
+  height: 1rem;
+  width: 1rem;
+}
+.content {
+  /* 你可以添加更多样式来控制内容的外观 */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  /* 设置为列方向，实现从上往下排列 */
+  align-items: stretch;
+  /* 子项默认拉伸以填充整个容器 */
+  overflow: hidden;/* 隐藏超出内容区域的内容 */
+  width:100%;
+  border-bottom: 1px solid #e6e6e6;
+}
+.partofspeech {
+  margin-right: 15px;
+  background-color: #00ffff;
+  color: #456de7;
+  padding: 0 5px 2px 5px;
+  border-radius: 5px;
+}
+.meaning {
+  color: #A7A7A7;
+}
+.example-text {
+  flex: 1 1 80%;
+}
+.example-image {
+  margin-top: -1.5rem;
+  height: 1.8rem;
+  width: 2.3rem;
+}
+.phrase {
+  color: #456de7;
+}
+.phrase-meaning {
+  color: #A7A7A7;
+}

@@ -1,0 +1,156 @@
+
+.container{
+		width: 90%;
+		margin: 0 auto;
+		margin-top: 1rem;
+		display: flex;  
+		align-items: stretch; /* 拉伸子元素以匹配最高的子元素 */  
+		justify-content: space-between; /* 水平对齐 */  
+		border: 2px solid #e6e6e6;
+		border-radius: 10px;
+		padding: 15px;
+		box-shadow: 0 0 0 2px rgb(247 127 0 / 10%);
+}
+.left-container{
+		flex: 0 0 60%;
+		display: flex;
+		flex-direction: column;
+		/* 设置为列方向，实现从上往下排列 */
+		align-items: stretch;
+		/* 子项默认拉伸以填充整个容器 */
+}
+.right-container {  
+	  flex: 0 0 40%; /* 右边占40%宽度 */  
+	  display: flex;  
+	    flex-direction: column; /* 垂直方向 */  
+	    justify-content: center; /* 垂直居中 */  
+	    align-items: center; /* 水平居中 */  
+	    text-align: center; /* 水平文本居中（对于单行文本）*/ 
+	  /* 其他样式... */
+}
+.exam-number{
+		margin-top: 10px;
+}
+.date{
+		margin-top: 25px;
+		color: #456de7;
+		font-size: 20px;
+}
+.question-number{
+		color: #a7a7a7;
+		margin-right: 10px;
+		font-size: 18px;
+}
+.correct-number{
+		color: #a7a7a7;
+		font-size: 18px;
+}
+.point{
+		  font-size: 80px; /* 大字号的数字字体大小 */  
+		  font-style: italic; /* 设置为斜体 */
+			margin-left: -40px;
+			color: #3FC681;
+}
+.small-text{
+			font-style: italic; /* 设置为斜体 */ 
+			 font-size: 26px;
+			 margin-top: -40px;
+			 margin-left: 80px;
+			 color: #3FC681;
+}
+.container2 {  
+	    width: 95%;  
+	    margin: 0 auto;  
+	    margin-top: 1rem;
+		  margin-bottom: 1rem;
+	    display: flex;  
+	    flex-direction: column; /* 如果需要垂直堆叠 */
+}
+.header-container {  
+	    display: flex;  
+	    align-items: center;  
+	    justify-content: space-between; /* 根据需要，如果h3和search之间需要间隔 */
+		  margin-bottom: 10px;
+}
+.search {  
+	    flex: 1; /* 让.search占据剩余空间 */  
+	    background-color: #ffffff;  
+	    border-radius: 1.5625rem;  
+	    display: flex;  
+	    padding: 0.15625rem;  
+	    align-items: center;  
+	    /* 移除margin-left，或根据需要设置 */  
+	    border: 1px solid #e6e6e6;
+		box-shadow: 0 0 0 2px rgb(247 127 0 / 10%);
+		margin-left: 30px;
+}
+.search-icon {  
+	    width: 25px;  
+	    height: 25px;  
+	    margin-right: 0.625rem;
+}
+.search-input {  
+	    flex: 1; /* 让输入框占据.search的剩余空间 */  
+	    border: none;  
+	    padding: 0 0.3125rem; /* 根据需要添加内边距 */
+}
+.button-group{
+		    display: flex;  
+		    justify-content: flex-start; /* 让按钮从左边开始排列 */ 
+			 width: 80%;
+}
+.button-group uni-button {  
+	    margin-right: 10px; /* 按钮之间的间距 */  
+	    padding: 0 10px; /* 内边距，控制按钮的大小 */  
+	    border: none; /* 移除默认的边框 */  
+	    border-radius: 5px; /* 圆角 */  
+	    background-color: #ededed; /* 背景色 */  
+	    color: gray; /* 文字颜色 */  
+	    font-size: 12px; /* 文字大小 */  
+	    cursor: pointer; /* 鼠标悬停时变为小手形状 */
+}
+.button-group .button1{
+		color: #2e47e7;
+}
+.title-container{
+		width: 90%;
+		margin: 0 auto;
+		 border: 2px solid #e6e6e6;
+		 border-radius: 10px;
+		 padding: 15px;
+		 box-shadow: 0 0 0 2px rgb(247 127 0 / 10%);
+		 margin-bottom: 20px;
+}
+.wrong-title-point{
+		 font-size: 36px;
+		font-style: italic; /* 设置为斜体 */ 
+		 color: #ee4e41;
+}
+.correct-title-point{
+		 font-size: 36px;
+		 font-style: italic; /* 设置为斜体 */ 
+		  color: #3fc681;
+}
+.sentence{
+		 margin-left: 30px;
+		 margin-bottom: 5px;
+}
+.answer{
+	 		 margin-left: 30px;
+}
+.wrong-answer{
+		 color: red;
+}
+.correct-answer{
+	 		 color: #3fc681;
+}
+.true-answer{
+		 color: #2e47e7;
+}
+.big-button{
+		 width: 90%;
+		 background-color: #2e47e7;
+		 color: white;
+		 margin-top: 20px;
+		 font-size: 14px;
+}
