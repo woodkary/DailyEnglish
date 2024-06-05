@@ -8,7 +8,8 @@
 				<view class="text-info">
 					<text class="number">{{ index + 1 }}</text>
 					<!-- 以上是题目序号 -->
-					<text class="question">{{ question.question }}</text>
+					    <text class="question" v-html="highlightUnderline(question.question)"></text>
+
 				</view>
 				<!--        如果是单选题，则显示选项按钮，否则显示输入框-->
 				<view class="button-group" v-show="question.question_type==1">
@@ -448,7 +449,11 @@
 			},
 			showQuestions() {
 				this.isShow = !this.isShow;
-			}
+			},
+			 highlightUnderline(text) {
+			      // 使用正则表达式匹配下划线，并将其替换为红色下划线
+			      return text.replace(/__/g, '<span class="red-underline">__</span>');
+			    },
 
 		}
 	}
@@ -466,5 +471,8 @@
 	.active {
 		background-color: #e74c3c;
 		color: white;
+	}
+	.red-underline {
+	  color: red; /* 设置红色 */
 	}
 </style>
