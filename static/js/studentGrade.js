@@ -96,12 +96,12 @@ function getStackedLineSeries(studentNames){
 //根据学生名获取平均分
 function getAverageGrade(studentName){
     let studentAverageGrade=studentAverageScores.find(item=>item.name===studentName);
-    return studentAverageGrade.value;
+    return studentAverageGrade!=null?studentAverageGrade.value:null;
 }
 //根据团队名获取平均分
 function getTeamAverageGrade(teamName){
     let teamAverageGrade=teamAverageScores.find(item=>item.name===teamName);
-    return teamAverageGrade.value;
+    return teamAverageGrade!=null?teamAverageGrade.value:null;
 }
 //加载团队和学生数据
 function loadTeamAndStudents() {
@@ -110,7 +110,6 @@ function loadTeamAndStudents() {
     let flag=false;
     if(teamAndStudents==null||teamAndStudents.length===0){
         //如果没有团队数据，则提示用户
-        alert("没有团队数据，请先创建团队");
         return;
     }
     for (let team in teamAndStudents) {
@@ -127,15 +126,15 @@ function loadTeamAndStudents() {
             //加载该团队的学生的成绩折线图
             let stuNames=teamAndStudents[team];
             loadStackedLineChart(stuNames);
+            //监听团队选择下拉框的change事件，以改变学生选择下拉框的选项
+            teamSelect.addEventListener("change", function() {
+                let selectedTeam=teamSelect.value;
+                loadStudents(selectedTeam);
+                //加载该团队的学生的成绩折线图
+                let stuNames=teamAndStudents[selectedTeam];
+                loadStackedLineChart(stuNames);
+            });
         }
-        //监听团队选择下拉框的change事件，以改变学生选择下拉框的选项
-        teamSelect.addEventListener("change", function() {
-            let selectedTeam=teamSelect.value;
-            loadStudents(selectedTeam);
-            //加载该团队的学生的成绩折线图
-            let stuNames=teamAndStudents[selectedTeam];
-            loadStackedLineChart(stuNames);
-        });
     }
 }
 //根据选择的团队加载学生数据
@@ -145,10 +144,9 @@ function loadStudents(selectedTeam){
     let flag=false;
     if(teamAndStudents[selectedTeam]==null||teamAndStudents[selectedTeam].length===0){
         //如果没有学生数据，则提示用户
-        alert("该团队没有学生数据");
         return;
     }
-    for (let student of teamAndStudents[selectedTeam]) {
+    teamAndStudents[selectedTeam].forEach(student => {
         let newOption = document.createElement("option");
         newOption.value = student;
         newOption.text = student;
@@ -158,13 +156,13 @@ function loadStudents(selectedTeam){
             studentSelect.value=student;
             flag=true;
             loadRadarChart(student,selectedTeam);
+            //监听学生选择下拉框的change事件，以改变学生的成绩雷达图
+            studentSelect.addEventListener("change", function() {
+                let selectedStudent = studentSelect.value;
+                loadRadarChart(selectedStudent);
+            });
         }
-        //监听学生选择下拉框的change事件，以改变学生的成绩雷达图
-        studentSelect.addEventListener("change", function() {
-            let selectedStudent = studentSelect.value;
-            loadRadarChart(selectedStudent);
-        });
-    }
+    });
 }
 function loadRadarChart(studentName,teamName){
     let chartDom = document.getElementById('radar-chart');
