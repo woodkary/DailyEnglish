@@ -62,6 +62,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		}
 
 		fmt.Println(Item)
+		fmt.Println("year = ", yyyy, "month = ", mm)
 
 		type response struct {
 			Code      string   `json:"code"`      // 响应代码
@@ -84,6 +85,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 				Response.Exam_date = append(Response.Exam_date, exam.ExamDate)
 			}
 		}
+		fmt.Println(Response.Exam_date)
 		Response.Code = "200"
 		Response.Msg = "成功"
 		c.JSON(200, Response)
