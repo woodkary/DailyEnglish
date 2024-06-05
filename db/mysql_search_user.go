@@ -43,6 +43,17 @@ func UserExists_User(db *sql.DB, username string) bool {
 	}
 	return true
 }
+func GetWordByWordId(db *sql.DB, word_id int) (string, error) {
+	var pronunciation string
+	var meanings string
+	var word string
+	err := db.QueryRow("SELECT pronunciation,meanings,word FROM word WHERE word_id =?", word_id).Scan(&pronunciation, &meanings, &word)
+	if err != nil {
+		return "", err
+	}
+	sound := `https://ssl.gstatic.com/dictionary/static/sounds/oxford/` + word + `--_gb_1.mp3`
+	return "{" + pronunciation + ` ` + meanings + ` ` + sound + "}", nil
+}
 
 // 插入用户 数据库字段有username string, email string
 func RegisterUser_User(db *sql.DB, username string, password string, email string) error {

@@ -86,12 +86,12 @@
 		},
     onLoad() {
       uni.request({
-        url: "/api/words/get_starbk",
+        url: "http://localhost:8080/api/words/get_starbk",
         method: "POST",
         header: {
           'Authorization': 'Bearer ' + uni.getStorageSync('token')
         },
-        body: {
+        data: {
           username: "kary"
         },
         success: (res) => {
@@ -107,7 +107,7 @@
               url: '../login/login'
             });
           }
-          this.words = res.data.words;
+          this.words = res.data.word;
         },
         fail: (res) => {
           console.log("请求失败");

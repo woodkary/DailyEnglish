@@ -151,22 +151,26 @@
 				// 例如：uni.navigateBack();
 			},
 			handleJump() {
-				// 处理跳转链接点击事件
+				/*// 处理跳转链接点击事件
 				uni.switchTab({
 					url: '../Vocab/Vocab'
-				}) //跳转到生词本页面，注意此处暂时用了switchTab，因为跳转到生词本页面后，需要刷新页面，所以用了switchTab
+				}) *///跳转到生词本页面，注意此处暂时用了switchTab，因为跳转到生词本页面后，需要刷新页面，所以用了switchTab
 				//后面会讲到如何刷新页面，记得改啊！！！！！！11
-				/*//todo:refresh the page
+				//传请求
 				uni.request({
-					url:'xxvcav',
+					url:'http://localhost:8080/api/words/add_new_word',
 					method:'post',
 					data:{
-						//data
+						word_id:this.questions[this.currentQuestionIndex].word_id,
+            spelling:this.questions[this.currentQuestionIndex].word,
+            pronunciation:this.questions[this.currentQuestionIndex].phonetic,
+            username:'kary',
+            sound: null,
 					},
 					success:(res)=>{
 						//success
 					},
-				})*/
+				})
 			},
 			swiperChange(event) {
 				const current = event.detail.current;

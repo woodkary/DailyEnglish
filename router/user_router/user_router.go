@@ -499,7 +499,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		var response Response
 		var word Word
 		word.WordID = 1
-		word.Word = "abondon"
+		word.Word = "abandon"
 		word.PhoneticUS = "[əˈbændən]"
 		word.WordQuestion = make(map[string]string)
 		word.WordQuestion["A"] = "放弃"
@@ -597,10 +597,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		c.JSON(http.StatusOK, response)
 
 	})
-	//收藏单词到单词本
-	r.POST("/api/words/add_new_word", func(c *gin.Context) {
 
-	})
 	//历次考试页面
 	r.GET("/api/exams/previous_examinations", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
@@ -1092,7 +1089,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
-
 	// 一次获取生词本的16个单词
 	r.POST("/api/words/get_starbk", tokenAuthMiddleware(), func(c *gin.Context) {
 		type request struct {
