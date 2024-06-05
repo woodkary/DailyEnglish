@@ -1092,4 +1092,71 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
+
+	// 一次获取生词本的16个单词
+	r.POST("/api/words/get_starbk", tokenAuthMiddleware(), func(c *gin.Context) {
+		type request struct {
+			Username string `json:"username"`
+		}
+		var req request
+		if err := c.ShouldBind(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+		ctx := context.Background()
+		// 查询用户的生词本
+		username := "kary" // 假设用户名为 kary
+		pattern := "word:" + username + "*"
+		// 获取所有匹配的键
+		keys, err := rdb.Keys(ctx, pattern).Result()
+		if err != nil {
+			log.Fatalf("Failed to get keys: %v", err)
+		}
+		// 创建一个 map 来存储键值对
+		wordsMap := make(map[string]string)
+
+		// 获取每个键的值
+		for _, key := range keys {
+			value, err := rdb.Get(ctx, key).Result()
+			if err != nil {
+				log.Printf("Failed to get value for key %s: %v", key, err)
+				continue
+			}
+
+			// 提取键的最后一个部分
+			parts := strings.Split(key, ":")
+			if len(parts) > 0 {
+				word := parts[len(parts)-1]
+				wordsMap[word] = value
+			}
+		}
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误",
+			})
+			return
+		}
+		type Word struct {
+			Word string `json:"word"`
+		}
+		type Response struct {
+			Code int    `json:"code"`
+			Msg  string `json:"msg"`
+			Word []Word `json:"word"`
+		}
+		var response Response
+		for _, word := range wordsMap {
+			var w Word
+			w.Word = word
+			response.Word = append(response.Word, w)
+		}
+		response.Code = 200
+		response.Msg = "成功"
+		c.JSON(200, response)
+
+	})
 }
