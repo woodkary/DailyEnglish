@@ -88,7 +88,7 @@
         }
 				let remember = this.remember;
 				uni.request({
-					url: '/api/user/login',
+					url: 'http://localhost:8080/api/user/login',
 					data: {
 						username: username,
 						password: password,

@@ -327,7 +327,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		}
 		//查询用户信息
 		Item, err := controlsql.GetUserStudy(db, UserClaims.UserID)
-		if err != sql.ErrNoRows {
+		if err != nil && err != sql.ErrNoRows {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
 				"msg":  "服务器内部错误"})

@@ -41,7 +41,8 @@
         password: '',
         password2: '',
         initialVerifyCodeInput: '',
-        verifyCode: ''
+        verifyCode: '',
+        vCode: ''
       }
     },
     methods: {
@@ -73,6 +74,7 @@
             console.log(res);
             if(res.statusCode === 200){
               let vCode = res.data.data;
+              this.vCode=vCode;
               let codeAndExpiry = {
                 vCode: vCode,
                 expiry: new Date().getTime() + 1000 * 60 * 5//5分钟有效
@@ -170,11 +172,12 @@
         let email=this.email;
         let password=this.password;
         uni.request({
-          url: '/api/user/register',
+          url: 'http://localhost:8080/api/user/register',
           data: {
             username: username,
             email: email,
-            password: password
+            password: password,
+            code: this.vCode
           },
           method: 'POST',
           success: (res) => {

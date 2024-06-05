@@ -65,7 +65,7 @@
 		onLoad() {
 			//获取所有团队成员
 			uni.request({
-				url: "/api/users/my_team",
+				url: "http://localhost:8080/api/users/my_team",
 				method:'GET',
 				header:{
 					'Authorization': `Bearer ${uni.getStorageSync('token')}`

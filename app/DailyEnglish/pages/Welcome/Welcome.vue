@@ -241,7 +241,7 @@ export default {
     this.buttonIds = [];
     //获取所有词书
     uni.request({
-      url: '/api/users/navigate_books',
+      url: 'http://localhost:8080/api/users/navigate_books',
       method: 'GET',
       header: {
         'Authorization': 'Bearer '+uni.getStorageSync('token')
@@ -334,7 +334,7 @@ export default {
         success: (res) => {
           if (res.confirm) {
             uni.request({
-              url: '/api/users/navigate_books',
+              url: 'http://localhost:8080/api/users/navigate_books',
               method: 'POST',
               header: {
                 'Authorization': 'Bearer '+uni.getStorageSync('token')

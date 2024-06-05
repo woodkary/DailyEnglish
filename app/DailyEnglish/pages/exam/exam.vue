@@ -98,10 +98,18 @@
 						choices: ['1', '选项B', '选项C', '选项D'],
             fullScore: 5 // 题目满分
 					},
+          {
+            question_id: 4,
+            question_type: 2,//1单选2填空
+            question: '__ is your brother?',
+            activeButtonIndex: null, // 用于存储当前激活的按钮索引
+            choices: null,
+            fullScore: 5 // 题目满分
+          }
 					// ...更多题目
 				], // 这里可以根据需要修改选项内容
 				realAnswer: [
-					'放弃', '选项B', '选项C' // 正确答案
+					'放弃', '选项B', '选项C', 'Who' // 正确答案
 				],
 				maxButtonsPerRow: 5, // 每行的最大元素个数
 				buttonMargin: 35, // 元素间隔

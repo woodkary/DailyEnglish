@@ -10,8 +10,9 @@ import (
 	userrouter "DailyEnglish/router/user_router"
 	"database/sql"
 	"fmt"
-	"github.com/go-redis/redis/v8"
+
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -27,11 +28,11 @@ func main() {
 	// redis 连接信息
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "r-bp1jdmrszl1yd6xxdipd.redis.rds.aliyuncs.com:6379", // Redis服务器地址
-		Username: "mimahezhanghao1yang",                            // Redis账号
-		Password: "MIMAhezhanghao1yang",                              // Redis密码
-		DB:       0,                                                 // 选择的数据库
+		Username: "mimahezhanghao1yang",                                // Redis账号
+		Password: "MIMAhezhanghao1yang",                                // Redis密码
+		DB:       0,                                                    // 选择的数据库
 	})
- 
+
 	// 测试Redis连接
 	_, err := rdb.Ping(rdb.Context()).Result()
 	if err != nil {
@@ -58,8 +59,8 @@ func main() {
 	teamrouter.InitTeamRouter(r, db)
 	go func() {
 		r1 := gin.Default()
-		userrouter.InitUserRouter(r1, db,rdb)
 		r1.Use(middlewares.Cors())
+		userrouter.InitUserRouter(r1, db, rdb)
 		r1.Run(":8080")
 	}()
 	r.Run(":8081")
