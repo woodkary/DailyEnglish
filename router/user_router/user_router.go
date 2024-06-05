@@ -64,7 +64,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		}
 		//将验证码存入 Redis
 		ctx := context.Background()// 创建一个空的 context
-		key := fmt.Sprintf("%s:%s", "web", data.Email)// key前缀为web-邮箱
+		key := fmt.Sprintf("%s:%s", "web", data.Email)// key前缀为web:邮箱
 		err = rdb.Set(ctx, key, Vcode, time.Minute*5).Err() // 验证码有效期5分钟,更新时替换
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -89,6 +89,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			Username string `json:"username"`
 			Pwd      string `json:"password"`
 			Email    string `json:"email"`
+			Code     string `json:"code"`
 		}
 
 		var data regdata
@@ -99,6 +100,25 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			})
 			return
 		}
+		//验证验证码
+		ctx := context.Background()
+		key := fmt.Sprintf("%s:%s", "web", data.Email)
+		code, rerr := rdb.Get(ctx, key).Result()
+		if rerr != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"code": "401",
+				"msg":  "验证码已过期",
+			})
+			return
+		}
+		if code != data.Code {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"code": "401",
+				"msg":  "验证码错误",
+			})
+			return
+		}
+
 		//验证用户是否已注册
 		if controlsql.UserExists_User(db, data.Email) {
 			c.JSON(http.StatusConflict, gin.H{
