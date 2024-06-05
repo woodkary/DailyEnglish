@@ -461,6 +461,7 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 	return nil
 }
 
+//redis------studentId:question_type:["score","num"]
 // func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int){
 
 // }
