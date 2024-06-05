@@ -41,7 +41,8 @@
         password: '',
         password2: '',
         initialVerifyCodeInput: '',
-        verifyCode: ''
+        verifyCode: '',
+        vCode: ''
       }
     },
     methods: {
@@ -73,6 +74,7 @@
             console.log(res);
             if(res.statusCode === 200){
               let vCode = res.data.data;
+              this.vCode=vCode;
               let codeAndExpiry = {
                 vCode: vCode,
                 expiry: new Date().getTime() + 1000 * 60 * 5//5分钟有效
@@ -174,7 +176,8 @@
           data: {
             username: username,
             email: email,
-            password: password
+            password: password,
+            code: this.vCode
           },
           method: 'POST',
           success: (res) => {
