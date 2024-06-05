@@ -12,13 +12,15 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/net/context"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 )
 
 func tokenAuthMiddleware() gin.HandlerFunc {
 	return middlewares.TokenAuthMiddleware("User")
 }
-func InitUserRouter(r *gin.Engine, db *sql.DB) {
+func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	//发送验证码
 	r.POST("/api/register/sendCode", func(c *gin.Context) {
 		type response struct {
@@ -60,6 +62,18 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			})
 			return
 		}
+		//将验证码存入 Redis
+		ctx := context.Background()// 创建一个空的 context
+		key := fmt.Sprintf("%s:%s", "web", data.Email)// key前缀为web-邮箱
+		err = rdb.Set(ctx, key, Vcode, time.Minute*5).Err() // 验证码有效期5分钟,更新时替换
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "验证码存储失败",
+			})
+			return
+		}
+		
 		// 返回成功响应
 		c.JSON(http.StatusOK, gin.H{
 			"code": "200",
@@ -67,6 +81,8 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			"data": Vcode,
 		})
 	})
+
+
 	//注册
 	r.POST("/api/user/register", func(c *gin.Context) {
 		type regdata struct {
