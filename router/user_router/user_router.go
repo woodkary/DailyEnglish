@@ -5,6 +5,7 @@ import (
 	middlewares "DailyEnglish/middlewares"
 	utils "DailyEnglish/utils"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -19,6 +20,36 @@ import (
 
 func tokenAuthMiddleware() gin.HandlerFunc {
 	return middlewares.TokenAuthMiddleware("User")
+}
+
+// FormatWordData formats the word data into the desired string format
+func FormatWordData(wordData map[string]interface{}) string {
+    var formattedData string
+    formattedData = "{"
+    for key, value := range wordData {
+        formattedData += fmt.Sprintf("%s:", key)
+        switch v := value.(type) {
+        case string:
+            formattedData += fmt.Sprintf("'%s',", v)
+        default:
+            formattedData += jsonValue(v) + ","
+        }
+    }
+    // Remove the trailing comma
+    if len(formattedData) > 1 {
+        formattedData = formattedData[:len(formattedData)-1]
+    }
+    formattedData += "}"
+    return formattedData
+}
+
+// jsonValue converts value to JSON format
+func jsonValue(v interface{}) string {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return ""
+	}
+	return string(b)
 }
 func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	//发送验证码
@@ -1154,5 +1185,49 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		response.Msg = "成功"
 		c.JSON(200, response)
 
+	})
+
+	// 添加生词
+	r.POST("/api/words/add_new_word", tokenAuthMiddleware(), func(c *gin.Context) {
+		type request struct {
+			Username string `json:"username"`
+			WordId   int    `json:"word_id"`
+		}
+		var req request
+		if err := c.ShouldBind(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+		ctx := context.Background()
+		// 获取单词信息
+		wordData, err := controlsql.GetWordByWordId(db, req.WordId)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误",
+			})
+			return
+		}
+
+		// 序列格式化
+		formattedWordData := FormatWordData(wordData)
+
+		// 添加生词到 Redis
+		key := "word:" + req.Username + ":" + wordData["spelling"].(string)
+		err = rdb.Set(ctx, key, formattedWordData, 0).Err()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"code": "200",
+			"msg":  "生词添加成功",
+		})
 	})
 }
