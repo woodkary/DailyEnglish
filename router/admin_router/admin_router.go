@@ -6,11 +6,14 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
+	"golang.org/x/net/context"
 )
 
-func InitAdminRouter(r *gin.Engine, db *sql.DB) {
+func InitAdminRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 
 	//注册&登录页面
 	r.GET("/api/team_manager/login", func(c *gin.Context) {
@@ -66,6 +69,18 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 			})
 			return
 		}
+		// 将验证码存入 Redis
+		ctx := context.Background()// 创建一个空的 context
+		key := fmt.Sprintf("%s:%s", "web", data.Email)// key前缀为web:邮箱
+		err = rdb.Set(ctx, key, Vcode, time.Minute*5).Err() // 验证码有效期5分钟,更新时替换
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "验证码存储失败",
+			})
+			return
+		}
+
 		// 返回成功响应
 		c.JSON(http.StatusOK, gin.H{
 			"code": "200",
@@ -81,6 +96,7 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 			Username string `json:"username"`
 			Pwd      string `json:"password"`
 			Email    string `json:"email"`
+			Code     string `json:"code"`
 		}
 
 		var data regdata
@@ -91,8 +107,26 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB) {
 			})
 			return
 		}
+		//验证验证码
+		ctx := context.Background()
+		key := fmt.Sprintf("%s:%s", "web", data.Email)
+		code, err := rdb.Get(ctx, key).Result()
+		if err != nil {
+			c.JSON(http.StatusForbidden, gin.H{
+				"code": "403",
+				"msg":  "验证码已过期",
+			})
+			return
+		}
+		if code != data.Code {
+			c.JSON(http.StatusForbidden, gin.H{
+				"code": "403",
+				"msg":  "验证码错误",
+			})
+			return
+		}
 		if !controlsql.AdminManagerExists(db, data.Username) {
-			//验证码由前端完成判定
+			
 			// fmt.Println("Pwd:", data.Pwd)
 			Key := "123456781234567812345678" //密钥
 			cryptoPwd := utils.AesEncrypt(data.Pwd, Key)
