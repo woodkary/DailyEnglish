@@ -565,9 +565,9 @@
         this.isDaka = true;
         uni.removeStorageSync('reviewed');
       }
+      this.fetchData();
     },
     onLoad() {
-      this.fetchData();
       console.log("hi");
     },
 		methods: {
@@ -581,14 +581,17 @@
 				uni.navigateTo({
 					url: "/pages/Examination/Examination?operation=" + 1
 				});
-			}
-/*			fetchData() {
+			},
+			fetchData() {
 				uni.request({
 					url: "http://localhost:8080/api/punch/main_menu",
 					header: {
 						'Authorization': `Bearer ${uni.getStorageSync('token')}`
 					},
-					method: 'GET',
+					method: 'POST',
+          data:{
+            times: this.isDaka+this.isReview
+          },
 					success: (res) => {
             //token失效
             if(res.statusCode === 401){
@@ -627,7 +630,7 @@
 						this.daka_book = "词汇书123"
 					}
 				});
-			}*/,
+			},
 			handleSearchShow() {
 				this.isHistoryVisible = true;
 			},
