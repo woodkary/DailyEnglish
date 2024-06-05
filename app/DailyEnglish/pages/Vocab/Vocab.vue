@@ -84,21 +84,36 @@
 				showBackTop: false, //是否显示返回顶部按钮
 			};
 		},
-		/*  onLoad() {
-		    uni.request({
-		      url: "/api/words/get_starbk",
-		      method: "POST",
-		      header: {
-		        'Authorization': 'Bearer ' + uni.getStorageSync('token')
-		      },
-		      success: (res) => {
-		        this.words = res.data.words;
-		      },
-		      fail: (res) => {
-		        console.log("请求失败");
-		      }
-		    });
-		  },*/
+    onLoad() {
+      uni.request({
+        url: "/api/words/get_starbk",
+        method: "POST",
+        header: {
+          'Authorization': 'Bearer ' + uni.getStorageSync('token')
+        },
+        body: {
+          username: "kary"
+        },
+        success: (res) => {
+          //token失效
+          if(res.statusCode === 401){
+            uni.removeStorageSync('token');
+            uni.showToast({
+              title: '登录已过期，请重新登录',
+              icon: 'none',
+              duration: 2000
+            });
+            uni.navigateTo({
+              url: '../login/login'
+            });
+          }
+          this.words = res.data.words;
+        },
+        fail: (res) => {
+          console.log("请求失败");
+        }
+      });
+    },
 
 		onPageScroll(e) {
 			// 获取滚动的距离

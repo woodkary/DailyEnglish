@@ -93,6 +93,18 @@ if (uni.restoreGlobal) {
           url: "/api/punch/main_menu",
           method: "GET",
           success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
             if (res.statusCode === 200) {
               this.daka_book = res.data.task_doday.book_learning;
               this.wordNumLearned = res.data.task_doday.word_num_learned;
@@ -631,6 +643,18 @@ if (uni.restoreGlobal) {
           word_id
         },
         success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
           let detailedMeanings = res.data.detailed_meanings;
           this.wordDetail.details = this.transformDetailedMeaningsToDetails(detailedMeanings);
           this.wordAndPhrase.phraseAndMeanings = res.data.phrases;
@@ -953,6 +977,18 @@ if (uni.restoreGlobal) {
           "Authorization": `Bearer ${uni.getStorageSync("token")}`
         },
         success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
           formatAppLog("log", "at pages/Examination/Examination.vue:114", res);
           if (res.data.code == 200) {
             let word_list = res.data.word_list;
@@ -990,6 +1026,18 @@ if (uni.restoreGlobal) {
             //data
           },
           success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
           }
         });
       },
@@ -1041,6 +1089,18 @@ if (uni.restoreGlobal) {
                 punch_result: this.isCorrects
               },
               success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
                 formatAppLog("log", "at pages/Examination/Examination.vue:237", res);
                 if (res.data.code == 200) {
                   uni.showToast({
@@ -1564,6 +1624,18 @@ if (uni.restoreGlobal) {
             'Authorization': 'Bearer ' + uni.getStorageSync('token')
           },
           success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
             this.words = res.data.words;
           },
           fail: (res) => {
@@ -2059,6 +2131,18 @@ if (uni.restoreGlobal) {
           },
           method: "POST",
           success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
             if (res.statusCode == 200) {
               if (remember) {
                 uni.setStorageSync("username");
@@ -2222,6 +2306,18 @@ if (uni.restoreGlobal) {
           withCredentials: false,
           method: "POST",
           success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
             formatAppLog("log", "at pages/register/register.vue:73", res);
             if (res.statusCode === 200) {
               let vCode = res.data.data;
@@ -2324,6 +2420,18 @@ if (uni.restoreGlobal) {
           },
           method: "POST",
           success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
             formatAppLog("log", "at pages/register/register.vue:181", res);
             if (res.statusCode === 200) {
               uni.showToast({
@@ -2710,6 +2818,18 @@ if (uni.restoreGlobal) {
           "Authorization": "Bearer " + uni.getStorageSync("token")
         },
         success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
           formatAppLog("log", "at pages/Welcome/Welcome.vue:250", res.data);
           let books = res.data.books;
           books.forEach((book) => {
@@ -2788,6 +2908,18 @@ if (uni.restoreGlobal) {
           title: "提示",
           content: "确定要选择《" + title + "》吗？",
           success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
             if (res.confirm) {
               uni.request({
                 url: "/api/users/navigate_books",
@@ -3569,6 +3701,18 @@ if (uni.restoreGlobal) {
           "Authorization": `Bearer ${uni.getStorageSync("token")}`
         },
         success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
           this.examDate = res.data.exam_date;
           this.questionNum = res.data.question_num;
           this.correctNum = res.data.correct_num;
@@ -4552,6 +4696,18 @@ if (uni.restoreGlobal) {
           "Authorization": `Bearer ${uni.getStorageSync("token")}`
         },
         success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
           let questionAndAnswer = this.transformQuestions(res.data.question_list);
           this.questions = questionAndAnswer.questions;
           this.realAnswer = questionAndAnswer.realAnswer;
@@ -4721,6 +4877,18 @@ if (uni.restoreGlobal) {
           content: this.isAllFinished() ? "您已完成全部题目，是否确认提交" : "您还有题目未完成，是否确认提交",
           showCancel: true,
           success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
             if (res.confirm) {
               let examResult = {
                 exam_id: this.exam_id,
@@ -5082,6 +5250,18 @@ if (uni.restoreGlobal) {
             date: this.getExamDate(/* @__PURE__ */ new Date())
           },
           success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
             if (res.data.code == 200) {
               this.exams = this.transformExams(res.data.exams);
             }
@@ -5099,6 +5279,18 @@ if (uni.restoreGlobal) {
             "Authorization": `Bearer ${uni.getStorageSync("token")}`
           },
           success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
             this.finishedExams = this.transformExams(res.data.exams);
           }
         });
@@ -5330,6 +5522,18 @@ if (uni.restoreGlobal) {
     mounted() {
       uni.getSystemInfo({
         success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
           this.screenWidth = res.screenWidth;
           if (this.isCircular) {
             this.drawCircularProgress();
@@ -5893,6 +6097,18 @@ if (uni.restoreGlobal) {
             "Authorization": `Bearer ${uni.getStorageSync("token")}`
           },
           success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
             if (res.data.code === 200 || res.data.code === "200") {
               uni.showToast({
                 title: "加入成功",
@@ -5986,6 +6202,18 @@ if (uni.restoreGlobal) {
           "Authorization": `Bearer ${uni.getStorageSync("token")}`
         },
         success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
           if (res.data.code == 200) {
             let teamInfo = res.data.team;
             this.teamName = teamInfo.team_name;

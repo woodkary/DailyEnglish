@@ -158,7 +158,7 @@
 			this.exam_name = event.name;
 			this.exam_id = exam_id;
 			uni.request({
-				url: '/api/exams/take_examination',
+				url: 'http://localhost:8080/api/exams/take_examination',
 				method: 'POST',
 				data: {
 					exam_id: exam_id
@@ -167,6 +167,18 @@
 					'Authorization': `Bearer ${uni.getStorageSync('token')}`
 				},
 				success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
 					//todo 获取所有题目信息
 					let questionAndAnswer = this.transformQuestions(res.data.question_list);
 					this.questions = questionAndAnswer.questions;
@@ -362,6 +374,18 @@
 					content: this.isAllFinished() ? '您已完成全部题目，是否确认提交' : '您还有题目未完成，是否确认提交',
 					showCancel: true,
 					success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
 						if (res.confirm) {
 							//计算并保存考试结果到本地
 							let examResult = {
@@ -385,6 +409,18 @@
 									'Authorization': `Bearer ${uni.getStorageSync('token')}`
 								},
 								success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
 									uni.showToast({
 										title: '提交成功',
 										icon: 'none'

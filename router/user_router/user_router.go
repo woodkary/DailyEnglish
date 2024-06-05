@@ -118,10 +118,10 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			return
 		}
 		// 验证码验证成功后尝试删除验证码，即使删除失败也不会影响流程
-        rerr = rdb.Del(ctx, key).Err()
-        if rerr != nil {
-            fmt.Printf("删除验证码失败：%v\n", rerr)
-        }
+		rerr = rdb.Del(ctx, key).Err()
+		if rerr != nil {
+			fmt.Printf("删除验证码失败：%v\n", rerr)
+		}
 
 		//验证用户是否已注册
 		if controlsql.UserExists_User(db, data.Email) {
@@ -443,7 +443,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			return
 		}
 		type Request struct {
-			PunchResult map[int]string `json:"punch_result"`
+			PunchResult map[int]bool `json:"punch_result"`
 		}
 		fmt.Println("接收到的打卡结果为", c.PostForm("punch_result"))
 		var request Request
@@ -551,6 +551,55 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		response.Code = 200
 		response.Msg = "成功"
 		c.JSON(200, response)
+	})
+	// 复习结果提交
+	r.POST("/api/main/reviewed", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		type Request struct {
+			PunchResult map[int]bool `json:"punch_result"`
+		}
+		fmt.Println("接收到的打卡结果为", c.PostForm("punch_result"))
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+
+		//TODO 将打卡结果存入数据库
+		userId := UserClaims.UserID //获取用户id
+		fmt.Println("打卡的用户id为", userId)
+		//更新用户学习进度
+		// err := controlsql.UpdateUserPunch(db, userId, time.Now().Format("2006-01-02"))
+		// if err != nil && err != sql.ErrNoRows {
+		// 	log.Panic(err)
+		// 	c.JSON(http.StatusInternalServerError, gin.H{
+		// 		"code": 500,
+		// 		"msg":  "服务器内部错误",
+		// 	})
+		// 	return
+		// }
+
+		type Response struct {
+			Code int    `json:"code"`
+			Msg  string `json:"msg"`
+		}
+		var response Response
+		response.Code = 200
+		response.Msg = "成功"
+		c.JSON(http.StatusOK, response)
+
+	})
+	//收藏单词到单词本
+	r.POST("/api/words/add_new_word", func(c *gin.Context) {
+
 	})
 	//历次考试页面
 	r.GET("/api/exams/previous_examinations", tokenAuthMiddleware(), func(c *gin.Context) {

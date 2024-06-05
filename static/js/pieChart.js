@@ -21,6 +21,12 @@ window.onload = function () {
             'Authorization': 'Bearer '+token//在请求头设置 token
         }
     }).then(response => {
+            if(response.status === 401){
+                //token失效
+                alert('登录已过期，请重新登录');
+                localStorage.removeItem('token');
+                window.location.href = './login.html';
+            }
         return response.json();
     }).then(data => {
         console.log(data);

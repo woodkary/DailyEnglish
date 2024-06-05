@@ -64,13 +64,25 @@
         }
         let btn = document.getElementById('sendCodeBtn');
         uni.request({
-          url: '/api/register/sendCode',
+          url: 'http://localhost:8080/api/register/sendCode',
           data: {
             email: this.email
           },
           withCredentials: false,
           method: 'POST',
           success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
             console.log(res);
             if(res.statusCode === 200){
               let vCode = res.data.data;
@@ -181,6 +193,18 @@
           },
           method: 'POST',
           success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
             console.log(res);
             if(res.statusCode === 200){
               uni.showToast({

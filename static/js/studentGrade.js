@@ -62,7 +62,16 @@ function teamAndStudentsInit(){
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
-    }).then(res => res.json())
+    }).then(res => {
+        if(res.status===401){
+            //如果token失效，则跳转到登录页面
+            alert("登录信息已过期，请重新登录");
+            localStorage.removeItem('token');
+            window.location.href="./login.html";
+            return null;
+        }
+        return res.json();
+    })
    .then(data => {
        if(data.code===200||data.code=="200"){
            //直接获取数据，无需转换格式

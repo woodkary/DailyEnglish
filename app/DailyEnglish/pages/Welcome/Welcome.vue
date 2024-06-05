@@ -247,6 +247,18 @@ export default {
         'Authorization': 'Bearer '+uni.getStorageSync('token')
       },
       success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
         console.log(res.data);
         let books = res.data.books;
         //将词书信息添加到books数组中
@@ -332,6 +344,18 @@ export default {
         title: '提示',
         content: '确定要选择《'+title+'》吗？',
         success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
           if (res.confirm) {
             uni.request({
               url: 'http://localhost:8080/api/users/navigate_books',
@@ -343,6 +367,18 @@ export default {
                 book_id: book_id
               },
               success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
                 console.log(res.data);
                 if (res.data.code === 200||res.data.code === "200") {
                   uni.showToast({

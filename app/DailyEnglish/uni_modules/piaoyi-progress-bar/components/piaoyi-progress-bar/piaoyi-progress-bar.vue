@@ -75,6 +75,18 @@
 			// 获取设备信息
 			uni.getSystemInfo({
 				success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
 					this.screenWidth = res.screenWidth;
 					if (this.isCircular) {
 						this.drawCircularProgress();

@@ -44,6 +44,12 @@ function fetchDataAndCreateTable(url) {
         }
     })
         .then(response => {
+            if(response.status === 401){
+                //token失效
+                alert('登录已过期，请重新登录');
+                localStorage.removeItem('token');
+                window.location.href = './login.html';
+            }
             if (!response.ok) {
                 throw new Error('Network response was not ok.');
             }

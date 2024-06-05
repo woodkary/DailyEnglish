@@ -537,8 +537,8 @@
 				wordNumTotal: 2345,
 				daysLeft: 30,
 				wordNumToPunch: 5,
-				wordNumPunched: 15,
-				wordNumToReview: 10,
+				wordNumPunched: 5,
+				wordNumToReview: 5,
 				wordNumReviewed: 5,
 				items: [{
 					word: 'apple',
@@ -551,6 +551,21 @@
 				}]
 			}
 		},
+    //switchTab后调用的函数
+    onShow() {
+      let toReview = uni.getStorageSync('toReview');
+      if(toReview){
+        this.isDaka=true;
+        this.isReview = false;
+        uni.removeStorageSync('toReview');
+      }
+      let reviewed = uni.getStorageSync('reviewed');
+      if(reviewed){
+        this.isReview=true;
+        this.isDaka = true;
+        uni.removeStorageSync('reviewed');
+      }
+    },
     onLoad() {
       this.fetchData();
       console.log("hi");
@@ -566,8 +581,8 @@
 				uni.navigateTo({
 					url: "/pages/Examination/Examination?operation=" + 1
 				});
-			},
-			fetchData() {
+			}
+/*			fetchData() {
 				uni.request({
 					url: "http://localhost:8080/api/punch/main_menu",
 					header: {
@@ -575,6 +590,18 @@
 					},
 					method: 'GET',
 					success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
 						if (res.statusCode === 200||res.statusCode === 404) {
 							this.daka_book = res.data.task_today.book_learning;
 							this.wordNumLearned = res.data.task_today.word_num_learned;
@@ -600,7 +627,7 @@
 						this.daka_book = "词汇书123"
 					}
 				});
-			},
+			}*/,
 			handleSearchShow() {
 				this.isHistoryVisible = true;
 			},

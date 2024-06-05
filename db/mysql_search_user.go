@@ -311,7 +311,7 @@ func GetExamDetail(db *sql.DB, user_id int, exam_id int) ([]QuestionDetail, erro
 	if err != nil && err.Error() != "sql: no rows in result set" {
 		return nil, err
 	}
-	if err.Error() != "sql: no rows in result set" {
+	if err != sql.ErrNoRows {
 		ans_list := strings.Split(ans, "-")
 		for _, item := range ans_list {
 			a := strings.Split(item, ":")

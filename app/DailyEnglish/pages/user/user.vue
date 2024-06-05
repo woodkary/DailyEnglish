@@ -98,6 +98,18 @@ export default {
         'Authorization': `Bearer ${uni.getStorageSync('token')}` // 这里需要将 token 放到 header 中
       },
       success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
         if (res.statusCode === 200) {
           const data = res.data;
           this.punch_word_num = data.punch_word_num;
