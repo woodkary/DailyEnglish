@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/go-redis/redis/v8"
 )
 
 type Exam_score struct {
@@ -461,7 +463,7 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 	return nil
 }
 
-//redis------studentId:question_type:["score","num"]
-// func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int){
+// redis------studentId:question_type:["score","num"]
+func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, examResult map[int]Exam_score) {
 
-// }
+}
