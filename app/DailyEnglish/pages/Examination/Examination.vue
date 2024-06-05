@@ -169,6 +169,11 @@
 					},
 					success:(res)=>{
 						//success
+            uni.showToast({
+              title: '加入生词本成功',
+              icon: 'none',
+              duration: 2000,
+            });
 					},
 				})
 			},
