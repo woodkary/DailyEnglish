@@ -204,6 +204,7 @@ func SearchQuestionNumByExamID(db *sql.DB, examID int) (int, error) {
 func SearchQuestionStatistics(db *sql.DB, examID int, questionID int) ([]int, error) {
 	var A_num, B_num, C_num, D_num int = 0, 0, 0, 0
 	var correctAnswer string
+	fmt.Println("question_id: ", questionID)
 	// 查询题目统计信息
 	err := db.QueryRow("SELECT A_num, B_num, C_num, D_num FROM question_statistics WHERE exam_id = ? AND question_id = ?", examID, questionID).Scan(&A_num, &B_num, &C_num, &D_num)
 	if err != nil {
@@ -284,7 +285,7 @@ func SearchUserIDByTeamID(db *sql.DB, teamID int) ([]int, error) {
 	var userIDs []int
 
 	// 查询数据库以获取用户名称
-	rows, err := db.Query("SELECT user_id FROM user-team WHERE team_id = ?", teamID)
+	rows, err := db.Query("SELECT user_id FROM `user-team` WHERE team_id = ?", teamID)
 	if err != nil {
 		return nil, err
 	}
