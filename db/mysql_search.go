@@ -284,7 +284,7 @@ func SearchUserIDByTeamID(db *sql.DB, teamID int) ([]int, error) {
 	var userIDs []int
 
 	// 查询数据库以获取用户名称
-	rows, err := db.Query("SELECT user_id FROM user-team WHERE team_id = ?", teamID)
+	rows, err := db.Query("SELECT user_id FROM `user-team` WHERE team_id = ?", teamID)
 	if err != nil {
 		return nil, err
 	}

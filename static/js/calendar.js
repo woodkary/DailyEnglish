@@ -5,6 +5,7 @@ let dates;
 getExamDates();
 //这个是主要函数
 function getExamDates(){
+    document.getElementById("month").textContent = getMonthString(month);
     let exam_dates;
     //如果本地存储中没有考试日期，则从后端获取考试日期
     if(!exam_dates) {
