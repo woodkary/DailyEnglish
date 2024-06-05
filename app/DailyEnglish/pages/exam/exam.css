@@ -34,23 +34,27 @@
 
 
 .text-info {
-	position: absolute;
+	position: relative;
 	top: 2rem;
-	left: 7%;
 	text-align: center;
 	overflow: auto;
-	height: auto;
+	height: 150px;
 	display: flex;
+	width: 100%;
+	border-bottom: 1px solid #ccc;
+	padding: 1rem;
+
 }
 
 .number {
 	position: relative;
 	font-size: 1rem;
+
 }
 
 .question {
 	position: relative;
-	font-size: 1.5rem;
+	font-size: 1.7rem;
 	margin-top: 1rem;
 	white-space: pre-line;
 	font-family: "pingfang";
@@ -60,7 +64,8 @@
 	display: flex;
 	flex-direction: column;
 	gap: 2rem;
-	margin-top: 10rem;
+	margin-top: 4rem;
+	position: relative;
 }
 
 .choice-container {
@@ -98,6 +103,76 @@
 
 }
 
+.input-group {
+	position: relative;
+	margin-top: 2rem;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+}
+.prompt{
+	font-family: "pingfang";
+	margin-left: 1rem;
+	margin-top: 0.7rem;
+	color:red;
+}
+.input-items {
+	display: flex;
+	margin-top: 1rem;
+}
+
+.item-index {
+	font-size: 26px;
+	margin-left: 1.3rem;
+	margin-top: 0.7rem;
+	position: relative;
+	/* 设置相对定位，以便伪元素可以相对于它定位 */
+	display: inline-block;
+	/* 使元素可以设置宽度和高度 */
+	line-height: 1;
+	/* 使行高与字体大小一致，以保持数字垂直居中 */
+	color: black;
+	z-index: 1;
+}
+
+.item-index::before {
+	content: '';
+	position: absolute;
+	top: 35%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	/* 将伪元素中心定位到父元素的中心 */
+	width: 37px;
+	/* 设置圈的直径，可以根据需要调整 */
+	height: 37px;
+	/* 设置圈的直径，可以根据需要调整 */
+	border-radius: 50%;
+	/* 创建圆形 */
+	color: white;
+	/* 设置圈内文字的颜色 */
+	font-size: 29px;
+	/* 设置圈内文字的大小，与.item-index的字体大小相同 */
+	line-height: 40px;
+	/* 设置圈内文字的行高，以保持垂直居中 */
+	text-align: center;
+	/* 设置圈内文字的水平居中 */
+	border: 2px solid #82b6fa;
+	/* 设置圈的边框 */
+	background-color:#e9fbfd;
+	z-index: -1;
+}
+
+.input-item {
+	width: 12rem;
+	height: auto;
+	margin-left: 1.3rem;
+}
+
+.inner-input {
+	font-size: 29px;
+}
+
+
 .confirm {
 	width: 80%;
 	background-color: #2f5eed;
@@ -120,18 +195,21 @@
 	width: 100%;
 	display: flex;
 	flex-direction: column;
-
-	
+	z-index: 999;
+	background-color: white;
+	border-top: 1px solid #ccc;
 }
-.xuanxiangbtn {
-		width: 35px;
-		height: 35px;
-		margin-left: 260px;
-	}
 
-	.daojishi {
-		margin-left: 10px;
-	}
+.xuanxiangbtn {
+	width: 35px;
+	height: 35px;
+	margin-left: 260px;
+}
+
+.daojishi {
+	margin-left: 10px;
+}
+
 .xuanxiang-container {
 	display: flex;
 	flex-direction: column;
@@ -140,19 +218,21 @@
 	margin-top: 10px;
 	border-top: 1px solid #ccc;
 
-	
+
 }
+
 .submit {
-		margin-top: 20px;
-		width: 80%;
-		background-color: #2f5eed;
-		font-size: 1.2rem;
-		font-family: "pingfang";
-		color: white;
-		border-radius: 0.5rem;
-		height: 3rem;
-		margin-bottom: 10px;
-	}
+	margin-top: 20px;
+	width: 80%;
+	background-color: #2f5eed;
+	font-size: 1.2rem;
+	font-family: "pingfang";
+	color: white;
+	border-radius: 0.5rem;
+	height: 3rem;
+	margin-bottom: 10px;
+}
+
 .finished {
 	border: 1px solid #5f85f9;
 	background-color: #e9fbfd;
