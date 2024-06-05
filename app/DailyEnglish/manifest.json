@@ -17,7 +17,9 @@
             "delay" : 0
         },
         /* 模块配置 */
-        "modules" : {},
+        "modules" : {
+            "SQLite" : {}
+        },
         /* 应用发布信息 */
         "distribute" : {
             /* android打包配置 */
@@ -80,16 +82,15 @@
     },
     "vueVersion" : "3",
     "locale" : "zh-Hans",
-    "h5": {
-        "devServer": {
-            "proxy": {
-                "/api": {
-                    "target": "http://localhost:8080",
-                    "changeOrigin": true,
-                    "secure": false
+    "h5" : {
+        "devServer" : {
+            "proxy" : {
+                "/api" : {
+                    "target" : "http://localhost:8080",
+                    "changeOrigin" : true,
+                    "secure" : false
                 }
             }
         }
     }
-
 }

@@ -1,0 +1,189 @@
+/**
+ * 这里是uni-app内置的常用样式变量
+ *
+ * uni-app 官方扩展插件及插件市场（https://ext.dcloud.net.cn）上很多三方插件均使用了这些样式变量
+ * 如果你是插件开发者，建议你使用scss预处理，并在插件代码中直接使用这些变量（无需 import 这个文件），方便用户通过搭积木的方式开发整体风格一致的App
+ *
+ */
+/**
+ * 如果你是App开发者（插件使用者），你可以通过修改这些变量来定制自己的插件主题，实现自定义主题功能
+ *
+ * 如果你的项目同样使用了scss预处理，你也可以直接在你的 scss 代码中使用如下变量，同时无需 import 这个文件
+ */
+/* 颜色变量 */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+.react[data-v-12311208] {
+  margin: 0 auto;
+  margin-top: 3.125rem;
+  width: 8.96875rem;
+  height: 1.875rem;
+  box-sizing: content-box;
+  border: 1px solid #0e57a1;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.react .sliderYuan[data-v-12311208] {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 50%;
+  margin: 0;
+  transform: translate(0, -50%);
+}
+.react .slider[data-v-12311208] {
+  width: 1.875rem;
+  height: 1.875rem;
+  background: #0e57a1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.react .slider.select[data-v-12311208] {
+  background: #ffffff;
+}
+.react .slider uni-image[data-v-12311208] {
+  display: block;
+  width: 0.90625rem;
+  height: auto;
+}
+.react .kong[data-v-12311208] {
+  text-align: center;
+  line-height: 1.875rem;
+  font-size: 0.6875rem;
+  font-family: PingFangSC-Medium, PingFang SC;
+  font-weight: 500;
+  letter-spacing: 0.03125rem;
+}
+.react .kong.right[data-v-12311208] {
+  flex: 1;
+  color: #0e57a1;
+}
+.react .kong.left[data-v-12311208] {
+  position: absolute;
+  left: 1;
+  top: 0;
+  z-index: 10;
+  height: 1.875rem;
+  color: #ffffff;
+}
+
+.toast[data-v-c319bb4c] {
+  position: fixed;/*固定定位，建议别改*/
+  top: 20%;/*距离顶部，使用中修改*/
+  left: 50%;/*居中，使用中修改*/
+  transform: translate(-50%, -50%);/*可以修改*/
+  background-color: black;/*背景色，使用中修改*/
+  color: white;/*字体颜色，使用中修改*/
+  padding: 10px 20px;/*内边距，使用中修改*/
+  border-radius: 5px;/*圆角，使用中修改*/
+  z-index: 9999;/*层级，不建议更改*/
+  text-align: center;/*文字居中，不建议更改*/
+}
+
+/**
+ * 这里是uni-app内置的常用样式变量
+ *
+ * uni-app 官方扩展插件及插件市场（https://ext.dcloud.net.cn）上很多三方插件均使用了这些样式变量
+ * 如果你是插件开发者，建议你使用scss预处理，并在插件代码中直接使用这些变量（无需 import 这个文件），方便用户通过搭积木的方式开发整体风格一致的App
+ *
+ */
+/**
+ * 如果你是App开发者（插件使用者），你可以通过修改这些变量来定制自己的插件主题，实现自定义主题功能
+ *
+ * 如果你的项目同样使用了scss预处理，你也可以直接在你的 scss 代码中使用如下变量，同时无需 import 这个文件
+ */
+/* 颜色变量 */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+.title {
+  font-size: large;
+}
+.scroll-view-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.scroll-view {
+  width: 100%;
+  white-space: nowrap;
+  max-height: 100 rpx;
+}
+.list-container {
+  display: flex;
+}
+.list {
+  display: flex;
+  flex-direction: column;
+  margin: 0.3125rem;
+  width: 9.375rem;
+}
+.item {
+  margin: 5px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+}
+.swiper-container {
+  width: 100%;
+  height: 6.25rem;
+}
+.swiper-container .swiper {
+  width: 100%;
+  height: 100%;
+}
+.swiper-container .swiper-item {
+  width: 99%;
+  height: 99%;
+  border: 0.03125rem solid #f00000;
+}
+.jiliancontainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 5.625rem;
+}
+.jiliancontainer .picker {
+  width: 100%;
+  padding: 20px;
+}
+.jiliancontainer .picker-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #eee;
+  padding: 10px;
+  border-radius: 5px;
+}
+.jiliancontainer .picker-text {
+  font-size: 16px;
+  color: #333;
+}
+.jiliancontainer .picker-icon {
+  margin-left: 10px;
+}

@@ -383,3 +383,16 @@ func InsertUserScore(db *sql.DB, user_id int, exam_id int, user_answer string, s
 	}
 	return nil
 }
+
+// 查询用户是否已有打卡计划
+func GetPunchPlan(db *sql.DB, user_id int) (bool, error) {
+	var count int
+	err := db.QueryRow("SELECT COUNT(*) FROM user_study WHERE user_id =?", user_id).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+	if count == 0 {
+		return false, nil
+	}
+	return true, nil
+}
