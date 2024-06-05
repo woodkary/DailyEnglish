@@ -10,14 +10,17 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
+	"golang.org/x/net/context"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 )
 
 func tokenAuthMiddleware() gin.HandlerFunc {
 	return middlewares.TokenAuthMiddleware("User")
 }
-func InitUserRouter(r *gin.Engine, db *sql.DB) {
+func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	//发送验证码
 	r.POST("/api/register/sendCode", func(c *gin.Context) {
 		type response struct {
@@ -59,6 +62,18 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			})
 			return
 		}
+		//将验证码存入 Redis
+		ctx := context.Background()// 创建一个空的 context
+		key := fmt.Sprintf("%s:%s", "app", data.Email)// key前缀为web:邮箱
+		err = rdb.Set(ctx, key, Vcode, time.Minute*5).Err() // 验证码有效期5分钟,更新时替换
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "验证码存储失败",
+			})
+			return
+		}
+		
 		// 返回成功响应
 		c.JSON(http.StatusOK, gin.H{
 			"code": "200",
@@ -66,12 +81,15 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			"data": Vcode,
 		})
 	})
+
+
 	//注册
 	r.POST("/api/user/register", func(c *gin.Context) {
 		type regdata struct {
 			Username string `json:"username"`
 			Pwd      string `json:"password"`
 			Email    string `json:"email"`
+			Code     string `json:"code"`
 		}
 
 		var data regdata
@@ -82,6 +100,25 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			})
 			return
 		}
+		//验证验证码
+		ctx := context.Background()
+		key := fmt.Sprintf("%s:%s", "app", data.Email)
+		code, rerr := rdb.Get(ctx, key).Result()
+		if rerr != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"code": "401",
+				"msg":  "验证码已过期",
+			})
+			return
+		}
+		if code != data.Code {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"code": "401",
+				"msg":  "验证码错误",
+			})
+			return
+		}
+
 		//验证用户是否已注册
 		if controlsql.UserExists_User(db, data.Email) {
 			c.JSON(http.StatusConflict, gin.H{
@@ -267,6 +304,16 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			}
 			return
 		}
+		//todo 向user_punch-learn表插入或者更新一项数据
+		/*[
+		{
+			"user_id": 1,
+			"learned_index": 50,//目前打卡到的单词本的下标
+			"punch_num": 20,//打卡总单词数
+			"review_num": 20,//复习总单词数
+			"date": "2024-05-22"//第一次选择词书的日期
+		}
+		]*/
 		c.JSON(200, gin.H{
 			"code": "200",
 			"msg":  "设置词书成功",
@@ -284,7 +331,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		}
 		//查询用户信息
 		Item, err := controlsql.GetUserStudy(db, UserClaims.UserID)
-		if err != nil {
+		if err != nil && err != sql.ErrNoRows {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
 				"msg":  "服务器内部错误"})
@@ -300,7 +347,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 			IsPunched      bool   `json:"ispunched"`
 		}
 		type Response struct {
-			Code      string    `json:"code"`
+			Code      int       `json:"code"`
 			Msg       string    `json:"msg"`
 			TaskToday TaskToday `json:"task_today"`
 		}
@@ -312,8 +359,12 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		response.TaskToday.PunchNum = Item.PunchNum
 		response.TaskToday.ReviewNum = 10 //这里写死的@TODO去找那些单词需要复习
 		response.TaskToday.IsPunched = Item.IsPunched
-		response.Code = "200"
+		response.Code = 200
 		response.Msg = "成功"
+		if err == sql.ErrNoRows {
+			response.Code = 404
+			response.Msg = "您还没有打卡"
+		}
 		c.JSON(200, response)
 	})
 	//打卡
@@ -388,6 +439,52 @@ func InitUserRouter(r *gin.Engine, db *sql.DB) {
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
+	// 打卡结果提交
+	r.POST("/api/main/punched", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		type Request struct {
+			PunchResult map[int]string `json:"punch_result"`
+		}
+		fmt.Println("接收到的打卡结果为", c.PostForm("punch_result"))
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+
+		//TODO 将打卡结果存入数据库
+		userId := UserClaims.UserID //获取用户id
+		fmt.Println("打卡的用户id为", userId)
+		//更新用户学习进度
+		err := controlsql.UpdateUserPunch(db, userId, time.Now().Format("2006-01-02"))
+		if err != nil && err != sql.ErrNoRows {
+			log.Panic(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": 500,
+				"msg":  "服务器内部错误",
+			})
+			return
+		}
+
+		type Response struct {
+			Code int    `json:"code"`
+			Msg  string `json:"msg"`
+		}
+		var response Response
+		response.Code = 200
+		response.Msg = "成功"
+		c.JSON(http.StatusOK, response)
+
+	})
+
 	//复习
 	r.GET("/api/main/take_review", tokenAuthMiddleware(), func(c *gin.Context) {
 		//查询复习单词，这里写死先

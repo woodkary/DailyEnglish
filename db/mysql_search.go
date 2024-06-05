@@ -3,11 +3,42 @@ package db
 import (
 	service "DailyEnglish/utils"
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"time"
 )
+
+// 重写map的序列化函数
+type CustomMap struct {
+	Data map[string][]string
+}
+
+func (m CustomMap) MarshalJSON() ([]byte, error) {
+	// 创建一个临时map来存储序列化结果
+	tempMap := make(map[string]interface{})
+	for k, v := range m.Data {
+		// 如果value是空数组，将其转换为interface{}类型的空数组
+		if v == nil {
+			tempMap[k] = []string{}
+		} else {
+			tempMap[k] = v
+		}
+	}
+	// 序列化临时map
+	return json.Marshal(tempMap)
+}
+
+type AverageScore struct {
+	Name  string    `json:"name"`  // 学生名或团队名
+	Value []float64 `json:"value"` // 各题型平均分
+}
+type RankScore struct {
+	Name string `json:"name"` // 学生名或团队名
+	Data []int  `json:"data"` // 各题型排名
+}
 
 // 1根据manager_id查所有team_id和team_name
 func SearchTeamInfoByManagerID(db *sql.DB, managerID int) ([]string, []string, error) {
@@ -117,8 +148,9 @@ func SearchExaminfoByTeamIDAndDate222(db *sql.DB, teamID int, date string) ([]Ex
 	var examInfos []Examinfo
 
 	// 查询数据库以获取考试信息
-	rows, err := db.Query("SELECT exam_id, exam_name, exam_date,exam_clock,exam_duration,quetion_num FROM exam_info WHERE team_id = ? AND exam_date = ?", teamID, date)
+	rows, err := db.Query("SELECT exam_id, exam_name, exam_date,exam_clock,exam_duration,question_num FROM exam_info WHERE team_id = ? AND exam_date = ?", teamID, date)
 	if err != nil {
+		log.Panic(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -127,6 +159,7 @@ func SearchExaminfoByTeamIDAndDate222(db *sql.DB, teamID int, date string) ([]Ex
 	for rows.Next() {
 		var examInfo Examinfo
 		if err := rows.Scan(&examInfo.ExamID, &examInfo.ExamName, &examInfo.ExamDate, &examInfo.StartTime, &examInfo.Duration, &examInfo.QuestionNum); err != nil {
+			log.Panic(err)
 			return nil, err
 		}
 		examInfos = append(examInfos, examInfo)
@@ -134,6 +167,7 @@ func SearchExaminfoByTeamIDAndDate222(db *sql.DB, teamID int, date string) ([]Ex
 
 	// 检查遍历过程中是否出错
 	if err := rows.Err(); err != nil {
+		log.Panic(err)
 		return nil, err
 	}
 
@@ -419,4 +453,57 @@ func SearchUserpunch(db *sql.DB, userid int) (int, string, error) {
 	}
 
 	return ispunch, lastdate, err
+}
+
+// 根据团队id和名称的map查询各团队的各学生，返回map[string][]string，也返回所有学生的id数组
+func SearchTeamMemberByTeamID(db *sql.DB, idAndNameMap map[int]string) (*CustomMap, []int, error) {
+	teamMemberMap := make(map[string][]string)
+	var studentIds []int //这里计算了所有的团队的所有学生的总和
+	for teamID, teamName := range idAndNameMap {
+		fmt.Println("teamID和teamName:", teamID, teamName)
+		//首先查询该团队的所有学生id
+		allStudentsId, err := db.Query("SELECT user_id FROM `user-team` WHERE team_id = ?", teamID)
+		if err != nil {
+			//如果查询不到学生id，说明该团队没有学生，则向map中添加空数组，跳过该团队
+			if err == sql.ErrNoRows {
+				fmt.Println("该团队没有学生", teamName)
+				teamMemberMap[teamName] = []string{}
+				continue
+			} else {
+				//其他错误则返回错误信息
+				log.Panic(err)
+				return nil, nil, err
+			}
+		}
+		defer allStudentsId.Close()
+		var studentNames []string
+		fmt.Println("开始查询所有学生姓名")
+		for allStudentsId.Next() {
+			var studentId int
+			//获取每一个studentId
+			if err := allStudentsId.Scan(&studentId); err != nil {
+				log.Panic(err)
+				return nil, nil, err
+			}
+			studentIds = append(studentIds, studentId)
+			//根据学生id查询学生姓名
+			var studentName string
+			err = db.QueryRow("SELECT username FROM user_info WHERE user_id = ?", studentId).Scan(&studentName)
+			if err != nil {
+				log.Panic(err)
+				return nil, nil, err
+			}
+			//将学生姓名加入到学生姓名数组中
+			studentNames = append(studentNames, studentName)
+		}
+		//将学生姓名数组加入到teamMemberMap中
+		teamMemberMap[teamName] = studentNames
+		fmt.Println(teamMemberMap)
+	}
+	// 创建CustomMap实例并填充数据
+	customMap := &CustomMap{
+		Data: teamMemberMap,
+	}
+
+	return customMap, studentIds, nil
 }

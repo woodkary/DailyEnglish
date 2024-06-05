@@ -21,4 +21,18 @@ export default {
 
 <style>
 /* 每个页面公共样式 */
+/* #ifdef H5 */ 
+  uni-page-head { display: none; } 
+  /* #endif */
+  .uni-tabbar-bottom .uni-tabbar{
+	      height: 70px;
+  }
+  .uni-tabbar__item {
+    img {
+      width: 27px;
+      height: 27px;
+	  margin-left:-2px;
+    }
+	
+  }
 </style>

@@ -244,7 +244,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 	//成员管理页面
 	r.GET("/api/team_manage/member_manage/data", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
-		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *UserClaims 类型
+		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *TeamManagerClaims 类型
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
@@ -589,6 +589,41 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB) {
 			return
 		}
 		c.JSON(200, "删除成员成功")
+	})
+	//根据Token中的ManagerID和Team，获取所有team的所有学生所有题型平均分，以及学生其各题型平均分、排名变化
+	r.GET("/api/team_manage/exam_situation/teams_and_students_grade", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
+		TeamManagerClaims, ok := user.(*service.TeamManagerClaims) // 将 user 转换为 *TeamManagerClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		type Response struct {
+			Code                 int                       `json:"code"` // 状态码
+			Msg                  string                    `json:"msg"`  // 消息
+			TeamAndStudents      *controlsql.CustomMap     `json:"team_and_students"`
+			StudentAverageScores []controlsql.AverageScore `json:"student_average_scores"` // 学生各题型平均分
+			TeamAverageScores    []controlsql.AverageScore `json:"team_average_scores"`    // 团队各题型平均分
+			ExamNames            []string                  `json:"exam_names"`             //前三个月考试名称
+			StudentRankScores    []controlsql.RankScore    `json:"student_rank_scores"`    // 学生各题型排名变化
+		}
+		var response Response
+		teamMemberMap, _, err := controlsql.SearchTeamMemberByTeamID(db, TeamManagerClaims.Team)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		response.TeamAndStudents = teamMemberMap
+		response.Code = 200
+		response.Msg = "成功"
+		//todo 先返回空数据
+		response.StudentAverageScores = []controlsql.AverageScore{}
+		response.TeamAverageScores = []controlsql.AverageScore{}
+		response.ExamNames = []string{}
+		response.StudentRankScores = []controlsql.RankScore{}
+		fmt.Println(response)
+		fmt.Println(response.TeamAndStudents)
+		c.JSON(200, response)
 	})
 }
 

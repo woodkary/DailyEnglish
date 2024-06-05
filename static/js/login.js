@@ -139,15 +139,11 @@ let initialEmail="";
 let inputEmail="";
 //准备用于注册的邮箱
 let registerEmail="";
+//后端响应的验证码
+let verificationCode="";
 
 function register(event) {
     event.preventDefault();
-    //判断输入的邮箱是否等于用于注册的邮箱
-    if(inputEmail!==registerEmail){
-        //TODO 不应使用toast，应使用文本提示
-        toggleToast("提示","邮箱重新输入，请再次发送验证码");
-        return;
-    }
     let username = document.getElementById("username-register").value;
     let email = document.getElementById("email-register").value;
     let password = document.getElementById("password-register").value;
@@ -165,7 +161,8 @@ function register(event) {
         body: JSON.stringify({
             username: username,
             email: email,
-            password: password
+            password: password,
+            code: verificationCode
         })
     }).then(response => {
         console.log(response);
@@ -225,7 +222,9 @@ function sendCode(event) {
                     button.textContent = `发送验证码`;
                 }
             }, 1000);
+            //保存全局变量，用于注册时验证邮箱是否正确
             registerEmail = email;
+            verificationCode = vCode;
         }else if(data.code==409){//邮箱已注册
             //TODO 不应使用toast，应使用文本提示
             toggleToast("提示","邮箱已注册");
