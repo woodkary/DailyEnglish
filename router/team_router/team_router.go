@@ -207,6 +207,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			log.Panic(err)
 			return
 		}
+		fmt.Println(qid)
 
 		for i := 0; i < QuestionNum; i++ {
 			qd[i], err = controlsql.SearchQuestionStatistics(db, request.ExamID, qid[i])

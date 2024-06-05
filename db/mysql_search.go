@@ -204,14 +204,15 @@ func SearchQuestionNumByExamID(db *sql.DB, examID int) (int, error) {
 func SearchQuestionStatistics(db *sql.DB, examID int, questionID int) ([]int, error) {
 	var A_num, B_num, C_num, D_num int = 0, 0, 0, 0
 	var correctAnswer string
+	fmt.Println("question_id: ", questionID)
 	// 查询题目统计信息
-	err := db.QueryRow("SELECT A_num, B_num, C_num, D_num FROM quetion_statistics WHERE exam_id = ? AND question_id = ?", examID, questionID).Scan(&A_num, &B_num, &C_num, &D_num)
+	err := db.QueryRow("SELECT A_num, B_num, C_num, D_num FROM question_statistics WHERE exam_id = ? AND question_id = ?", examID, questionID).Scan(&A_num, &B_num, &C_num, &D_num)
 	if err != nil {
 		return nil, err
 	}
 
 	// 查询题目答案
-	err = db.QueryRow("SELECT quetion_answer FROM quetion_info WHERE question_id = ?", questionID).Scan(&correctAnswer)
+	err = db.QueryRow("SELECT question_answer FROM question_info WHERE question_id = ?", questionID).Scan(&correctAnswer)
 	if err != nil {
 		return nil, err
 	}
