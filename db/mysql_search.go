@@ -36,7 +36,7 @@ type AverageScore struct {
 	Value []float64 `json:"value"` // 各题型平均分
 }
 type RankScore struct {
-	Name string `json:"name"` // 学生名或团队名
+	Name string `json:"name"` // 学生名
 	Data []int  `json:"data"` // 各题型排名
 }
 
@@ -508,4 +508,20 @@ func SearchTeamMemberByTeamID(db *sql.DB, idAndNameMap map[int]string) (*CustomM
 	return customMap, studentIds, nil
 }
 
-// 
+// // 根据学生id数组，查询其中所有学生的名字，和各题型平均分数组
+// func SearchStudentAverageScoresByStudentIDs(db *sql.DB, studentIds []int) ([]AverageScore, error) {
+// 	var averageScores []AverageScore
+// 	for _, studentId := range studentIds {
+// 		var averageScore AverageScore
+// 		//先查询该学生的姓名
+// 		err := db.QueryRow("SELECT username FROM user_info WHERE user_id = ?", studentId).Scan(&averageScore.Name)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 		//查询该学生各题型的平均分
+// 		//遍历各题型
+// 		for question_type := 1; question_type <= 6; question_type++ {
+
+// 		}
+// 	}
+// }

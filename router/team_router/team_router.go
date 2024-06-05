@@ -12,13 +12,14 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 )
 
 func tokenAuthMiddleware() gin.HandlerFunc {
 	return middlewares.TokenAuthMiddleware("TeamManager")
 }
 
-func InitTeamRouter(r *gin.Engine, db *sql.DB) {
+func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	//考试情况数据
 	r.POST("/api/team_manage/exam_situation/calendar", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
