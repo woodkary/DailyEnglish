@@ -24,23 +24,23 @@ func tokenAuthMiddleware() gin.HandlerFunc {
 
 // FormatWordData formats the word data into the desired string format
 func FormatWordData(wordData map[string]interface{}) string {
-    var formattedData string
-    formattedData = "{"
-    for key, value := range wordData {
-        formattedData += fmt.Sprintf("%s:", key)
-        switch v := value.(type) {
-        case string:
-            formattedData += fmt.Sprintf("'%s',", v)
-        default:
-            formattedData += jsonValue(v) + ","
-        }
-    }
-    // Remove the trailing comma
-    if len(formattedData) > 1 {
-        formattedData = formattedData[:len(formattedData)-1]
-    }
-    formattedData += "}"
-    return formattedData
+	var formattedData string
+	formattedData = "{"
+	for key, value := range wordData {
+		formattedData += fmt.Sprintf("%s:", key)
+		switch v := value.(type) {
+		case string:
+			formattedData += fmt.Sprintf("'%s',", v)
+		default:
+			formattedData += jsonValue(v) + ","
+		}
+	}
+	// Remove the trailing comma
+	if len(formattedData) > 1 {
+		formattedData = formattedData[:len(formattedData)-1]
+	}
+	formattedData += "}"
+	return formattedData
 }
 
 // jsonValue converts value to JSON format
@@ -348,11 +348,22 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	})
 
 	//主页面
-	r.GET("/api/punch/main_menu", tokenAuthMiddleware(), func(c *gin.Context) {
+	r.POST("/api/punch/main_menu", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
 		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			c.JSON(500, "服务器错误")
+			return
+		}
+		type Request struct {
+			Time int `json:"time"`
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
 			return
 		}
 		//查询用户信息
@@ -378,13 +389,24 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			TaskToday TaskToday `json:"task_today"`
 		}
 		var response Response
+		if request.Time == 0 {
+			response.TaskToday.PunchNum = Item.PunchNum
+			response.TaskToday.ReviewNum = 5 //这里写死的@TODO去找那些单词需要复习
+			response.TaskToday.IsPunched = false
+		}else if request.Time == 1{
+			response.TaskToday.PunchNum = 0
+			response.TaskToday.ReviewNum = 5 //这里写死的@TODO去找那些单词需要复习
+			response.TaskToday.IsPunched = true
+		}else {
+			response.TaskToday.PunchNum = 0
+			response.TaskToday.ReviewNum = 0 
+			response.TaskToday.IsPunched = true
+		}
 		response.TaskToday.BookLearning = Item.BookLearning
 		response.TaskToday.WordNumLearned = Item.WordNumLearned
 		response.TaskToday.WordNumTotal = Item.WordNumTotal
 		response.TaskToday.DaysLeft = Item.Days_left
-		response.TaskToday.PunchNum = Item.PunchNum
-		response.TaskToday.ReviewNum = 10 //这里写死的@TODO去找那些单词需要复习
-		response.TaskToday.IsPunched = Item.IsPunched
+		
 		response.Code = 200
 		response.Msg = "成功"
 		if err == sql.ErrNoRows {
