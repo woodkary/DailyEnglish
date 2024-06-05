@@ -54,8 +54,9 @@ function getExamDates(){
 function fromDateToStr(date) {
     let year = date.getFullYear();
     let month = date.getMonth() + 1;
+    let zero=month<10?'0':'';
     let day = date.getDate();
-    return year + "-" + month + "-" + day;
+    return year + "-" + +zero + month + "-" + day;
 }
 
 
@@ -130,13 +131,7 @@ function renderCalendar(dates,exam_dates) {
             });
         }else{
             dayDiv.addEventListener('click', () => {
-                let eventDiv = document.querySelector('.event');
-                eventDiv.innerHTML = '';
-                // 清空之前的考试信息
-                let dateH1 = document.createElement('h1');
-                // 设置日期标题
-                dateH1.textContent = "今天没有考试";
-                eventDiv.appendChild(dateH1);
+                renderDefaultExamData(date);
             });
         }
         dayDiv.className = 'day'; // 设置类名
