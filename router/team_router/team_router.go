@@ -60,8 +60,8 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			Item = append(Item, examInfo...)
 		}
 
-		fmt.Println(Item)
-		fmt.Println("year = ", yyyy, "month = ", mm)
+		// fmt.Println(Item)
+		// fmt.Println("year = ", yyyy, "month = ", mm)
 
 		type response struct {
 			Code      string   `json:"code"`      // 响应代码
@@ -78,13 +78,13 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 				log.Println("Error parsing date:", err)
 				continue
 			}
-			fmt.Println("now parsing: ", examDate.Year(), examDate.Month())
+			// fmt.Println("now parsing: ", examDate.Year(), examDate.Month())
 
 			if examDate.Year() == yyyy && examDate.Month() == time.Month(mm) {
 				Response.Exam_date = append(Response.Exam_date, exam.ExamDate)
 			}
 		}
-		fmt.Println(Response.Exam_date)
+		// fmt.Println(Response.Exam_date)
 		Response.Code = "200"
 		Response.Msg = "成功"
 		c.JSON(200, Response)
@@ -203,7 +203,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		var qd = make([][]int, QuestionNum)                                  // 考试题目详情
 		qid, err := controlsql.SearchQuestionIDsByExamID(db, request.ExamID) // 考试题目ID
 		if err != nil {
-			c.JSON(500, "服务器错误")
+			c.JSON(500, "服务器错误5")
 			log.Panic(err)
 			return
 		}
@@ -211,7 +211,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		for i := 0; i < QuestionNum; i++ {
 			qd[i], err = controlsql.SearchQuestionStatistics(db, request.ExamID, qid[i])
 			if err != nil {
-				c.JSON(500, "服务器错误")
+				c.JSON(500, "服务器错误6")
 				log.Panic(err)
 				return
 			}
