@@ -3,24 +3,27 @@ package utils
 import (
 	"time"
 
-	sf "github.com/bwmarrin/snowflake"
+	"github.com/bwmarrin/snowflake"
 )
 
-func GenerateID(st time.Time, machineID int64) int64 {
+var node *snowflake.Node
 
-	sf.Epoch = st.UnixNano() / 1000000
-	node, _ := sf.NewNode(machineID)
-	time.Sleep(3 * time.Millisecond)
-	return node.Generate().Int64()
+func init() {
+	// 设置 Snowflake 算法的起始时间为某个固定的时间点，例如：2020-01-01 00:00:00 UTC
+	var st time.Time
+	st, _ = time.Parse("2006-01-02 15:04:05", "2020-01-01 00:00:00")
+	snowflake.Epoch = st.UnixNano() / 1000000
+
+	// 假设机器ID为1，这里可以根据实际情况进行设置
+	var machineID int64 = 1
+	var err error
+	node, err = snowflake.NewNode(machineID)
+	if err != nil {
+		panic(err)
+	}
 }
 
-func TestGenerateID() {
-	st := time.Now()
-	var machineID int64 = 1
-	id1 := GenerateID(st, machineID)
-	id2 := GenerateID(st, machineID)
-	id3 := GenerateID(st, machineID)
-	println(id1, id2, id3)
-	id4 := GenerateID(st, machineID)
-	println(id4)
+func GenerateID() int64 {
+	// 直接使用预先创建的node生成ID
+	return node.Generate().Int64()
 }

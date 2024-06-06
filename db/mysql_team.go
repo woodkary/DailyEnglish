@@ -11,7 +11,7 @@ import (
 // （新建团队）插入团队信息
 func RegisterTeam(db *sql.DB, teamname string, managerid, maxnum int) error {
 	// 准备插入语句
-	teamid := utils.GenerateID(time.Now(), 1)
+	teamid := utils.GenerateID()
 	// 获取当前日期
 	now := time.Now()
 	// 格式化日期为字符串

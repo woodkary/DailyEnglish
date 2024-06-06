@@ -4,7 +4,6 @@ import (
 	utils "DailyEnglish/utils"
 	"database/sql"
 	"fmt"
-	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -51,8 +50,7 @@ func RegisterUser(db *sql.DB, username, email, password, phone string) error {
 	}()
 
 	// 生成用户ID
-	var machineID int64 = 1
-	userid := utils.GenerateID(time.Now(), machineID)
+	userid := utils.GenerateID()
 
 	// 准备插入语句
 	stmt, err := tx.Prepare("INSERT INTO manager_info(manager_id, manager_name, email, phone, pwd) VALUES(?, ?, ?, ?, ?)")

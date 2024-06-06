@@ -154,7 +154,7 @@
 			}
 		},
 		onLoad(event) {
-			let exam_id = parseInt(event.exam_id);
+			let exam_id = event.exam_id;
 			this.exam_name = event.name;
 			this.exam_id = exam_id;
 			uni.request({
