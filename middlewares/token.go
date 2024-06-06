@@ -18,6 +18,7 @@ func TokenAuthMiddleware(usertype string) gin.HandlerFunc {
 				c.Abort()
 				return
 			}
+
 			// 检查头是否以"Bearer"开头
 			if !strings.HasPrefix(authHeader, "Bearer ") {
 				c.JSON(http.StatusUnauthorized, "令牌格式错误")
