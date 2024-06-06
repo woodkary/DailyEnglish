@@ -416,6 +416,72 @@ func InsertUserScore(db *sql.DB, user_id int, exam_id int, user_answer string, s
 	return nil
 }
 
+type Word struct {
+	WordID       int               `json:"word_id"`
+	Word         string            `json:"word"`
+	PhoneticUS   string            `json:"phonetic_us"`
+	WordQuestion map[string]string `json:"word_question"`
+	Answer       string            `json:"answer"`
+}
+
+// 从数据库中查询，并且生成用户打卡内容
+func GetUserPunchContent(db *sql.DB, userID int) ([]Word, error) {
+	// 查询用户当前学习的bookID
+	// 查询用户计划的打卡词数
+	var bookID int
+	var plan_num int
+	var learn_index int
+	err := db.QueryRow("SELECT book_id,plan_num,learn_index FROM user_study WHERE user_id = ?", userID).Scan(&bookID, &plan_num, &learn_index)
+	if err != nil {
+		log.Panic(err)
+		return nil, err
+	}
+
+	// 查找该book从learned_index以后plan_num个未学习过的词的WordID
+	var wordIDs []int
+	query := "SELECT word_id FROM word_book WHERE book_id = ? AND word_id > ? AND word_id <= ?"
+	rows, err := db.Query(query, bookID, learn_index, learn_index+plan_num)
+	if err != nil {
+		log.Panic(err)
+		return nil, err
+	}
+	for rows.Next() {
+		var wordID int
+		err := rows.Scan(&wordID)
+		if err != nil {
+			log.Panic(err)
+			return nil, err
+		}
+		wordIDs = append(wordIDs, wordID)
+	}
+
+	// 查询每个 wordID 对应的 Word 对象
+	var WordList []Word
+	var objectQuestion string
+	for _, wordID := range wordIDs {
+		var object Word
+		object.WordID = wordID
+		err := db.QueryRow("SELECT word,phonetic_us,word_question,answer FROM word WHERE word_id = ?", wordID).Scan(&object.Word, &object.PhoneticUS, &objectQuestion, &object.Answer)
+		if err != nil {
+			log.Panic(err)
+			return nil, err
+		}
+
+		fmt.Println("objectQuestion: ", objectQuestion, "parsed: ", objectQuestion[1:])
+		// 将objectQuestion字符串的首位：字符忽略，并以空格划分为四个子字符串，形如A.1 B.2 C.3 D.4
+		objectQuestionList := strings.Split(objectQuestion[1:], " ")
+		object.WordQuestion = make(map[string]string)
+		for _, question := range objectQuestionList {
+			m := strings.Split(question, ".")
+			object.WordQuestion[m[0]] = m[1]
+		}
+		fmt.Println(object.WordQuestion)
+
+		WordList = append(WordList, object)
+	}
+	return WordList, nil
+}
+
 // 更新一次打卡信息
 func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 	// 查询当前用户的打卡记录

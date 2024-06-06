@@ -236,6 +236,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			"token": token,
 		})
 	})
+
 	//选择词书界面
 	r.GET("/api/users/navigate_books", tokenAuthMiddleware(), func(c *gin.Context) {
 		//查询词书信息
@@ -417,7 +418,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	})
 	//打卡
 	r.GET("/api/main/take_punch", tokenAuthMiddleware(), func(c *gin.Context) {
-		//查询打卡单词，这里写死先
 		//打卡单词
 		type Word struct {
 			WordID       int               `json:"word_id"`
@@ -432,57 +432,84 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			WordList []Word `json:"word_list"`
 		}
 		var response Response
-		var word Word
-		word.WordID = 1
-		word.Word = "apple"
-		word.PhoneticUS = "[ˈæpl]"
-		word.WordQuestion = make(map[string]string)
-		word.WordQuestion["A"] = "苹果"
-		word.WordQuestion["B"] = "香蕉"
-		word.WordQuestion["C"] = "橘子"
-		word.WordQuestion["D"] = "梨"
-		word.Answer = "A"
-		response.WordList = append(response.WordList, word)
-		word.WordID = 2
-		word.Word = "banana"
-		word.PhoneticUS = "[bəˈnænə]"
-		word.WordQuestion = make(map[string]string)
-		word.WordQuestion["A"] = "苹果"
-		word.WordQuestion["B"] = "香蕉"
-		word.WordQuestion["C"] = "橘子"
-		word.WordQuestion["D"] = "梨"
-		word.Answer = "B"
-		response.WordList = append(response.WordList, word)
-		word.WordID = 3
-		word.Word = "orange"
-		word.PhoneticUS = "[ˈɔːrɪndʒ]"
-		word.WordQuestion = make(map[string]string)
-		word.WordQuestion["A"] = "苹果"
-		word.WordQuestion["B"] = "香蕉"
-		word.WordQuestion["C"] = "橘子"
-		word.WordQuestion["D"] = "梨"
-		word.Answer = "C"
-		response.WordList = append(response.WordList, word)
-		word.WordID = 4
-		word.Word = "pear"
-		word.PhoneticUS = "[per]"
-		word.WordQuestion = make(map[string]string)
-		word.WordQuestion["A"] = "苹果"
-		word.WordQuestion["B"] = "香蕉"
-		word.WordQuestion["C"] = "橘子"
-		word.WordQuestion["D"] = "梨"
-		word.Answer = "D"
-		response.WordList = append(response.WordList, word)
-		word.WordID = 5
-		word.Word = "grape"
-		word.PhoneticUS = "[ɡreɪp]"
-		word.WordQuestion = make(map[string]string)
-		word.WordQuestion["A"] = "苹果"
-		word.WordQuestion["B"] = "香蕉"
-		word.WordQuestion["C"] = "葡萄"
-		word.WordQuestion["D"] = "梨"
-		word.Answer = "C"
-		response.WordList = append(response.WordList, word)
+
+		// 从UserClaims中获取用户id
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+
+		wordlist, err := controlsql.GetUserPunchContent(db, UserClaims.UserID)
+		if err != nil && err != sql.ErrNoRows {
+			c.JSON(500, "服务器内部错误")
+			return
+		}
+		fmt.Println("GetUserPunchContent: ", wordlist)
+
+		// var word Word
+		// word.WordID = 1
+		// word.Word = "apple"
+		// word.PhoneticUS = "[ˈæpl]"
+		// word.WordQuestion = make(map[string]string)
+		// word.WordQuestion["A"] = "苹果"
+		// word.WordQuestion["B"] = "香蕉"
+		// word.WordQuestion["C"] = "橘子"
+		// word.WordQuestion["D"] = "梨"
+		// word.Answer = "A"
+		// response.WordList = append(response.WordList, word)
+		// word.WordID = 2
+		// word.Word = "banana"
+		// word.PhoneticUS = "[bəˈnænə]"
+		// word.WordQuestion = make(map[string]string)
+		// word.WordQuestion["A"] = "苹果"
+		// word.WordQuestion["B"] = "香蕉"
+		// word.WordQuestion["C"] = "橘子"
+		// word.WordQuestion["D"] = "梨"
+		// word.Answer = "B"
+		// response.WordList = append(response.WordList, word)
+		// word.WordID = 3
+		// word.Word = "orange"
+		// word.PhoneticUS = "[ˈɔːrɪndʒ]"
+		// word.WordQuestion = make(map[string]string)
+		// word.WordQuestion["A"] = "苹果"
+		// word.WordQuestion["B"] = "香蕉"
+		// word.WordQuestion["C"] = "橘子"
+		// word.WordQuestion["D"] = "梨"
+		// word.Answer = "C"
+		// response.WordList = append(response.WordList, word)
+		// word.WordID = 4
+		// word.Word = "pear"
+		// word.PhoneticUS = "[per]"
+		// word.WordQuestion = make(map[string]string)
+		// word.WordQuestion["A"] = "苹果"
+		// word.WordQuestion["B"] = "香蕉"
+		// word.WordQuestion["C"] = "橘子"
+		// word.WordQuestion["D"] = "梨"
+		// word.Answer = "D"
+		// response.WordList = append(response.WordList, word)
+		// word.WordID = 5
+		// word.Word = "grape"
+		// word.PhoneticUS = "[ɡreɪp]"
+		// word.WordQuestion = make(map[string]string)
+		// word.WordQuestion["A"] = "苹果"
+		// word.WordQuestion["B"] = "香蕉"
+		// word.WordQuestion["C"] = "葡萄"
+		// word.WordQuestion["D"] = "梨"
+		// word.Answer = "C"
+		// response.WordList = append(response.WordList, word)
+
+		var aword Word
+		for _, word := range wordlist {
+			aword.WordID = word.WordID
+			aword.Word = word.Word
+			aword.PhoneticUS = word.PhoneticUS
+			aword.WordQuestion = word.WordQuestion
+			aword.Answer = word.Answer
+			response.WordList = append(response.WordList, aword)
+		}
+		fmt.Println("打卡单词列表 ", response.WordList)
 		response.Code = 200
 		response.Msg = "成功"
 		c.JSON(200, response)
@@ -508,7 +535,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			return
 		}
 
-		//TODO 将打卡结果存入数据库
+		// 将打卡结果存入数据库
 		userId := UserClaims.UserID //获取用户id
 		fmt.Println("打卡的用户id为", userId)
 		//更新用户学习进度
@@ -530,7 +557,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		response.Code = 200
 		response.Msg = "成功"
 		c.JSON(http.StatusOK, response)
-
 	})
 
 	//复习

@@ -60,8 +60,8 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			Item = append(Item, examInfo...)
 		}
 
-		fmt.Println(Item)
-		fmt.Println("year = ", yyyy, "month = ", mm)
+		// fmt.Println(Item)
+		// fmt.Println("year = ", yyyy, "month = ", mm)
 
 		type response struct {
 			Code      string   `json:"code"`      // 响应代码
@@ -78,13 +78,13 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 				log.Println("Error parsing date:", err)
 				continue
 			}
-			fmt.Println("now parsing: ", examDate.Year(), examDate.Month())
+			// fmt.Println("now parsing: ", examDate.Year(), examDate.Month())
 
 			if examDate.Year() == yyyy && examDate.Month() == time.Month(mm) {
 				Response.Exam_date = append(Response.Exam_date, exam.ExamDate)
 			}
 		}
-		fmt.Println(Response.Exam_date)
+		// fmt.Println(Response.Exam_date)
 		Response.Code = "200"
 		Response.Msg = "成功"
 		c.JSON(200, Response)
