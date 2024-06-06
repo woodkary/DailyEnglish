@@ -461,13 +461,11 @@ func GetUserPunchContent(db *sql.DB, userID int) ([]Word, error) {
 	for _, wordID := range wordIDs {
 		var object Word
 		object.WordID = wordID
-		err := db.QueryRow("SELECT word,phonetic_us,word_question,answer FROM word WHERE word_id = ?", wordID).Scan(&object.Word, &object.PhoneticUS, &objectQuestion, &object.Answer)
+		err := db.QueryRow("SELECT word,pronunciation,word_question,answer FROM word WHERE word_id = ?", wordID).Scan(&object.Word, &object.PhoneticUS, &objectQuestion, &object.Answer)
 		if err != nil {
 			log.Panic(err)
 			return nil, err
 		}
-
-		fmt.Println("objectQuestion: ", objectQuestion, "parsed: ", objectQuestion[1:])
 		// 将objectQuestion字符串的首位：字符忽略，并以空格划分为四个子字符串，形如A.1 B.2 C.3 D.4
 		objectQuestionList := strings.Split(objectQuestion[1:], " ")
 		object.WordQuestion = make(map[string]string)

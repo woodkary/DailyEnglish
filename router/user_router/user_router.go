@@ -443,6 +443,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 
 		wordlist, err := controlsql.GetUserPunchContent(db, UserClaims.UserID)
 		if err != nil && err != sql.ErrNoRows {
+			log.Panic(err)
 			c.JSON(500, "服务器内部错误")
 			return
 		}
