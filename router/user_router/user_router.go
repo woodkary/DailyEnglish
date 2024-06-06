@@ -433,6 +433,8 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			WordList []Word `json:"word_list"`
 		}
 		var response Response
+		//wordlist := controlsql.GetWordList(db)
+
 		var word Word
 		word.WordID = 1
 		word.Word = "apple"
