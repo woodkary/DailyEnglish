@@ -415,7 +415,7 @@ func InsertUserScore(db *sql.DB, user_id int, exam_id int, user_answer string, s
 	return nil
 }
 
-type Word_of_Punch struct {
+type Word struct {
 	WordID       int               `json:"word_id"`
 	Word         string            `json:"word"`
 	PhoneticUS   string            `json:"phonetic_us"`
@@ -424,11 +424,10 @@ type Word_of_Punch struct {
 }
 
 // 从数据库中查询，并且生成用户打卡内容
-func GetUserPunchContent(db *sql.DB, userID int) ([]Word_of_Punch, error) {
+func GetUserPunchContent(db *sql.DB, userID int) ([]Word, error) {
 	// 查询用户当前学习的bookID
-	var bookID int
-
 	// 查询用户计划的打卡词数
+	var bookID int
 	var plan_num int
 	var learn_index int
 	err := db.QueryRow("SELECT book_id,plan_num,learn_index FROM user_study WHERE user_id = ?", userID).Scan(&bookID, &plan_num, &learn_index)
@@ -449,32 +448,36 @@ func GetUserPunchContent(db *sql.DB, userID int) ([]Word_of_Punch, error) {
 	query := `SELECT word_id FROM word-book WHERE book_id = ? LIMIT ? OFFSET ?`
 	rows, err := db.Query(query, bookID, limit, offset)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
+		return nil, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
 		var word_id int
 		if err := rows.Scan(&word_id); err != nil {
-			panic(err)
+			log.Panic(err)
+			return nil, err
 		}
 		wordIDs = append(wordIDs, word_id)
 	}
 	if err := rows.Err(); err != nil {
-		panic(err)
+		log.Panic(err)
+		return nil, err
 	}
 
 	// 查询每个 wordID 对应的 Word_of_Punch 对象
-	var WordList []Word_of_Punch
+	var WordList []Word
 	for _, wordID := range wordIDs {
-		var word Word_of_Punch
+		var word Word
 		var question string
 		word.WordID = wordID
 
 		query = `SELECT word_question,word,phonetic_us,answer FROM word WHERE word_id = ?`
 		err := db.QueryRow(query, wordID).Scan(&question, &word.Word, &word.PhoneticUS, &word.Answer)
 		if err != nil {
-			panic(err)
+			log.Panic(err)
+			return nil, err
 		}
 		// 处理question字符串
 

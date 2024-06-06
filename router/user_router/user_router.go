@@ -499,7 +499,15 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		// word.Answer = "C"
 		// response.WordList = append(response.WordList, word)
 
-		response.WordList = wordlist
+		var aword Word
+		for _, word := range wordlist {
+			aword.WordID = word.WordID
+			aword.Word = word.Word
+			aword.PhoneticUS = word.PhoneticUS
+			aword.WordQuestion = word.WordQuestion
+			aword.Answer = word.Answer
+			response.WordList = append(response.WordList, aword)
+		}
 		response.Code = 200
 		response.Msg = "成功"
 		c.JSON(200, response)
