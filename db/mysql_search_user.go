@@ -465,8 +465,6 @@ func GetUserPunchContent(db *sql.DB, userID int) ([]Word, error) {
 			log.Panic(err)
 			return nil, err
 		}
-
-		fmt.Println("objectQuestion: ", objectQuestion, "parsed: ", objectQuestion[1:])
 		// 将objectQuestion字符串的首位：字符忽略，并以空格划分为四个子字符串，形如A.1 B.2 C.3 D.4
 		objectQuestionList := strings.Split(objectQuestion[1:], " ")
 		object.WordQuestion = make(map[string]string)
