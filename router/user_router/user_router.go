@@ -446,6 +446,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			c.JSON(500, "服务器内部错误")
 			return
 		}
+		fmt.Println("GetUserPunchContent: ", wordlist)
 
 		// var word Word
 		// word.WordID = 1
@@ -508,6 +509,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			aword.Answer = word.Answer
 			response.WordList = append(response.WordList, aword)
 		}
+		fmt.Println("打卡单词列表 ", response.WordList)
 		response.Code = 200
 		response.Msg = "成功"
 		c.JSON(200, response)

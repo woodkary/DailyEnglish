@@ -436,64 +436,48 @@ func GetUserPunchContent(db *sql.DB, userID int) ([]Word, error) {
 		return nil, err
 	}
 
-	// 查找该book从learned_index以后plan_num个未学习过的词
+	// 查找该book从learned_index以后plan_num个未学习过的词的WordID
 	var wordIDs []int
-
-	x := learn_index + 1
-	y := x + plan_num
-	limit := y - x + 1
-	offset := x - 1
-
-	// 查询指定 book_id 的第 x 到第 y 行数据
-	query := `SELECT word_id FROM word-book WHERE book_id = ? LIMIT ? OFFSET ?`
-	rows, err := db.Query(query, bookID, limit, offset)
+	query := "SELECT word_id FROM word_book WHERE book_id = ? AND word_id > ? AND word_id <= ?"
+	rows, err := db.Query(query, bookID, learn_index, learn_index+plan_num)
 	if err != nil {
 		log.Panic(err)
 		return nil, err
 	}
-	defer rows.Close()
-
 	for rows.Next() {
-		var word_id int
-		if err := rows.Scan(&word_id); err != nil {
-			log.Panic(err)
-			return nil, err
-		}
-		wordIDs = append(wordIDs, word_id)
-	}
-	if err := rows.Err(); err != nil {
-		log.Panic(err)
-		return nil, err
-	}
-
-	// 查询每个 wordID 对应的 Word_of_Punch 对象
-	var WordList []Word
-	for _, wordID := range wordIDs {
-		var word Word
-		var question string
-		word.WordID = wordID
-
-		query = `SELECT word_question,word,phonetic_us,answer FROM word WHERE word_id = ?`
-		err := db.QueryRow(query, wordID).Scan(&question, &word.Word, &word.PhoneticUS, &word.Answer)
+		var wordID int
+		err := rows.Scan(&wordID)
 		if err != nil {
 			log.Panic(err)
 			return nil, err
 		}
-		// 处理question字符串
-
-		content_list := strings.Split(question, "：")
-
-		word.WordQuestion = make(map[string]string)
-		options := strings.Split(content_list[1], " ")
-		for _, option := range options {
-			m := strings.Split(option, ".")
-			word.WordQuestion[m[0]] = m[1]
-		}
-
-		//
-		WordList = append(WordList, word)
+		wordIDs = append(wordIDs, wordID)
 	}
 
+	// 查询每个 wordID 对应的 Word 对象
+	var WordList []Word
+	var objectQuestion string
+	for _, wordID := range wordIDs {
+		var object Word
+		object.WordID = wordID
+		err := db.QueryRow("SELECT word,phonetic_us,word_question,answer FROM word WHERE word_id = ?", wordID).Scan(&object.Word, &object.PhoneticUS, &objectQuestion, &object.Answer)
+		if err != nil {
+			log.Panic(err)
+			return nil, err
+		}
+
+		fmt.Println("objectQuestion: ", objectQuestion, "parsed: ", objectQuestion[1:])
+		// 将objectQuestion字符串的首位：字符忽略，并以空格划分为四个子字符串，形如A.1 B.2 C.3 D.4
+		objectQuestionList := strings.Split(objectQuestion[1:], " ")
+		object.WordQuestion = make(map[string]string)
+		for _, question := range objectQuestionList {
+			m := strings.Split(question, ".")
+			object.WordQuestion[m[0]] = m[1]
+		}
+		fmt.Println(object.WordQuestion)
+
+		WordList = append(WordList, object)
+	}
 	return WordList, nil
 }
 
