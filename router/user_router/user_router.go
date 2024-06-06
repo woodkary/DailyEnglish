@@ -95,7 +95,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		}
 		//将验证码存入 Redis
 		ctx := context.Background()                         // 创建一个空的 context
-		key := fmt.Sprintf("%s:%s", "app", data.Email)      // key前缀为web:邮箱
+		key := fmt.Sprintf("%s:%s", "app", data.Email)      // key前缀为app:邮箱
 		err = rdb.Set(ctx, key, Vcode, time.Minute*5).Err() // 验证码有效期5分钟,更新时替换
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -745,7 +745,9 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		for _, item := range Item {
 			var exam Exam
 			//选择今日的考试
+
 			if item.ExamDate != request.ExamDate {
+				fmt.Println(item.ExamDate, request.ExamDate, item.ExamName)
 				continue
 			}
 			fmt.Println(item.ExamDate, request.ExamDate)
@@ -926,6 +928,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	//提交考试@TODO
 	//redis------studentId:question_type:["score","num"]
 	r.POST("/api/exams/submitExamResult", tokenAuthMiddleware(), func(c *gin.Context) {
+
 		type Request struct {
 			Exam_result map[int]controlsql.Exam_score `json:"selectedChoiceAndScore"`
 			Exam_id     int                           `json:"exam_id"`
@@ -962,6 +965,15 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 				"msg":  "服务器内部错误"})
 			return
 		}
+		//向redis插入学生各题型总分信息
+		averageScores, err := controlsql.UpdateStudentRDB(db, rdb, UserClaims.UserID, request.Exam_result)
+		if err != nil {
+			log.Panic(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+		}
+		fmt.Println("各题型平均分为：", averageScores)
 		c.JSON(200, gin.H{
 			"code": "200",
 			"msg":  "提交成功",
@@ -1109,19 +1121,23 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			return
 		}
 		//查询该日期的考试信息
-		Item, err := controlsql.SearchExaminfoByTeamIDAndDate222(db, UserClaims.UserID, request.Date)
+		fmt.Println("查询日期为:", request.Date)
+		Item, err := controlsql.SearchExaminfoByTeamIDAndDate222(db, UserClaims.TeamID, UserClaims.UserID, request.Date)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
 				"msg":  "服务器内部错误"})
 			return
 		}
+		fmt.Println("查询结果为:", Item)
 		type Exam struct {
 			ExamID      int    `json:"exam_id"`
-			ExamName    string `json:"name"`
+			ExamName    string `json:"exam_name"`
 			StartTime   string `json:"start_time"`
+			ExamDate    string `json:"exam_date"`
 			Duration    int    `json:"duration"`
 			QuestionNum int    `json:"question_num"`
+			ExamScore   int    `json:"exam_score"`
 		}
 		type Response struct {
 			Code  int    `json:"code"`
@@ -1136,6 +1152,8 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			exam.StartTime = item.StartTime
 			exam.Duration = item.Duration
 			exam.QuestionNum = item.QuestionNum
+			exam.ExamDate = item.ExamDate
+			exam.ExamScore = item.ExamFullScore
 			response.Exams = append(response.Exams, exam)
 		}
 		response.Code = 200

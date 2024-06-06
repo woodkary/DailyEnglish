@@ -256,6 +256,7 @@
 				return exams.map(exam => {
 					// 将日期从 "yyyy/mm/dd" 转换为 "年月日"
 					const dateParts = exam.exam_date.split('-');
+          console.log(dateParts); // 输出: );
 					const dateInChineseFormat = `${dateParts[0]}年${dateParts[1]}月${dateParts[2]}日`;
 
 					return {

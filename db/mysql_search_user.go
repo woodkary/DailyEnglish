@@ -2,6 +2,7 @@ package db
 
 import (
 	utils "DailyEnglish/utils"
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -45,21 +46,21 @@ func UserExists_User(db *sql.DB, username string) bool {
 }
 
 func GetWordByWordId(db *sql.DB, word_id int) (map[string]interface{}, error) {
-    var pronunciation string
-    var meanings string
-    var word string
-    err := db.QueryRow("SELECT pronunciation,meanings,word FROM word WHERE word_id =?", word_id).Scan(&pronunciation, &meanings, &word)
-    if err != nil {
-        return nil, err
-    }
-    // Construct the word data structure
-    wordData := map[string]interface{}{
-        "word_id": word_id,
-        "spelling": word,
-        "pronunciation": pronunciation,
-        "meanings": meanings,
-    }
-    return wordData, nil
+	var pronunciation string
+	var meanings string
+	var word string
+	err := db.QueryRow("SELECT pronunciation,meanings,word FROM word WHERE word_id =?", word_id).Scan(&pronunciation, &meanings, &word)
+	if err != nil {
+		return nil, err
+	}
+	// Construct the word data structure
+	wordData := map[string]interface{}{
+		"word_id":       word_id,
+		"spelling":      word,
+		"pronunciation": pronunciation,
+		"meanings":      meanings,
+	}
+	return wordData, nil
 }
 
 // 插入用户 数据库字段有username string, email string
@@ -233,7 +234,7 @@ func GetExamInfoByExamID(db *sql.DB, exam_id int) (Exam, error) {
 }
 
 // 根据user_id,team_id查询考试信息
-func GetExamInfo(db *sql.DB, use_id int, team_id int) ([]Exam, error) {
+func GetExamInfo(db *sql.DB, user_id int, team_id int) ([]Exam, error) {
 	var exams []Exam
 	rows, err := db.Query("SELECT exam_id,exam_name,exam_date,exam_clock,question_num FROM exam_info WHERE team_id =?", team_id)
 	if err != nil {
@@ -246,7 +247,7 @@ func GetExamInfo(db *sql.DB, use_id int, team_id int) ([]Exam, error) {
 			return nil, err
 		}
 		//每个exam_id查examRank和examScore
-		err = db.QueryRow("SELECT exam_score,exam_rank from `user-exam_score` WHERE user_id =? AND exam_id =?", use_id, exam.ExamID).Scan(&exam.ExamScore, &exam.ExamRank)
+		err = db.QueryRow("SELECT exam_score,exam_rank from `user-exam_score` WHERE user_id =? AND exam_id =?", user_id, exam.ExamID).Scan(&exam.ExamScore, &exam.ExamRank)
 		if err != nil && err.Error() != "sql: no rows in result set" {
 			return nil, err
 		}
@@ -401,7 +402,7 @@ func InsertUserScore(db *sql.DB, user_id int, exam_id int, user_answer string, s
 	if err != nil && err.Error() != "Error 1062 (23000): Duplicate entry '32-29364224' for key 'user-exam_score.PRIMARY'" {
 		return err
 	}
-	if err.Error() == "Error 1062 (23000): Duplicate entry '32-29364224' for key 'user-exam_score.PRIMARY'" {
+	if err != nil && err.Error() == "Error 1062 (23000): Duplicate entry '32-29364224' for key 'user-exam_score.PRIMARY'" {
 		stmt, err := db.Prepare("UPDATE `user-exam_score` SET exam_score = ?,user_answer = ? WHERE user_id = ? AND exam_id = ?")
 		if err != nil {
 			return err
@@ -482,6 +483,66 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 }
 
 // redis------studentId:question_type:["score","num"]
-func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, examResult map[int]Exam_score) {
+// 向redis中插入学生的题目总分和题目数量
+func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, examResult map[int]Exam_score) (map[int]float64, error) {
+	averageScores := make(map[int]float64)
+	ctx := context.Background()
+	//先遍历map，获取题目id和题目分数
+	for questionID, questionResult := range examResult {
+		var questionType int
+		// 查询题目类型
+		err := db.QueryRow("SELECT question_type FROM question_info WHERE question_id = ?", questionID).Scan(&questionType)
+		if err != nil {
+			log.Printf("Failed to query question type for questionID %d: %v", questionID, err)
+			continue
+		}
 
+		// 构造 Redis 键
+		key := fmt.Sprintf("%d:%d", userID, questionType)
+		fmt.Println("key:", key)
+
+		// 使用 Redis 事务确保原子性
+		_, err = rdb.TxPipelined(ctx, func(pipe redis.Pipeliner) error {
+			// 获取当前的 score 和 num
+			score, err := rdb.HGet(ctx, key, "score").Int()
+			if err == redis.Nil {
+				score = 0
+			} else if err != nil {
+				return err
+			}
+			fmt.Println("score:", score)
+
+			num, err := rdb.HGet(ctx, key, "num").Int()
+			if err == redis.Nil {
+				num = 0
+			} else if err != nil {
+				return err
+			}
+			fmt.Println("num:", num)
+
+			// 更新 score 和 num
+			score += questionResult.UserScore
+			num += 1
+
+			// 设置新的 score 和 num
+			err = pipe.HSet(ctx, key, map[string]interface{}{
+				"score": score,
+				"num":   num,
+			}).Err()
+			if err != nil {
+				return err
+			}
+			fmt.Println("已更新redis", score)
+			//在返回值的map中记录平均分
+			averageScores[questionType] = float64(score) / float64(num)
+			return nil
+		})
+
+		if err != nil {
+			log.Printf("Failed to update Redis for questionType %d: %v", questionType, err)
+			continue
+		}
+	}
+
+	return averageScores, nil
 }

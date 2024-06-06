@@ -187,6 +187,111 @@
             sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
           });
       }
+      if(uni.getStorageSync("banana")){
+        this.words.push({
+            word_id: 6,
+            spelling: "banana",
+            pronunciation: "/'bænən/",
+            meanings: {
+              verb: null,
+              adjective: null,
+              noun: ["香蕉", "香蕉树"],
+              pronoun: null,
+              adverb: null,
+              conjunction: null,
+              preposition: null,
+              interjection: null
+            },
+            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
+          });
+      }
+
+      if(uni.getStorageSync("pear")){
+        this.words.push({
+            word_id: 7,
+            spelling: "pear",
+            pronunciation: "/pɪər/",
+            meanings: {
+              verb: null,
+              adjective: null,
+              noun: ["梨", "梨树"],
+              pronoun: null,
+              adverb: null,
+              conjunction: null,
+              preposition: null,
+              interjection: null
+            },
+            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
+          });
+      }
+      if(uni.getStorageSync("abroad")){
+        this.words.push({
+            word_id: 8,
+            spelling: "abroad",
+            pronunciation: "/əˈbrɔːd/",
+            meanings: {
+              adverb: ["到处", "到处去", "到处旅行"],
+              interjection: null
+            },
+            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
+          });
+      }
+      if(uni.getStorageSync("absorb")){
+
+        this.words.push({
+            word_id: 9,
+            spelling: "absorb",
+            pronunciation: "/əˈbɒsəb/",
+            meanings: {
+              verb: ["吸收", "吸收力", "吸收营养", "吸收影响"],
+              noun: ["吸收物", "吸收的事物", "吸收的能量", "吸收的能量"],
+              pronoun: null,
+              adverb: null,
+              conjunction: null,
+              preposition: null,
+              interjection: null
+            },
+            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
+          });
+      }
+
+      if(uni.getStorageSync("bargain")){
+
+        this.words.push({
+            word_id: 10,
+            spelling: "bargain",
+            pronunciation: "/ˈbɑːɡɪn/",
+            meanings: {
+              verb: ["讨价还价", "谈价", "谈价交易", "谈判"],
+              noun: ["讨价", "谈价", "谈价交易", "谈判"],
+              pronoun: null,
+              adverb: null,
+              conjunction: null,
+              preposition: null,
+              interjection: null
+            },
+            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
+          });
+      }
+      if(uni.getStorageSync("satisfy")){
+
+
+        this.words.push({
+            word_id: 11,
+            spelling: "satisfy",
+            pronunciation: "/səˈfɪtɪ/",
+            meanings: {
+              verb: ["满足", "使满足", "使满意", "使满意"],
+              noun: ["满足感", "满足的感觉", "满足的要求", "满足的条件"],
+              pronoun: null,
+              adverb: null,
+              conjunction: null,
+              preposition: null,
+              interjection: null
+            },
+            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
+          });
+      }
       this.cnt = this.words.length;
       this.book = "cet4";
       /*uni.request({
