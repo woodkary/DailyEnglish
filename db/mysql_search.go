@@ -136,16 +136,28 @@ func SearchExamInfoByTeamIDAndDate(db *sql.DB, teamID int, date string) ([]ExamI
 
 // 2.3 clock duration questionnum
 type Examinfo struct {
-	ExamID      int
-	ExamName    string
-	ExamDate    string
-	StartTime   string
-	Duration    int
-	QuestionNum int
+	ExamID        int
+	ExamName      string
+	ExamDate      string
+	StartTime     string
+	Duration      int
+	QuestionNum   int
+	ExamFullScore int
+}
+type ExamDTO struct {
+	ExamID       int
+	ExamName     string
+	ExamDate     string
+	ExamClock    string
+	ExamDuration int
+	QuestionNum  int
 }
 
-func SearchExaminfoByTeamIDAndDate222(db *sql.DB, teamID int, date string) ([]Examinfo, error) {
+func SearchExaminfoByTeamIDAndDate222(db *sql.DB, teamID int, userID int, date string) ([]Examinfo, error) {
 	var examInfos []Examinfo
+	fmt.Println("teamID: ", teamID)
+	fmt.Println("date: ", date)
+	// 查询数据库以获取考试信息
 
 	// 查询数据库以获取考试信息
 	rows, err := db.Query("SELECT exam_id, exam_name, exam_date,exam_clock,exam_duration,question_num FROM exam_info WHERE team_id = ? AND exam_date = ?", teamID, date)
@@ -154,16 +166,41 @@ func SearchExaminfoByTeamIDAndDate222(db *sql.DB, teamID int, date string) ([]Ex
 		return nil, err
 	}
 	defer rows.Close()
+	count := 1
 
 	// 遍历结果集并收集考试信息
 	for rows.Next() {
-		var examInfo Examinfo
-		if err := rows.Scan(&examInfo.ExamID, &examInfo.ExamName, &examInfo.ExamDate, &examInfo.StartTime, &examInfo.Duration, &examInfo.QuestionNum); err != nil {
+		fmt.Println("count: ", count)
+		count++
+		var examDto ExamDTO
+		if err := rows.Scan(&examDto.ExamID, &examDto.ExamName, &examDto.ExamDate, &examDto.ExamClock, &examDto.ExamDuration, &examDto.QuestionNum); err != nil {
 			log.Panic(err)
 			return nil, err
 		}
+		//如果user-exam_score存在该考试，说明用户已经参与了该考试，则不再显示考试信息
+		var count int
+		err = db.QueryRow("SELECT COUNT(*) FROM `user-exam_score` WHERE exam_id = ? AND user_id = ?", examDto.ExamID, userID).Scan(&count)
+		if err != nil {
+			log.Panic(err)
+			return nil, err
+		}
+		if count > 0 {
+			continue
+		}
+		var examInfo Examinfo
+		examInfo.ExamID = examDto.ExamID
+		examInfo.ExamName = examDto.ExamName
+		examInfo.ExamDate = examDto.ExamDate
+		//分隔考试时间
+		startAndEnd := strings.Split(examDto.ExamClock, "[~,-]")
+
+		examInfo.StartTime = startAndEnd[0]
+		examInfo.Duration = examDto.ExamDuration
+		examInfo.QuestionNum = examDto.QuestionNum
+		examInfo.ExamFullScore = examDto.QuestionNum * 5
 		examInfos = append(examInfos, examInfo)
 	}
+	fmt.Println("examInfos: ", examInfos)
 
 	// 检查遍历过程中是否出错
 	if err := rows.Err(); err != nil {

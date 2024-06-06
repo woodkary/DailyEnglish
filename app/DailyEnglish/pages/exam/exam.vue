@@ -399,7 +399,7 @@
 							uni.setStorageSync('examResult', examResult);
 							//todo 提交考试结果到服务器
 							uni.request({
-								url: `/api/exams/submitExamResult`,
+								url: `http://localhost:8080/api/exams/submitExamResult`,
 								method: 'POST',
 								data: {
 									selectedChoiceAndScore: this.selectedChoiceAndScore,

@@ -10,13 +10,13 @@
 		<image class="back-icon" src="../../static/back.svg" @click="handleBack"></image>
 		<swiper class="question-container" :options="swiperOptions" :easing-function="'linear'" :duration="250" @before-change="swiperChange" :current="currentQuestionIndex"   >
 			<swiper-item v-for="(question, index) in questions" :key="index">
-				<view class="text-info">
+				<view class="text-info" >
 					<text class="word">{{ question.word }}</text>
 					<text class="phonetic">{{ question.phonetic }}</text>
 				</view>
 				<view class="button-group">
 					<button class="option" v-for="(choice, choiceIndex) in question.choices" :key="choiceIndex"
-						:class="getClass(choiceIndex)" @click="selectChoice(choiceIndex)">{{ choice }}</button>
+						:class="getClass(choiceIndex)" @click="selectChoice(choiceIndex)" :ref="`option${choiceIndex}`">{{ choice }}</button>
 				</view>
 
 				<view class="jump-group" @click="handleJump(question.word)">
@@ -227,67 +227,70 @@
 					let nextIndex = this.currentQuestionIndex; // 切换到下一题
 					/*this.currentQuestionIndex++; // 先增加索引*/
 					this.$nextTick(() => {
-						this.showCorrectAnswer(this.realAnswer[nextIndex],nextIndex);
+						this.showCorrectAnswer(this.realAnswer[nextIndex],nextIndex,this.currentQuestionIndex);
 					});
 				} else {
 					let currIndex = this.currentQuestionIndex;
 					// 错误答案的逻辑
 					this.$nextTick(() => {
 						this.showIncorrectAnswer(index);
-						this.showCorrectAnswer(this.realAnswer[currIndex],currIndex);
+						this.showCorrectAnswer(this.realAnswer[currIndex],currIndex,this.currentQuestionIndex);
 					});
 				}
         this.updateProgressBar(); // 更新进度条
         // 增加索引并判断是否是最后一题
         //TODO 这个逻辑应该在完成打卡页面中做，而打卡页面中做
-        if(++this.currentQuestionIndex==this.questions.length) {
-          uni.request({
-            //判断操作类型并发送请求
-            url:!this.operation?'http://localhost:8080/api/main/punched':'http://localhost:8080/api/main/reviewed',
-            method:'POST',
-            header:{
-              'Authorization':`Bearer ${uni.getStorageSync('token')}`
-            },
-            data:{
-              punch_result:this.isCorrects,
-            },
-            success:(res)=> {
-              console.log(res);
-              if(res.data.code==200){
-                uni.showToast({
-                  title: this.operation? '复习结束':'打卡结束',
-                  icon: 'none',
-                  duration: 2000,
-                  success:()=> {
-                    uni.navigateTo({
-                      url: `../finishClockin/finishClockin?questionNum=${this.questions.length}&operation=${this.operation}}`
-                    })
-                  }
-                });
+        setTimeout(() => {
+          if(++this.currentQuestionIndex==this.questions.length) {
+            uni.request({
+              //判断操作类型并发送请求
+              url:!this.operation?'http://localhost:8080/api/main/punched':'http://localhost:8080/api/main/reviewed',
+              method:'POST',
+              header:{
+                'Authorization':`Bearer ${uni.getStorageSync('token')}`
+              },
+              data:{
+                punch_result:this.isCorrects,
+              },
+              success:(res)=> {
+                console.log(res);
+                if(res.data.code==200){
+                  uni.showToast({
+                    title: this.operation? '复习结束':'打卡结束',
+                    icon: 'none',
+                    duration: 2000,
+                    success:()=> {
+                      uni.navigateTo({
+                        url: `../finishClockin/finishClockin?questionNum=${this.questions.length}&operation=${this.operation}}`
+                      })
+                    }
+                  });
+                }
+              },
+              fail:(err)=> {
+                console.log(err);
               }
-            },
-            fail:(err)=> {
-              console.log(err);
-            }
-          });
-        }
+            });
+          }
+        },500);
 			},
-			showCorrectAnswer(answer,index) {
-				// 找到正确答案的索引
-				const correctIndex = this.questions[index].choices.indexOf(answer);
-				// 应用正确答案的样式
-				const correctButton = this.$refs[`option${correctIndex}`];
-				if (correctButton) {
-					correctButton.classList.add('correct');
-				}
-
-			},
-			showIncorrectAnswer(index) {
-				// 应用错误答案的样式
-				const incorrectButton = this.$refs[`option${index}`];
-				if (incorrectButton) {
-					incorrectButton.classList.add('incorrect');
-				}
+      showCorrectAnswer(answer, index, currIndex) {
+        const correctIndex = this.questions[index].choices.indexOf(answer);
+        this.$nextTick(() => {
+          const correctButton = this.$refs[`option${correctIndex}`] && this.$refs[`option${correctIndex}`][currIndex];
+          if (correctButton && correctButton.classList) {
+            correctButton.classList.add('correct');
+          }
+        });
+      },
+			showIncorrectAnswer(index,currIndex) {
+        this.$nextTick(() => {
+          // 应用错误答案的样式
+          const incorrectButton = this.$refs[`option${index}`][currIndex];
+          if (incorrectButton) {
+            incorrectButton.classList.add('incorrect');
+          }
+        });
 			},
 			preventSelect(event) {
 				// 阻止长按事件的默认行为
