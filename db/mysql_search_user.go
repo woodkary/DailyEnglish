@@ -550,10 +550,10 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 
 // redis------user_id:question_type:["score","num"]
 // 向redis中插入学生的题目总分和题目数量
-func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, examResult map[int]Exam_score) (map[int]float64, error) {
+func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, teamID int, examResult map[int]Exam_score) (map[int]float64, error) {
 	averageScores := make(map[int]float64)
 	ctx := context.Background()
-	//先遍历map，获取题目id和题目分数
+
 	for questionID, questionResult := range examResult {
 		var questionType int
 		// 查询题目类型
@@ -563,44 +563,71 @@ func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, examResult map[
 			continue
 		}
 
-		// 构造 Redis 键
-		key := fmt.Sprintf("%d:%d", userID, questionType)
-		fmt.Println("key:", key)
+		// 构造学生的 Redis 键
+		userKey := fmt.Sprintf("%d:%d", userID, questionType)
+		// 构造团队的 Redis 键
+		teamKey := fmt.Sprintf("teamAverage:%d:%d", teamID, questionType)
 
 		// 使用 Redis 事务确保原子性
 		_, err = rdb.TxPipelined(ctx, func(pipe redis.Pipeliner) error {
-			// 获取当前的 score 和 num
-			score, err := rdb.HGet(ctx, key, "score").Int()
+			// 获取并更新学生的 score 和 num，如果没有则初始化为 0
+			userScore, err := rdb.HGet(ctx, userKey, "score").Int()
 			if err == redis.Nil {
-				score = 0
+				userScore = 0
 			} else if err != nil {
 				return err
 			}
-			fmt.Println("score:", score)
 
-			num, err := rdb.HGet(ctx, key, "num").Int()
+			userNum, err := rdb.HGet(ctx, userKey, "num").Int()
 			if err == redis.Nil {
-				num = 0
+				userNum = 0
 			} else if err != nil {
 				return err
 			}
-			fmt.Println("num:", num)
 
-			// 更新 score 和 num
-			score += questionResult.UserScore
-			num += 1
+			// 更新学生的 score 和 num
+			userScore += questionResult.UserScore
+			userNum += 1
 
-			// 设置新的 score 和 num
-			err = pipe.HSet(ctx, key, map[string]interface{}{
-				"score": score,
-				"num":   num,
+			// 设置学生的新的 score 和 num
+			err = pipe.HSet(ctx, userKey, map[string]interface{}{
+				"score": userScore,
+				"num":   userNum,
 			}).Err()
 			if err != nil {
 				return err
 			}
-			fmt.Println("已更新redis", score)
-			//在返回值的map中记录平均分
-			averageScores[questionType] = float64(score) / float64(num)
+
+			// 获取并更新团队的 score 和 num
+			teamScore, err := rdb.HGet(ctx, teamKey, "score").Int()
+			if err == redis.Nil {
+				teamScore = 0
+			} else if err != nil {
+				return err
+			}
+
+			teamNum, err := rdb.HGet(ctx, teamKey, "num").Int()
+			if err == redis.Nil {
+				teamNum = 0
+			} else if err != nil {
+				return err
+			}
+
+			// 更新团队的 score 和 num
+			teamScore += questionResult.UserScore
+			teamNum += 1
+
+			// 设置团队的新的 score 和 num
+			err = pipe.HSet(ctx, teamKey, map[string]interface{}{
+				"score": teamScore,
+				"num":   teamNum,
+			}).Err()
+			if err != nil {
+				return err
+			}
+
+			// 在返回值的 map 中记录学生的平均分
+			averageScores[questionType] = float64(userScore) / float64(userNum)
 			return nil
 		})
 
