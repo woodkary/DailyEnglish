@@ -993,7 +993,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			return
 		}
 		//向redis插入学生各题型总分信息
-		averageScores, err := controlsql.UpdateStudentRDB(db, rdb, UserClaims.UserID, request.Exam_result)
+		averageScores, err := controlsql.UpdateStudentRDB(db, rdb, UserClaims.UserID, UserClaims.TeamID, request.Exam_result)
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
