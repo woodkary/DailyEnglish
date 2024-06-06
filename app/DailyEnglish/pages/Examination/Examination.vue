@@ -19,7 +19,7 @@
 						:class="getClass(choiceIndex)" @click="selectChoice(choiceIndex)" :ref="`option${choiceIndex}`">{{ choice }}</button>
 				</view>
 
-				<view class="jump-group" @click="handleJump(question.word)">
+				<view class="jump-group" @click="handleJump(question)">
 					<text class="link">加入生词本</text>
 					<image class="jump-icon" src="../../static/jump.svg" />
 
@@ -150,7 +150,7 @@
 				this.$router.back();
 				// 例如：uni.navigateBack();
 			},
-			handleJump(word) {
+			handleJump(question) {
 				/*// 处理跳转链接点击事件
 				uni.switchTab({
 					url: '../Vocab/Vocab'
@@ -160,12 +160,11 @@
 				uni.request({
 					url:'http://localhost:8080/api/words/add_new_word',
 					method:'post',
+          header: {
+            'Authorization': `Bearer ${uni.getStorageSync('token')}`
+          },
 					data:{
-						word_id:this.questions[this.currentQuestionIndex].word_id,
-            spelling:this.questions[this.currentQuestionIndex].word,
-            pronunciation:this.questions[this.currentQuestionIndex].phonetic,
-            username:'kary',
-            sound: null,
+						word_id:question.word_id
 					},
 					success:(res)=>{
 						//success

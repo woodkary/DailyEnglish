@@ -67,7 +67,7 @@ function teamAndStudentsInit(){
             //如果token失效，则跳转到登录页面
             alert("登录信息已过期，请重新登录");
             localStorage.removeItem('token');
-            window.location.href="./login.html";
+            window.location.href="./login&register.html";
             return null;
         }
         return res.json();
@@ -85,7 +85,7 @@ function teamAndStudentsInit(){
    }).catch(err => console.log(err));
 }
 teamAndStudentsInit();
-// loadTeamAndStudents();
+//loadTeamAndStudents();
 //根据学生排名变化，获取折线图的数据
 function getStackedLineSeries(studentNames){
     let result=[];
@@ -104,13 +104,11 @@ function getStackedLineSeries(studentNames){
 }
 //根据学生名获取平均分
 function getAverageGrade(studentName){
-    let studentAverageGrade=studentAverageScores.find(item=>item.name===studentName);
-    return studentAverageGrade!=null?studentAverageGrade.value:null;
+    return studentAverageScores.find(item => item.name === studentName)
 }
 //根据团队名获取平均分
 function getTeamAverageGrade(teamName){
-    let teamAverageGrade=teamAverageScores.find(item=>item.name===teamName);
-    return teamAverageGrade!=null?teamAverageGrade.value:null;
+    return teamAverageScores.find(item => item.name === teamName)
 }
 //加载团队和学生数据
 function loadTeamAndStudents() {
@@ -179,10 +177,15 @@ function loadRadarChart(studentName,teamName){
     let option;
     option = {
         legend: {
+            top: 0,
             data: [studentName,teamName]
+        },
+        grid: {
+            containLabel: true
         },
         radar: {
             // shape: 'circle',
+            radius: '60%', // 减小雷达图的半径
             indicator: questions
         },
         series: [

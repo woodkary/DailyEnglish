@@ -14,9 +14,102 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
+// 定义词性的常量
+const (
+	Verb         = "verb"
+	Noun         = "noun"
+	Pronoun      = "pronoun"
+	Adjective    = "adjective"
+	Adverb       = "adverb"
+	Preposition  = "preposition"
+	Conjunction  = "conjunction"
+	Interjection = "interjection"
+)
+
+// 创建词性映射
+var posMap = map[string]string{
+	"v.":      Verb,
+	"n.":      Noun,
+	"pron.":   Pronoun,
+	"adj.":    Adjective,
+	"adv.":    Adverb,
+	"prep.":   Preposition,
+	"conj.":   Conjunction,
+	"interj.": Interjection,
+}
+
+// 定义meanings结构体
+type Meanings struct {
+	Verb         []string `json:"verb"`
+	Noun         []string `json:"noun"`
+	Pronoun      []string `json:"pronoun"`
+	Adjective    []string `json:"adjective"`
+	Adverb       []string `json:"adverb"`
+	Preposition  []string `json:"preposition"`
+	Conjunction  []string `json:"conjunction"`
+	Interjection []string `json:"interjection"`
+}
+
+// 初始化meanings结构体
+func newMeanings() *Meanings {
+	return &Meanings{
+		Verb:         []string{},
+		Noun:         []string{},
+		Pronoun:      []string{},
+		Adjective:    []string{},
+		Adverb:       []string{},
+		Preposition:  []string{},
+		Conjunction:  []string{},
+		Interjection: []string{},
+	}
+}
+
+// 将输入字符串转换为meanings结构体
+func parseMeanings(input string) *Meanings {
+	meanings := newMeanings()
+	//先根据/号分隔各词性
+	parts := strings.Split(input, "/")
+
+	for _, part := range parts {
+		//再根据.号分隔词性和词义
+		posMeaning := strings.SplitN(part, ".", 2)
+		if len(posMeaning) == 2 {
+			pos := posMeaning[0] + "."
+			//最后根据中文逗号分隔词义
+			meaning := strings.Split(posMeaning[1], "，")
+			if posName, ok := posMap[pos]; ok {
+				switch posName {
+				case Verb:
+					meanings.Verb = meaning
+				case Noun:
+					meanings.Noun = meaning
+				case Pronoun:
+					meanings.Pronoun = meaning
+				case Adjective:
+					meanings.Adjective = meaning
+				case Adverb:
+					meanings.Adverb = meaning
+				case Preposition:
+					meanings.Preposition = meaning
+				case Conjunction:
+					meanings.Conjunction = meaning
+				case Interjection:
+					meanings.Interjection = meaning
+				}
+			}
+		}
+	}
+	return meanings
+}
+
 type Exam_score struct {
 	UserAnswer string `json:"selectedChoice"`
 	UserScore  int    `json:"score"`
+}
+type WordData struct {
+	WordID   int    `json:"word_id"`
+	Spelling string `json:"spelling"`
+	Meanings *Meanings
 }
 
 // 根据email查询user是否存在
@@ -45,7 +138,7 @@ func UserExists_User(db *sql.DB, username string) bool {
 	return true
 }
 
-func GetWordByWordId(db *sql.DB, word_id int) (map[string]interface{}, error) {
+func GetWordByWordId(db *sql.DB, word_id int) (*WordData, error) {
 	var pronunciation string
 	var meanings string
 	var word string
@@ -54,11 +147,10 @@ func GetWordByWordId(db *sql.DB, word_id int) (map[string]interface{}, error) {
 		return nil, err
 	}
 	// Construct the word data structure
-	wordData := map[string]interface{}{
-		"word_id":       word_id,
-		"spelling":      word,
-		"pronunciation": pronunciation,
-		"meanings":      meanings,
+	wordData := &WordData{
+		WordID:   word_id,
+		Spelling: word,
+		Meanings: parseMeanings(meanings),
 	}
 	return wordData, nil
 }
@@ -636,4 +728,15 @@ func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, teamID int, exa
 	}
 
 	return averageScores, nil
+}
+
+// 根据wordId获取单词发音和单词拼写
+func GetWordInfo(db *sql.DB, wordId int) ([]string, error) {
+	var pronunciation string
+	var word string
+	err := db.QueryRow("SELECT pronunciation,word FROM word WHERE word_id = ?", wordId).Scan(&pronunciation, &word)
+	if err != nil {
+		return nil, err
+	}
+	return []string{pronunciation, word}, nil
 }

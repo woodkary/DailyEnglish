@@ -45,7 +45,8 @@
 					preposition: "prep.",
 					interjection: "int."
 				},
-				words: [{
+				words: [
+            /*{
 						word_id: 1,
 						spelling: "moral",
 						pronunciation: "/ˈmɔːrəl/",
@@ -75,7 +76,7 @@
 							interjection: null
 						},
 						sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/abandon--_gb_1.mp3"
-					},
+					},*/
           // {
           //   word_id: 3,
           //   spelling: "apple",
@@ -294,14 +295,11 @@
       }
       this.cnt = this.words.length;
       this.book = "cet4";
-      /*uni.request({
+      uni.request({
         url: "http://localhost:8080/api/words/get_starbk",
-        method: "POST",
+        method: "GET",
         header: {
           'Authorization': 'Bearer ' + uni.getStorageSync('token')
-        },
-        data: {
-          username: "kary"
         },
         success: (res) => {
           // token失效
@@ -313,28 +311,21 @@
               duration: 2000
             });
             uni.navigateTo({
-              url: '../login/login'
+              url: '../logins/login'
             });
           }
-
-          let tempWords = res.data.word;
-          tempWords.forEach((word, index) => {
-            const wordString = word.word;
-            if (!this.isSimplifiedDescription(wordString)) {
-              const transformedWord = this.transformWordDescription(wordString);
-              if (transformedWord) {
-                tempWords[index] = transformedWord;
-              }
-            }else{
-              tempWords[index] =word;
-            }
-          });
-          this.words = tempWords;
+          if(res.data.code === 200||res.data.code === "200"){
+            res.data.words.forEach(word => {
+              let res=word;
+              res["sound"]=this.getSoundUrl(res);
+              this.words.push(res);
+            });
+          }
         },
         fail: (res) => {
           console.log("请求失败");
         }
-      });*/
+      });
     },
 
 		onPageScroll(e) {

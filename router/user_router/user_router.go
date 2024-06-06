@@ -1187,84 +1187,138 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
-	// 一次获取生词本的16个单词
-	r.POST("/api/words/get_starbk", tokenAuthMiddleware(), func(c *gin.Context) {
-		type request struct {
-			Username string `json:"username"`
-		}
-		var req request
-		if err := c.ShouldBind(&req); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
-				"msg":  "请求参数错误",
+	// 获取生词本的单词
+	r.GET("/api/words/get_starbk", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器错误",
 			})
 			return
 		}
 		ctx := context.Background()
-		// 查询用户的生词本
-		username := "kary" // 假设用户名为 kary
-		pattern := "word:" + username + "*"
-		// 获取所有匹配的键
-		keys, err := rdb.Keys(ctx, pattern).Result()
-		if err != nil {
-			log.Fatalf("Failed to get keys: %v", err)
-		}
-		// 创建一个 map 来存储键值对
-		wordsMap := make(map[string]string)
+		userID := UserClaims.UserID
+		pattern := fmt.Sprintf("word:%d:*", userID)
 
-		// 获取每个键的值
-		for _, key := range keys {
-			value, err := rdb.Get(ctx, key).Result()
+		// 使用SCAN命令获取所有匹配的键，并构成keys切片
+		var cursor uint64
+		var keys []string
+		for {
+			var err error
+			var result []string
+			result, cursor, err = rdb.Scan(ctx, cursor, pattern, 0).Result()
 			if err != nil {
-				log.Printf("Failed to get value for key %s: %v", key, err)
-				continue
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"code": "500",
+					"msg":  "服务器内部错误",
+				})
+				return
+			}
+			keys = append(keys, result...)
+			if cursor == 0 {
+				break
+			}
+		}
+		fmt.Println("keys:", keys)
+
+		type WordData struct {
+			WordID        int                  `json:"word_id"`
+			Spelling      string               `json:"spelling"`
+			Pronunciation string               `json:"pronunciation"`
+			Meanings      *controlsql.Meanings `json:"meanings"`
+		}
+
+		// 获取所有单词的详细信息
+		var words []WordData
+		for _, key := range keys {
+			wordData := WordData{
+				Meanings: new(controlsql.Meanings),
+			}
+			// 从Redis哈希中获取字段值
+			values, err := rdb.HGetAll(ctx, key).Result()
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"code": "500",
+					"msg":  "服务器内部错误",
+				})
+				return
 			}
 
-			// 提取键的最后一个部分
-			parts := strings.Split(key, ":")
-			if len(parts) > 0 {
-				word := parts[len(parts)-1]
-				wordsMap[word] = value
+			// 解析字段值到Meanings结构体中
+			if v, ok := values["verb"]; ok && v != "" {
+				wordData.Meanings.Verb = strings.Split(v, ",")
 			}
-		}
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
-				"msg":  "服务器内部错误",
-			})
-			return
-		}
-		type Word struct {
-			Word string `json:"word"`
-		}
-		type Response struct {
-			Code int    `json:"code"`
-			Msg  string `json:"msg"`
-			Word []Word `json:"word"`
-		}
-		var response Response
-		for _, word := range wordsMap {
-			var w Word
-			w.Word = word
-			response.Word = append(response.Word, w)
-		}
-		response.Code = 200
-		response.Msg = "成功"
-		c.JSON(200, response)
+			if n, ok := values["noun"]; ok && n != "" {
+				wordData.Meanings.Noun = strings.Split(n, ",")
+			}
+			if p, ok := values["pronoun"]; ok && p != "" {
+				wordData.Meanings.Pronoun = strings.Split(p, ",")
+			}
+			if adj, ok := values["adjective"]; ok && adj != "" {
+				wordData.Meanings.Adjective = strings.Split(adj, ",")
+			}
+			if adv, ok := values["adverb"]; ok && adv != "" {
+				wordData.Meanings.Adverb = strings.Split(adv, ",")
+			}
+			if prep, ok := values["preposition"]; ok && prep != "" {
+				wordData.Meanings.Preposition = strings.Split(prep, ",")
+			}
+			if conj, ok := values["conjunction"]; ok && conj != "" {
+				wordData.Meanings.Conjunction = strings.Split(conj, ",")
+			}
+			if interj, ok := values["interjection"]; ok && interj != "" {
+				wordData.Meanings.Interjection = strings.Split(interj, ",")
+			}
 
+			// 从键中提取wordID
+			var wordID int
+			_, err = fmt.Sscanf(key, "word:%d:%d", &userID, &wordID)
+			if err == nil {
+				wordData.WordID = wordID
+			}
+			//从mysql根据wordID获取单词发音和单词拼写
+			pronAndSpelling, err := controlsql.GetWordInfo(db, wordID)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"code": 500,
+					"msg":  "服务器内部错误",
+				})
+			}
+
+			wordData.Pronunciation = pronAndSpelling[0]
+			wordData.Spelling = pronAndSpelling[1]
+
+			words = append(words, wordData)
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"code":  200,
+			"msg":   "获取用户存储的单词成功",
+			"words": words,
+		})
 	})
 
 	// 添加生词
 	r.POST("/api/words/add_new_word", tokenAuthMiddleware(), func(c *gin.Context) {
 		type request struct {
-			Username string `json:"username"`
-			WordId   int    `json:"word_id"`
+			WordId int `json:"word_id"`
 		}
 		var req request
 		if err := c.ShouldBind(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"code": "400",
 				"msg":  "请求参数错误",
+			})
+			return
+		}
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器错误",
 			})
 			return
 		}
@@ -1279,12 +1333,33 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			return
 		}
 
-		// 序列格式化
-		formattedWordData := FormatWordData(wordData)
-
 		// 添加生词到 Redis
-		key := "word:" + req.Username + ":" + wordData["spelling"].(string)
-		err = rdb.Set(ctx, key, formattedWordData, 0).Err()
+		//key为word:userID:wordID
+		key := fmt.Sprintf("word:%d:%d", UserClaims.UserID, req.WordId)
+
+		// 如果该单词已经存在于生词本中，则不再添加
+		if rdb.Exists(ctx, key).Val() == 1 {
+			c.JSON(http.StatusConflict, gin.H{
+				"code": "409",
+				"msg":  "该单词已存在于生词本中",
+			})
+			return
+		}
+		// 将Meanings转换为map以便于存储到Redis中
+		//将切片以逗号分隔
+		meaningsMap := map[string]interface{}{
+			"verb":         strings.Join(wordData.Meanings.Verb, ","),
+			"noun":         strings.Join(wordData.Meanings.Noun, ","),
+			"pronoun":      strings.Join(wordData.Meanings.Pronoun, ","),
+			"adjective":    strings.Join(wordData.Meanings.Adjective, ","),
+			"adverb":       strings.Join(wordData.Meanings.Adverb, ","),
+			"preposition":  strings.Join(wordData.Meanings.Preposition, ","),
+			"conjunction":  strings.Join(wordData.Meanings.Conjunction, ","),
+			"interjection": strings.Join(wordData.Meanings.Interjection, ","),
+		}
+
+		// 添加字段到Redis
+		err = rdb.HMSet(ctx, key, meaningsMap).Err()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
@@ -1292,6 +1367,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			})
 			return
 		}
+
 		c.JSON(http.StatusOK, gin.H{
 			"code": "200",
 			"msg":  "生词添加成功",
