@@ -482,7 +482,7 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 	return nil
 }
 
-// redis------studentId:question_type:["score","num"]
+// redis------user_id:question_type:["score","num"]
 // 向redis中插入学生的题目总分和题目数量
 func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, examResult map[int]Exam_score) (map[int]float64, error) {
 	averageScores := make(map[int]float64)
