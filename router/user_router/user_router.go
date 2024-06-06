@@ -118,10 +118,10 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			return
 		}
 		// 验证码验证成功后尝试删除验证码，即使删除失败也不会影响流程
-        rerr = rdb.Del(ctx, key).Err()
-        if rerr != nil {
-            fmt.Printf("删除验证码失败：%v\n", rerr)
-        }
+		rerr = rdb.Del(ctx, key).Err()
+		if rerr != nil {
+			fmt.Printf("删除验证码失败：%v\n", rerr)
+		}
 
 		//验证用户是否已注册
 		if controlsql.UserExists_User(db, data.Email) {
@@ -205,6 +205,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			"token": token,
 		})
 	})
+
 	//选择词书界面
 	r.GET("/api/users/navigate_books", tokenAuthMiddleware(), func(c *gin.Context) {
 		//查询词书信息
