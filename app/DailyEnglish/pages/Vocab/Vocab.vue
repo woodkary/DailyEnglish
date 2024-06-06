@@ -3,7 +3,7 @@
 		<image class="back-icon" src="../../static/back.svg" @click="handleBack"></image>
 		<view class="vocabook">
 			<image class="vocabook-img" src="../../static/book.png"></image>
-			<view class="vocabook-title">单词书:{{ book }}</view>
+			<h3 class="vocabook-title">单词书:{{ book }}</h3>
 			<view class="vocabook-cnt">生词数：{{ cnt }}</view>
 			<view class="button-container"><button class="review" @click="Review">复习</button></view>
 			<view class="button-container"><button class="export" @click="Export">导出</button></view>
@@ -386,10 +386,7 @@
 		justify-content: center;
 		/*垂直居中 */
 		height: 100vh;
-		background-image: linear-gradient(-190deg,
-				#fff669 0%,
-				#ecf1f1 50%,
-				#d6f8f7 100%);
+		background-image: white;
 	}
 
 	.back-icon {
@@ -429,15 +426,16 @@
 
 	.vocabook-title {
 		font-size: 1rem;
-		margin-left: 2rem;
+		margin-left: 0.5rem;
 		margin-top: 1.7rem;
 		margin-bottom: 17rem;
 	}
 
 	.vocabook-cnt {
 		font-size: 0.9rem;
-		margin-left: -3.7rem;
+		margin-left: -5.3rem;
 		margin-top: 3.8rem;
+		color: #a7a7a7;
 	}
 
 	.button-container {
@@ -451,7 +449,6 @@
 	.review {
 		margin-left: -4rem;
 		margin-top: 5rem;
-		border: 1px solid #000;
 		border-radius: 5px;
 		width: 4rem;
 		height: 2rem;
@@ -459,6 +456,8 @@
 		/*文字居中*/
 		text-align: center;
 		line-height: 2rem;
+		background-color: #456de7;
+		color: white;
 	}
 
 	.export {
