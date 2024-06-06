@@ -415,10 +415,38 @@ func InsertUserScore(db *sql.DB, user_id int, exam_id int, user_answer string, s
 	return nil
 }
 
-// 从数据库中查询，并且生成用户打卡内容
-func GetUserPunchContent(db *sql.DB, userID int) (string, error) {
-	
+type Word_of_Punch struct {
+	WordID       int               `json:"word_id"`
+	Word         string            `json:"word"`
+	PhoneticUS   string            `json:"phonetic_us"`
+	WordQuestion map[string]string `json:"word_question"`
+	Answer       string            `json:"answer"`
+}
 
+// 从数据库中查询，并且生成用户打卡内容
+func GetUserPunchContent(db *sql.DB, userID int, bookID int) ([]Word_of_Punch, error) {
+	// 查询用户计划的打卡词数
+	var plan_num int
+	var learned_index int
+	err := db.QueryRow("SELECT plan_num,learned_index FROM user_study WHERE user_id = ?", userID).Scan(&plan_num, &learned_index)
+	if err != nil {
+		log.Panic(err)
+		return nil, err
+	}
+	// 假定每个用户计划都为10个词
+	plan_num = 10
+
+	// 查找该book从learned_index以后plan_num个未学习过的词
+	var wordIDs []int
+	// wordIDs := TODO
+	// 根据每个wordID in wordIDs逐个查找word表 得到word_of_punch对象
+	var WordList []Word_of_Punch
+	for _, wordID := range wordIDs {
+		// 需要从ID得到该Word的Word_of_Punch对象
+		//object := TODO
+		WordList = append(WordList, object)
+	}
+	return WordList, nil
 }
 
 // 更新一次打卡信息
