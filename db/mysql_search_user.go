@@ -424,7 +424,11 @@ type Word_of_Punch struct {
 }
 
 // 从数据库中查询，并且生成用户打卡内容
-func GetUserPunchContent(db *sql.DB, userID int, bookID int) ([]Word_of_Punch, error) {
+func GetUserPunchContent(db *sql.DB, userID int) ([]Word_of_Punch, error) {
+	// 查询用户当前学习的bookID
+	var bookID int
+	// TODO
+
 	// 查询用户计划的打卡词数
 	var plan_num int
 	var learned_index int
