@@ -447,6 +447,7 @@ func GetUserPunchContent(db *sql.DB, userID int) ([]Word, error) {
 	for rows.Next() {
 		var wordID int
 		err := rows.Scan(&wordID)
+		fmt.Print("wordID: ", wordID)
 		if err != nil {
 			log.Panic(err)
 			return nil, err
@@ -460,7 +461,7 @@ func GetUserPunchContent(db *sql.DB, userID int) ([]Word, error) {
 	for _, wordID := range wordIDs {
 		var object Word
 		object.WordID = wordID
-		err := db.QueryRow("SELECT word,phonetic_us,word_question,answer FROM word WHERE word_id = ?", wordID).Scan(&object.Word, &object.PhoneticUS, &objectQuestion, &object.Answer)
+		err := db.QueryRow("SELECT word,pronunciation,word_question,answer FROM word WHERE word_id = ?", wordID).Scan(&object.Word, &object.PhoneticUS, &objectQuestion, &object.Answer)
 		if err != nil {
 			log.Panic(err)
 			return nil, err
