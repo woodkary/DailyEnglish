@@ -447,7 +447,6 @@ func GetUserPunchContent(db *sql.DB, userID int) ([]Word, error) {
 	for rows.Next() {
 		var wordID int
 		err := rows.Scan(&wordID)
-		fmt.Print("wordID: ", wordID)
 		if err != nil {
 			log.Panic(err)
 			return nil, err
