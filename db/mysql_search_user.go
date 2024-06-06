@@ -45,21 +45,21 @@ func UserExists_User(db *sql.DB, username string) bool {
 }
 
 func GetWordByWordId(db *sql.DB, word_id int) (map[string]interface{}, error) {
-    var pronunciation string
-    var meanings string
-    var word string
-    err := db.QueryRow("SELECT pronunciation,meanings,word FROM word WHERE word_id =?", word_id).Scan(&pronunciation, &meanings, &word)
-    if err != nil {
-        return nil, err
-    }
-    // Construct the word data structure
-    wordData := map[string]interface{}{
-        "word_id": word_id,
-        "spelling": word,
-        "pronunciation": pronunciation,
-        "meanings": meanings,
-    }
-    return wordData, nil
+	var pronunciation string
+	var meanings string
+	var word string
+	err := db.QueryRow("SELECT pronunciation,meanings,word FROM word WHERE word_id =?", word_id).Scan(&pronunciation, &meanings, &word)
+	if err != nil {
+		return nil, err
+	}
+	// Construct the word data structure
+	wordData := map[string]interface{}{
+		"word_id":       word_id,
+		"spelling":      word,
+		"pronunciation": pronunciation,
+		"meanings":      meanings,
+	}
+	return wordData, nil
 }
 
 // 插入用户 数据库字段有username string, email string
@@ -413,6 +413,12 @@ func InsertUserScore(db *sql.DB, user_id int, exam_id int, user_answer string, s
 		}
 	}
 	return nil
+}
+
+// 从数据库中查询，并且生成用户打卡内容
+func GetUserPunchContent(db *sql.DB, userID int) (string, error) {
+	
+
 }
 
 // 更新一次打卡信息

@@ -418,7 +418,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	})
 	//打卡
 	r.GET("/api/main/take_punch", tokenAuthMiddleware(), func(c *gin.Context) {
-		//查询打卡单词，这里写死先
 		//打卡单词
 		type Word struct {
 			WordID       int               `json:"word_id"`
@@ -433,7 +432,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			WordList []Word `json:"word_list"`
 		}
 		var response Response
-		//wordlist := controlsql.GetWordList(db)
+		//wordlist := controlsql.Get
 
 		var word Word
 		word.WordID = 1
