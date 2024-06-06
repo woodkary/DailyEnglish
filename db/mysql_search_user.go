@@ -427,29 +427,70 @@ type Word_of_Punch struct {
 func GetUserPunchContent(db *sql.DB, userID int) ([]Word_of_Punch, error) {
 	// 查询用户当前学习的bookID
 	var bookID int
-	// TODO
 
 	// 查询用户计划的打卡词数
 	var plan_num int
-	var learned_index int
-	err := db.QueryRow("SELECT plan_num,learned_index FROM user_study WHERE user_id = ?", userID).Scan(&plan_num, &learned_index)
+	var learn_index int
+	err := db.QueryRow("SELECT book_id,plan_num,learn_index FROM user_study WHERE user_id = ?", userID).Scan(&bookID, &plan_num, &learn_index)
 	if err != nil {
 		log.Panic(err)
 		return nil, err
 	}
-	// 假定每个用户计划都为10个词
-	plan_num = 10
 
 	// 查找该book从learned_index以后plan_num个未学习过的词
 	var wordIDs []int
-	// wordIDs := TODO
-	// 根据每个wordID in wordIDs逐个查找word表 得到word_of_punch对象
+
+	x := learn_index + 1
+	y := x + plan_num
+	limit := y - x + 1
+	offset := x - 1
+
+	// 查询指定 book_id 的第 x 到第 y 行数据
+	query := `SELECT word_id FROM word-book WHERE book_id = ? LIMIT ? OFFSET ?`
+	rows, err := db.Query(query, bookID, limit, offset)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var word_id int
+		if err := rows.Scan(&word_id); err != nil {
+			panic(err)
+		}
+		wordIDs = append(wordIDs, word_id)
+	}
+	if err := rows.Err(); err != nil {
+		panic(err)
+	}
+
+	// 查询每个 wordID 对应的 Word_of_Punch 对象
 	var WordList []Word_of_Punch
 	for _, wordID := range wordIDs {
-		// 需要从ID得到该Word的Word_of_Punch对象
-		//object := TODO
-		WordList = append(WordList, object)
+		var word Word_of_Punch
+		var question string
+		word.WordID = wordID
+
+		query = `SELECT word_question,word,phonetic_us,answer FROM word WHERE word_id = ?`
+		err := db.QueryRow(query, wordID).Scan(&question, &word.Word, &word.PhoneticUS, &word.Answer)
+		if err != nil {
+			panic(err)
+		}
+		// 处理question字符串
+
+		content_list := strings.Split(question, "：")
+
+		word.WordQuestion = make(map[string]string)
+		options := strings.Split(content_list[1], " ")
+		for _, option := range options {
+			m := strings.Split(option, ".")
+			word.WordQuestion[m[0]] = m[1]
+		}
+
+		//
+		WordList = append(WordList, word)
 	}
+
 	return WordList, nil
 }
 
