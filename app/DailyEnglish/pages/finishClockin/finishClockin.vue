@@ -148,6 +148,10 @@
         uni.switchTab({
           url: `../home/home`
         });
+        if(this.operation==0) {
+          uni.setStorageSync("addTotalPunchDay", 1);
+          uni.setStorageSync("addConsecutivePunchDay", 1);
+        }
       },
       transformExams(exams) {
         if(exams==null){//防止空数组报错

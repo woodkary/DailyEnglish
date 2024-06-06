@@ -25,7 +25,7 @@ func tokenAuthMiddleware() gin.HandlerFunc {
 // FormatWordData formats the word data into the desired string format
 func FormatWordData(wordData map[string]interface{}) string {
 	var formattedData string
-	formattedData = "{"
+	formattedData = "'{"
 	for key, value := range wordData {
 		formattedData += fmt.Sprintf("%s:", key)
 		switch v := value.(type) {
@@ -39,7 +39,7 @@ func FormatWordData(wordData map[string]interface{}) string {
 	if len(formattedData) > 1 {
 		formattedData = formattedData[:len(formattedData)-1]
 	}
-	formattedData += "}"
+	formattedData += "}'"
 	return formattedData
 }
 
@@ -390,23 +390,23 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		}
 		var response Response
 		if request.Time == 0 {
-			response.TaskToday.PunchNum = Item.PunchNum
+			response.TaskToday.PunchNum = 5
 			response.TaskToday.ReviewNum = 5 //这里写死的@TODO去找那些单词需要复习
 			response.TaskToday.IsPunched = false
-		}else if request.Time == 1{
+		} else if request.Time == 1 {
 			response.TaskToday.PunchNum = 0
 			response.TaskToday.ReviewNum = 5 //这里写死的@TODO去找那些单词需要复习
 			response.TaskToday.IsPunched = true
-		}else {
+		} else {
 			response.TaskToday.PunchNum = 0
-			response.TaskToday.ReviewNum = 0 
+			response.TaskToday.ReviewNum = 0
 			response.TaskToday.IsPunched = true
 		}
 		response.TaskToday.BookLearning = Item.BookLearning
 		response.TaskToday.WordNumLearned = Item.WordNumLearned
 		response.TaskToday.WordNumTotal = Item.WordNumTotal
 		response.TaskToday.DaysLeft = Item.Days_left
-		
+
 		response.Code = 200
 		response.Msg = "成功"
 		if err == sql.ErrNoRows {

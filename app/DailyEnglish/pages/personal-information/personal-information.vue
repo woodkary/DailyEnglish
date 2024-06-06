@@ -9,35 +9,35 @@
 						id="username"
 				      label="用户名"  
 				      :value="username"  
-				      placeholder="wwswad"  
+				      placeholder="kary"
 				      @update:value="username = $event"  
 				    />
 				<EditableItemView
 				id="email"
 				      label="邮箱"  
 				      :value="email"  
-				      placeholder="3242412@xy.com"  
+				      placeholder="834479572@qq.com"
 				      @update:value="email = $event"  
 				    />
 				<EditableItemView
 				id="phone"
 				      label="手机号"  
 				      :value="phone"  
-				      placeholder="12312312312"  
+				      placeholder="18923208090"
 				      @update:value="phone = $event"  
 				    />
 				<EditableItemView
 				 id="birthday"
 				  label="生日"  
 				  :value="birthday"  
-				  placeholder="1999-01-01"  
+				  placeholder="2003-05-28"
 				  @update:value="birthday = $event"  
 				/>  
 				<EditableItemView
 				id="team"
 				      label="团队"  
 				      :value="team"  
-				      placeholder="无"  
+				      placeholder="英语每日练小组"
 				      @update:value="team = $event"  
 				    />
 			</view>
@@ -53,11 +53,11 @@
 		  },  
 		  data() {  
 		    return {  
-		      username: 'wwswad',  
-		      email: '3242412@xy.com',  
-			  phone: '12312312312',
-			  birthday: '1999-01-01',
-			  team: '无'
+		      username: 'kary',
+		      email: '834479572@qq.com',
+			  phone: '18923208090',
+			  birthday: '2003-05-28',
+			  team: '英语每日练小组'
 		      // 其他数据...  
 		    };  
 		  },  

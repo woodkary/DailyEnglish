@@ -76,6 +76,54 @@
 						},
 						sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/abandon--_gb_1.mp3"
 					},
+          // {
+          //   word_id: 3,
+          //   spelling: "apple",
+          //   pronunciation: "/'æpl/",
+          //   meanings: {
+          //     verb: null,
+          //     adjective: null,
+          //     noun: ["苹果", "苹果树"],
+          //     pronoun: null,
+          //     adverb: null,
+          //     conjunction: null,
+          //     preposition: null,
+          //     interjection: null
+          //   },
+          //   sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
+          // },
+          // {
+          //   word_id: 4,
+          //   spelling: "orange",
+          //   pronunciation: "/'ɔːrɪndʒ/",
+          //   meanings: {
+          //     verb: null,
+          //     adjective: ["橙黄色的", "橙色的","橘色的"],
+          //     noun: ["柑橘", "橙树","橙黄色"],
+          //     pronoun: null,
+          //     adverb: null,
+          //     conjunction: null,
+          //     preposition: null,
+          //     interjection: null
+          //   },
+          //   sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
+          // },
+          // {
+          //   word_id: 5,
+          //   spelling: "grape",
+          //   pronunciation: "/ɡreɪp/",
+          //   meanings: {
+          //     verb: null,
+          //     adjective: null,
+          //     noun: ["葡萄", "葡萄酒","葡萄树","葡萄色"],
+          //     pronoun: null,
+          //     adverb: null,
+          //     conjunction: null,
+          //     preposition: null,
+          //     interjection: null
+          //   },
+          //   sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
+          // }
 				], // 单词列表
 				cnt: 0,
 				book: "cet4",
@@ -85,7 +133,63 @@
 			};
 		},
     onLoad() {
-      uni.request({
+      if(uni.getStorageSync("grape")){
+        this.words.push({
+            word_id: 5,
+            spelling: "grape",
+            pronunciation: "/ɡreɪp/",
+            meanings: {
+              verb: null,
+              adjective: null,
+              noun: ["葡萄", "葡萄酒","葡萄树","葡萄色"],
+              pronoun: null,
+              adverb: null,
+              conjunction: null,
+              preposition: null,
+              interjection: null
+            },
+            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
+          });
+      }
+      if(uni.getStorageSync("apple")){
+        this.words.push({
+            word_id: 3,
+            spelling: "apple",
+            pronunciation: "/'æpl/",
+            meanings: {
+              verb: null,
+              adjective: null,
+              noun: ["苹果", "苹果树"],
+              pronoun: null,
+              adverb: null,
+              conjunction: null,
+              preposition: null,
+              interjection: null
+            },
+            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
+          });
+      }
+      if(uni.getStorageSync("orange")){
+        this.words.push({
+            word_id: 4,
+            spelling: "orange",
+            pronunciation: "/'ɔːrɪndʒ/",
+            meanings: {
+              verb: null,
+              adjective: ["橙黄色的", "橙色的","橘色的"],
+              noun: ["柑橘", "橙树","橙黄色"],
+              pronoun: null,
+              adverb: null,
+              conjunction: null,
+              preposition: null,
+              interjection: null
+            },
+            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
+          });
+      }
+      this.cnt = this.words.length;
+      this.book = "cet4";
+      /*uni.request({
         url: "http://localhost:8080/api/words/get_starbk",
         method: "POST",
         header: {
@@ -95,8 +199,8 @@
           username: "kary"
         },
         success: (res) => {
-          //token失效
-          if(res.statusCode === 401){
+          // token失效
+          if (res.statusCode === 401) {
             uni.removeStorageSync('token');
             uni.showToast({
               title: '登录已过期，请重新登录',
@@ -107,12 +211,25 @@
               url: '../login/login'
             });
           }
-          this.words = res.data.word;
+
+          let tempWords = res.data.word;
+          tempWords.forEach((word, index) => {
+            const wordString = word.word;
+            if (!this.isSimplifiedDescription(wordString)) {
+              const transformedWord = this.transformWordDescription(wordString);
+              if (transformedWord) {
+                tempWords[index] = transformedWord;
+              }
+            }else{
+              tempWords[index] =word;
+            }
+          });
+          this.words = tempWords;
         },
         fail: (res) => {
           console.log("请求失败");
         }
-      });
+      });*/
     },
 
 		onPageScroll(e) {
@@ -127,6 +244,72 @@
 			}
 		},
 		methods: {
+      transformWordDescription(simpleDescription) {
+        try {
+          // 解析输入的简略描述
+          const word = JSON.parse(this.fixJsonString(simpleDescription));
+
+          // 创建详细描述的基础结构
+          const detailedDescription = {
+            word_id: word.word_id,
+            spelling: word.spelling,
+            pronunciation: word.pronunciation,
+            meanings: {
+              verb: [],
+              adjective: null,
+              noun: null,
+              pronoun: null,
+              adverb: null,
+              conjunction: null,
+              preposition: null,
+              interjection: null
+            },
+            sound: null // 假设没有提供发音链接
+          };
+
+          // 处理meanings部分
+          const meaningsArray = word.meanings.split('，');
+          meaningsArray.forEach(meaning => {
+            const [partOfSpeech, definition] = meaning.split('.');
+            if (partOfSpeech && definition) {
+              const pos = partOfSpeech.trim();
+              const def = definition.trim();
+              if (pos === this.simplifiedSpeech.verb) {
+                detailedDescription.meanings.verb.push(def);
+              } else if (pos === this.simplifiedSpeech.adjective) {
+                detailedDescription.meanings.adjective = [def];
+              } else if (pos === this.simplifiedSpeech.noun) {
+                detailedDescription.meanings.noun = [def];
+              }
+              // 添加其他词性判断
+            }
+          });
+
+          return detailedDescription;
+        } catch (error) {
+          console.error("Error parsing JSON: ", error);
+          return null;
+        }
+      },
+      fixJsonString(str) {
+        return str
+            .replace(/'/g, '"') // 替换单引号为双引号
+            .replace(/(\w+):/g, '"$1":') // 给键添加双引号
+            .replace(/:([a-zA-Z]+)/g, ':"$1"') // 给值添加双引号（简单情况下，非数组、对象等）
+            .replace(/,\s*}/g, '}') // 移除尾随逗号
+            .replace(/https":/, 'https:'); // 修正URL的冒号问题
+      },
+      isSimplifiedDescription(wordString) {
+        // 检查meanings是否是字符串类型，判断是否为简略描述
+        const fixedWordString = this.fixJsonString(wordString);
+        try {
+          const parsedWord = JSON.parse(fixedWordString);
+          return typeof parsedWord.meanings === 'string';
+        } catch (error) {
+          console.error("Error parsing word description: ", error);
+          return false;
+        }
+      },
 			getSoundUrl(word){
 				return `https://ssl.gstatic.com/dictionary/static/sounds/oxford/${word.spelling}--_gb_1.mp3`;
 			},

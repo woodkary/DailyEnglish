@@ -90,6 +90,22 @@ export default {
     }
   },
   onLoad() {
+    if(uni.getStorageSync('consecutivePunchDay')){
+      this.consecutive_punch_day = uni.getStorageSync('consecutivePunchDay');
+    }
+    if(uni.getStorageSync('totalPunchDay')){
+      this.total_punch_day = uni.getStorageSync('totalPunchDay');
+    }
+    if(uni.getStorageSync('addConsecutivePunchDay')){
+      this.consecutive_punch_day += uni.getStorageSync('addConsecutivePunchDay');
+      uni.removeStorageSync('addConsecutivePunchDay');
+      uni.setStorageSync("consecutivePunchDay", this.consecutive_punch_day);
+    }
+    if(uni.getStorageSync('addTotalPunchDay')){
+      this.total_punch_day += uni.getStorageSync('addTotalPunchDay');
+      uni.removeStorageSync('addTotalPunchDay');
+      uni.setStorageSync("totalPunchDay", this.total_punch_day);
+    }
     // 页面加载完成后，获取用户信息
     uni.request({
       url: 'http://localhost:8080/api/users/my_punches',

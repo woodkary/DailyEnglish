@@ -19,7 +19,7 @@
 						:class="getClass(choiceIndex)" @click="selectChoice(choiceIndex)">{{ choice }}</button>
 				</view>
 
-				<view class="jump-group" @click="handleJump">
+				<view class="jump-group" @click="handleJump(question.word)">
 					<text class="link">加入生词本</text>
 					<image class="jump-icon" src="../../static/jump.svg" />
 
@@ -150,7 +150,7 @@
 				this.$router.back();
 				// 例如：uni.navigateBack();
 			},
-			handleJump() {
+			handleJump(word) {
 				/*// 处理跳转链接点击事件
 				uni.switchTab({
 					url: '../Vocab/Vocab'
@@ -174,6 +174,7 @@
               icon: 'none',
               duration: 2000,
             });
+            uni.setStorageSync(word,true);
 					},
 				})
 			},

@@ -87,6 +87,7 @@
           return;
         }
 				let remember = this.remember;
+        uni.clearStorage()
 				uni.request({
 					url: 'http://localhost:8080/api/user/login',
 					data: {
@@ -121,6 +122,7 @@
                 //TODO: 跳转到首页，或处理其他逻辑
                 url: res.data.isChoosed? '../home/home': '../Welcome/Welcome'+`?operation=${res.data.isChoosed?1:0}`
               });
+              uni.setStorageSync("consecutivePunchDay",11)
             }else if(res.statusCode == 401){//密码错误
               let passwordInput = document.getElementById('password');
               passwordInput.classList.add('inputActive');
