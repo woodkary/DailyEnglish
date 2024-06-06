@@ -537,8 +537,8 @@
 				wordNumTotal: 2345,
 				daysLeft: 30,
 				wordNumToPunch: 5,
-				wordNumPunched: 15,
-				wordNumToReview: 10,
+				wordNumPunched: 5,
+				wordNumToReview: 5,
 				wordNumReviewed: 5,
 				items: [{
 					word: 'apple',
@@ -551,8 +551,22 @@
 				}]
 			}
 		},
-    onLoad() {
+    //switchTab后调用的函数
+    onShow() {
+      let toReview = uni.getStorageSync('toReview');
+      if(toReview){
+        this.isDaka=true;
+        this.isReview = false;
+      }
+      let reviewed = uni.getStorageSync('reviewed');
+      if(reviewed){
+        this.isReview=true;
+        this.isDaka = true;
+
+      }
       this.fetchData();
+    },
+    onLoad() {
       console.log("hi");
     },
 		methods: {
@@ -573,8 +587,23 @@
 					header: {
 						'Authorization': `Bearer ${uni.getStorageSync('token')}`
 					},
-					method: 'GET',
+					method: 'POST',
+          data:{
+            times: this.isDaka+this.isReview
+          },
 					success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
 						if (res.statusCode === 200||res.statusCode === 404) {
 							this.daka_book = res.data.task_today.book_learning;
 							this.wordNumLearned = res.data.task_today.word_num_learned;
@@ -585,11 +614,17 @@
 								this.isDaka = true;
 							}
 							this.wordNumPunched = res.data.task_today.word_num_punched;//todo 没有
+              if(this.wordNumPunched==null){
+                this.wordNumPunched=5;
+              }
 							this.wordNumToReview = res.data.task_today.review_num;
 							if (this.wordNumToReview == 0) {
 								this.isReview = true;
 							}
 							this.wordNumReviewed = res.data.task_today.word_num_reviewed;//todo 没有
+              if(this.wordNumReviewed==null) {
+                this.wordNumReviewed = 5;
+              }
             } else {
 							console.error("请求失败", res);
 							this.daka_book = "词汇书123"

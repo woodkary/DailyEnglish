@@ -184,7 +184,7 @@ export default {
       this.word.meanings=this.transformMeaningsToText(localDetails.meanings);
     }
     uni.request({
-      url: '/api/words/word_details',
+      url: 'http://localhost:8080/api/words/word_details',
       method: 'POST',
       header: {
         'content-type': 'application/json', // 默认值
@@ -194,6 +194,18 @@ export default {
         word_id: word_id
       },
       success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
         //发送请求，获取详细释义和短语释义
         let detailedMeanings=res.data.detailed_meanings;
         //原格式：

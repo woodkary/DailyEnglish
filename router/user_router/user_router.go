@@ -5,6 +5,7 @@ import (
 	middlewares "DailyEnglish/middlewares"
 	utils "DailyEnglish/utils"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -19,6 +20,36 @@ import (
 
 func tokenAuthMiddleware() gin.HandlerFunc {
 	return middlewares.TokenAuthMiddleware("User")
+}
+
+// FormatWordData formats the word data into the desired string format
+func FormatWordData(wordData map[string]interface{}) string {
+	var formattedData string
+	formattedData = "'{"
+	for key, value := range wordData {
+		formattedData += fmt.Sprintf("%s:", key)
+		switch v := value.(type) {
+		case string:
+			formattedData += fmt.Sprintf("'%s',", v)
+		default:
+			formattedData += jsonValue(v) + ","
+		}
+	}
+	// Remove the trailing comma
+	if len(formattedData) > 1 {
+		formattedData = formattedData[:len(formattedData)-1]
+	}
+	formattedData += "}'"
+	return formattedData
+}
+
+// jsonValue converts value to JSON format
+func jsonValue(v interface{}) string {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return ""
+	}
+	return string(b)
 }
 func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	//发送验证码
@@ -318,11 +349,22 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	})
 
 	//主页面
-	r.GET("/api/punch/main_menu", tokenAuthMiddleware(), func(c *gin.Context) {
+	r.POST("/api/punch/main_menu", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
 		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			c.JSON(500, "服务器错误")
+			return
+		}
+		type Request struct {
+			Time int `json:"time"`
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
 			return
 		}
 		//查询用户信息
@@ -348,13 +390,24 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			TaskToday TaskToday `json:"task_today"`
 		}
 		var response Response
+		if request.Time == 0 {
+			response.TaskToday.PunchNum = 5
+			response.TaskToday.ReviewNum = 5 //这里写死的@TODO去找那些单词需要复习
+			response.TaskToday.IsPunched = false
+		} else if request.Time == 1 {
+			response.TaskToday.PunchNum = 0
+			response.TaskToday.ReviewNum = 5 //这里写死的@TODO去找那些单词需要复习
+			response.TaskToday.IsPunched = true
+		} else {
+			response.TaskToday.PunchNum = 0
+			response.TaskToday.ReviewNum = 0
+			response.TaskToday.IsPunched = true
+		}
 		response.TaskToday.BookLearning = Item.BookLearning
 		response.TaskToday.WordNumLearned = Item.WordNumLearned
 		response.TaskToday.WordNumTotal = Item.WordNumTotal
 		response.TaskToday.DaysLeft = Item.Days_left
-		response.TaskToday.PunchNum = Item.PunchNum
-		response.TaskToday.ReviewNum = 10 //这里写死的@TODO去找那些单词需要复习
-		response.TaskToday.IsPunched = Item.IsPunched
+
 		response.Code = 200
 		response.Msg = "成功"
 		if err == sql.ErrNoRows {
@@ -444,7 +497,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			return
 		}
 		type Request struct {
-			PunchResult map[int]string `json:"punch_result"`
+			PunchResult map[int]bool `json:"punch_result"`
 		}
 		fmt.Println("接收到的打卡结果为", c.PostForm("punch_result"))
 		var request Request
@@ -500,7 +553,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		var response Response
 		var word Word
 		word.WordID = 1
-		word.Word = "abondon"
+		word.Word = "abandon"
 		word.PhoneticUS = "[əˈbændən]"
 		word.WordQuestion = make(map[string]string)
 		word.WordQuestion["A"] = "放弃"
@@ -553,6 +606,52 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
+	// 复习结果提交
+	r.POST("/api/main/reviewed", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		type Request struct {
+			PunchResult map[int]bool `json:"punch_result"`
+		}
+		fmt.Println("接收到的打卡结果为", c.PostForm("punch_result"))
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+
+		//TODO 将打卡结果存入数据库
+		userId := UserClaims.UserID //获取用户id
+		fmt.Println("打卡的用户id为", userId)
+		//更新用户学习进度
+		// err := controlsql.UpdateUserPunch(db, userId, time.Now().Format("2006-01-02"))
+		// if err != nil && err != sql.ErrNoRows {
+		// 	log.Panic(err)
+		// 	c.JSON(http.StatusInternalServerError, gin.H{
+		// 		"code": 500,
+		// 		"msg":  "服务器内部错误",
+		// 	})
+		// 	return
+		// }
+
+		type Response struct {
+			Code int    `json:"code"`
+			Msg  string `json:"msg"`
+		}
+		var response Response
+		response.Code = 200
+		response.Msg = "成功"
+		c.JSON(http.StatusOK, response)
+
+	})
+
 	//历次考试页面
 	r.GET("/api/exams/previous_examinations", tokenAuthMiddleware(), func(c *gin.Context) {
 		user, _ := c.Get("user")
@@ -1043,5 +1142,115 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		response.Code = 200
 		response.Msg = "成功"
 		c.JSON(200, response)
+	})
+	// 一次获取生词本的16个单词
+	r.POST("/api/words/get_starbk", tokenAuthMiddleware(), func(c *gin.Context) {
+		type request struct {
+			Username string `json:"username"`
+		}
+		var req request
+		if err := c.ShouldBind(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+		ctx := context.Background()
+		// 查询用户的生词本
+		username := "kary" // 假设用户名为 kary
+		pattern := "word:" + username + "*"
+		// 获取所有匹配的键
+		keys, err := rdb.Keys(ctx, pattern).Result()
+		if err != nil {
+			log.Fatalf("Failed to get keys: %v", err)
+		}
+		// 创建一个 map 来存储键值对
+		wordsMap := make(map[string]string)
+
+		// 获取每个键的值
+		for _, key := range keys {
+			value, err := rdb.Get(ctx, key).Result()
+			if err != nil {
+				log.Printf("Failed to get value for key %s: %v", key, err)
+				continue
+			}
+
+			// 提取键的最后一个部分
+			parts := strings.Split(key, ":")
+			if len(parts) > 0 {
+				word := parts[len(parts)-1]
+				wordsMap[word] = value
+			}
+		}
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误",
+			})
+			return
+		}
+		type Word struct {
+			Word string `json:"word"`
+		}
+		type Response struct {
+			Code int    `json:"code"`
+			Msg  string `json:"msg"`
+			Word []Word `json:"word"`
+		}
+		var response Response
+		for _, word := range wordsMap {
+			var w Word
+			w.Word = word
+			response.Word = append(response.Word, w)
+		}
+		response.Code = 200
+		response.Msg = "成功"
+		c.JSON(200, response)
+
+	})
+
+	// 添加生词
+	r.POST("/api/words/add_new_word", tokenAuthMiddleware(), func(c *gin.Context) {
+		type request struct {
+			Username string `json:"username"`
+			WordId   int    `json:"word_id"`
+		}
+		var req request
+		if err := c.ShouldBind(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+		ctx := context.Background()
+		// 获取单词信息
+		wordData, err := controlsql.GetWordByWordId(db, req.WordId)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误",
+			})
+			return
+		}
+
+		// 序列格式化
+		formattedWordData := FormatWordData(wordData)
+
+		// 添加生词到 Redis
+		key := "word:" + req.Username + ":" + wordData["spelling"].(string)
+		err = rdb.Set(ctx, key, formattedWordData, 0).Err()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"code": "200",
+			"msg":  "生词添加成功",
+		})
 	})
 }

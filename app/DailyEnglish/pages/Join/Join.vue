@@ -42,6 +42,18 @@
             'Authorization': `Bearer ${uni.getStorageSync('token')}`
           },
           success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
             if (res.data.code === 200||res.data.code === "200") {
               uni.showToast({
                 title: '加入成功',

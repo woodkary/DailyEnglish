@@ -87,6 +87,7 @@
           return;
         }
 				let remember = this.remember;
+        uni.clearStorage()
 				uni.request({
 					url: 'http://localhost:8080/api/user/login',
 					data: {
@@ -96,6 +97,18 @@
 					},
 					method: 'POST',
 					success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
             if(res.statusCode == 200){
               if (remember) {
                 uni.setStorageSync('username');
@@ -109,6 +122,7 @@
                 //TODO: 跳转到首页，或处理其他逻辑
                 url: res.data.isChoosed? '../home/home': '../Welcome/Welcome'+`?operation=${res.data.isChoosed?1:0}`
               });
+              uni.setStorageSync("consecutivePunchDay",11)
             }else if(res.statusCode == 401){//密码错误
               let passwordInput = document.getElementById('password');
               passwordInput.classList.add('inputActive');

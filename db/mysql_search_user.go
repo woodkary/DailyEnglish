@@ -44,6 +44,24 @@ func UserExists_User(db *sql.DB, username string) bool {
 	return true
 }
 
+func GetWordByWordId(db *sql.DB, word_id int) (map[string]interface{}, error) {
+    var pronunciation string
+    var meanings string
+    var word string
+    err := db.QueryRow("SELECT pronunciation,meanings,word FROM word WHERE word_id =?", word_id).Scan(&pronunciation, &meanings, &word)
+    if err != nil {
+        return nil, err
+    }
+    // Construct the word data structure
+    wordData := map[string]interface{}{
+        "word_id": word_id,
+        "spelling": word,
+        "pronunciation": pronunciation,
+        "meanings": meanings,
+    }
+    return wordData, nil
+}
+
 // 插入用户 数据库字段有username string, email string
 func RegisterUser_User(db *sql.DB, username string, password string, email string) error {
 	fmt.Print("RegisterUser_User")
@@ -311,7 +329,7 @@ func GetExamDetail(db *sql.DB, user_id int, exam_id int) ([]QuestionDetail, erro
 	if err != nil && err.Error() != "sql: no rows in result set" {
 		return nil, err
 	}
-	if err.Error() != "sql: no rows in result set" {
+	if err != sql.ErrNoRows {
 		ans_list := strings.Split(ans, "-")
 		for _, item := range ans_list {
 			a := strings.Split(item, ":")

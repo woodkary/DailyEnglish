@@ -19,7 +19,7 @@
 						:class="getClass(choiceIndex)" @click="selectChoice(choiceIndex)">{{ choice }}</button>
 				</view>
 
-				<view class="jump-group" @click="handleJump">
+				<view class="jump-group" @click="handleJump(question.word)">
 					<text class="link">加入生词本</text>
 					<image class="jump-icon" src="../../static/jump.svg" />
 
@@ -105,7 +105,7 @@
       this.isCorrects={};
       uni.request({
         //判断操作类型并发送请求
-        url:!operation?'/api/main/take_punch':'/api/main/take_review',
+        url:!operation?'http://localhost:8080/api/main/take_punch':'http://localhost:8080/api/main/take_review',
         method:'GET',
         header:{
           'Authorization':`Bearer ${uni.getStorageSync('token')}`
@@ -150,23 +150,33 @@
 				this.$router.back();
 				// 例如：uni.navigateBack();
 			},
-			handleJump() {
-				// 处理跳转链接点击事件
+			handleJump(word) {
+				/*// 处理跳转链接点击事件
 				uni.switchTab({
 					url: '../Vocab/Vocab'
-				}) //跳转到生词本页面，注意此处暂时用了switchTab，因为跳转到生词本页面后，需要刷新页面，所以用了switchTab
+				}) *///跳转到生词本页面，注意此处暂时用了switchTab，因为跳转到生词本页面后，需要刷新页面，所以用了switchTab
 				//后面会讲到如何刷新页面，记得改啊！！！！！！11
-				/*//todo:refresh the page
+				//传请求
 				uni.request({
-					url:'xxvcav',
+					url:'http://localhost:8080/api/words/add_new_word',
 					method:'post',
 					data:{
-						//data
+						word_id:this.questions[this.currentQuestionIndex].word_id,
+            spelling:this.questions[this.currentQuestionIndex].word,
+            pronunciation:this.questions[this.currentQuestionIndex].phonetic,
+            username:'kary',
+            sound: null,
 					},
 					success:(res)=>{
 						//success
+            uni.showToast({
+              title: '加入生词本成功',
+              icon: 'none',
+              duration: 2000,
+            });
+            uni.setStorageSync(word,true);
 					},
-				})*/
+				})
 			},
 			swiperChange(event) {
 				const current = event.detail.current;
@@ -233,7 +243,7 @@
         if(++this.currentQuestionIndex==this.questions.length) {
           uni.request({
             //判断操作类型并发送请求
-            url:!this.operation?'/api/main/punched':'/api/main/reviewed',
+            url:!this.operation?'http://localhost:8080/api/main/punched':'http://localhost:8080/api/main/reviewed',
             method:'POST',
             header:{
               'Authorization':`Bearer ${uni.getStorageSync('token')}`

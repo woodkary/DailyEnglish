@@ -151,7 +151,7 @@ export default {
     this.examId=options.exam_id;
     this.examName=options.exam_name;
     uni.request({
-      url: '/api/exams/examination_details',
+      url: 'http://localhost:8080/api/exams/examination_details',
 	  method:'POST',
       data: {
         exam_id: this.examId
@@ -161,6 +161,18 @@ export default {
         'Authorization': `Bearer ${uni.getStorageSync('token')}`
       },
       success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
         this.examDate = res.data.exam_date;
         this.questionNum = res.data.question_num;
         this.correctNum = res.data.correct_num;

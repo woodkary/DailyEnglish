@@ -213,7 +213,6 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			qd[i], err = controlsql.SearchQuestionStatistics(db, request.ExamID, qid[i])
 			if err != nil {
 				c.JSON(500, "服务器错误6")
-				log.Panic(err)
 				return
 			}
 		}

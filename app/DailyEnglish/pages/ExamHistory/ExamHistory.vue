@@ -174,7 +174,7 @@
 			getTodayExams() {
 				// 从服务器获取今天的考试记录
 				uni.request({
-					url: '/api/exams/exams_date',
+					url: 'http://localhost:8080/api/exams/exams_date',
 					method: 'POST',
 					header: {
 						'Authorization': `Bearer ${uni.getStorageSync('token')}`
@@ -183,6 +183,30 @@
             date: this.getExamDate(new Date())
           },
 					success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
 						if (res.data.code == 200) {
 							this.exams = this.transformExams(res.data.exams);
 						}
@@ -195,12 +219,24 @@
 			getPreviousExams() {
 				// 从服务器获取之前的考试记录
 				uni.request({
-					url: '/api/exams/previous_examinations',
+					url: 'http://localhost:8080/api/exams/previous_examinations',
 					method: 'GET',
 					header: {
 						'Authorization': `Bearer ${uni.getStorageSync('token')}`
 					},
 					success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
 						this.finishedExams = this.transformExams(res.data.exams);
 					}
 				});

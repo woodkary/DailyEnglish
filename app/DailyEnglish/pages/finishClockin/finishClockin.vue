@@ -42,6 +42,7 @@
         consecutivePunchDay: 10,
         // 今天考试数量
 				examCnt: 2,
+        operation:0,
         // 考试列表
 				exams: [
 				        /*{
@@ -67,6 +68,7 @@
     onLoad(event) {
       //获取题目数量
       this.todayLearned = event.questionNum;
+      this.operation=parseInt(event.operation);
       // 从本地缓存中获取今天的学习天数
       const consecutivePunchDay = uni.getStorageSync("consecutivePunchDay");
       if (consecutivePunchDay) {
@@ -80,6 +82,18 @@
             'Authorization': `Bearer ${uni.getStorageSync('token')}`
           },
           success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
             const data = res.data;
             if (data.code === 0) {
               this.consecutivePunchDay = data.consecutive_punch_day;
@@ -93,7 +107,7 @@
       }
       // 从服务器获取今天的考试记录
       uni.request({
-        url: '/api/exams/exams_date',
+        url: 'http://localhost:8080/api/exams/exams_date',
         method: 'POST',
         header: {
           'Authorization': `Bearer ${uni.getStorageSync('token')}`
@@ -102,6 +116,18 @@
           date: this.getExamDate(new Date())
         },
         success: (res) => {
+            //token失效
+            if(res.statusCode === 401){
+              uni.removeStorageSync('token');
+              uni.showToast({
+                title: '登录已过期，请重新登录',
+                icon: 'none',
+                duration: 2000
+              });
+              uni.navigateTo({
+                url: '../login/login'
+              });
+            }
           if (res.data.code == 200) {
             this.exams = this.transformExams(res.data.exams);
             this.haveExam = this.exams.length > 0;
@@ -115,9 +141,17 @@
     },
 		methods: {
       toHome() {
+        if(this.operation==0)
+        uni.setStorageSync("toReview", true);
+        else if(this.operation==1)
+          uni.setStorageSync("reviewed", true);
         uni.switchTab({
           url: `../home/home`
         });
+        if(this.operation==0) {
+          uni.setStorageSync("addTotalPunchDay", 1);
+          uni.setStorageSync("addConsecutivePunchDay", 1);
+        }
       },
       transformExams(exams) {
         if(exams==null){//防止空数组报错

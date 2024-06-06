@@ -208,6 +208,7 @@ func SearchQuestionStatistics(db *sql.DB, examID int, questionID int) ([]int, er
 	// 查询题目统计信息
 	err := db.QueryRow("SELECT A_num, B_num, C_num, D_num FROM question_statistics WHERE exam_id = ? AND question_id = ?", examID, questionID).Scan(&A_num, &B_num, &C_num, &D_num)
 	if err != nil {
+		log.Panic(err)
 		return nil, err
 	}
 

@@ -92,6 +92,12 @@ function login(event) {
         },
         body: JSON.stringify(data)
     }).then(response => {
+            if(response.status === 401){
+                //token失效
+                alert('登录已过期，请重新登录');
+                localStorage.removeItem('token');
+                window.location.href = './login.html';
+            }
         console.log(response);
         return response.json();
     }).then(data => {
@@ -165,6 +171,12 @@ function register(event) {
             code: verificationCode
         })
     }).then(response => {
+            if(response.status === 401){
+                //token失效
+                alert('登录已过期，请重新登录');
+                localStorage.removeItem('token');
+                window.location.href = './login.html';
+            }
         console.log(response);
         if(response.status==200){
             console.log("注册成功");
