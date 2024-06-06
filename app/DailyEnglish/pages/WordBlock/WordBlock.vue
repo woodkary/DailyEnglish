@@ -8,7 +8,7 @@
 		</view>
 		<view class="action-container">
 			<image class="read-button" src="../../static/read-icon.svg" @click="readWord"></image>
-			<view class="review-count"style="display: none">
+			<view class="review-count" style="display: none">
 				<p >复习次数:</p>
 				<p style="color: #e74c3c">{{reviewCount }}</p>
 			</view>
