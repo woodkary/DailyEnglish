@@ -268,8 +268,8 @@ func AddUserBook(db *sql.DB, user_id int, book_id int) error {
 		return err
 	}
 	defer stmt.Close()
-	//默认计划20个单词每天学习
-	_, err = stmt.Exec(user_id, book_id, 20, 0)
+	//默认计划10个单词每天学习
+	_, err = stmt.Exec(user_id, book_id, 10, 0)
 	if err != nil {
 		return err
 	}

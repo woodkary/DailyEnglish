@@ -326,6 +326,8 @@ function renderExamData(date){
         cardDiv.appendChild(jumpBtn);
         jumpBtn.addEventListener('click',()=>{
             window.location.href='./test-statistics.html?date='+date.toLocaleDateString()+"&team_id="+exams[i].team_id+"&exam_id="+exams[i].exam_id;
+            sessionStorage.setItem('team_id',exams[i].team_id);
+            sessionStorage.setItem('exam_id',exams[i].exam_id);
         });
     }
 }
