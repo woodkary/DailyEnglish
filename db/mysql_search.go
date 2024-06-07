@@ -8,7 +8,6 @@ import (
 	"log"
 	"strconv"
 	"strings"
-	"time"
 )
 
 // 重写map的序列化函数
@@ -463,21 +462,21 @@ func SearchTeamInfoByTeamID(db *sql.DB, teamID int) (string, int, error) {
 }
 
 // 12 插入考试
-func InsertExamInfo(db *sql.DB, exam_name string, exam_date string, exam_clock string, question_num int, question_id string, team_id int) error {
-	now := time.Now()
-	var id int64 = 1
-	exam_id := service.GenerateID(now, id)
+func InsertExamInfo(db *sql.DB, exam_name string, exam_date string, exam_clock string, question_num int, question_id string, team_id int) (int, error) {
+	exam_id := service.GenerateID()
 	fmt.Println(exam_id)
-	stmt, err := db.Prepare("INSERT INTO exam_info(exam_id,exam_name,exam_date,exam_clock,question_num,question_id,team_id) VALUES(?,?,?,?,?,?,?)")
+	stmt, err := db.Prepare("INSERT INTO exam_info(exam_id,exam_name,exam_date,exam_clock,question_num,question_id,team_id,exam_duration) VALUES(?,?,?,?,?,?,?,?)")
 	if err != nil {
-		return err
+		return 0, err
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec(exam_id, exam_name, exam_date, exam_clock, question_num, question_id, team_id)
+	//将考试时长用exam_clock"09:00~11:00"格式化为int型，单位为分钟
+	duration := service.TimeRangeToMinutes(exam_clock)
+	_, err = stmt.Exec(exam_id, exam_name, exam_date, exam_clock, question_num, question_id, team_id, duration)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return nil
+	return int(exam_id), nil
 }
 
 // 13 查询用户打卡信息

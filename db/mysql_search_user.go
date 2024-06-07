@@ -159,7 +159,7 @@ func GetWordByWordId(db *sql.DB, word_id int) (*WordData, error) {
 func RegisterUser_User(db *sql.DB, username string, password string, email string) error {
 	fmt.Print("RegisterUser_User")
 	// 准备插入语句
-	userid := utils.GenerateID(time.Now(), 1145141919810)
+	userid := utils.GenerateID()
 	stmt, err := db.Prepare("INSERT INTO user_info(user_id ,username, email, pwd,sex,phone,birthday,register_date) VALUES( ?, ?, ?, ?,?,?,?,?)")
 	if err != nil {
 		return err
@@ -329,6 +329,7 @@ type Exam struct {
 // 根据exam_id查询exam_info
 func GetExamInfoByExamID(db *sql.DB, exam_id int) (Exam, error) {
 	var exam Exam
+	fmt.Println(exam_id)
 	err := db.QueryRow("SELECT exam_name,exam_date,exam_clock,question_num,question_id FROM exam_info WHERE exam_id =?", exam_id).Scan(&exam.ExamName, &exam.ExamDate, &exam.Exam_clock, &exam.QuestionNum, &exam.QuestionID)
 	if err != nil {
 		return exam, err
@@ -542,7 +543,7 @@ func GetUserPunchContent(db *sql.DB, userID int) ([]Word, error) {
 
 	// 查找该book从learned_index以后plan_num个未学习过的词的WordID
 	var wordIDs []int
-	query := "SELECT word_id FROM word_book WHERE book_id = ? AND word_id > ? AND word_id <= ?"
+	query := "SELECT word_id FROM word_book WHERE book_id = ? AND word_id > ? AND word_id < ?"
 	rows, err := db.Query(query, bookID, learn_index, learn_index+plan_num)
 	if err != nil {
 		log.Panic(err)
@@ -798,4 +799,18 @@ func GetWordInfo(db *sql.DB, wordId int) ([]string, error) {
 		return nil, err
 	}
 	return []string{pronunciation, word}, nil
+}
+
+// 根据user_id查询用户是否以及选了词书
+func CheckUserBook(db *sql.DB, user_id int) int {
+	var count int
+	err := db.QueryRow("SELECT COUNT(*) FROM user_study WHERE user_id = ?", user_id).Scan(&count)
+	if err != nil {
+		log.Panic(err)
+		return 0
+	}
+	if count == 0 {
+		return 0
+	}
+	return 1
 }

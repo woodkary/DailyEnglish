@@ -116,12 +116,17 @@
                 uni.setStorageSync('remember');
               }
 			  let token = res.data.token;
-        console.log(token);
+			  console.log(token);
 			  uni.setStorageSync('token', token);
-              uni.navigateTo({
-                //TODO: 跳转到首页，或处理其他逻辑
-                url: res.data.isChoosed? '../home/home': '../Welcome/Welcome'+`?operation=${res.data.isChoosed?1:0}`
-              });
+              if (res.data.isChoosed) {
+					uni.switchTab({
+						url: '../home/home'
+					});
+				} else {
+					uni.navigateTo({
+						url: '../Welcome/Welcome' + `?operation=${res.data.isChoosed ? 1 : 0}`
+					});
+				}
               uni.setStorageSync("consecutivePunchDay",11)
             }else if(res.statusCode == 401){//密码错误
               let passwordInput = document.getElementById('password');

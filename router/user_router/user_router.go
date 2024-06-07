@@ -229,12 +229,13 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 				"msg":  "服务器内部错误"})
 			return
 		}
-
+		isChoosed := controlsql.CheckUserBook(db, userid)
 		token, _ := utils.GenerateToken_User(userid, team_id, team_name)
 		c.JSON(http.StatusOK, gin.H{
-			"code":  "200",
-			"msg":   "登录成功",
-			"token": token,
+			"code":      "200",
+			"msg":       "登录成功",
+			"token":     token,
+			"isChoosed": isChoosed,
 		})
 	})
 
@@ -392,7 +393,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		}
 		var response Response
 		if request.Time == 0 {
-			response.TaskToday.PunchNum = 5
+			response.TaskToday.PunchNum = 20
 			response.TaskToday.ReviewNum = 5 //这里写死的@TODO去找那些单词需要复习
 			response.TaskToday.IsPunched = false
 		} else if request.Time == 1 {
@@ -744,42 +745,43 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
-	//查询今日考试
-	r.POST("api/exams/exam_date", tokenAuthMiddleware(), func(c *gin.Context) {
+	// 获取某一天的所有考试信息
+	r.POST("/api/exams/exams_date", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
-			ExamDate string `json:"date"`
+			Date string `json:"date"`
 		}
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": 400,
+				"code": "400",
 				"msg":  "请求参数错误",
 			})
 			return
 		}
-
 		user, _ := c.Get("user")
-		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		UserClaims, ok := user.(*utils.UserClaims)
 		if !ok {
 			c.JSON(500, "服务器错误")
 			return
 		}
-		fmt.Println(request.ExamDate, UserClaims.UserID, UserClaims.TeamID)
-		Item, err := controlsql.GetExamInfo(db, UserClaims.UserID, UserClaims.TeamID)
+		//查询该日期的考试信息
+		fmt.Println("查询日期为:", request.Date)
+		Item, err := controlsql.SearchExaminfoByTeamIDAndDate222(db, UserClaims.TeamID, UserClaims.UserID, request.Date)
 		if err != nil {
-			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": 500,
+				"code": "500",
 				"msg":  "服务器内部错误"})
 			return
 		}
+		fmt.Println("查询结果为:", Item)
 		type Exam struct {
-			ExamID      int    `json:"exam_id"`
+			ExamID      string `json:"exam_id"`
 			ExamName    string `json:"exam_name"`
+			StartTime   string `json:"start_time"`
 			ExamDate    string `json:"exam_date"`
-			ExamScore   int    `json:"exam_score"`
-			ExamRank    int    `json:"exam_rank"`
+			Duration    int    `json:"duration"`
 			QuestionNum int    `json:"question_num"`
+			ExamScore   int    `json:"exam_score"`
 		}
 		type Response struct {
 			Code  int    `json:"code"`
@@ -789,26 +791,19 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		var response Response
 		for _, item := range Item {
 			var exam Exam
-			//选择今日的考试
-
-			if item.ExamDate != request.ExamDate {
-				fmt.Println(item.ExamDate, request.ExamDate, item.ExamName)
-				continue
-			}
-			fmt.Println(item.ExamDate, request.ExamDate)
-			exam.ExamDate = item.ExamDate
-			exam.ExamID = item.ExamID
+			exam.ExamID = strconv.Itoa(item.ExamID)
 			exam.ExamName = item.ExamName
-			exam.ExamRank = item.ExamRank
-			exam.ExamScore = item.ExamScore
+			exam.StartTime = item.StartTime
+			exam.Duration = item.Duration
 			exam.QuestionNum = item.QuestionNum
+			exam.ExamDate = item.ExamDate
+			exam.ExamScore = item.ExamFullScore
 			response.Exams = append(response.Exams, exam)
 		}
 		response.Code = 200
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
-
 	//单次考试详情
 	r.POST("/api/exams/examination_details", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
@@ -898,7 +893,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	//考试页面,用户开始考试需要向用户发送考试题目
 	r.POST("/api/exams/take_examination", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
-			ExamID int `json:"exam_id"`
+			ExamID string `json:"exam_id"`
 		}
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
@@ -925,8 +920,9 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			QuestionList []Question `json:"question_list"`
 		}
 		var response Response
+		examId, _ := strconv.Atoi(request.ExamID)
 		//查询考试信息
-		Item1, err := controlsql.GetExamInfoByExamID(db, request.ExamID)
+		Item1, err := controlsql.GetExamInfoByExamID(db, examId)
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -973,10 +969,9 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	//提交考试@TODO
 	//redis------studentId:question_type:["score","num"]
 	r.POST("/api/exams/submitExamResult", tokenAuthMiddleware(), func(c *gin.Context) {
-
 		type Request struct {
 			Exam_result map[int]controlsql.Exam_score `json:"selectedChoiceAndScore"`
-			Exam_id     int                           `json:"exam_id"`
+			Exam_id     string                        `json:"exam_id"`
 		}
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
@@ -1001,8 +996,9 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			user_answer += item.UserAnswer + "-"
 		}
 		user_answer = strings.TrimRight(user_answer, "-")
+		exam_id, _ := strconv.Atoi(request.Exam_id)
 		//插入考试信息
-		err := controlsql.InsertUserScore(db, UserClaims.UserID, request.Exam_id, user_answer, totalScore)
+		err := controlsql.InsertUserScore(db, UserClaims.UserID, exam_id, user_answer, totalScore)
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -1146,65 +1142,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		})
 	})
 
-	// 获取某一天的所有考试信息
-	r.POST("/api/exams/exams_date", tokenAuthMiddleware(), func(c *gin.Context) {
-		type Request struct {
-			Date string `json:"date"`
-		}
-		var request Request
-		if err := c.ShouldBind(&request); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
-				"msg":  "请求参数错误",
-			})
-			return
-		}
-		user, _ := c.Get("user")
-		UserClaims, ok := user.(*utils.UserClaims)
-		if !ok {
-			c.JSON(500, "服务器错误")
-			return
-		}
-		//查询该日期的考试信息
-		fmt.Println("查询日期为:", request.Date)
-		Item, err := controlsql.SearchExaminfoByTeamIDAndDate222(db, UserClaims.TeamID, UserClaims.UserID, request.Date)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
-				"msg":  "服务器内部错误"})
-			return
-		}
-		fmt.Println("查询结果为:", Item)
-		type Exam struct {
-			ExamID      int    `json:"exam_id"`
-			ExamName    string `json:"exam_name"`
-			StartTime   string `json:"start_time"`
-			ExamDate    string `json:"exam_date"`
-			Duration    int    `json:"duration"`
-			QuestionNum int    `json:"question_num"`
-			ExamScore   int    `json:"exam_score"`
-		}
-		type Response struct {
-			Code  int    `json:"code"`
-			Msg   string `json:"msg"`
-			Exams []Exam `json:"exams"`
-		}
-		var response Response
-		for _, item := range Item {
-			var exam Exam
-			exam.ExamID = item.ExamID
-			exam.ExamName = item.ExamName
-			exam.StartTime = item.StartTime
-			exam.Duration = item.Duration
-			exam.QuestionNum = item.QuestionNum
-			exam.ExamDate = item.ExamDate
-			exam.ExamScore = item.ExamFullScore
-			response.Exams = append(response.Exams, exam)
-		}
-		response.Code = 200
-		response.Msg = "成功"
-		c.JSON(200, response)
-	})
 	// 获取生词本的单词
 	//从redis获取释义，从mysql获取拼写和读音
 	r.GET("/api/words/get_starbk", tokenAuthMiddleware(), func(c *gin.Context) {

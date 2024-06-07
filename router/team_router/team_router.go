@@ -516,13 +516,38 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 				question_id += "-"
 			}
 		}
-		err := controlsql.InsertExamInfo(db, request.ExamName, request.ExamDate, request.Exam_clock, question_num, question_id, teamID)
+		exam_id, err := controlsql.InsertExamInfo(db, request.ExamName, request.ExamDate, request.Exam_clock, question_num, question_id, teamID)
 		if err != nil {
 			log.Panic(err)
 			c.JSON(500, "服务器错误")
 			return
 		}
 		c.JSON(200, "发布成功")
+		//@TODO具体逻辑待议
+		//发布考试后在考试的当天设置定时任务，检查是否需要更新数据库，需要则更新并停止任务，不需要则继续等待
+		//定时任务的时间为考试时间的当天
+		//定时任务的内容为检查是否需要更新数据库
+		ticker := time.NewTicker(1 * time.Hour)
+		go func() {
+			for {
+				select {
+				case <-ticker.C:
+					//检查是否需要更新数据库
+					isNeed, err := controlsql.CalculateRank(db, exam_id)
+					if err != nil {
+						log.Panic(err)
+						return
+					}
+					if isNeed {
+						//更新数据库
+						err = controlsql.FreshRank(db, exam_id)
+						ticker.Stop()
+						return
+					}
+				}
+			}
+		}()
+
 	})
 	//创建团队
 	r.POST("/api/team_manage/create_team", tokenAuthMiddleware(), func(c *gin.Context) {
