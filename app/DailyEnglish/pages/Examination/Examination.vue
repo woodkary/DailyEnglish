@@ -271,7 +271,7 @@
               }
             });
           }
-        },500);
+        },10);
 			},
       showCorrectAnswer(answer, index, currIndex) {
         const correctIndex = this.questions[index].choices.indexOf(answer);

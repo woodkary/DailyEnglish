@@ -605,8 +605,10 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 				log.Panic(err)
 				return err
 			}
+			lastPunchdate = today
+		} else {
+			return err
 		}
-		return err
 	}
 
 	// 解析最后打卡日期
@@ -645,57 +647,107 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 		log.Panic(err)
 		return err
 	}
+	//计算isPunch中连续的1的个数，这是用户连续打卡到的天数
+	count := 0
+	for isPunch > 0 {
+		if isPunch&0x01 == 1 {
+			count++
+		}
+		isPunch >>= 1
+	}
+	fmt.Println("连续打卡天数:", count)
+	//更新user_study表中的continuous_study字段，其值为现有值和count的最大值
+	//表示连续打卡天数
+	updateQuery, err = db.Prepare("UPDATE user_study SET continuous_study = GREATEST(continuous_study,?) WHERE user_id = ?")
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	defer updateQuery.Close()
+	_, err = updateQuery.Exec(count, userID)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
 
 	fmt.Printf("User %d punch record updated successfully.\n", userID)
 	return nil
 }
 func UpdateUserLearnIndex(db *sql.DB, userID int) error {
+	// 开启事务
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+			log.Fatalf("Recovered from panic: %v", p)
+		}
+	}()
+
 	// `user_punch-learn`查询当前用户的学习进度
 	var learnedIndex int
-	err := db.QueryRow("SELECT learned_index FROM `user_punch-learn` WHERE user_id = ?", userID).Scan(&learnedIndex)
+	err = tx.QueryRow("SELECT learned_index FROM `user_punch-learn` WHERE user_id = ?", userID).Scan(&learnedIndex)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			//说明当前用户还没有选择词书，则应该提醒他选择词书
+			tx.Rollback()
 			return errors.New("请先选择词书")
 		}
+		tx.Rollback()
 		return err
 	}
+
 	var planNum int
 	//从user_study表中查询该用户计划的词数
-	err = db.QueryRow("SELECT plan_num FROM user_study WHERE user_id = ?", userID).Scan(&planNum)
+	err = tx.QueryRow("SELECT plan_num FROM user_study WHERE user_id = ?", userID).Scan(&planNum)
 	if err != nil {
+		tx.Rollback()
 		log.Panic(err)
 		return err
 	}
-	//将learnedIndex+planNum更新到user_punch-learn
-	//并将user_punch-learn的punch_num加上计划的词数
-	updateQuery, err := db.Prepare("UPDATE `user_punch-learn` SET learned_index = ?,punch_num = punch_num +? WHERE user_id = ?")
+
+	// 将learnedIndex+planNum更新到user_punch-learn，并将user_punch-learn的punch_num加上计划的词数
+	updateQuery, err := tx.Prepare("UPDATE `user_punch-learn` SET learned_index = ?, punch_num = punch_num + ? WHERE user_id = ?")
 	if err != nil {
-		log.Panic(err)
-		return err
-	}
-	defer updateQuery.Close()
-	_, err = updateQuery.Exec(learnedIndex+planNum, userID)
-	if err != nil {
-		log.Panic(err)
-		return err
-	}
-	//将user_study表中的learn_index也更新为learnedIndex+planNum，
-	//同时将study_day+1，表示多学了一天
-	updateQuery, err = db.Prepare("UPDATE user_study SET learn_index = ?,study_day = study_day+1 WHERE user_id = ?")
-	if err != nil {
+		tx.Rollback()
 		log.Panic(err)
 		return err
 	}
 	defer updateQuery.Close()
-	_, err = updateQuery.Exec(learnedIndex+planNum, userID)
+
+	_, err = updateQuery.Exec(learnedIndex+planNum, planNum, userID)
 	if err != nil {
+		tx.Rollback()
 		log.Panic(err)
 		return err
 	}
+
+	// 将user_study表中的learn_index也更新为learnedIndex+planNum，同时将study_day+1，表示多学了一天
+	updateQuery, err = tx.Prepare("UPDATE user_study SET learn_index = ?, study_day = study_day + 1 WHERE user_id = ?")
+	if err != nil {
+		tx.Rollback()
+		log.Panic(err)
+		return err
+	}
+	defer updateQuery.Close()
+
+	_, err = updateQuery.Exec(learnedIndex+planNum, userID)
+	if err != nil {
+		tx.Rollback()
+		log.Panic(err)
+		return err
+	}
+
+	// 提交事务
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
 	fmt.Printf("User %d learn index updated successfully.\n", userID)
 	return nil
-
 }
 
 // redis------user_id:question_type:["score","num"]
