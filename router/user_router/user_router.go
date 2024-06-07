@@ -333,7 +333,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			}
 			return
 		}
-		//todo 向user_punch-learn表插入或者更新一项数据
+		//todo 向user_punch-learn表插入一项数据
 		/*[
 		{
 			"user_id": 1,
@@ -348,6 +348,53 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			"msg":  "设置词书成功",
 		})
 
+	})
+
+	//修改词书
+	r.PUT("/api/users/navigate_books", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			BookID int `json:"book_id"`
+		}
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims)
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+
+		//修改用户词书
+		err := controlsql.UpdateUserBook(db, UserClaims.UserID, request.BookID)
+		if err != nil {
+			// 其他错误
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误",
+			})
+			return
+		}
+		//todo 向user_punch-learn表更新一项数据
+		/*[
+		{
+			"user_id": 1,
+			"learned_index": 50,//目前打卡到的单词本的下标
+			"punch_num": 20,//打卡总单词数
+			"review_num": 20,//复习总单词数
+			"date": "2024-05-22"//第一次选择词书的日期
+		}
+		]*/
+		c.JSON(200, gin.H{
+			"code": "200",
+			"msg":  "修改词书成功",
+		})
 	})
 
 	//主页面

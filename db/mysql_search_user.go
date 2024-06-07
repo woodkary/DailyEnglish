@@ -248,7 +248,7 @@ type UserStudy struct {
 	IsPunched      bool
 }
 
-// 添加用户学习信息
+// 添加用户学习词书信息
 func AddUserBook(db *sql.DB, user_id int, book_id int) error {
 	// 首先检查是否已经存在相同的记录
 	var count int
@@ -287,6 +287,46 @@ func AddUserBook(db *sql.DB, user_id int, book_id int) error {
 
 	return nil
 }
+
+// 更新用户学习词书信息
+func UpdateUserBook(db *sql.DB, user_id int, book_id int) error {
+	plan_num := 20 // 默认计划每天学习10个单词
+	// 首先检查用户是否已经选择一本词书
+	var count int
+	err := db.QueryRow("SELECT COUNT(*) FROM user_study WHERE user_id = ?", user_id).Scan(&count)
+	if err != nil {
+		return err
+	}
+	// 如果已经存在，则更新
+	if count > 0 {
+		stmt, err := db.Prepare("UPDATE user_study SET plan_num =?,study_day =? WHERE user_id =?")
+		if err != nil {
+			log.Panic(err)
+			return err
+		}
+		defer stmt.Close()
+		_, err = stmt.Exec(plan_num, book_id, user_id)
+		if err != nil {
+			log.Panic(err)
+			return err
+		}
+	} else {
+		// 如果不存在，则插入
+		stmt, err := db.Prepare("INSERT INTO user_study(user_id,book_id,plan_num) VALUES(?,?,?)")
+		if err != nil {
+			log.Panic(err)
+			return err
+		}
+		defer stmt.Close()
+		_, err = stmt.Exec(user_id, book_id, plan_num)
+		if err != nil {
+			log.Panic(err)
+			return err
+		}
+	}
+	return nil
+}
+
 func GetUserStudy(db *sql.DB, user_id int) (UserStudy, error) {
 	var userStudy UserStudy
 	var book_id int
