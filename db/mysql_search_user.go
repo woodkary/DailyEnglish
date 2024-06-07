@@ -940,7 +940,7 @@ func GetUserCenter(db *sql.DB, user_id int) (UserPunchInfo, error) {
 func CheckUserPunchFinish(db *sql.DB, user_id int, book_id int) (int, error) {
 	// 查询user_study的learn_num -- 当前词书的学习进度
 	var learn_num int
-	err := db.QueryRow("SELECT learn_num FROM user_study WHERE user_id = ?", user_id).Scan(&learn_num)
+	err := db.QueryRow("SELECT learn_index FROM user_study WHERE user_id = ?", user_id).Scan(&learn_num)
 	if err != nil {
 		log.Panic(err)
 		return 0, err

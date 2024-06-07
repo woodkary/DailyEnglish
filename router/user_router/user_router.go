@@ -1440,4 +1440,39 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		response.ConsecutivePunchDay = userPunchInfo.ConsecutivePunchDay
 		c.JSON(http.StatusOK, response)
 	})
+	//测试接口
+	r.POST("/test/users/check_punch_finish", func(c *gin.Context) {
+		type Request struct {
+			UserID int `json:"user_id"`
+			BookID int `json:"book_id"`
+		}
+
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+		//查询用户的打卡记录
+		userPunchInfo, err := controlsql.CheckUserPunchFinish(db, request.UserID, request.BookID)
+		if err != nil {
+			log.Panic(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+			return
+		}
+		type Response struct {
+			Code          int    `json:"code"`
+			Msg           string `json:"msg"`
+			UserPunchInfo int    `json:"user_punch_info"`
+		}
+		var response Response
+		response.Code = 200
+		response.Msg = "成功"
+		response.UserPunchInfo = userPunchInfo
+		c.JSON(http.StatusOK, response)
+	})
 }
