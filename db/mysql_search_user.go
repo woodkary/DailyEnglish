@@ -935,3 +935,27 @@ func GetUserCenter(db *sql.DB, user_id int) (UserPunchInfo, error) {
 	}
 	return UserPunchInfo{PunchWordNum: punchWordNum, TotalPunchDay: totalPunchDay, ConsecutivePunchDay: consecutivePunchDay}, nil
 }
+
+// 查询该用户当前词书是否被打卡完
+func CheckUserPunchFinish(db *sql.DB, user_id int, book_id int) (int, error) {
+	// 查询user_study的learn_num -- 当前词书的学习进度
+	var learn_num int
+	err := db.QueryRow("SELECT learn_num FROM user_study WHERE user_id = ?", user_id).Scan(&learn_num)
+	if err != nil {
+		log.Panic(err)
+		return 0, err
+	}
+	// 查询book_info的word_num -- 当前词库的单词数量
+	var word_num int
+	err = db.QueryRow("SELECT word_num FROM book_info WHERE book_id = ?", book_id).Scan(&word_num)
+	if err != nil {
+		log.Panic(err)
+		return 0, err
+	}
+
+	// 如果learn_num等于word_num，则表示该用户当前词书已被打卡完
+	if learn_num == word_num {
+		return 1, nil
+	}
+	return 0, nil
+}
