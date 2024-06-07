@@ -273,6 +273,10 @@ func AddUserBook(db *sql.DB, user_id int, book_id int) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+func AddUserPunchLearn(db *sql.DB, user_id int) error {
 	//向user_punch-learn插入一项记录
 	//由于其几乎所有字段都有默认值，所以只需根据user_id插入即可
 	stmt2, err := db.Prepare("INSERT INTO `user_punch-learn`(user_id,date) VALUES(?,?)")
@@ -284,7 +288,6 @@ func AddUserBook(db *sql.DB, user_id int, book_id int) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 func GetUserStudy(db *sql.DB, user_id int) (UserStudy, error) {
