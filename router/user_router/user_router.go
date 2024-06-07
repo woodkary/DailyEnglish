@@ -550,6 +550,23 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			})
 			return
 		}
+		//更新learned_index
+		err = controlsql.UpdateUserLearnIndex(db, userId)
+		if err != nil {
+			if err.Error() == "请先选择词书" {
+				c.JSON(http.StatusNotFound, gin.H{
+					"code": 404,
+					"msg":  "请先选择词书",
+				})
+				return
+			}
+			log.Panic(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": 500,
+				"msg":  "服务器内部错误",
+			})
+			return
+		}
 
 		type Response struct {
 			Code int    `json:"code"`
@@ -1189,7 +1206,9 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		c.JSON(200, response)
 	})
 	// 获取生词本的单词
+	//从redis获取释义，从mysql获取拼写和读音
 	r.GET("/api/words/get_starbk", tokenAuthMiddleware(), func(c *gin.Context) {
+		// 从请求上下文中获取用户信息
 		user, _ := c.Get("user")
 		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
@@ -1201,6 +1220,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		}
 		ctx := context.Background()
 		userID := UserClaims.UserID
+		// 构造Redis键的匹配模式
 		pattern := fmt.Sprintf("word:%d:*", userID)
 
 		// 使用SCAN命令获取所有匹配的键，并构成keys切片
@@ -1223,6 +1243,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			}
 		}
 
+		// 定义单词数据结构
 		type WordData struct {
 			WordID        int                  `json:"word_id"`
 			Spelling      string               `json:"spelling"`
@@ -1233,9 +1254,11 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		// 并行获取所有单词的详细信息
 		var words []WordData
 		var wg sync.WaitGroup
-		wordChan := make(chan WordData, len(keys))
-		errChan := make(chan error, len(keys))
+		wordChan := make(chan WordData, len(keys)) // 用于存储单词数据的通道
+		errChan := make(chan error, len(keys))     // 用于存储错误的通道
 
+		// 遍历所有键，启动goroutine并行处理
+		//每有一个收藏的单词，就会增加一个goroutine
 		for _, key := range keys {
 			wg.Add(1)
 			go func(key string) {
@@ -1251,7 +1274,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 					return
 				}
 
-				// 解析字段值到Meanings结构体中
+				// 解析各词性字段值到Meanings结构体中
 				wordData.Meanings.Adjective = strings.Split(values["adjective"], ",")
 				wordData.Meanings.Adverb = strings.Split(values["adverb"], ",")
 				wordData.Meanings.Conjunction = strings.Split(values["conjunction"], ",")
@@ -1280,11 +1303,12 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 				wordData.Pronunciation = pronAndSpelling[0]
 				wordData.Spelling = pronAndSpelling[1]
 
+				// 将处理好的单词数据发送到通道
 				wordChan <- wordData
 			}(key)
 		}
 
-		// 等待所有goroutine完成
+		// 等待所有goroutine完成，并关闭通道
 		go func() {
 			wg.Wait()
 			close(wordChan)
@@ -1303,6 +1327,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			return
 		}
 
+		// 返回结果
 		c.JSON(http.StatusOK, gin.H{
 			"code":  200,
 			"msg":   "获取用户存储的单词成功",

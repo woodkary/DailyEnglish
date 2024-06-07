@@ -252,11 +252,11 @@ type UserStudy struct {
 func AddUserBook(db *sql.DB, user_id int, book_id int) error {
 	// 首先检查是否已经存在相同的记录
 	var count int
-	err := db.QueryRow("SELECT COUNT(*) FROM user_study WHERE user_id = ? AND book_id = ?", user_id, book_id).Scan(&count)
+	err := db.QueryRow("SELECT COUNT(*) FROM user_study WHERE user_id = ?", user_id).Scan(&count)
 	if err != nil {
 		return err
 	}
-
+	fmt.Println("count:", count)
 	// 如果已经存在记录，则返回"已完成"
 	if count > 0 {
 		return errors.New("已完成")
@@ -268,8 +268,19 @@ func AddUserBook(db *sql.DB, user_id int, book_id int) error {
 		return err
 	}
 	defer stmt.Close()
-
+	//默认计划20个单词每天学习
 	_, err = stmt.Exec(user_id, book_id, 20, 0)
+	if err != nil {
+		return err
+	}
+	//向user_punch-learn插入一项记录
+	//由于其几乎所有字段都有默认值，所以只需根据user_id插入即可
+	stmt2, err := db.Prepare("INSERT INTO `user_punch-learn`(user_id,date) VALUES(?,?)")
+	if err != nil {
+		return err
+	}
+	defer stmt2.Close()
+	_, err = stmt2.Exec(user_id, utils.GetCurrentDate())
 	if err != nil {
 		return err
 	}
@@ -636,6 +647,54 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 
 	fmt.Printf("User %d punch record updated successfully.\n", userID)
 	return nil
+}
+func UpdateUserLearnIndex(db *sql.DB, userID int) error {
+	// `user_punch-learn`查询当前用户的学习进度
+	var learnedIndex int
+	err := db.QueryRow("SELECT learned_index FROM `user_punch-learn` WHERE user_id = ?", userID).Scan(&learnedIndex)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			//说明当前用户还没有选择词书，则应该提醒他选择词书
+			return errors.New("请先选择词书")
+		}
+		return err
+	}
+	var planNum int
+	//从user_study表中查询该用户计划的词数
+	err = db.QueryRow("SELECT plan_num FROM user_study WHERE user_id = ?", userID).Scan(&planNum)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	//将learnedIndex+planNum更新到user_punch-learn
+	//并将user_punch-learn的punch_num加上计划的词数
+	updateQuery, err := db.Prepare("UPDATE `user_punch-learn` SET learned_index = ?,punch_num = punch_num +? WHERE user_id = ?")
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	defer updateQuery.Close()
+	_, err = updateQuery.Exec(learnedIndex+planNum, userID)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	//将user_study表中的learn_index也更新为learnedIndex+planNum，
+	//同时将study_day+1，表示多学了一天
+	updateQuery, err = db.Prepare("UPDATE user_study SET learn_index = ?,study_day = study_day+1 WHERE user_id = ?")
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	defer updateQuery.Close()
+	_, err = updateQuery.Exec(learnedIndex+planNum, userID)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	fmt.Printf("User %d learn index updated successfully.\n", userID)
+	return nil
+
 }
 
 // redis------user_id:question_type:["score","num"]
