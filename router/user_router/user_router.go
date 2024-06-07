@@ -333,7 +333,17 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			}
 			return
 		}
-		//todo 向user_punch-learn表插入一项数据
+		//todo 向user_punch-learn表插入或者更新一项数据
+
+		err = controlsql.AddUserPunchLearn(db, UserClaims.UserID)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误",
+			})
+			return
+		}
 		/*[
 		{
 			"user_id": 1,

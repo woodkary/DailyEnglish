@@ -200,8 +200,10 @@ style="font-size: 25px; font-weight: 600; color: #3a7afe;">题目分析</span>
     window.onload = function() {
         let localeDateString = new URLSearchParams(window.location.search).get("date");
         selectedDate = localeDateString ? new Date(localeDateString) : new Date();
-        team_id = new URLSearchParams(window.location.search).get("team_id");
-        exam_id = new URLSearchParams(window.location.search).get("exam_id");
+        team_id = sessionStorage.getItem("team_id");
+        exam_id = sessionStorage.getItem("exam_id");
+        let team_info=localStorage.getItem("team_info");
+        let team_name=JSON.parse(team_info).team_name;
         if(exam_id){
             fetchExamDetails();
         }
@@ -281,8 +283,8 @@ function fetchExamDetails(){
             "Authorization": "Bearer " + localStorage.getItem("token")
         },
         body: JSON.stringify({
-            "team_id": parseInt(team_id),
-            "exam_id": parseInt(exam_id)
+            team_id: parseInt(team_id),
+            exam_id: parseInt(exam_id)
         })
     }).then(response => response.json())
    .then(data => {
@@ -468,34 +470,6 @@ fontSize: 16 // 设置横坐标轴标签字体大小
 
     option2 && myChart2.setOption(option2);
 }
-
-    //添加隐藏筛选框点击事件
-    document.addEventListener('DOMContentLoaded', function () {
-        // 获取点击的图标元素
-        let toggleFilter = document.querySelector('.toggle-filter');
-
-        // 获取 i 元素
-        let filterIcon = toggleFilter.querySelector('i');
-
-        // 获取需要隐藏和显示的 filter 容器
-        let filterContainer = document.querySelector('.filter');
-
-        // 添加点击事件
-        toggleFilter.addEventListener('click', function () {
-            // 切换 filter 容器的显示和隐藏
-            if (filterContainer.style.display === 'none') {
-filterContainer.style.display = 'flex';
-filterContainer.style.maxHeight = '1000px'; // 使用足够大的值来确保内容可以完全展开
-filterIcon.classList.remove('uil-angle-down');
-filterIcon.classList.add('uil-angle-up');
-            } else {
-filterContainer.style.display = 'none';
-filterContainer.style.maxHeight = '0'; // 隐藏内容
-filterIcon.classList.remove('uil-angle-up');
-filterIcon.classList.add('uil-angle-down');
-            }
-        });
-    });
     function createTable(data) {
         // 清空表格内容
         document.getElementById('tableBody').innerHTML = '';
