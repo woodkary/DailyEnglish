@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -1221,7 +1222,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 				break
 			}
 		}
-		fmt.Println("keys:", keys)
 
 		type WordData struct {
 			WordID        int                  `json:"word_id"`
@@ -1230,67 +1230,77 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			Meanings      *controlsql.Meanings `json:"meanings"`
 		}
 
-		// 获取所有单词的详细信息
+		// 并行获取所有单词的详细信息
 		var words []WordData
+		var wg sync.WaitGroup
+		wordChan := make(chan WordData, len(keys))
+		errChan := make(chan error, len(keys))
+
 		for _, key := range keys {
-			wordData := WordData{
-				Meanings: new(controlsql.Meanings),
-			}
-			// 从Redis哈希中获取字段值
-			values, err := rdb.HGetAll(ctx, key).Result()
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{
-					"code": "500",
-					"msg":  "服务器内部错误",
-				})
-				return
-			}
+			wg.Add(1)
+			go func(key string) {
+				defer wg.Done()
+				wordData := WordData{
+					Meanings: new(controlsql.Meanings),
+				}
 
-			// 解析字段值到Meanings结构体中
-			if v, ok := values["verb"]; ok && v != "" {
-				wordData.Meanings.Verb = strings.Split(v, ",")
-			}
-			if n, ok := values["noun"]; ok && n != "" {
-				wordData.Meanings.Noun = strings.Split(n, ",")
-			}
-			if p, ok := values["pronoun"]; ok && p != "" {
-				wordData.Meanings.Pronoun = strings.Split(p, ",")
-			}
-			if adj, ok := values["adjective"]; ok && adj != "" {
-				wordData.Meanings.Adjective = strings.Split(adj, ",")
-			}
-			if adv, ok := values["adverb"]; ok && adv != "" {
-				wordData.Meanings.Adverb = strings.Split(adv, ",")
-			}
-			if prep, ok := values["preposition"]; ok && prep != "" {
-				wordData.Meanings.Preposition = strings.Split(prep, ",")
-			}
-			if conj, ok := values["conjunction"]; ok && conj != "" {
-				wordData.Meanings.Conjunction = strings.Split(conj, ",")
-			}
-			if interj, ok := values["interjection"]; ok && interj != "" {
-				wordData.Meanings.Interjection = strings.Split(interj, ",")
-			}
+				// 从Redis哈希中获取字段值
+				values, err := rdb.HGetAll(ctx, key).Result()
+				if err != nil {
+					errChan <- err
+					return
+				}
 
-			// 从键中提取wordID
-			var wordID int
-			_, err = fmt.Sscanf(key, "word:%d:%d", &userID, &wordID)
-			if err == nil {
+				// 解析字段值到Meanings结构体中
+				wordData.Meanings.Adjective = strings.Split(values["adjective"], ",")
+				wordData.Meanings.Adverb = strings.Split(values["adverb"], ",")
+				wordData.Meanings.Conjunction = strings.Split(values["conjunction"], ",")
+				wordData.Meanings.Interjection = strings.Split(values["interjection"], ",")
+				wordData.Meanings.Noun = strings.Split(values["noun"], ",")
+				wordData.Meanings.Preposition = strings.Split(values["preposition"], ",")
+				wordData.Meanings.Pronoun = strings.Split(values["pronoun"], ",")
+				wordData.Meanings.Verb = strings.Split(values["verb"], ",")
+
+				// 从键中提取wordID
+				var wordID int
+				_, err = fmt.Sscanf(key, "word:%d:%d", &userID, &wordID)
+				if err != nil {
+					errChan <- err
+					return
+				}
 				wordData.WordID = wordID
-			}
-			//从mysql根据wordID获取单词发音和单词拼写
-			pronAndSpelling, err := controlsql.GetWordInfo(db, wordID)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{
-					"code": 500,
-					"msg":  "服务器内部错误",
-				})
-			}
 
-			wordData.Pronunciation = pronAndSpelling[0]
-			wordData.Spelling = pronAndSpelling[1]
+				// 从MySQL根据wordID获取单词发音和单词拼写
+				pronAndSpelling, err := controlsql.GetWordInfo(db, wordID)
+				if err != nil {
+					errChan <- err
+					return
+				}
 
-			words = append(words, wordData)
+				wordData.Pronunciation = pronAndSpelling[0]
+				wordData.Spelling = pronAndSpelling[1]
+
+				wordChan <- wordData
+			}(key)
+		}
+
+		// 等待所有goroutine完成
+		go func() {
+			wg.Wait()
+			close(wordChan)
+			close(errChan)
+		}()
+
+		// 收集结果和错误
+		for wd := range wordChan {
+			words = append(words, wd)
+		}
+		if err := <-errChan; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误",
+			})
+			return
 		}
 
 		c.JSON(http.StatusOK, gin.H{
@@ -1303,7 +1313,8 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 	// 添加生词
 	r.POST("/api/words/add_new_word", tokenAuthMiddleware(), func(c *gin.Context) {
 		type request struct {
-			WordId int `json:"word_id"`
+			Username string `json:"username"`
+			WordId   int    `json:"word_id"`
 		}
 		var req request
 		if err := c.ShouldBind(&req); err != nil {
@@ -1337,29 +1348,31 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		//key为word:userID:wordID
 		key := fmt.Sprintf("word:%d:%d", UserClaims.UserID, req.WordId)
 
-		// 如果该单词已经存在于生词本中，则不再添加
-		if rdb.Exists(ctx, key).Val() == 1 {
-			c.JSON(http.StatusConflict, gin.H{
-				"code": "409",
-				"msg":  "该单词已存在于生词本中",
-			})
-			return
-		}
-		// 将Meanings转换为map以便于存储到Redis中
-		//将切片以逗号分隔
+		// 将Meanings转换为map以便于存储到Redis中，并按字段名称字典序排序
 		meaningsMap := map[string]interface{}{
-			"verb":         strings.Join(wordData.Meanings.Verb, ","),
-			"noun":         strings.Join(wordData.Meanings.Noun, ","),
-			"pronoun":      strings.Join(wordData.Meanings.Pronoun, ","),
 			"adjective":    strings.Join(wordData.Meanings.Adjective, ","),
 			"adverb":       strings.Join(wordData.Meanings.Adverb, ","),
-			"preposition":  strings.Join(wordData.Meanings.Preposition, ","),
 			"conjunction":  strings.Join(wordData.Meanings.Conjunction, ","),
 			"interjection": strings.Join(wordData.Meanings.Interjection, ","),
+			"noun":         strings.Join(wordData.Meanings.Noun, ","),
+			"preposition":  strings.Join(wordData.Meanings.Preposition, ","),
+			"pronoun":      strings.Join(wordData.Meanings.Pronoun, ","),
+			"verb":         strings.Join(wordData.Meanings.Verb, ","),
 		}
 
-		// 添加字段到Redis
-		err = rdb.HMSet(ctx, key, meaningsMap).Err()
+		// 创建一个有序切片存储字段和值，确保所有字段都被初始化
+		orderedFields := []string{"adjective", "adverb", "conjunction", "interjection", "noun", "preposition", "pronoun", "verb"}
+		orderedMap := make(map[string]interface{})
+		for _, field := range orderedFields {
+			if value, exists := meaningsMap[field]; exists {
+				orderedMap[field] = value
+			} else {
+				orderedMap[field] = ""
+			}
+		}
+
+		// 使用HMSet按顺序插入字段和值
+		err = rdb.HMSet(ctx, key, orderedMap).Err()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
