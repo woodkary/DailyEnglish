@@ -1348,4 +1348,39 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			"msg":  "生词添加成功",
 		})
 	})
+	//个人中心页面
+	r.GET("/api/users/my_punches", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器错误",
+			})
+			return
+		}
+		//查询用户的打卡记录
+		userPunchInfo, err := controlsql.GetUserCenter(db, UserClaims.UserID)
+		if err != nil {
+			log.Panic(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+			return
+		}
+		type Response struct {
+			Code                int    `json:"code"`
+			Msg                 string `json:"msg"`
+			PunchWordNum        int    `json:"punch_word_num"`        //打卡单词数
+			TotalPunchDay       int    `json:"total_punch_day"`       //总打卡天数
+			ConsecutivePunchDay int    `json:"consecutive_punch_day"` //连续打卡天数
+		}
+		var response Response
+		response.Code = 200
+		response.Msg = "成功"
+		response.PunchWordNum = userPunchInfo.PunchWordNum
+		response.TotalPunchDay = userPunchInfo.TotalPunchDay
+		response.ConsecutivePunchDay = userPunchInfo.ConsecutivePunchDay
+		c.JSON(http.StatusOK, response)
+	})
 }

@@ -866,3 +866,29 @@ func CheckUserBook(db *sql.DB, user_id int) int {
 	}
 	return 1
 }
+
+type UserPunchInfo struct {
+	PunchWordNum        int `json:"punch_word_num"`        //打卡单词数
+	TotalPunchDay       int `json:"total_punch_day"`       //总打卡天数
+	ConsecutivePunchDay int `json:"consecutive_punch_day"` //连续打卡天数
+}
+
+// 查询个人中心页面
+func GetUserCenter(db *sql.DB, user_id int) (UserPunchInfo, error) {
+	var punchWordNum int = 0
+	var totalPunchDay int = 0
+	var consecutivePunchDay int = 0
+	//首先从user_punch-learn查punch_num作为打卡单词数
+	err := db.QueryRow("SELECT punch_num FROM `user_punch-learn` WHERE user_id = ?", user_id).Scan(&punchWordNum)
+	if err != nil && err != sql.ErrNoRows {
+		log.Panic(err)
+		return UserPunchInfo{}, err
+	}
+	//再从user_study查study_day和continuous_study作为总打卡天数和连续打卡天数
+	err = db.QueryRow("SELECT study_day,continuous_study FROM user_study WHERE user_id = ?", user_id).Scan(&totalPunchDay, &consecutivePunchDay)
+	if err != nil && err != sql.ErrNoRows {
+		log.Panic(err)
+		return UserPunchInfo{}, err
+	}
+	return UserPunchInfo{PunchWordNum: punchWordNum, TotalPunchDay: totalPunchDay, ConsecutivePunchDay: consecutivePunchDay}, nil
+}
