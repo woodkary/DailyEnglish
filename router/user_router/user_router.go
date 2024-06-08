@@ -14,6 +14,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"golang.org/x/net/context"
@@ -52,7 +53,7 @@ func jsonValue(v interface{}) string {
 	}
 	return string(b)
 }
-func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
+func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsearch.Client) {
 	//发送验证码
 	r.POST("/api/register/sendCode", func(c *gin.Context) {
 		type response struct {
@@ -1474,5 +1475,38 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		response.Msg = "成功"
 		response.UserPunchInfo = userPunchInfo
 		c.JSON(http.StatusOK, response)
+	})
+	r.POST("/api/users/search_words", func(ctx *gin.Context) {
+		type Request struct {
+			Input string `json:"input"`
+		}
+
+		var req Request
+		if err := ctx.ShouldBind(&req); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+		//根据input，搜索词库中的所有匹配的单词
+		words, err := controlsql.SearchWords(db, es, req.Input)
+
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+			return
+		}
+		type Response struct {
+			Code  int                  `json:"code"`
+			Msg   string               `json:"msg"`
+			Words []controlsql.EngWord `json:"words"`
+		}
+		var response Response
+		response.Code = 200
+		response.Msg = "成功"
+		response.Words = words
+		ctx.JSON(http.StatusOK, response)
 	})
 }

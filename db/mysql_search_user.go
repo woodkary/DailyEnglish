@@ -2,8 +2,10 @@ package db
 
 import (
 	utils "DailyEnglish/utils"
+	"bytes"
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -11,6 +13,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/elastic/go-elasticsearch/esapi"
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -958,4 +962,128 @@ func CheckUserPunchFinish(db *sql.DB, user_id int, book_id int) (int, error) {
 		return 1, nil
 	}
 	return 0, nil
+}
+
+type EngWord struct {
+	WordID        string    `json:"word_id"`
+	Spelling      string    `json:"spelling"`
+	Pronunciation string    `json:"pronunciation"`
+	Meanings      *Meanings `json:"meanings"`
+}
+
+// SearchWords searches for words in Elasticsearch, and if not found, searches in MySQL and inserts them into Elasticsearch.
+func SearchWords(db *sql.DB, es *elasticsearch.Client, input string) ([]EngWord, error) {
+	ctx := context.Background()
+
+	// Step 1: Search in Elasticsearch
+	var buf bytes.Buffer
+	query := map[string]interface{}{
+		"query": map[string]interface{}{
+			"bool": map[string]interface{}{
+				"must": make([]interface{}, 0),
+			},
+		},
+	}
+
+	for _, char := range input {
+		query["query"].(map[string]interface{})["bool"].(map[string]interface{})["must"] = append(query["query"].(map[string]interface{})["bool"].(map[string]interface{})["must"].([]interface{}),
+			map[string]interface{}{
+				"wildcard": map[string]interface{}{
+					"spelling": fmt.Sprintf("*%c*", char),
+				},
+			})
+	}
+
+	if err := json.NewEncoder(&buf).Encode(query); err != nil {
+		log.Fatalf("Error encoding query: %s", err)
+	}
+
+	res, err := es.Search(
+		es.Search.WithContext(ctx),
+		es.Search.WithIndex("dailyenglish"),
+		es.Search.WithBody(&buf),
+	)
+	if err != nil {
+		if !strings.Contains(err.Error(), "index_not_found_exception") {
+			log.Fatalf("Error searching for documents: %s", err)
+		} else {
+			log.Printf("Index not found: %v", err)
+		}
+	}
+
+	defer res.Body.Close()
+
+	var words []EngWord
+
+	// Check if Elasticsearch returned any results
+	if res.IsError() {
+		log.Printf("Failed to search documents: %s", res.Status())
+	} else {
+		var r map[string]interface{}
+		if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
+			log.Printf("Error parsing the response body: %s", err)
+		}
+
+		hits := r["hits"].(map[string]interface{})["hits"].([]interface{})
+		for _, hit := range hits {
+			source := hit.(map[string]interface{})["_source"].(map[string]interface{})
+			word := EngWord{
+				WordID:        source["word_id"].(string),
+				Spelling:      source["spelling"].(string),
+				Pronunciation: source["pronunciation"].(string),
+				Meanings:      parseMeanings(source["meanings"].(string)),
+			}
+			words = append(words, word)
+		}
+		return words, nil
+	}
+
+	// Step 2: If Elasticsearch returns no results, search in MySQL
+	for _, char := range input {
+		// Search in MySQL
+		queryStr := fmt.Sprintf("SELECT word_id, word, pronunciation, meanings FROM word WHERE word LIKE '%%%s%%'", char)
+		rows, err := db.Query(queryStr)
+		if err != nil {
+			return nil, fmt.Errorf("MySQL query failed: %w", err)
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var word EngWord
+			var meanings string
+
+			if err := rows.Scan(&word.WordID, &word.Spelling, &word.Pronunciation, &meanings); err != nil {
+				return nil, fmt.Errorf("Failed to scan MySQL row: %w", err)
+			}
+
+			word.Meanings = parseMeanings(meanings)
+			words = append(words, word)
+		}
+		if err := rows.Err(); err != nil {
+			return nil, fmt.Errorf("MySQL rows error: %w", err)
+		}
+	}
+
+	// Step 3: Insert new words into Elasticsearch
+	for _, word := range words {
+		// Batch insert to Elasticsearch
+		meaningsJSON, err := json.Marshal(word.Meanings)
+		if err != nil {
+			log.Printf("Failed to marshal meanings for word %s: %v", word.Spelling, err)
+			continue
+		}
+		body := fmt.Sprintf(`{"word_id": "%s", "spelling": "%s", "pronunciation": "%s", "meanings": "%s"}`, word.WordID, word.Spelling, word.Pronunciation, meaningsJSON)
+		req := esapi.IndexRequest{
+			Index:      "dailyenglish",
+			DocumentID: word.WordID,
+			Body:       strings.NewReader(body),
+			Refresh:    "true",
+		}
+
+		_, err = req.Do(ctx, es)
+		if err != nil {
+			log.Printf("Failed to insert word %s into Elasticsearch: %v", word.Spelling, err)
+		}
+	}
+	return words, nil
 }
