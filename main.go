@@ -5,17 +5,17 @@ package main
 
 import (
 	middlewares "DailyEnglish/middlewares"
-    	adminrouter "DailyEnglish/router/admin_router"
-    	teamrouter "DailyEnglish/router/team_router"
-    	userrouter "DailyEnglish/router/user_router"
-    	"database/sql"
-    	"fmt"
-    	"log"
+	adminrouter "DailyEnglish/router/admin_router"
+	teamrouter "DailyEnglish/router/team_router"
+	userrouter "DailyEnglish/router/user_router"
+	"database/sql"
+	"fmt"
+	"log"
 
-    	"github.com/elastic/go-elasticsearch/v8"
-    	"github.com/gin-gonic/gin"
-    	"github.com/go-redis/redis/v8"
-    	_ "github.com/go-sql-driver/mysql"
+	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
@@ -52,29 +52,30 @@ func main() {
 	}
 	defer db.Close()
 	// 连接es
-    esURL := "https://b8fde32e62044f12b769b107e7e2346f.us-central1.gcp.cloud.es.io"
-    esAPIKey := "RzQ0VC1JOEJMQ0gwOXRlMFloZkQ6M2dpNUFMRF9SeE9wMkxhNjAxUjF5dw=="
-    cfg := elasticsearch.Config{
-        APIKey: esAPIKey,
-        Addresses: []string{
-            esURL,
-        },
-    }
-    es, err := elasticsearch.NewClient(cfg)
-    if err != nil {
-        log.Fatalf("Error creating the client: %s", err)
-    }
-    //测试es连接
-    _, err = es.Ping()
-    if err != nil {
-        log.Fatalf("Error pinging Elasticsearch: %s", err)
-    }
-    fmt.Println("Elasticsearch Connected")
-	// 启动生产者
-    go runProducer()
+	esURL := "https://b8fde32e62044f12b769b107e7e2346f.us-central1.gcp.cloud.es.io"
+	esAPIKey := "RzQ0VC1JOEJMQ0gwOXRlMFloZkQ6M2dpNUFMRF9SeE9wMkxhNjAxUjF5dw=="
+	cfg := elasticsearch.Config{
+		APIKey: esAPIKey,
+		Addresses: []string{
+			esURL,
+		},
+	}
+	es, err := elasticsearch.NewClient(cfg)
+	if err != nil {
+		log.Fatalf("Error creating the client: %s", err)
+	}
 
-    // 启动消费者
-    go runConsumer()
+	//测试es连接
+	_, err = es.Ping()
+	if err != nil {
+		log.Fatalf("Error pinging Elasticsearch: %s", err)
+	}
+	fmt.Println("Elasticsearch Connected")
+	// 启动生产者
+	go RunProducer()
+
+	// 启动消费者
+	go RunConsumer()
 
 	r := gin.Default()
 	r.Use(middlewares.Cors())
@@ -87,7 +88,7 @@ func main() {
 	go func() {
 		r1 := gin.Default()
 		r1.Use(middlewares.Cors())
-		userrouter.InitUserRouter(r1, db, rdb)
+		userrouter.InitUserRouter(r1, db, rdb, es)
 		r1.Run(":8080")
 	}()
 	log.Println("Server is running at :8081")

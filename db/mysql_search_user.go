@@ -13,7 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/elastic/go-elasticsearch/esapi"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/go-redis/redis/v8"
 )
@@ -52,6 +51,40 @@ type Meanings struct {
 	Preposition  []string `json:"preposition"`
 	Conjunction  []string `json:"conjunction"`
 	Interjection []string `json:"interjection"`
+}
+
+// MarshalJSON 自定义序列化方法
+func (m Meanings) MarshalJSON() ([]byte, error) {
+	type Alias Meanings
+	return json.Marshal(&struct {
+		Alias
+		Verb         []string `json:"verb"`
+		Noun         []string `json:"noun"`
+		Pronoun      []string `json:"pronoun"`
+		Adjective    []string `json:"adjective"`
+		Adverb       []string `json:"adverb"`
+		Preposition  []string `json:"preposition"`
+		Conjunction  []string `json:"conjunction"`
+		Interjection []string `json:"interjection"`
+	}{
+		Alias:        (Alias)(m),
+		Verb:         ensureNotNil(m.Verb),
+		Noun:         ensureNotNil(m.Noun),
+		Pronoun:      ensureNotNil(m.Pronoun),
+		Adjective:    ensureNotNil(m.Adjective),
+		Adverb:       ensureNotNil(m.Adverb),
+		Preposition:  ensureNotNil(m.Preposition),
+		Conjunction:  ensureNotNil(m.Conjunction),
+		Interjection: ensureNotNil(m.Interjection),
+	})
+}
+
+// ensureNotNil 确保切片不为 nil
+func ensureNotNil(slice []string) []string {
+	if slice == nil {
+		return []string{}
+	}
+	return slice
 }
 
 // 初始化meanings结构体
@@ -965,13 +998,14 @@ func CheckUserPunchFinish(db *sql.DB, user_id int, book_id int) (int, error) {
 }
 
 type EngWord struct {
-	WordID        string    `json:"word_id"`
+	WordID        int       `json:"word_id"`
 	Spelling      string    `json:"spelling"`
 	Pronunciation string    `json:"pronunciation"`
 	Meanings      *Meanings `json:"meanings"`
 }
 
-// SearchWords searches for words in Elasticsearch, and if not found, searches in MySQL and inserts them into Elasticsearch.
+// 先在es中搜索，如果没有搜索到，再在mysql中搜索
+// 返回EngWord数组
 func SearchWords(db *sql.DB, es *elasticsearch.Client, input string) ([]EngWord, error) {
 	ctx := context.Background()
 
@@ -985,6 +1019,22 @@ func SearchWords(db *sql.DB, es *elasticsearch.Client, input string) ([]EngWord,
 		},
 	}
 
+	/*查询es中所有包含input每个字母的词，返回结果
+	POST /dailyenglish/_search
+		{
+			"query":{
+				"bool":{
+					"must":[
+						{"wildcard":{"spelling":"*i*"}},
+						{"wildcard":{"spelling":"*n*"}},
+						{"wildcard":{"spelling":"*p*"}},
+						{"wildcard":{"spelling":"*u*"}},
+						{"wildcard":{"spelling":"*t*"}},
+					]
+				}
+			}
+		}
+	*/
 	for _, char := range input {
 		query["query"].(map[string]interface{})["bool"].(map[string]interface{})["must"] = append(query["query"].(map[string]interface{})["bool"].(map[string]interface{})["must"].([]interface{}),
 			map[string]interface{}{
@@ -995,17 +1045,18 @@ func SearchWords(db *sql.DB, es *elasticsearch.Client, input string) ([]EngWord,
 	}
 
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
-		log.Fatalf("Error encoding query: %s", err)
+		log.Panicf("Error encoding query: %s", err)
 	}
 
 	res, err := es.Search(
 		es.Search.WithContext(ctx),
 		es.Search.WithIndex("dailyenglish"),
 		es.Search.WithBody(&buf),
+		es.Search.WithTrackTotalHits(true),
 	)
 	if err != nil {
 		if !strings.Contains(err.Error(), "index_not_found_exception") {
-			log.Fatalf("Error searching for documents: %s", err)
+			log.Panicf("Error searching for documents: %s", err)
 		} else {
 			log.Printf("Index not found: %v", err)
 		}
@@ -1015,7 +1066,7 @@ func SearchWords(db *sql.DB, es *elasticsearch.Client, input string) ([]EngWord,
 
 	var words []EngWord
 
-	// Check if Elasticsearch returned any results
+	//检查es是否有结果
 	if res.IsError() {
 		log.Printf("Failed to search documents: %s", res.Status())
 	} else {
@@ -1023,67 +1074,113 @@ func SearchWords(db *sql.DB, es *elasticsearch.Client, input string) ([]EngWord,
 		if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
 			log.Printf("Error parsing the response body: %s", err)
 		}
-
+		//查找json中hits下的hits数组
 		hits := r["hits"].(map[string]interface{})["hits"].([]interface{})
 		for _, hit := range hits {
+			//解析hit下的_source字段
 			source := hit.(map[string]interface{})["_source"].(map[string]interface{})
+			//_source字段结构和EngWord结构相同，直接解析为EngWord
 			word := EngWord{
-				WordID:        source["word_id"].(string),
+				WordID:        (int)(source["word_id"].(float64)),
 				Spelling:      source["spelling"].(string),
 				Pronunciation: source["pronunciation"].(string),
-				Meanings:      parseMeanings(source["meanings"].(string)),
+				Meanings:      parseMeaningsFromMap(source["meanings"].(map[string]interface{})),
 			}
 			words = append(words, word)
+			fmt.Println("word:", word)
 		}
-		return words, nil
-	}
-
-	// Step 2: If Elasticsearch returns no results, search in MySQL
-	for _, char := range input {
-		// Search in MySQL
-		queryStr := fmt.Sprintf("SELECT word_id, word, pronunciation, meanings FROM word WHERE word LIKE '%%%s%%'", char)
-		rows, err := db.Query(queryStr)
-		if err != nil {
-			return nil, fmt.Errorf("MySQL query failed: %w", err)
-		}
-		defer rows.Close()
-
-		for rows.Next() {
-			var word EngWord
-			var meanings string
-
-			if err := rows.Scan(&word.WordID, &word.Spelling, &word.Pronunciation, &meanings); err != nil {
-				return nil, fmt.Errorf("Failed to scan MySQL row: %w", err)
-			}
-
-			word.Meanings = parseMeanings(meanings)
-			words = append(words, word)
-		}
-		if err := rows.Err(); err != nil {
-			return nil, fmt.Errorf("MySQL rows error: %w", err)
+		if len(words) > 0 {
+			return words, nil
 		}
 	}
 
-	// Step 3: Insert new words into Elasticsearch
-	for _, word := range words {
-		// Batch insert to Elasticsearch
-		meaningsJSON, err := json.Marshal(word.Meanings)
-		if err != nil {
-			log.Printf("Failed to marshal meanings for word %s: %v", word.Spelling, err)
-			continue
-		}
-		body := fmt.Sprintf(`{"word_id": "%s", "spelling": "%s", "pronunciation": "%s", "meanings": "%s"}`, word.WordID, word.Spelling, word.Pronunciation, meaningsJSON)
-		req := esapi.IndexRequest{
-			Index:      "dailyenglish",
-			DocumentID: word.WordID,
-			Body:       strings.NewReader(body),
-			Refresh:    "true",
+	// 如果es没有结果，则在mysql中搜索
+	queryStr := fmt.Sprintf("SELECT word_id, word, pronunciation, meanings FROM word WHERE word LIKE '%%%s%%'", input)
+	rows, err := db.Query(queryStr)
+	if err != nil {
+		return nil, fmt.Errorf("MySQL query failed: %w", err)
+	}
+	defer rows.Close()
+
+	//在搜索的同时，将搜索结果插入到请求体bulkBuf中，准备批量插入es
+	var bulkBuf bytes.Buffer
+	for rows.Next() {
+		var word EngWord
+		var meanings string
+
+		if err := rows.Scan(&word.WordID, &word.Spelling, &word.Pronunciation, &meanings); err != nil {
+			return nil, fmt.Errorf("Failed to scan MySQL row: " + err.Error())
 		}
 
-		_, err = req.Do(ctx, es)
+		word.Meanings = parseMeanings(meanings)
+		words = append(words, word)
+
+		// 先插入{"index":{"_index":"dailyenglish","_id":1}}部分
+		meta := []byte(fmt.Sprintf(`{ "index" : { "_index" : "dailyenglish", "_id" : "%d" } }%s`, word.WordID, "\n"))
+		bulkBuf.Write(meta)
+
+		doc, err := json.Marshal(word)
 		if err != nil {
-			log.Printf("Failed to insert word %s into Elasticsearch: %v", word.Spelling, err)
+			return nil, fmt.Errorf("Failed to marshal document" + err.Error())
+		}
+		// 再插入{"word_id":1,"spelling":"input","pronunciation":"input","meanings":{"verb":[]}}部分
+		bulkBuf.Write(doc)
+		bulkBuf.Write([]byte("\n"))
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("MySQL rows error: %w", err)
+	}
+
+	// 如果bulkBuf有内容，则批量插入es
+	if bulkBuf.Len() > 0 {
+		fmt.Println("bulk insert:", bulkBuf.String())
+		res, err := es.Bulk(
+			bytes.NewReader(bulkBuf.Bytes()),
+			es.Bulk.WithContext(ctx),
+			es.Bulk.WithIndex("dailyenglish"),
+			es.Bulk.WithRefresh("true"),
+		)
+		if err != nil {
+			return nil, fmt.Errorf("Failed to execute bulk insert: " + err.Error())
+		}
+		defer res.Body.Close()
+		fmt.Println("bulk insert response:", res.String())
+
+		if res.IsError() {
+			log.Printf("Bulk insert error: %s", res.String())
 		}
 	}
+
 	return words, nil
+}
+
+// parseMeaningsFromMap parses the meanings field from a map into a Meanings struct.
+func parseMeaningsFromMap(meanings map[string]interface{}) *Meanings {
+	meaningMap := Meanings{
+		Verb:         toStringSlice(meanings["verb"]),
+		Noun:         toStringSlice(meanings["noun"]),
+		Pronoun:      toStringSlice(meanings["pronoun"]),
+		Adjective:    toStringSlice(meanings["adjective"]),
+		Adverb:       toStringSlice(meanings["adverb"]),
+		Preposition:  toStringSlice(meanings["preposition"]),
+		Conjunction:  toStringSlice(meanings["conjunction"]),
+		Interjection: toStringSlice(meanings["interjection"]),
+	}
+	return &meaningMap
+}
+
+// toStringSlice converts an interface to a []string.
+func toStringSlice(value interface{}) []string {
+	if value == nil {
+		return []string{}
+	}
+	if slice, ok := value.([]interface{}); ok {
+		result := make([]string, len(slice))
+		for i, v := range slice {
+			result[i] = v.(string)
+		}
+		return result
+	}
+	return []string{}
 }
