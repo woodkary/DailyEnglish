@@ -517,6 +517,32 @@ type Word struct {
 	Answer       string            `json:"answer"`
 }
 
+// 根据wordIDs查询word
+func GetWordByWordID(db *sql.DB, wordIDs []int) ([]Word, error) {
+	var WordList []Word
+	var objectQuestion string
+	for _, wordID := range wordIDs {
+		var object Word
+		object.WordID = wordID
+		err := db.QueryRow("SELECT word,pronunciation,word_question,answer FROM word WHERE word_id = ?", wordID).Scan(&object.Word, &object.PhoneticUS, &objectQuestion, &object.Answer)
+		if err != nil {
+			log.Panic(err)
+			return nil, err
+		}
+		// 将objectQuestion字符串的首位：字符忽略，并以空格划分为四个子字符串，形如A.1 B.2 C.3 D.4
+		objectQuestionList := strings.Split(objectQuestion[1:], " ")
+		object.WordQuestion = make(map[string]string)
+		for _, question := range objectQuestionList {
+			m := strings.Split(question, ".")
+			object.WordQuestion[m[0]] = m[1]
+		}
+		fmt.Println(object.WordQuestion)
+
+		WordList = append(WordList, object)
+	}
+	return WordList, nil
+}
+
 // 从数据库中查询，并且生成用户打卡内容
 func GetUserPunchContent(db *sql.DB, userID int) ([]Word, error) {
 	// 查询用户当前学习的bookID
@@ -639,6 +665,40 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 	return nil
 }
 
+// 打卡后插入学习记录并更新复习时间
+func InsertUserMemory(db *sql.DB, userID int, wordID int, isCorret bool) error {
+	//先根据wordID查询difficulty
+	var difficulty int
+	err := db.QueryRow("SELECT difficulty FROM word WHERE word_id = ?", wordID).Scan(&difficulty)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	//计算下次复习时间
+	interval_history := "0"
+	var feedback_history string
+	if isCorret {
+		feedback_history = "1"
+	} else {
+		feedback_history = "0"
+	}
+	bestInterval := utils.CalculateBestInterval(difficulty, interval_history, feedback_history)
+	nextReviewTime := time.Now().AddDate(0, 0, bestInterval).Format("2006-01-02")
+	//插入记忆记录
+	insertQuery, err := db.Prepare("INSERT INTO user_word_memory(user_id,word_id,learn_times,interval_history,feedback_history,interval_days,is_memory,review_date) VALUES(?,?,?,?,?,?,?,?)")
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	defer insertQuery.Close()
+	_, err = insertQuery.Exec(userID, wordID, 1, interval_history, feedback_history, bestInterval, 0, nextReviewTime)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	return nil
+}
+
 // redis------user_id:question_type:["score","num"]
 // 向redis中插入学生的题目总分和题目数量
 func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, teamID int, examResult map[int]Exam_score) (map[int]float64, error) {
@@ -754,4 +814,25 @@ func CheckUserBook(db *sql.DB, user_id int) int {
 		return 0
 	}
 	return 1
+}
+
+// 查询review_date<=now的word_id列表
+func GetReviewWordID(db *sql.DB, user_id int) ([]int, error) {
+	var wordIDs []int
+	nowdate := utils.GetCurrentDate()
+	rows, err := db.Query("SELECT word_id FROM user_word_memory WHERE user_id = ? AND review_date <= ?", user_id, nowdate)
+	if err != nil {
+		log.Panic(err)
+		return nil, err
+	}
+	for rows.Next() {
+		var wordID int
+		err := rows.Scan(&wordID)
+		if err != nil {
+			log.Panic(err)
+			return nil, err
+		}
+		wordIDs = append(wordIDs, wordID)
+	}
+	return wordIDs, nil
 }
