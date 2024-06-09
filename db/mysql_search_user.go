@@ -1144,7 +1144,7 @@ func SearchWords(db *sql.DB, es *elasticsearch.Client, input string) ([]EngWord,
 	return words, nil
 }
 
-// parseMeaningsFromMap parses the meanings field from a map into a Meanings struct.
+// 说实话，实在懒得再把这些搬进utils包里了，直接写在这里吧。
 func parseMeaningsFromMap(meanings map[string]interface{}) *Meanings {
 	meaningMap := Meanings{
 		Verb:         toStringSlice(meanings["verb"]),
