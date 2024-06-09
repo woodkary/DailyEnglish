@@ -1013,12 +1013,11 @@ func SearchWords(db *sql.DB, es *elasticsearch.Client, input string) ([]EngWord,
 	var buf bytes.Buffer
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
-			"bool": map[string]interface{}{
-				"must": make([]interface{}, 0),
+			"wildcard": map[string]interface{}{
+				"spelling": fmt.Sprintf("*%s*", input),
 			},
 		},
 	}
-
 	/*查询es中所有包含input每个字母的词，返回结果
 	POST /dailyenglish/_search
 		{
@@ -1035,14 +1034,6 @@ func SearchWords(db *sql.DB, es *elasticsearch.Client, input string) ([]EngWord,
 			}
 		}
 	*/
-	for _, char := range input {
-		query["query"].(map[string]interface{})["bool"].(map[string]interface{})["must"] = append(query["query"].(map[string]interface{})["bool"].(map[string]interface{})["must"].([]interface{}),
-			map[string]interface{}{
-				"wildcard": map[string]interface{}{
-					"spelling": fmt.Sprintf("*%c*", char),
-				},
-			})
-	}
 
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
 		log.Panicf("Error encoding query: %s", err)
@@ -1134,7 +1125,6 @@ func SearchWords(db *sql.DB, es *elasticsearch.Client, input string) ([]EngWord,
 
 	// 如果bulkBuf有内容，则批量插入es
 	if bulkBuf.Len() > 0 {
-		fmt.Println("bulk insert:", bulkBuf.String())
 		res, err := es.Bulk(
 			bytes.NewReader(bulkBuf.Bytes()),
 			es.Bulk.WithContext(ctx),
@@ -1145,7 +1135,6 @@ func SearchWords(db *sql.DB, es *elasticsearch.Client, input string) ([]EngWord,
 			return nil, fmt.Errorf("Failed to execute bulk insert: " + err.Error())
 		}
 		defer res.Body.Close()
-		fmt.Println("bulk insert response:", res.String())
 
 		if res.IsError() {
 			log.Printf("Bulk insert error: %s", res.String())
