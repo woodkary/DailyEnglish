@@ -2,7 +2,7 @@
   <view>
     <view class="body-head" style="display:flex">
       <image class="back" src="../../static/back.svg"></image>
-      <image class="logout" src="../../static/logout.svg"></image>
+      <image class="logout" @click="logout" src="../../static/logout.svg"></image>
     </view>
     <view class="personal-information" >
       <image class="head" src="../../static/pikachu.jpg"></image>
@@ -141,6 +141,17 @@ export default {
   },
 
   methods: {
+    logout() {
+      uni.removeStorageSync('token');
+      uni.showToast({
+        title: '退出成功',
+        icon: 'none',
+        duration: 2000
+      });
+      uni.navigateTo({
+        url: '../login/login'
+      });
+    },
     goToTeam() {
       uni.navigateTo({
         url: '../MyTeam/MyTeam'//Todo: 跳转到团队页面

@@ -126,7 +126,15 @@ function getQuestion(page) {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer '+localStorage.getItem('token')
         }
-    }).then(res => res.json()).then(data => {
+    }).then(res => {
+        if(res.status===401){
+            alert("登录信息已过期，请重新登录。")
+            localStorage.removeItem('token');
+            window.location.href = "./login&register.html";
+            return null;
+        }
+        return res.json()
+    }).then(data => {
         if(data.code === 200){
             //获取到题目后，先以十道题目分开
             let questions=data.questions;

@@ -52,10 +52,10 @@
               </ul>
 
             <ul class="logout-mode">
-                <li><a href="#">
-                        <i class="uil uil-signout"></i>
-                        <span class="link-name">Logout</span>
-                    </a></li>
+                <li><a href="login&register.html" onclick="logout()">
+                <i class="uil uil-signout"></i>
+                <span class="link-name">Logout</span>
+            </a></li>
 
                 <li class="mode">
                     <a href="#">
@@ -180,7 +180,16 @@
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
             }
-        }).then(response => response.json())
+        }).then(response => {
+            if(response.status === 401){
+                //token失效
+                alert('登录已过期，请重新登录');
+                localStorage.removeItem('token');
+                window.location.href = './login&register.html';
+                return null;
+            }
+            return response.json()
+        })
        .then(data => {
             console.log(data);
             data.team.forEach(t => {
@@ -638,5 +647,5 @@
 }
 
 </style>
-
+<script src="./js/login.js"></script>
 </html>
