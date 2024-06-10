@@ -741,6 +741,7 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 		}
 		isPunch >>= 1
 	}
+	count = maxCount
 	fmt.Println("连续打卡天数:", count)
 	//更新user_study表中的continuous_study字段，其值为现有值和count的最大值
 	//表示连续打卡天数
