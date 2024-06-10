@@ -1018,18 +1018,12 @@ func SearchWords(db *sql.DB, es *elasticsearch.Client, input string) ([]EngWord,
 			},
 		},
 	}
-	/*查询es中所有包含input每个字母的词，返回结果
+	/*查询es中所有包含input的词，返回结果
 	POST /dailyenglish/_search
 		{
 			"query":{
-				"bool":{
-					"must":[
-						{"wildcard":{"spelling":"*i*"}},
-						{"wildcard":{"spelling":"*n*"}},
-						{"wildcard":{"spelling":"*p*"}},
-						{"wildcard":{"spelling":"*u*"}},
-						{"wildcard":{"spelling":"*t*"}},
-					]
+				"wildcard":{
+				"spelling":"*input*"
 				}
 			}
 		}
