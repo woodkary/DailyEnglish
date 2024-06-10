@@ -729,9 +729,15 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 	}
 	//计算isPunch中连续的1的个数，这是用户连续打卡到的天数
 	count := 0
+	maxCount := 0
 	for isPunch > 0 {
 		if isPunch&0x01 == 1 {
 			count++
+			if count > maxCount {
+				maxCount = count
+			}
+		} else {
+			count = 0
 		}
 		isPunch >>= 1
 	}
