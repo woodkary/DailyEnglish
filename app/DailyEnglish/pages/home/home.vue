@@ -540,6 +540,7 @@
 				wordNumPunched: 5,
 				wordNumToReview: 5,
 				wordNumReviewed: 5,
+        searchHistory: {}, //历史搜索记录
         //历史搜索记录
 				items: [/*{
 					word: 'apple',
@@ -666,25 +667,29 @@
         let searchHistory = uni.getStorageSync('searchHistory');
         if(searchHistory){
           //搜索记录是this.searchInput+"_words"对应的结构体
-          searchHistory.push(uni.getStorageSync(this.searchInput+"_words"));
+          searchHistory.push(this.searchHistory[this.searchInput+"_words"]);
           uni.setStorageSync('searchHistory', searchHistory);
         }else{
-          uni.setStorageSync('searchHistory', [uni.getStorageSync(this.searchInput+"_words")]);
+          uni.setStorageSync('searchHistory', [this.searchHistory[this.searchInput+"_words"]]);
         }
-				// 跳转到搜索结果页
-				uni.navigateTo({
-					// url: `/pages/word_details/word_details?word=${this.searchInput}`
-					url: `/pages/word_details/word_details`
-				});
-				uni.showToast({
-					title: '搜索成功',
-					icon: 'none'
-				});
-				console.log("本次搜索内容是", this.searchInput);
-			},
-			handleSearchInput(input) {
-				this.searchInput = input;
-        let input_words = uni.getStorageSync(input+"_words");
+			// 跳转到搜索结果页
+			uni.navigateTo({
+				// url: `/pages/word_details/word_details?word=${this.searchInput}`
+				url: `/pages/word_details/word_details`
+			});
+			uni.showToast({
+				title: '搜索成功',
+				icon: 'none'
+			});
+			console.log("本次搜索内容是", this.searchInput);
+		},
+		handleSearchInput(input) {
+        if(input.length==0){
+          this.searchHistory = uni.getStorageSync('searchHistory');
+		  return;
+        }
+		    this.searchInput = input;
+        let input_words = this.searchHistory[input+"_words"];
         // 从本地缓存中获取上次的搜索记录
         if(input_words){
           this.items = input_words;
@@ -700,13 +705,14 @@
           success: (res) => {
             if (res.statusCode === 200) {
               let words = res.data.words;
+			  if(words==null) words = [];
               this.items = [];//清空原有记录
               // 遍历words数组，将每一个对象转换为新的结构，并添加到items数组中
               words.forEach(word => {
                 this.items.push(this.transformWordObject(word));
               });
               // 缓存搜索结果
-              uni.setStorageSync(input+"_words", this.items);
+              this.searchHistory[input+"_words"]=Array.from(this.items);
             } else {
               console.error("请求失败", res);
             }
