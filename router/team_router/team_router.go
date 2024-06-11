@@ -522,14 +522,13 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			c.JSON(500, "服务器错误")
 			return
 		}
-
 		// 初始化QuestionStatistics
-		err = controlsql.InitQuestionStatistics(db, exam_id, request.QuestionIDs)
-		if err != nil {
-			log.Panic(err)
-			c.JSON(500, "服务器错误")
-			return
-		}
+		// err = controlsql.InitQuestionStatistics(db, exam_id, question_num))
+		// if err != nil {
+		// 	log.Panic(err)
+		// 	c.JSON(500, "服务器错误")
+		// 	return
+		// }
 
 		c.JSON(200, "发布成功")
 		//@TODO具体逻辑待议
@@ -550,9 +549,6 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 					if isNeed {
 						//更新数据库
 						err = controlsql.FreshRank(db, exam_id)
-						if err != nil {
-							log.Panic(err)
-						}
 						ticker.Stop()
 						return
 					}

@@ -17,12 +17,24 @@ import (
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
+	"github.com/gorilla/websocket"
 	"golang.org/x/net/context"
 )
 
 func tokenAuthMiddleware() gin.HandlerFunc {
 	return middlewares.TokenAuthMiddleware("User")
 }
+// 升级http连接
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
+var (
+	connections = make(map[string]*websocket.Conn) //
+	mutex       = &sync.Mutex{}                    //互斥锁
+)
 
 // FormatWordData formats the word data into the desired string format
 func FormatWordData(wordData map[string]interface{}) string {
@@ -392,15 +404,15 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			return
 		}
 		//todo 向user_punch-learn表更新一项数据
-		err = controlsql.AddUserPunchLearn(db, UserClaims.UserID)
-		if err != nil {
-			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
-				"msg":  "服务器内部错误",
-			})
-			return
+		/*[
+		{
+			"user_id": 1,
+			"learned_index": 50,//目前打卡到的单词本的下标
+			"punch_num": 20,//打卡总单词数
+			"review_num": 20,//复习总单词数
+			"date": "2024-05-22"//第一次选择词书的日期
 		}
+		]*/
 		c.JSON(200, gin.H{
 			"code": "200",
 			"msg":  "修改词书成功",
@@ -428,11 +440,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		}
 		//查询用户信息
 		Item, err := controlsql.GetUserStudy(db, UserClaims.UserID)
-		if err != nil && err != sql.ErrNoRows {
-			log.Panic(err)
-			c.JSON(500, "服务器内部错误")
-			return
-		}
 		Item2, err := controlsql.GetReviewWordID(db, UserClaims.UserID)
 		if err != nil && err != sql.ErrNoRows {
 			c.JSON(http.StatusInternalServerError, gin.H{
