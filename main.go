@@ -1,7 +1,10 @@
+/*
+ * @Date: 2024-04-04 14:28:51
+ */
 package main
 
 import (
-	"DailyEnglish/middlewares"
+	middlewares "DailyEnglish/middlewares"
 	adminrouter "DailyEnglish/router/admin_router"
 	teamrouter "DailyEnglish/router/team_router"
 	userrouter "DailyEnglish/router/user_router"
@@ -13,7 +16,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	_ "github.com/go-sql-driver/mysql"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 var (
@@ -76,26 +78,19 @@ func init() {
 }
 
 func main() {
-	defer rdb.Close()
-	defer db.Close()
-
-	// 启动生产者
-	go middlewares.RunProducer()
-
-	// 启动消费者
-	go middlewares.RunConsumer()
-
 	r := gin.Default()
 	r.Use(middlewares.Cors())
 	r.Static("static/team_manager", "./static")
+	// r.Static("static/team_manager/css", "./static/css")
+	// r.Static("static/team_manager/js", "./static/js")
+	// r.LoadHTMLFiles("./static/login.html", "./static/register.html", "./static/forgot_password.html", "./static/index.html", "./static/404.html")
 	adminrouter.InitAdminRouter(r, db, rdb)
 	teamrouter.InitTeamRouter(r, db, rdb)
 	go func() {
 		r1 := gin.Default()
-		r1.Use(middlewares.Cors()) //跨域
+		r1.Use(middlewares.Cors())
 		userrouter.InitUserRouter(r1, db, rdb, es)
 		r1.Run(":8080")
 	}()
-	log.Println("Server is running at :8081")
 	r.Run(":8081")
 }
