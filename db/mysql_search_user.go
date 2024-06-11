@@ -2,19 +2,19 @@ package db
 
 import (
 	utils "DailyEnglish/utils"
-    	"bytes"
-    	"context"
-    	"database/sql"
-    	"encoding/json"
-    	"errors"
-    	"fmt"
-    	"log"
-    	"strconv"
-    	"strings"
-    	"time"
+	"bytes"
+	"context"
+	"database/sql"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"log"
+	"strconv"
+	"strings"
+	"time"
 
-    	"github.com/elastic/go-elasticsearch/v8"
-    	"github.com/go-redis/redis/v8"
+	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/go-redis/redis/v8"
 )
 
 // 定义词性的常量
@@ -52,6 +52,7 @@ type Meanings struct {
 	Conjunction  []string `json:"conjunction"`
 	Interjection []string `json:"interjection"`
 }
+
 // MarshalJSON 自定义序列化方法
 func (m Meanings) MarshalJSON() ([]byte, error) {
 	type Alias Meanings
@@ -612,6 +613,7 @@ type Word struct {
 	WordQuestion map[string]string `json:"word_question"`
 	Answer       string            `json:"answer"`
 }
+
 // 根据wordIDs查询word
 func GetWordByWordID(db *sql.DB, wordIDs []int) ([]Word, error) {
 	var WordList []Word
@@ -697,29 +699,29 @@ func GetUserPunchContent(db *sql.DB, userID int) ([]Word, error) {
 // 更新一次打卡信息
 func UpdateUserPunch(db *sql.DB, userID int, today string, rdb *redis.Client, punchResult map[int]bool) error {
 	// 查询当前用户的打卡记录
-    	query := "SELECT is_punch, last_punchdate FROM user_punch WHERE user_id = ?"
-    	var isPunch int64
-    	var lastPunchdate string
-    	err := db.QueryRow(query, userID).Scan(&isPunch, &lastPunchdate)
-    	if err != nil {
-    		if err == sql.ErrNoRows {
-    			// 说明当前用户没有打卡记录，则插入一条新的记录
-    			insertQuery, err := db.Prepare("INSERT INTO user_punch(user_id, is_punch, last_punchdate) VALUES(?,?,?)")
-    			if err != nil {
-    				log.Panic(err)
-    				return err
-    			}
-    			defer insertQuery.Close()
-    			_, err = insertQuery.Exec(userID, 0x01, today)
-    			if err != nil {
-    				log.Panic(err)
-    				return err
-    			}
-    			lastPunchdate = today
-    		} else {
-    			return err
-    		}
-    	}
+	query := "SELECT is_punch, last_punchdate FROM user_punch WHERE user_id = ?"
+	var isPunch int64
+	var lastPunchdate string
+	err := db.QueryRow(query, userID).Scan(&isPunch, &lastPunchdate)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// 说明当前用户没有打卡记录，则插入一条新的记录
+			insertQuery, err := db.Prepare("INSERT INTO user_punch(user_id, is_punch, last_punchdate) VALUES(?,?,?)")
+			if err != nil {
+				log.Panic(err)
+				return err
+			}
+			defer insertQuery.Close()
+			_, err = insertQuery.Exec(userID, 0x01, today)
+			if err != nil {
+				log.Panic(err)
+				return err
+			}
+			lastPunchdate = today
+		} else {
+			return err
+		}
+	}
 
 	// 解析最后打卡日期
 	lastPunchTime, err := time.Parse("2006-01-02", lastPunchdate)
@@ -758,78 +760,78 @@ func UpdateUserPunch(db *sql.DB, userID int, today string, rdb *redis.Client, pu
 		return err
 	}
 	//更新用户learn_index和study_day
-    	var old_index int
-    	var plan_num int
-    	var study_day int
-    	db.QueryRow("SELECT learn_index,plan_num,study_day FROM user_study WHERE user_id = ?", userID).Scan(&old_index, &plan_num, &study_day)
-    	new_index := old_index + plan_num
-    	study_day++
-    	updateQuery, err = db.Prepare("UPDATE user_study SET learn_index = ?,study_day = ? WHERE user_id = ?")
-    	if err != nil {
-    		log.Panic(err)
-    		return err
-    	}
-    	defer updateQuery.Close()
-    	_, err = updateQuery.Exec(new_index, study_day, userID)
-    	if err != nil {
-    		log.Panic(err)
-    		return err
-    	}
-    	fmt.Printf("User %d punch record updated successfully.\n", userID)
-    	return nil
+	var old_index int
+	var plan_num int
+	var study_day int
+	db.QueryRow("SELECT learn_index,plan_num,study_day FROM user_study WHERE user_id = ?", userID).Scan(&old_index, &plan_num, &study_day)
+	new_index := old_index + plan_num
+	study_day++
+	updateQuery, err = db.Prepare("UPDATE user_study SET learn_index = ?,study_day = ? WHERE user_id = ?")
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	defer updateQuery.Close()
+	_, err = updateQuery.Exec(new_index, study_day, userID)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	fmt.Printf("User %d punch record updated successfully.\n", userID)
+	return nil
 
 	//计算isPunch中连续的1的个数，这是用户连续打卡到的天数
-    	count := 0
-    	maxCount := 0
-    	for isPunch > 0 {
-    		if isPunch&0x01 == 1 {
-    			count++
-    			if count > maxCount {
-    				maxCount = count
-    			}
-    		} else {
-    			count = 0
-    		}
-    		isPunch >>= 1
-    	}
-    	count = maxCount
-    	fmt.Println("连续打卡天数:", count)
-    	//更新user_study表中的continuous_study字段，其值为现有值和count的最大值
-    	//表示连续打卡天数
-    	updateQuery, err = db.Prepare("UPDATE user_study SET continuous_study = GREATEST(continuous_study,?) WHERE user_id = ?")
-    	if err != nil {
-    		log.Panic(err)
-    		return err
-    	}
-    	defer updateQuery.Close()
-    	_, err = updateQuery.Exec(count, userID)
-    	if err != nil {
-    		log.Panic(err)
-    		return err
-    	}
+	count := 0
+	maxCount := 0
+	for isPunch > 0 {
+		if isPunch&0x01 == 1 {
+			count++
+			if count > maxCount {
+				maxCount = count
+			}
+		} else {
+			count = 0
+		}
+		isPunch >>= 1
+	}
+	count = maxCount
+	fmt.Println("连续打卡天数:", count)
+	//更新user_study表中的continuous_study字段，其值为现有值和count的最大值
+	//表示连续打卡天数
+	updateQuery, err = db.Prepare("UPDATE user_study SET continuous_study = GREATEST(continuous_study,?) WHERE user_id = ?")
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	defer updateQuery.Close()
+	_, err = updateQuery.Exec(count, userID)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
 
-    	// 构建键名
-    	redisKey := fmt.Sprintf("punchResult:%d:%s", userID, today)
+	// 构建键名
+	redisKey := fmt.Sprintf("punchResult:%d:%s", userID, today)
 
-    	// 准备哈希的键值对
-    	hashData := make(map[string]interface{})
-    	for k, v := range punchResult {
-    		// 由于Redis的哈希字段和值都是字符串，所以这里需要将整数键转换为字符串
-    		keyStr := strconv.Itoa(k)
-    		// 布尔值在Go中转换为字符串时，"true"会被转换为"1"，"false"会被转换为"0"
-    		valueStr := strconv.FormatBool(v)
-    		hashData[keyStr] = valueStr
-    	}
+	// 准备哈希的键值对
+	hashData := make(map[string]interface{})
+	for k, v := range punchResult {
+		// 由于Redis的哈希字段和值都是字符串，所以这里需要将整数键转换为字符串
+		keyStr := strconv.Itoa(k)
+		// 布尔值在Go中转换为字符串时，"true"会被转换为"1"，"false"会被转换为"0"
+		valueStr := strconv.FormatBool(v)
+		hashData[keyStr] = valueStr
+	}
 
-    	// 使用HMSet将所有键值对存入Redis哈希
-    	_, err = rdb.HMSet(context.Background(), redisKey, hashData).Result()
-    	if err != nil {
-    		log.Panic(err)
-    		return err
-    	}
+	// 使用HMSet将所有键值对存入Redis哈希
+	_, err = rdb.HMSet(context.Background(), redisKey, hashData).Result()
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
 
-    	fmt.Printf("User %d punch record updated successfully.\n", userID)
-    	return nil
+	fmt.Printf("User %d punch record updated successfully.\n", userID)
+	return nil
 }
 func UpdateUserLearnIndex(db *sql.DB, userID int) error {
 	// 开启事务
@@ -907,6 +909,53 @@ func UpdateUserLearnIndex(db *sql.DB, userID int) error {
 	fmt.Printf("User %d learn index updated successfully.\n", userID)
 	return nil
 }
+
+// 一位用户提交考试结果，更新该场考试的question_statistics表
+func UpdateQuestionStatistics(db *sql.DB, examID int, question_result map[int]string) error {
+	// 循环遍历question_result的键question_id
+	// 判断question_result的值为A还是B还是C还是D，为对应的字段加1
+	for questionID, answer := range question_result {
+		switch answer {
+		case "A":
+			updatequery, _ := db.Prepare("UPDATE question_statistics SET A_num VALUES A_num + 1 WHERE exam_id = ? AND question_id = ?")
+			defer updatequery.Close()
+			_, err := updatequery.Exec(examID, questionID)
+			if err != nil {
+				log.Panic(err)
+				return err
+			}
+		case "B":
+			updatequery, _ := db.Prepare("UPDATE question_statistics SET B_num VALUES B_num + 1 WHERE exam_id = ? AND question_id = ?")
+			defer updatequery.Close()
+			_, err := updatequery.Exec(examID, questionID)
+			if err != nil {
+				log.Panic(err)
+				return err
+			}
+		case "C":
+			updatequery, _ := db.Prepare("UPDATE question_statistics SET C_num VALUES C_num + 1 WHERE exam_id = ? AND question_id = ?")
+			defer updatequery.Close()
+			_, err := updatequery.Exec(examID, questionID)
+			if err != nil {
+				log.Panic(err)
+				return err
+			}
+		case "D":
+			updatequery, _ := db.Prepare("UPDATE question_statistics SET D_num VALUES D_num + 1 WHERE exam_id = ? AND question_id = ?")
+			defer updatequery.Close()
+			_, err := updatequery.Exec(examID, questionID)
+			if err != nil {
+				log.Panic(err)
+				return err
+			}
+		default:
+			log.Printf("Invalid answer %s for question %d", answer, questionID)
+		}
+		fmt.Printf("Question %d answer %s updated successfully.\n", questionID, answer)
+	}
+	return nil
+}
+
 // 打卡后插入学习记录并更新复习时间
 func InsertUserMemory(db *sql.DB, userID int, wordID int, isCorret bool) error {
 	//先根据wordID查询difficulty
@@ -981,6 +1030,7 @@ func UpdatetUserMemory(db *sql.DB, userID int, wordID int, isCorret bool) error 
 	}
 	return nil
 }
+
 // redis------user_id:question_type:["score","num"]
 // 向redis中插入学生的题目总分和题目数量
 func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, teamID int, examResult map[int]Exam_score) (map[int]float64, error) {
@@ -1097,6 +1147,7 @@ func CheckUserBook(db *sql.DB, user_id int) int {
 	}
 	return 1
 }
+
 type UserPunchInfo struct {
 	PunchWordNum        int `json:"punch_word_num"`        //打卡单词数
 	TotalPunchDay       int `json:"total_punch_day"`       //总打卡天数
@@ -1351,6 +1402,7 @@ func toStringSlice(value interface{}) []string {
 	}
 	return []string{}
 }
+
 // 查询review_date<=now的word_id列表
 func GetReviewWordID(db *sql.DB, user_id int) ([]int, error) {
 	var wordIDs []int
