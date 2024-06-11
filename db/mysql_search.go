@@ -50,6 +50,26 @@ type NewWord struct {
 	RelatedWords  string `json:"related_words"`
 }
 
+func UpdateWordID(db *sql.DB) error {
+	new_id := 1
+	//查询数据库中所有word_id并更新
+	rows, err := db.Query("SELECT word_id FROM word")
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var word_id int
+		rows.Scan(&word_id)
+		_, err := db.Exec("UPDATE word SET word_id = ? WHERE word_id = ?", new_id, word_id)
+		if err != nil {
+			return err
+		}
+		new_id++
+	}
+	return nil
+}
+
 func InsertWords(db *sql.DB, filename string) error {
 	// 读取文件
 	data, err := ioutil.ReadFile(filename)
@@ -65,23 +85,38 @@ func InsertWords(db *sql.DB, filename string) error {
 	}
 
 	// 插入数据到数据库
-	word_id := 101
+	//word_id := 101
 	for _, word := range NewWords {
-		_, err := db.Exec(
-			"INSERT INTO word (word_id,word, pronunciation, meanings, morpheme, example_sentence, phrases) VALUES (?,?, ?, ?, ?, ?, ?)",
-			word_id,
-			word.Word,
-			word.Pronunciation,
-			word.PartsOfSpeech,
-			word.RelatedWords,
-			word.Examples,
-			word.Phrases,
-		)
+		//先查询该单词是否已经存在
+		var count int
+		err = db.QueryRow("SELECT COUNT(*) FROM word WHERE word = ?", word.Word).Scan(&count)
 		if err != nil {
-			log.Printf("Failed to insert word %s: %v", word.Word, err)
-		} else {
-			word_id++
+			return err
 		}
+		//如果存在更新信息
+		if count > 0 {
+			_, err = db.Exec("UPDATE word SET pronunciation = ?, meanings = ?, morpheme = ?, example_sentence = ?, phrases = ? WHERE word = ?", word.Pronunciation, word.PartsOfSpeech, word.RelatedWords, word.Examples, word.Phrases, word.Word)
+			if err != nil {
+				log.Printf("Failed to update word %s: %v", word.Word, err)
+			}
+			continue
+		}
+		// //如果不存在插入新单词
+		// _, err := db.Exec(
+		// 	"INSERT INTO word (word_id,word, pronunciation, meanings, morpheme, example_sentence, phrases) VALUES (?,?, ?, ?, ?, ?, ?)",
+		// 	word_id,
+		// 	word.Word,
+		// 	word.Pronunciation,
+		// 	word.PartsOfSpeech,
+		// 	word.RelatedWords,
+		// 	word.Examples,
+		// 	word.Phrases,
+		// )
+		// if err != nil {
+		// 	log.Printf("Failed to insert word %s: %v", word.Word, err)
+		// } else {
+		// 	word_id++
+		// }
 	}
 
 	return nil

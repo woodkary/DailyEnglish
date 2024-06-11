@@ -370,6 +370,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		}
 		//查询用户信息
 		Item, err := controlsql.GetUserStudy(db, UserClaims.UserID)
+		Item2, err := controlsql.GetReviewWordID(db, UserClaims.UserID)
 		if err != nil && err != sql.ErrNoRows {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
@@ -391,20 +392,9 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			TaskToday TaskToday `json:"task_today"`
 		}
 		var response Response
-		var plan_num int
-		if request.Time == 0 {
-			response.TaskToday.PunchNum = 20
-			response.TaskToday.ReviewNum = 5 //这里写死的@TODO去找那些单词需要复习
-			response.TaskToday.IsPunched = false
-		} else if request.Time == 1 {
-			response.TaskToday.PunchNum = 0
-			response.TaskToday.ReviewNum = 5 //这里写死的@TODO去找那些单词需要复习
-			response.TaskToday.IsPunched = true
-		} else {
-			response.TaskToday.PunchNum = 0
-			response.TaskToday.ReviewNum = 0
-			response.TaskToday.IsPunched = true
-		}
+		response.TaskToday.PunchNum = Item.PunchNum
+		response.TaskToday.IsPunched = Item.IsPunched
+		response.TaskToday.ReviewNum = len(Item2)
 		response.TaskToday.BookLearning = Item.BookLearning
 		response.TaskToday.WordNumLearned = Item.WordNumLearned
 		response.TaskToday.WordNumTotal = Item.WordNumTotal
@@ -497,7 +487,18 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			})
 			return
 		}
-
+		//打卡后插入学习记录并更新复习时间
+		for k, v := range request.PunchResult {
+			err := controlsql.InsertUserMemory(db, userId, k, v)
+			if err != nil && err != sql.ErrNoRows {
+				log.Panic(err)
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"code": 500,
+					"msg":  "服务器内部错误",
+				})
+				return
+			}
+		}
 		type Response struct {
 			Code int    `json:"code"`
 			Msg  string `json:"msg"`
@@ -583,15 +584,17 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		userId := UserClaims.UserID //获取用户id
 		fmt.Println("打卡的用户id为", userId)
 		//更新用户学习进度
-		// err := controlsql.UpdateUserPunch(db, userId, time.Now().Format("2006-01-02"))
-		// if err != nil && err != sql.ErrNoRows {
-		// 	log.Panic(err)
-		// 	c.JSON(http.StatusInternalServerError, gin.H{
-		// 		"code": 500,
-		// 		"msg":  "服务器内部错误",
-		// 	})
-		// 	return
-		// }
+		for k, v := range request.PunchResult {
+			err := controlsql.UpdatetUserMemory(db, userId, k, v)
+			if err != nil && err != sql.ErrNoRows {
+				log.Panic(err)
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"code": 500,
+					"msg":  "服务器内部错误",
+				})
+				return
+			}
+		}
 
 		type Response struct {
 			Code int    `json:"code"`

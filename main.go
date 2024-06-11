@@ -5,9 +5,9 @@ package main
 
 import (
 	"DailyEnglish/middlewares"
-	"DailyEnglish/router/adminrouter"
-	"DailyEnglish/router/teamrouter"
-	"DailyEnglish/router/userrouter"
+	adminrouter "DailyEnglish/router/admin_router"
+	teamrouter "DailyEnglish/router/team_router"
+	userrouter "DailyEnglish/router/user_router"
 	"database/sql"
 	"fmt"
 

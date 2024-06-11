@@ -558,7 +558,7 @@ func GetUserPunchContent(db *sql.DB, userID int) ([]Word, error) {
 
 	// 查找该book从learned_index以后plan_num个未学习过的词的WordID
 	var wordIDs []int
-	query := "SELECT word_id FROM word_book WHERE book_id = ? AND word_id > ? AND word_id < ?"
+	query := "SELECT word_id FROM word_book WHERE book_id = ? AND word_id > ? AND word_id <= ?"
 	rows, err := db.Query(query, bookID, learn_index, learn_index+plan_num)
 	if err != nil {
 		log.Panic(err)
@@ -660,7 +660,24 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 		log.Panic(err)
 		return err
 	}
-
+	//更新用户learn_index和study_day
+	var old_index int
+	var plan_num int
+	var study_day int
+	db.QueryRow("SELECT learn_index,plan_num,study_day FROM user_study WHERE user_id = ?", userID).Scan(&old_index, &plan_num, &study_day)
+	new_index := old_index + plan_num
+	study_day++
+	updateQuery, err = db.Prepare("UPDATE user_study SET learn_index = ?,study_day = ? WHERE user_id = ?")
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	defer updateQuery.Close()
+	_, err = updateQuery.Exec(new_index, study_day, userID)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
 	fmt.Printf("User %d punch record updated successfully.\n", userID)
 	return nil
 }
@@ -685,13 +702,54 @@ func InsertUserMemory(db *sql.DB, userID int, wordID int, isCorret bool) error {
 	bestInterval := utils.CalculateBestInterval(difficulty, interval_history, feedback_history)
 	nextReviewTime := time.Now().AddDate(0, 0, bestInterval).Format("2006-01-02")
 	//插入记忆记录
-	insertQuery, err := db.Prepare("INSERT INTO user_word_memory(user_id,word_id,learn_times,interval_history,feedback_history,interval_days,is_memory,review_date) VALUES(?,?,?,?,?,?,?,?)")
+	insertQuery, err := db.Prepare("INSERT INTO user_word_memory(user_id,word_id,learn_times,interval_history,feedback_history,interval_days,is_memory,review_date,difficulty) VALUES(?,?,?,?,?,?,?,?,?)")
 	if err != nil {
 		log.Panic(err)
 		return err
 	}
 	defer insertQuery.Close()
-	_, err = insertQuery.Exec(userID, wordID, 1, interval_history, feedback_history, bestInterval, 0, nextReviewTime)
+	_, err = insertQuery.Exec(userID, wordID, 1, interval_history, feedback_history, bestInterval, 0, nextReviewTime, difficulty)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	return nil
+}
+
+// 复习后更新学习记录
+func UpdatetUserMemory(db *sql.DB, userID int, wordID int, isCorret bool) error {
+	//先根据wordID查询difficulty,interval_history,feedback_history,review_date,interval_days
+	var difficulty int
+	var interval_history string
+	var feedback_history string
+	var review_date string
+	var interval_days int
+	err := db.QueryRow("SELECT difficulty,interval_history,feedback_history,review_date,interval_days FROM user_word_memory WHERE user_id = ? AND word_id = ?", userID, wordID).Scan(&difficulty, &interval_history, &feedback_history, &review_date, &interval_days)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	//更新interval_history
+	real_reviewDate := time.Now()
+	t, _ := time.Parse("2006-01-02", review_date)
+	real_interval_days := interval_days + int(real_reviewDate.Sub(t).Hours()/24)
+	interval_history = interval_history + "," + strconv.Itoa(real_interval_days)
+	//更新feedback_history
+	if isCorret {
+		feedback_history = feedback_history + "," + "1"
+	} else {
+		feedback_history = feedback_history + "," + "0"
+	}
+	bestInterval := utils.CalculateBestInterval(difficulty, interval_history, feedback_history)
+	nextReviewTime := time.Now().AddDate(0, 0, bestInterval).Format("2006-01-02")
+	//更新记忆记录
+	updateQuery, err := db.Prepare("UPDATE user_word_memory SET learn_times = learn_times + 1,interval_history = ?,feedback_history = ?,interval_days = ?,review_date = ? WHERE user_id = ? AND word_id = ?")
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	defer updateQuery.Close()
+	_, err = updateQuery.Exec(interval_history, feedback_history, bestInterval, nextReviewTime, userID, wordID)
 	if err != nil {
 		log.Panic(err)
 		return err
