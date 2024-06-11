@@ -79,10 +79,10 @@ func main() {
 	defer db.Close()
 
 	// 启动生产者
-	go RunProducer()
+	go middlewares.RunProducer()
 
 	// 启动消费者
-	go RunConsumer()
+	go middlewares.RunConsumer()
 
 	r := gin.Default()
 	r.Use(middlewares.Cors())
