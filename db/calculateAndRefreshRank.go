@@ -122,12 +122,12 @@ func FreshRank(db *sql.DB, exam_id int) error {
 		}
 	}
 	pass_rate := float64(pass_num) / float64(len(ss))
-	//将用户的成绩以解析成字符串"user_id:score,user_id:score"形式存入exam_info表中
+	//将用户的成绩以解析成字符串"score-score"形式存入exam_score表中
 	var user_score_str string
 	for _, v := range ss {
-		user_score_str += (string)(v.Key) + ":" + (string)(v.Value) + ","
+		user_score_str += (string)(v.Value) + "-"
 	}
-	//将得到的数据插入exam_info表中
+	//将得到的数据插入exam_score表中
 	stmt, err := db.Prepare("INSERT INTO `exam_score`(exam_id,max_score,average_score,pass_rate,exam_score) VALUES(?,?,?,?,?)")
 	if err != nil {
 		return err
