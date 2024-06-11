@@ -1434,5 +1434,6 @@ func GetReviewWordID(db *sql.DB, user_id int) ([]int, error) {
 		}
 		wordIDs = append(wordIDs, wordID)
 	}
+	fmt.Println("wordIDs:", wordIDs)
 	return wordIDs, nil
 }
