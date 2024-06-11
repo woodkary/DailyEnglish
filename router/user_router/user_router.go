@@ -428,6 +428,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		}
 		//查询用户信息
 		Item, err := controlsql.GetUserStudy(db, UserClaims.UserID)
+		Item2, err := controlsql.GetReviewWordID(db, UserClaims.UserID)
 		if err != nil && err != sql.ErrNoRows {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
@@ -449,19 +450,9 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			TaskToday TaskToday `json:"task_today"`
 		}
 		var response Response
-		if request.Time == 0 {
-			response.TaskToday.PunchNum = 20
-			response.TaskToday.ReviewNum = 5 //这里写死的@TODO去找那些单词需要复习
-			response.TaskToday.IsPunched = false
-		} else if request.Time == 1 {
-			response.TaskToday.PunchNum = 0
-			response.TaskToday.ReviewNum = 5 //这里写死的@TODO去找那些单词需要复习
-			response.TaskToday.IsPunched = true
-		} else {
-			response.TaskToday.PunchNum = 0
-			response.TaskToday.ReviewNum = 0
-			response.TaskToday.IsPunched = true
-		}
+		response.TaskToday.PunchNum = Item.PunchNum
+		response.TaskToday.IsPunched = Item.IsPunched
+		response.TaskToday.ReviewNum = len(Item2)
 		response.TaskToday.BookLearning = Item.BookLearning
 		response.TaskToday.WordNumLearned = Item.WordNumLearned
 		response.TaskToday.WordNumTotal = Item.WordNumTotal
@@ -506,60 +497,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			c.JSON(500, "服务器内部错误")
 			return
 		}
-		fmt.Println("GetUserPunchContent: ", wordlist)
-
-		// var word Word
-		// word.WordID = 1
-		// word.Word = "apple"
-		// word.PhoneticUS = "[ˈæpl]"
-		// word.WordQuestion = make(map[string]string)
-		// word.WordQuestion["A"] = "苹果"
-		// word.WordQuestion["B"] = "香蕉"
-		// word.WordQuestion["C"] = "橘子"
-		// word.WordQuestion["D"] = "梨"
-		// word.Answer = "A"
-		// response.WordList = append(response.WordList, word)
-		// word.WordID = 2
-		// word.Word = "banana"
-		// word.PhoneticUS = "[bəˈnænə]"
-		// word.WordQuestion = make(map[string]string)
-		// word.WordQuestion["A"] = "苹果"
-		// word.WordQuestion["B"] = "香蕉"
-		// word.WordQuestion["C"] = "橘子"
-		// word.WordQuestion["D"] = "梨"
-		// word.Answer = "B"
-		// response.WordList = append(response.WordList, word)
-		// word.WordID = 3
-		// word.Word = "orange"
-		// word.PhoneticUS = "[ˈɔːrɪndʒ]"
-		// word.WordQuestion = make(map[string]string)
-		// word.WordQuestion["A"] = "苹果"
-		// word.WordQuestion["B"] = "香蕉"
-		// word.WordQuestion["C"] = "橘子"
-		// word.WordQuestion["D"] = "梨"
-		// word.Answer = "C"
-		// response.WordList = append(response.WordList, word)
-		// word.WordID = 4
-		// word.Word = "pear"
-		// word.PhoneticUS = "[per]"
-		// word.WordQuestion = make(map[string]string)
-		// word.WordQuestion["A"] = "苹果"
-		// word.WordQuestion["B"] = "香蕉"
-		// word.WordQuestion["C"] = "橘子"
-		// word.WordQuestion["D"] = "梨"
-		// word.Answer = "D"
-		// response.WordList = append(response.WordList, word)
-		// word.WordID = 5
-		// word.Word = "grape"
-		// word.PhoneticUS = "[ɡreɪp]"
-		// word.WordQuestion = make(map[string]string)
-		// word.WordQuestion["A"] = "苹果"
-		// word.WordQuestion["B"] = "香蕉"
-		// word.WordQuestion["C"] = "葡萄"
-		// word.WordQuestion["D"] = "梨"
-		// word.Answer = "C"
-		// response.WordList = append(response.WordList, word)
-
 		var aword Word
 		for _, word := range wordlist {
 			aword.WordID = word.WordID
@@ -608,23 +545,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			})
 			return
 		}
-		//更新learned_index
-		err = controlsql.UpdateUserLearnIndex(db, userId)
-		if err != nil {
-			if err.Error() == "请先选择词书" {
-				c.JSON(http.StatusNotFound, gin.H{
-					"code": 404,
-					"msg":  "请先选择词书",
-				})
-				return
-			}
-			log.Panic(err)
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": 500,
-				"msg":  "服务器内部错误",
-			})
-			return
-		}
 
 		type Response struct {
 			Code int    `json:"code"`
@@ -638,7 +558,12 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 
 	//复习
 	r.GET("/api/main/take_review", tokenAuthMiddleware(), func(c *gin.Context) {
-		//查询复习单词，这里写死先
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
 		//复习单词
 		type Word struct {
 			WordID       int               `json:"word_id"`
@@ -653,57 +578,30 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			WordList []Word `json:"word_list"`
 		}
 		var response Response
-		var word Word
-		word.WordID = 1
-		word.Word = "abandon"
-		word.PhoneticUS = "[əˈbændən]"
-		word.WordQuestion = make(map[string]string)
-		word.WordQuestion["A"] = "放弃"
-		word.WordQuestion["B"] = "保留"
-		word.WordQuestion["C"] = "拒绝"
-		word.WordQuestion["D"] = "接受"
-		word.Answer = "A"
-		response.WordList = append(response.WordList, word)
-		word.WordID = 2
-		word.Word = "abroad"
-		word.PhoneticUS = "[əˈbrɔːd]"
-		word.WordQuestion = make(map[string]string)
-		word.WordQuestion["A"] = "国内"
-		word.WordQuestion["B"] = "国外"
-		word.WordQuestion["C"] = "国际"
-		word.WordQuestion["D"] = "国内外"
-		word.Answer = "B"
-		response.WordList = append(response.WordList, word)
-		word.WordID = 3
-		word.Word = "absorb"
-		word.PhoneticUS = "[əbˈzɔːrb]"
-		word.WordQuestion = make(map[string]string)
-		word.WordQuestion["A"] = "吸收"
-		word.WordQuestion["B"] = "排放"
-		word.WordQuestion["C"] = "吸引"
-		word.WordQuestion["D"] = "排斥"
-		word.Answer = "A"
-		response.WordList = append(response.WordList, word)
-		word.WordID = 4
-		word.Word = "bargain"
-		word.PhoneticUS = "[ˈbɑːrɡɪn]"
-		word.WordQuestion = make(map[string]string)
-		word.WordQuestion["C"] = "讨价还价"
-		word.WordQuestion["B"] = "交易"
-		word.WordQuestion["A"] = "协商"
-		word.WordQuestion["D"] = "交易"
-		word.Answer = "C"
-		response.WordList = append(response.WordList, word)
-		word.WordID = 5
-		word.Word = "satisfy"
-		word.PhoneticUS = "[ˈsætɪsfaɪ]"
-		word.WordQuestion = make(map[string]string)
-		word.WordQuestion["C"] = "满足"
-		word.WordQuestion["B"] = "满意"
-		word.WordQuestion["A"] = "满足"
-		word.WordQuestion["D"] = "满足"
-		word.Answer = "C"
-		response.WordList = append(response.WordList, word)
+		//数据库中查找word_id
+		wordIDs, err := controlsql.GetReviewWordID(db, UserClaims.UserID)
+		if err != nil && err != sql.ErrNoRows {
+			log.Panic(err)
+			c.JSON(500, "服务器内部错误")
+			return
+		}
+		//查询单词信息
+		words, err := controlsql.GetWordByWordID(db, wordIDs)
+		if err != nil && err != sql.ErrNoRows {
+			log.Panic(err)
+			c.JSON(500, "服务器内部错误")
+			return
+		}
+		var aword Word
+		for _, word := range words {
+			aword.WordID = word.WordID
+			aword.Word = word.Word
+			aword.PhoneticUS = word.PhoneticUS
+			aword.WordQuestion = word.WordQuestion
+			aword.Answer = word.Answer
+			response.WordList = append(response.WordList, aword)
+		}
+		fmt.Println("复习单词列表 ", response.WordList)
 		response.Code = 200
 		response.Msg = "成功"
 		c.JSON(200, response)
@@ -733,15 +631,17 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		userId := UserClaims.UserID //获取用户id
 		fmt.Println("打卡的用户id为", userId)
 		//更新用户学习进度
-		// err := controlsql.UpdateUserPunch(db, userId, time.Now().Format("2006-01-02"))
-		// if err != nil && err != sql.ErrNoRows {
-		// 	log.Panic(err)
-		// 	c.JSON(http.StatusInternalServerError, gin.H{
-		// 		"code": 500,
-		// 		"msg":  "服务器内部错误",
-		// 	})
-		// 	return
-		// }
+		for k, v := range request.PunchResult {
+			err := controlsql.UpdatetUserMemory(db, userId, k, v)
+			if err != nil && err != sql.ErrNoRows {
+				log.Panic(err)
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"code": 500,
+					"msg":  "服务器内部错误",
+				})
+				return
+			}
+		}
 
 		type Response struct {
 			Code int    `json:"code"`

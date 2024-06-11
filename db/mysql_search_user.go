@@ -571,6 +571,32 @@ type Word struct {
 	Answer       string            `json:"answer"`
 }
 
+// 根据wordIDs查询word
+func GetWordByWordID(db *sql.DB, wordIDs []int) ([]Word, error) {
+	var WordList []Word
+	var objectQuestion string
+	for _, wordID := range wordIDs {
+		var object Word
+		object.WordID = wordID
+		err := db.QueryRow("SELECT word,pronunciation,word_question,answer FROM word WHERE word_id = ?", wordID).Scan(&object.Word, &object.PhoneticUS, &objectQuestion, &object.Answer)
+		if err != nil {
+			log.Panic(err)
+			return nil, err
+		}
+		// 将objectQuestion字符串的首位：字符忽略，并以空格划分为四个子字符串，形如A.1 B.2 C.3 D.4
+		objectQuestionList := strings.Split(objectQuestion[1:], " ")
+		object.WordQuestion = make(map[string]string)
+		for _, question := range objectQuestionList {
+			m := strings.Split(question, ".")
+			object.WordQuestion[m[0]] = m[1]
+		}
+		fmt.Println(object.WordQuestion)
+
+		WordList = append(WordList, object)
+	}
+	return WordList, nil
+}
+
 // 从数据库中查询，并且生成用户打卡内容
 func GetUserPunchContent(db *sql.DB, userID int) ([]Word, error) {
 	// 查询用户当前学习的bookID
@@ -586,7 +612,7 @@ func GetUserPunchContent(db *sql.DB, userID int) ([]Word, error) {
 
 	// 查找该book从learned_index以后plan_num个未学习过的词的WordID
 	var wordIDs []int
-	query := "SELECT word_id FROM word_book WHERE book_id = ? AND word_id > ? AND word_id < ?"
+	query := "SELECT word_id FROM word_book WHERE book_id = ? AND word_id > ? AND word_id <= ?"
 	rows, err := db.Query(query, bookID, learn_index, learn_index+plan_num)
 	if err != nil {
 		log.Panic(err)
@@ -690,6 +716,7 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 		log.Panic(err)
 		return err
 	}
+<<<<<<< HEAD
 	//计算isPunch中连续的1的个数，这是用户连续打卡到的天数
 	count := 0
 	for isPunch > 0 {
@@ -702,17 +729,34 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 	//更新user_study表中的continuous_study字段，其值为现有值和count的最大值
 	//表示连续打卡天数
 	updateQuery, err = db.Prepare("UPDATE user_study SET continuous_study = GREATEST(continuous_study,?) WHERE user_id = ?")
+=======
+	//更新用户learn_index和study_day
+	var old_index int
+	var plan_num int
+	var study_day int
+	db.QueryRow("SELECT learn_index,plan_num,study_day FROM user_study WHERE user_id = ?", userID).Scan(&old_index, &plan_num, &study_day)
+	new_index := old_index + plan_num
+	study_day++
+	updateQuery, err = db.Prepare("UPDATE user_study SET learn_index = ?,study_day = ? WHERE user_id = ?")
+>>>>>>> 808fcf39a5cc24b92ba4a27465f395cbb5a681e6
 	if err != nil {
 		log.Panic(err)
 		return err
 	}
 	defer updateQuery.Close()
+<<<<<<< HEAD
 	_, err = updateQuery.Exec(count, userID)
+=======
+	_, err = updateQuery.Exec(new_index, study_day, userID)
+>>>>>>> 808fcf39a5cc24b92ba4a27465f395cbb5a681e6
 	if err != nil {
 		log.Panic(err)
 		return err
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> 808fcf39a5cc24b92ba4a27465f395cbb5a681e6
 	fmt.Printf("User %d punch record updated successfully.\n", userID)
 	return nil
 }
@@ -790,6 +834,81 @@ func UpdateUserLearnIndex(db *sql.DB, userID int) error {
 	}
 
 	fmt.Printf("User %d learn index updated successfully.\n", userID)
+	return nil
+}
+
+// 打卡后插入学习记录并更新复习时间
+func InsertUserMemory(db *sql.DB, userID int, wordID int, isCorret bool) error {
+	//先根据wordID查询difficulty
+	var difficulty int
+	err := db.QueryRow("SELECT difficulty FROM word WHERE word_id = ?", wordID).Scan(&difficulty)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	//计算下次复习时间
+	interval_history := "0"
+	var feedback_history string
+	if isCorret {
+		feedback_history = "1"
+	} else {
+		feedback_history = "0"
+	}
+	bestInterval := utils.CalculateBestInterval(difficulty, interval_history, feedback_history)
+	nextReviewTime := time.Now().AddDate(0, 0, bestInterval).Format("2006-01-02")
+	//插入记忆记录
+	insertQuery, err := db.Prepare("INSERT INTO user_word_memory(user_id,word_id,learn_times,interval_history,feedback_history,interval_days,is_memory,review_date,difficulty) VALUES(?,?,?,?,?,?,?,?,?)")
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	defer insertQuery.Close()
+	_, err = insertQuery.Exec(userID, wordID, 1, interval_history, feedback_history, bestInterval, 0, nextReviewTime, difficulty)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	return nil
+}
+
+// 复习后更新学习记录
+func UpdatetUserMemory(db *sql.DB, userID int, wordID int, isCorret bool) error {
+	//先根据wordID查询difficulty,interval_history,feedback_history,review_date,interval_days
+	var difficulty int
+	var interval_history string
+	var feedback_history string
+	var review_date string
+	var interval_days int
+	err := db.QueryRow("SELECT difficulty,interval_history,feedback_history,review_date,interval_days FROM user_word_memory WHERE user_id = ? AND word_id = ?", userID, wordID).Scan(&difficulty, &interval_history, &feedback_history, &review_date, &interval_days)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	//更新interval_history
+	real_reviewDate := time.Now()
+	t, _ := time.Parse("2006-01-02", review_date)
+	real_interval_days := interval_days + int(real_reviewDate.Sub(t).Hours()/24)
+	interval_history = interval_history + "," + strconv.Itoa(real_interval_days)
+	//更新feedback_history
+	if isCorret {
+		feedback_history = feedback_history + "," + "1"
+	} else {
+		feedback_history = feedback_history + "," + "0"
+	}
+	bestInterval := utils.CalculateBestInterval(difficulty, interval_history, feedback_history)
+	nextReviewTime := time.Now().AddDate(0, 0, bestInterval).Format("2006-01-02")
+	//更新记忆记录
+	updateQuery, err := db.Prepare("UPDATE user_word_memory SET learn_times = learn_times + 1,interval_history = ?,feedback_history = ?,interval_days = ?,review_date = ? WHERE user_id = ? AND word_id = ?")
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	defer updateQuery.Close()
+	_, err = updateQuery.Exec(interval_history, feedback_history, bestInterval, nextReviewTime, userID, wordID)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
 	return nil
 }
 
@@ -910,6 +1029,7 @@ func CheckUserBook(db *sql.DB, user_id int) int {
 	return 1
 }
 
+<<<<<<< HEAD
 type UserPunchInfo struct {
 	PunchWordNum        int `json:"punch_word_num"`        //打卡单词数
 	TotalPunchDay       int `json:"total_punch_day"`       //总打卡天数
@@ -958,4 +1078,25 @@ func CheckUserPunchFinish(db *sql.DB, user_id int, book_id int) (int, error) {
 		return 1, nil
 	}
 	return 0, nil
+=======
+// 查询review_date<=now的word_id列表
+func GetReviewWordID(db *sql.DB, user_id int) ([]int, error) {
+	var wordIDs []int
+	nowdate := utils.GetCurrentDate()
+	rows, err := db.Query("SELECT word_id FROM user_word_memory WHERE user_id = ? AND review_date <= ?", user_id, nowdate)
+	if err != nil {
+		log.Panic(err)
+		return nil, err
+	}
+	for rows.Next() {
+		var wordID int
+		err := rows.Scan(&wordID)
+		if err != nil {
+			log.Panic(err)
+			return nil, err
+		}
+		wordIDs = append(wordIDs, wordID)
+	}
+	return wordIDs, nil
+>>>>>>> 808fcf39a5cc24b92ba4a27465f395cbb5a681e6
 }

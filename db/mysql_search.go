@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"strconv"
 	"strings"
@@ -37,6 +38,119 @@ type AverageScore struct {
 type RankScore struct {
 	Name string `json:"name"` // 学生名
 	Data []int  `json:"data"` // 各题型排名
+}
+
+// 0插入单词
+type NewWord struct {
+	Word          string `json:"word"`
+	Pronunciation string `json:"pronunciation"`
+	PartsOfSpeech string `json:"parts_of_speech"`
+	Examples      string `json:"examples"`
+	Phrases       string `json:"phrases"`
+	RelatedWords  string `json:"related_words"`
+}
+
+func UpdateWordID(db *sql.DB) error {
+	new_id := 1
+	//查询数据库中所有word_id并更新
+	rows, err := db.Query("SELECT word_id FROM word")
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var word_id int
+		rows.Scan(&word_id)
+		_, err := db.Exec("UPDATE word SET word_id = ? WHERE word_id = ?", new_id, word_id)
+		if err != nil {
+			return err
+		}
+		new_id++
+	}
+	return nil
+}
+
+func InsertWords(db *sql.DB, filename string) error {
+	// 读取文件
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+
+	// 解析JSON数据
+	var NewWords []NewWord
+	err = json.Unmarshal(data, &NewWords)
+	if err != nil {
+		return err
+	}
+
+	// 插入数据到数据库
+	//word_id := 101
+	for _, word := range NewWords {
+		//先查询该单词是否已经存在
+		var count int
+		err = db.QueryRow("SELECT COUNT(*) FROM word WHERE word = ?", word.Word).Scan(&count)
+		if err != nil {
+			return err
+		}
+		//如果存在更新信息
+		if count > 0 {
+			_, err = db.Exec("UPDATE word SET pronunciation = ?, meanings = ?, morpheme = ?, example_sentence = ?, phrases = ? WHERE word = ?", word.Pronunciation, word.PartsOfSpeech, word.RelatedWords, word.Examples, word.Phrases, word.Word)
+			if err != nil {
+				log.Printf("Failed to update word %s: %v", word.Word, err)
+			}
+			continue
+		}
+		// //如果不存在插入新单词
+		// _, err := db.Exec(
+		// 	"INSERT INTO word (word_id,word, pronunciation, meanings, morpheme, example_sentence, phrases) VALUES (?,?, ?, ?, ?, ?, ?)",
+		// 	word_id,
+		// 	word.Word,
+		// 	word.Pronunciation,
+		// 	word.PartsOfSpeech,
+		// 	word.RelatedWords,
+		// 	word.Examples,
+		// 	word.Phrases,
+		// )
+		// if err != nil {
+		// 	log.Printf("Failed to insert word %s: %v", word.Word, err)
+		// } else {
+		// 	word_id++
+		// }
+	}
+
+	return nil
+}
+func UpdateWords(newdb *sql.DB, db *sql.DB) error {
+	//查询mysql中的word表
+	rows, err := db.Query("SELECT word_id,word FROM word")
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var word_id int
+		var word string
+		if err := rows.Scan(&word_id, &word); err != nil {
+			return err
+		}
+		//查询sqlite中的VOC_TB表
+		var difficulty int
+		err = newdb.QueryRow("SELECT difficulty FROM VOC_TB WHERE spelling = ?", word).Scan(&difficulty)
+		if err != nil && err != sql.ErrNoRows {
+			return err
+		}
+		if err == sql.ErrNoRows {
+			fmt.Println("word: ", word, " not found in VOC_TB\n")
+			continue
+		}
+		//更新mysql中的word表
+		_, err = db.Exec("UPDATE word SET difficulty = ? WHERE word_id = ?", difficulty, word_id)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // 1根据manager_id查所有team_id和team_name

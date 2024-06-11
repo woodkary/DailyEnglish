@@ -1,6 +1,7 @@
 package main
 
 import (
+<<<<<<< HEAD
     middlewares "DailyEnglish/middlewares"
     adminrouter "DailyEnglish/router/admin_router"
     teamrouter "DailyEnglish/router/team_router"
@@ -13,6 +14,19 @@ import (
     "github.com/gin-gonic/gin"
     "github.com/go-redis/redis/v8"
     _ "github.com/go-sql-driver/mysql"
+=======
+	"DailyEnglish/middlewares"
+	adminrouter "DailyEnglish/router/admin_router"
+	teamrouter "DailyEnglish/router/team_router"
+	userrouter "DailyEnglish/router/user_router"
+	"database/sql"
+	"fmt"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
+	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/mattn/go-sqlite3"
+>>>>>>> 808fcf39a5cc24b92ba4a27465f395cbb5a681e6
 )
 
 func main() {

@@ -7,7 +7,6 @@ import (
 )
 
 func TestRabbitMQConnection(t *testing.T) {
-	// 假设RabbitMQ服务运行在本地，且默认端口5672上
 	conn, err := amqp.Dial("amqp://guest:guest@47.113.117.103:5672/")
 	if err != nil {
 		t.Fatalf("Failed to connect to RabbitMQ: %v", err)
@@ -22,6 +21,7 @@ func TestRabbitMQConnection(t *testing.T) {
 	defer ch.Close()
 
 	// 如果我们能够到达这里，说明连接和通道都建立成功了
-	// 可以添加更多的测试来验证队列声明、消息发布和消费等功能
 	t.Logf("Connected to RabbitMQ and opened a channel successfully")
+	// 可以添加更多的测试来验证队列声明、消息发布和消费等功能
+	
 }
