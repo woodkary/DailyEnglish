@@ -27,6 +27,7 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-sqlite3 v1.14.22 // indirect
 	github.com/olivere/elastic/v7 v7.0.32 // indirect
 	github.com/pilu/config v0.0.0-20131214182432-3eb99e6c0b9a // indirect
 	github.com/pilu/fresh v0.0.0-20190826141211-0fa698148017 // indirect

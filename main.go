@@ -1,7 +1,7 @@
 package main
 
 import (
-	middlewares "DailyEnglish/middlewares"
+	"DailyEnglish/middlewares"
 	adminrouter "DailyEnglish/router/admin_router"
 	teamrouter "DailyEnglish/router/team_router"
 	userrouter "DailyEnglish/router/user_router"
@@ -12,7 +12,8 @@ import (
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
-	_ "github.com/go-sql-driver/mysql" // 导入mysql驱动, 只执行init函数
+	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var (
@@ -91,7 +92,7 @@ func main() {
 	teamrouter.InitTeamRouter(r, db, rdb)
 	go func() {
 		r1 := gin.Default()
-		r1.Use(middlewares.Cors())//跨域
+		r1.Use(middlewares.Cors()) //跨域
 		userrouter.InitUserRouter(r1, db, rdb, es)
 		r1.Run(":8080")
 	}()
