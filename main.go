@@ -77,38 +77,6 @@ func init() {
 	}
 }
 func main() {
-
-	// 数据库连接信息
-	username := "mimahezhanghao1yang"
-	password := "MIMAhezhanghao1yang"
-	hostname := "rm-wz9p61j3qlj6lg69fpo.mysql.rds.aliyuncs.com"
-	port := "3306"
-	dbname := "dailyenglish"
-
-	// redis 连接信息
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     "r-bp1jdmrszl1yd6xxdipd.redis.rds.aliyuncs.com:6379", // Redis服务器地址
-		Username: "mimahezhanghao1yang",                                // Redis账号
-		Password: "MIMAhezhanghao1yang",                                // Redis密码
-		DB:       0,                                                    // 选择的数据库
-	})
-
-	// 测试Redis连接
-	_, err := rdb.Ping(rdb.Context()).Result()
-	if err != nil {
-		panic(err)
-	}
-	defer rdb.Close()
-
-	// 构建数据库连接字符串
-	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", username, password, hostname, port, dbname)
-
-	// 连接数据库
-	db, err := sql.Open("mysql", dataSourceName)
-	if err != nil {
-		panic(err.Error())
-	}
-	defer db.Close()
 	r := gin.Default()
 	r.Use(middlewares.Cors())
 	r.Static("static/team_manager", "./static")
