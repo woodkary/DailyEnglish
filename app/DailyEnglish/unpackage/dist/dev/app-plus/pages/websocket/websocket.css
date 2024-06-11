@@ -1,0 +1,24 @@
+
+.container[data-v-5f987691] {
+		padding: 20px;
+}
+uni-input[data-v-5f987691] {
+		width: 100%;
+		padding: 10px;
+		margin-bottom: 10px;
+		border: 1px solid #ccc;
+}
+uni-button[data-v-5f987691] {
+		padding: 10px;
+		background-color: #007aff;
+		color: white;
+		border: none;
+		cursor: pointer;
+}
+uni-button[data-v-5f987691]:disabled {
+		background-color: #ccc;
+}
+uni-text[data-v-5f987691] {
+		display: block;
+		margin: 5px 0;
+}

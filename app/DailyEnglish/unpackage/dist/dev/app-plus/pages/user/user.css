@@ -1,226 +1,292 @@
 
 @font-face {
-		font-family: 'w03';
-		src: url('../../static/Circe Rounded W03 Bold.otf');
+  font-family: 'w03';
+  src: url('../../static/Circe Rounded W03 Bold.otf');
 }
 body {
-		background-color: #fcfcfc;
+		background-color: #f3f2f5;
+		overflow-y: hidden;
+}
+.body-head {
+		margin-top: 1.3rem;
+		height: 2rem;
+		width: 100%;
+		background-color: transparent;
+		display: flex;
+}
+.back {
+  width: 2rem;
+  height: 2rem;
+  margin-left: 1rem;
+}
+.logout {
+  width: 1.8rem;
+  height: 1.8rem;
+  margin-left: auto;
+  margin-right: 1rem;
 }
 .personal-information {
-		height: 10rem;
-		margin: auto;
-		/* 使用margin自动居中，并添加上下间距 */
-		width: 86%;
-		display: flex;
-		/* 使用 flexbox 以方便布局 */
+  position: relative;
+  height: 18rem;
+  margin: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: transparent;
+  align-items: center;
 }
 .head {
-		margin-top: 3rem;
-		width: 5rem;
-		height: 5rem;
-		border-radius: 30%;
-		margin-left: 0rem;
-		border: 1px solid #f6f6f6;
-		box-shadow: 0 0 0 3px white;
+  margin-top: 2rem;
+  width: 8rem;
+  height: 8rem;
+  border-radius: 25px;
 }
 .username {
-		margin-top: 3rem;
-		font-size: 38px;
-		margin-left: 1rem;
+  margin-top: 0.5rem;
+  font-size: 32px;
+}
+.discription {
+  width: 40%;
+  height: 2rem;
+  margin-top: 1rem;
+  border-radius: 12px;
+  white-space: nowrap;
+  line-height: 2rem;
+  text-align: center;
+  background-color: transparent;
+  border: 1px solid #b4b3b6;
 }
 .dakatianshu {
-		height: 100%;
-		width: 50%;
-		margin-left: 7%;
-		display: flex;
-		flex-direction: column;
-		/* 将 flex 子项垂直堆叠 */
-		align-items: center;
+  height: 100%;
+  width: 50%;
+  margin-left: 7%;
+  display: flex;
+  flex-direction: column;
+  /* 将 flex 子项垂直堆叠 */
+  align-items: center;
 }
 .number2 {
-		margin-top: 0.7rem;
-		margin-bottom: 0.2rem;
-		font-size: 60px;
-		font-family: 'w03';
-		color:#2a9d8fd6;
+  margin-top: 0.7rem;
+  margin-bottom: 0.2rem;
+  font-size: 60px;
+  font-family: 'w03';
+  color: #2a9d8fd6;
 }
 .words2 {
-		font-size: 12px;
-		/* color:#828491; */
+  font-size: 12px;
+  /* color:#828491; */
 }
 .right1 {
-		margin-top: 4rem;
-		width: 1.4rem;
-		height: 1.4rem;
-		margin-left: 6rem;
-		/*翻转180度*/
-		transform: rotate(180deg);
+  margin-top: 3.3rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  margin-left: 5rem;
+}
+.tail {
+  background-color: white;
+  /*左上和右上的圆角*/
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+  width: 100%;
+  margin-top: 20px;
 }
 .container1 {
-		height: 7rem;
-		width:90%;
-		margin-bottom:20px;
-		margin-left: 5%;
-		display: flex;
-		/* 使用 flexbox 以方便布局 */
-		align-items: center;
-		/* 如果需要水平居中 */
-		border-radius: 10px;
-		box-shadow: rgba(0, 0, 0, 0.45) 0px 10px 20px -20px;
-		background-color: white;
+  height: 7rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  background-color: transparent;
 }
 .words-amount {
-		height: 100%;
-		width: 50%;
-		margin-left:7%;
-		display: flex;
-		flex-direction: column;
-		/* 将 flex 子项垂直堆叠 */
-		align-items: center;
+  height: 100%;
+  width: 50%;
+  margin-left: 4%;
+  display: flex;
+  flex-direction: column;
+  /* 将 flex 子项垂直堆叠 */
+  align-items: center;
 }
 .number1 {
-		margin-top: 0.7rem;
-		margin-bottom: 0.2rem;
-		font-size: 60px;
-		font-family: 'w03';
-		color:#e9c46cd6;
+  margin-top: 0.7rem;
+  margin-bottom: 0.2rem;
+  font-size: 60px;
+  font-family: 'w03';
+  color: #e9c46cd6;
 }
 .words1 {
-		font-size: 12px;
-		/* color:#828491; */
+  font-size: 12px;
+  /* color:#828491; */
 }
 .lianxudakatianshu {
-		height: 100%;
-		width: 50%;
-		margin-left: 7%;
-		display: flex;
-		flex-direction: column;
-		/* 将 flex 子项垂直堆叠 */
-		align-items: center;
-		/* 如果需要水平居中 */
+  height: 100%;
+  width: 50%;
+  margin-left: 7%;
+  display: flex;
+  flex-direction: column;
+  /* 将 flex 子项垂直堆叠 */
+  align-items: center;
+  /* 如果需要水平居中 */
 }
 .number3 {
-		margin-top: 0.7rem;
-		margin-bottom: 0.2rem;
-		font-size: 60px;
-		font-family: 'w03';
-		color:#ba074bd6;
+  margin-top: 0.7rem;
+  margin-bottom: 0.2rem;
+  font-size: 60px;
+  font-family: 'w03';
+  color: #ba074bd6;
 }
 .words3 {
-		font-size: 12px;
-		/* color:#828491; */
+  font-size: 12px;
+  /* color:#828491; */
 }
 .container2 {
-		height: 4rem;
-		margin: 1px auto;
-		margin-top: 60px;
-		/* 使用margin自动居中，并添加上下间距 */
-		background-color: white;
-		display: flex;
-		/* 使用 flexbox 以方便布局 */
-		align-items: center;
-		/* 如果需要水平居中 */
-		justify-content: space-between;
-		/* 在主轴上分配空间，使得子项之间有间隔 */
-		/* border-bottom: 2px solid #f6f6f6; */
+  height: 4rem;
+  margin: 1px auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.calendar-wrapper {
+  margin-left: 2rem;
+  display: inline-block;
+  padding: 10px;
+  border: none;
+  background-color: #f3f2f5;
+  border-radius: 15px;
+  box-sizing: border-box;
+  /* 确保padding和border包含在宽高内 */
 }
 .calendar {
-		width: 2rem;
-		height: 2rem;
-		margin-left: 0.9rem;
+  width: 2rem;
+  height: 2rem;
+  display: block;
 }
 .word2 {
-		margin-left: 0.9rem;
-		flex-grow: 1;
-		font-size: 19px;
+  margin-left: 0.9rem;
+  flex-grow: 1;
+  font-size: 19px;
 }
 .right {
-		width: 1.2rem;
-		height: 1.2rem;
-		margin-left: auto;
-		margin-right: 1rem;
-		rotate: 180deg;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-left: auto;
+  margin-right: 2rem;
+  rotate: 180deg;
 }
 .container3 {
-		height: 4rem;
-		margin: 1px auto;
-		/* 使用margin自动居中，并添加上下间距 */
-		width: 100%;
-		background-color: white;
-		display: flex;
-		/* 使用 flexbox 以方便布局 */
-		align-items: center;
-		/* 如果需要水平居中 */
-		justify-content: space-between;
-		/* 在主轴上分配空间，使得子项之间有间隔 */
-		/* border-bottom: 2px solid #f6f6f6; */
+  height: 4rem;
+  margin: 1px auto;
+  /* 使用margin自动居中，并添加上下间距 */
+  width: 100%;
+  background-color: white;
+  display: flex;
+  /* 使用 flexbox 以方便布局 */
+  align-items: center;
+  /* 如果需要水平居中 */
+  justify-content: space-between;
+  /* 在主轴上分配空间，使得子项之间有间隔 */
+  /* border-bottom: 2px solid #f6f6f6; */
+}
+.wordbook-wrapper {
+  margin-left: 2rem;
+  display: inline-block;
+  padding: 10px;
+  border: none;
+  background-color: #f3f2f5;
+  border-radius: 15px;
+  box-sizing: border-box;
+  /* 确保padding和border包含在宽高内 */
 }
 .wordbook {
-		width: 2.5rem;
-		height: 2.5rem;
-		margin-left: 0.7rem;
+  width: 2rem;
+  height: 2rem;
+  display: block;
+}
+.team-wrapper {
+  margin-left: 2rem;
+  display: inline-block;
+  padding: 10px;
+  border: none;
+  background-color: #f3f2f5;
+  border-radius: 15px;
+  box-sizing: border-box;
+  /* 确保padding和border包含在宽高内 */
 }
 .team {
-		width: 2rem;
-		height: 2rem;
-		margin-left: 0.9rem;
+  width: 2rem;
+  height: 2rem;
+  display: block;
 }
 .word3 {
-		margin-left: 0.6rem;
-		flex-grow: 1;
-		font-size: 19px;
+  margin-left: 0.9rem;
+  flex-grow: 1;
+  font-size: 19px;
 }
 .word31 {
-		margin-left: 1rem;
-		flex-grow: 1;
-		font-size: 19px;
+  margin-left: 1rem;
+  flex-grow: 1;
+  font-size: 19px;
 }
 .container4 {
-		height: 4rem;
-		margin: 1px auto;
-		margin-top:10px;
-		/* 使用margin自动居中，并添加上下间距 */
-		width: 100%;
-		background-color: white;
-		display: flex;
-		/* 使用 flexbox 以方便布局 */
-		align-items: center;
-		/* 如果需要水平居中 */
-		justify-content: space-between;
-		/* 在主轴上分配空间，使得子项之间有间隔 */
-		/* border-bottom: 2px solid #f6f6f6; */
+  height: 4rem;
+  margin: 1px auto;
+  width: 100%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.setting-wrapper {
+  margin-left: 2rem;
+  display: inline-block;
+  padding: 10px;
+  border: none;
+  background-color: #f3f2f5;
+  border-radius: 15px;
+  box-sizing: border-box;
+  /* 确保padding和border包含在宽高内 */
 }
 .setting {
-		width: 2rem;
-		height: 2rem;
-		margin-left: 0.9rem;
+  width: 2rem;
+  height: 2rem;
+  display: block;
 }
 .word4 {
-		margin-left: 0.9rem;
-		flex-grow: 1;
-		font-size: 19px;
+  margin-left: 0.9rem;
+  flex-grow: 1;
+  font-size: 19px;
 }
 .container5 {
-		height: 4rem;
-		margin: 1px auto;
-		/* 使用margin自动居中，并添加上下间距 */
-		width: 100%;
-		background-color: white;
-		display: flex;
-		/* 使用 flexbox 以方便布局 */
-		align-items: center;
-		/* 如果需要水平居中 */
-		justify-content: space-between;
-		/* 在主轴上分配空间，使得子项之间有间隔 */
-		/* border-bottom: 2px solid #f6f6f6; */
+  height: 4rem;
+  margin: 1px auto;
+  /* 使用margin自动居中，并添加上下间距 */
+  width: 100%;
+  background-color: white;
+  display: flex;
+  /* 使用 flexbox 以方便布局 */
+  align-items: center;
+  /* 如果需要水平居中 */
+  justify-content: space-between;
+  /* 在主轴上分配空间，使得子项之间有间隔 */
+  /* border-bottom: 2px solid #f6f6f6; */
+}
+.feedback-wrapper {
+  margin-left: 2rem;
+  display: inline-block;
+  padding: 10px;
+  border: none;
+  background-color: #f3f2f5;
+  border-radius: 15px;
+  box-sizing: border-box;
+  /* 确保padding和border包含在宽高内 */
 }
 .feedback {
-		width: 2rem;
-		height: 2rem;
-		margin-left: 0.9rem;
+  width: 2rem;
+  height: 2rem;
+  display: block;
 }
 .word5 {
-		margin-left: 0.9rem;
-		flex-grow: 1;
-		font-size: 19px;
+  margin-left: 0.9rem;
+  flex-grow: 1;
+  font-size: 19px;
 }

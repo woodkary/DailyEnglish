@@ -48,7 +48,219 @@ if (uni.restoreGlobal) {
     }
     return target;
   };
-  const _sfc_main$y = {
+  const _sfc_main$A = {
+    data() {
+      return {
+        username: "",
+        password: "",
+        remember: false
+      };
+    },
+    beforeMount() {
+      let username = uni.getStorageSync("username");
+      let password = uni.getStorageSync("password");
+      let remember = uni.getStorageSync("remember");
+      if (username && password && remember) {
+        this.username = username;
+        this.password = password;
+        this.remember = remember;
+      }
+    },
+    methods: {
+      autoLogin() {
+        this.remember = !this.remember;
+        formatAppLog("log", "at pages/login/login.vue:57", this.remember);
+        formatAppLog("log", "at pages/login/login.vue:58", this.username);
+        formatAppLog("log", "at pages/login/login.vue:59", this.password);
+      },
+      login() {
+        let flag = true;
+        let username = this.username;
+        if (!username) {
+          this.$nextTick(() => {
+            let usernameInput = document.getElementById("username");
+            usernameInput.classList.add("inputActive");
+            setTimeout(() => {
+              usernameInput.classList.remove("inputActive");
+            }, 2e3);
+          });
+          flag = false;
+        }
+        let password = this.password;
+        if (!password) {
+          this.$nextTick(() => {
+            let passwordInput = document.getElementById("password");
+            passwordInput.classList.add("inputActive");
+            setTimeout(() => {
+              passwordInput.classList.remove("inputActive");
+            }, 2e3);
+          });
+          flag = false;
+        }
+        if (!flag) {
+          return;
+        }
+        let remember = this.remember;
+        uni.clearStorage();
+        uni.request({
+          url: "http://localhost:8080/api/user/login",
+          data: {
+            username,
+            password,
+            remember
+          },
+          method: "POST",
+          success: (res) => {
+            if (res.statusCode === 401) {
+              uni.removeStorageSync("token");
+              uni.showToast({
+                title: "登录已过期，请重新登录",
+                icon: "none",
+                duration: 2e3
+              });
+              uni.navigateTo({
+                url: "../login/login"
+              });
+            }
+            if (res.statusCode == 200) {
+              if (remember) {
+                uni.setStorageSync("username");
+                uni.setStorageSync("password");
+                uni.setStorageSync("remember");
+              }
+              let token = res.data.token;
+              formatAppLog("log", "at pages/login/login.vue:119", token);
+              uni.setStorageSync("token", token);
+              if (res.data.isChoosed) {
+                uni.switchTab({
+                  url: "../home/home"
+                });
+              } else {
+                uni.navigateTo({
+                  url: `../Welcome/Welcome?operation=${res.data.isChoosed ? 1 : 0}`
+                });
+              }
+              uni.setStorageSync("consecutivePunchDay", 11);
+            } else if (res.statusCode == 401) {
+              let passwordInput = document.getElementById("password");
+              passwordInput.classList.add("inputActive");
+              setTimeout(() => {
+                passwordInput.classList.remove("inputActive");
+              }, 2e3);
+              uni.showToast({
+                title: "密码错误",
+                icon: "none"
+              });
+            } else if (res.statusCode == 403) {
+              let usernameInput = document.getElementById("username");
+              usernameInput.classList.add("inputActive");
+              setTimeout(() => {
+                usernameInput.classList.remove("inputActive");
+              });
+              uni.showToast({
+                title: "用户不存在",
+                icon: "none"
+              }, 1e3);
+            }
+          },
+          fail: (res) => {
+            uni.showToast({
+              title: "登录失败",
+              icon: "none"
+            });
+          }
+        });
+      }
+    }
+  };
+  function _sfc_render$A(_ctx, _cache, $props, $setup, $data, $options) {
+    const _component_span1 = vue.resolveComponent("span1");
+    const _component_router_link = vue.resolveComponent("router-link");
+    return vue.openBlock(), vue.createElementBlock("view", null, [
+      vue.createElementVNode("view", { class: "all-container" }, [
+        vue.createElementVNode("image", {
+          class: "background",
+          src: "/static/login1.svg"
+        }),
+        vue.createElementVNode("view", { class: "container" }, [
+          vue.createVNode(_component_span1, null, {
+            default: vue.withCtx(() => [
+              vue.createTextVNode("Sign In")
+            ]),
+            _: 1
+            /* STABLE */
+          }),
+          vue.createElementVNode("view", { class: "white-container1" }, [
+            vue.createElementVNode("span", null, "账号"),
+            vue.withDirectives(vue.createElementVNode(
+              "input",
+              {
+                id: "username",
+                class: "search-box",
+                type: "text",
+                "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.username = $event),
+                placeholder: "请输入账号"
+              },
+              null,
+              512
+              /* NEED_PATCH */
+            ), [
+              [vue.vModelText, $data.username]
+            ])
+          ]),
+          vue.createElementVNode("view", { class: "white-container2" }, [
+            vue.createElementVNode("span", null, "密码"),
+            vue.createElementVNode("view", { class: "password-container" }, [
+              vue.withDirectives(vue.createElementVNode(
+                "input",
+                {
+                  id: "password",
+                  class: "search-box",
+                  type: "password",
+                  "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $data.password = $event),
+                  placeholder: "请输入密码"
+                },
+                null,
+                512
+                /* NEED_PATCH */
+              ), [
+                [vue.vModelText, $data.password]
+              ]),
+              vue.createElementVNode(
+                "img",
+                {
+                  ref: "errorIcon",
+                  class: "error-icon",
+                  src: "/static/errorCross.svg"
+                },
+                null,
+                512
+                /* NEED_PATCH */
+              )
+            ]),
+            vue.createElementVNode("view", { class: "forgot-password-link" }, "忘记密码?")
+          ]),
+          vue.createElementVNode("button", {
+            class: "login-button",
+            onClick: _cache[2] || (_cache[2] = (...args) => $options.login && $options.login(...args))
+          }, "登录"),
+          vue.createCommentVNode(' 	<button class="register-button">注册</button><button class="forget">忘记密码？</button>\r\n				<button class="button1"></button>\r\n				<span class="text">登录代表你同意用户协议、隐私政策和儿童隐私政策</span> '),
+          vue.createElementVNode("span", { class: "text" }, [
+            vue.createTextVNode("have no account? "),
+            vue.createVNode(_component_router_link, { to: "../register/register" }, {
+              default: vue.withCtx(() => [
+                vue.createTextVNode("click here")
+              ]),
+              _: 1
+              /* STABLE */
+            })
+          ])
+        ])
+      ])
+    ]);
+  }
+  const PagesLoginLogin = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["render", _sfc_render$A], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/login/login.vue"]]);
+  const _sfc_main$z = {
     data() {
       return {
         isHistoryVisible: false,
@@ -63,21 +275,57 @@ if (uni.restoreGlobal) {
         wordNumTotal: 2345,
         daysLeft: 30,
         wordNumToPunch: 5,
-        wordNumPunched: 15,
-        wordNumToReview: 10,
+        wordNumPunched: 5,
+        wordNumToReview: 5,
         wordNumReviewed: 5,
-        items: [{
-          word: "apple",
-          phonetic: "/ˈæpl/",
-          meaning: "苹果111111111111111111111111111111111111111111111111"
-        }, {
-          word: "banana",
-          phonetic: "/bəˈnɑː.nə/",
-          meaning: "香蕉"
-        }]
+        searchHistory: {},
+        //历史搜索记录
+        //历史搜索记录
+        items: [
+          /*{
+          	word: 'apple',
+          	phonetic: '/ˈæpl/',
+          	meaning: '苹果'
+          }, {
+          	word: 'banana',
+          	phonetic: '/bəˈnɑː.nə/',
+          	meaning: '香蕉'
+          }*/
+        ]
       };
     },
+    //switchTab后调用的函数
+    onShow() {
+      this.items = uni.getStorageSync("searchHistory") || [];
+      let toReview = uni.getStorageSync("toReview");
+      if (toReview) {
+        this.isDaka = true;
+        this.isReview = false;
+      }
+      let reviewed = uni.getStorageSync("reviewed");
+      if (reviewed) {
+        this.isReview = true;
+        this.isDaka = true;
+      }
+      this.fetchData();
+    },
+    onLoad() {
+      formatAppLog("log", "at pages/home/home.vue:574", "hi");
+    },
     methods: {
+      transformWordObject(original) {
+        let transformed = {
+          word: original.spelling,
+          phonetic: original.pronunciation
+        };
+        for (let partOfSpeech in original.meanings) {
+          if (original.meanings[partOfSpeech].length > 0) {
+            transformed.meaning = original.meanings[partOfSpeech][0];
+            break;
+          }
+        }
+        return transformed;
+      },
       handleDaka() {
         uni.navigateTo({
           url: "/pages/Examination/Examination?operation=0"
@@ -90,55 +338,69 @@ if (uni.restoreGlobal) {
       },
       fetchData() {
         uni.request({
-          url: "/api/punch/main_menu",
-          method: "GET",
+          url: "http://localhost:8080/api/punch/main_menu",
+          header: {
+            "Authorization": `Bearer ${uni.getStorageSync("token")}`
+          },
+          method: "POST",
+          data: {
+            times: this.isDaka + this.isReview
+          },
           success: (res) => {
-            //token失效
-            if(res.statusCode === 401){
-              uni.removeStorageSync('token');
+            if (res.statusCode === 401) {
+              uni.removeStorageSync("token");
               uni.showToast({
-                title: '登录已过期，请重新登录',
-                icon: 'none',
-                duration: 2000
+                title: "登录已过期，请重新登录",
+                icon: "none",
+                duration: 2e3
               });
               uni.navigateTo({
-                url: '../login/login'
+                url: "../login/login"
               });
             }
-            if (res.statusCode === 200) {
-              this.daka_book = res.data.task_doday.book_learning;
-              this.wordNumLearned = res.data.task_doday.word_num_learned;
-              this.wordNumTotal = res.data.task_doday.word_num_total;
-              this.daysLeft = res.data.task_doday.days_left;
-              this.wordNumToPunch = res.data.task_doday.word_num_to_punch;
+            if (res.statusCode === 200 || res.statusCode === 404) {
+              this.daka_book = res.data.task_today.book_learning;
+              this.wordNumLearned = res.data.task_today.word_num_learned;
+              this.wordNumTotal = res.data.task_today.word_num_total;
+              this.daysLeft = res.data.task_today.days_left;
+              this.wordNumToPunch = res.data.task_today.punch_num;
               if (this.wordNumToPunch == 0) {
                 this.isDaka = true;
               }
-              this.wordNumPunched = res.data.task_doday.word_num_punched;
-              this.wordNumToReview = res.data.task_doday.word_num_to_review;
+              this.wordNumPunched = res.data.task_today.word_num_punched;
+              if (this.wordNumPunched == null) {
+                this.wordNumPunched = 5;
+              }
+              this.wordNumToReview = res.data.task_today.review_num;
               if (this.wordNumToReview == 0) {
                 this.isReview = true;
               }
-              this.wordNumReviewed = res.data.task_doday.word_num_reviewed;
+              this.wordNumReviewed = res.data.task_today.word_num_reviewed;
+              if (this.wordNumReviewed == null) {
+                this.wordNumReviewed = 5;
+              }
             } else {
-              formatAppLog("error", "at pages/home/home.vue:587", "请求失败", res);
+              formatAppLog("error", "at pages/home/home.vue:652", "请求失败", res);
               this.daka_book = "词汇书123";
             }
           },
           fail: (err) => {
-            formatAppLog("error", "at pages/home/home.vue:592", "请求失败", err);
+            formatAppLog("error", "at pages/home/home.vue:657", "请求失败", err);
             this.daka_book = "词汇书123";
           }
         });
-      },
-      onLoad() {
-        this.fetchData();
-        formatAppLog("log", "at pages/home/home.vue:599", "hi");
       },
       handleSearchShow() {
         this.isHistoryVisible = true;
       },
       handleSearchRouter() {
+        let searchHistory = uni.getStorageSync("searchHistory");
+        if (searchHistory) {
+          searchHistory.push(this.searchHistory[this.searchInput + "_words"]);
+          uni.setStorageSync("searchHistory", searchHistory);
+        } else {
+          uni.setStorageSync("searchHistory", [this.searchHistory[this.searchInput + "_words"]]);
+        }
         uni.navigateTo({
           // url: `/pages/word_details/word_details?word=${this.searchInput}`
           url: `/pages/word_details/word_details`
@@ -147,10 +409,43 @@ if (uni.restoreGlobal) {
           title: "搜索成功",
           icon: "none"
         });
-        formatAppLog("log", "at pages/home/home.vue:614", "本次搜索内容是", this.searchInput);
+        formatAppLog("log", "at pages/home/home.vue:684", "本次搜索内容是", this.searchInput);
       },
       handleSearchInput(input) {
+        if (input.length == 0) {
+          this.searchHistory = uni.getStorageSync("searchHistory");
+          return;
+        }
         this.searchInput = input;
+        let input_words = this.searchHistory[input + "_words"];
+        if (input_words) {
+          this.items = input_words;
+          return;
+        }
+        uni.request({
+          url: "http://localhost:8080/api/users/search_words",
+          data: {
+            input: this.searchInput
+          },
+          method: "POST",
+          success: (res) => {
+            if (res.statusCode === 200) {
+              let words = res.data.words;
+              if (words == null)
+                words = [];
+              this.items = [];
+              words.forEach((word2) => {
+                this.items.push(this.transformWordObject(word2));
+              });
+              this.searchHistory[input + "_words"] = Array.from(this.items);
+            } else {
+              formatAppLog("error", "at pages/home/home.vue:717", "请求失败", res);
+            }
+          },
+          fail: (err) => {
+            formatAppLog("error", "at pages/home/home.vue:721", "请求失败", err);
+          }
+        });
       },
       cancelSearch() {
         this.isHistoryVisible = false;
@@ -158,7 +453,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$y(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$z(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "homepage" }, [
       vue.createElementVNode("view", { class: "search-container" }, [
         vue.createElementVNode("view", {
@@ -169,7 +464,7 @@ if (uni.restoreGlobal) {
             "view",
             {
               class: vue.normalizeClass(["search", { active: $data.isHistoryVisible }]),
-              onClick: _cache[2] || (_cache[2] = ($event) => $options.handleSearchShow())
+              onClick: _cache[3] || (_cache[3] = ($event) => $options.handleSearchShow())
             },
             [
               vue.createElementVNode("image", {
@@ -181,7 +476,8 @@ if (uni.restoreGlobal) {
                 {
                   placeholder: "搜索",
                   "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.searchInput = $event),
-                  onConfirm: _cache[1] || (_cache[1] = (...args) => $options.handleSearchRouter && $options.handleSearchRouter(...args))
+                  onInput: _cache[1] || (_cache[1] = ($event) => $options.handleSearchInput($data.searchInput)),
+                  onConfirm: _cache[2] || (_cache[2] = (...args) => $options.handleSearchRouter && $options.handleSearchRouter(...args))
                 },
                 null,
                 544
@@ -196,7 +492,7 @@ if (uni.restoreGlobal) {
           $data.isHistoryVisible ? (vue.openBlock(), vue.createElementBlock("button", {
             key: 0,
             class: "cancel",
-            onClick: _cache[3] || (_cache[3] = (...args) => $options.cancelSearch && $options.cancelSearch(...args))
+            onClick: _cache[4] || (_cache[4] = (...args) => $options.cancelSearch && $options.cancelSearch(...args))
           }, "取消")) : (vue.openBlock(), vue.createElementBlock("image", {
             key: 1,
             class: "Msg-icon",
@@ -208,7 +504,7 @@ if (uni.restoreGlobal) {
           { class: "history" },
           [
             vue.createElementVNode("view", { class: "history-header" }, [
-              vue.createElementVNode("text", { class: "title" }, "历史搜索"),
+              vue.createElementVNode("text", { class: "title" }, "搜索"),
               vue.createElementVNode("text", { class: "clean" }, "清空")
             ]),
             vue.createElementVNode("view", { class: "list" }, [
@@ -362,7 +658,7 @@ if (uni.restoreGlobal) {
               ]),
               vue.createElementVNode("view", {
                 class: "plan-num",
-                style: { "margin-left": "100px" }
+                style: { "margin-left": "50px" }
               }, [
                 vue.createElementVNode(
                   "view",
@@ -379,7 +675,7 @@ if (uni.restoreGlobal) {
                 "button",
                 {
                   class: "plan-btn1",
-                  onClick: _cache[4] || (_cache[4] = (...args) => $options.handleDaka && $options.handleDaka(...args))
+                  onClick: _cache[5] || (_cache[5] = (...args) => $options.handleDaka && $options.handleDaka(...args))
                 },
                 "开始学习",
                 512
@@ -391,7 +687,7 @@ if (uni.restoreGlobal) {
                 "button",
                 {
                   class: "plan-btn1",
-                  onClick: _cache[5] || (_cache[5] = (...args) => $options.handleReview && $options.handleReview(...args))
+                  onClick: _cache[6] || (_cache[6] = (...args) => $options.handleReview && $options.handleReview(...args))
                 },
                 "开始复习",
                 512
@@ -403,7 +699,7 @@ if (uni.restoreGlobal) {
                 "button",
                 {
                   class: "plan-btn1",
-                  onClick: _cache[6] || (_cache[6] = (...args) => $options.handleDaka && $options.handleDaka(...args))
+                  onClick: _cache[7] || (_cache[7] = (...args) => $options.handleDaka && $options.handleDaka(...args))
                 },
                 "继续学习",
                 512
@@ -481,8 +777,8 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesHomeHome = /* @__PURE__ */ _export_sfc(_sfc_main$y, [["render", _sfc_render$y], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/home/home.vue"]]);
-  const _sfc_main$x = {
+  const PagesHomeHome = /* @__PURE__ */ _export_sfc(_sfc_main$z, [["render", _sfc_render$z], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/home/home.vue"]]);
+  const _sfc_main$y = {
     name: "CollapsibleView",
     props: {
       word: {
@@ -503,7 +799,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$x(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$y(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock(
       "view",
       {
@@ -533,8 +829,8 @@ if (uni.restoreGlobal) {
       /* CLASS */
     );
   }
-  const CollapsibleView = /* @__PURE__ */ _export_sfc(_sfc_main$x, [["render", _sfc_render$x], ["__scopeId", "data-v-4b4aa2b3"], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/components/CollapsibleView.vue"]]);
-  const _sfc_main$w = {
+  const CollapsibleView = /* @__PURE__ */ _export_sfc(_sfc_main$y, [["render", _sfc_render$y], ["__scopeId", "data-v-4b4aa2b3"], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/components/CollapsibleView.vue"]]);
+  const _sfc_main$x = {
     components: {
       CollapsibleView
     },
@@ -620,18 +916,18 @@ if (uni.restoreGlobal) {
       };
     },
     onLoad(event) {
-      let word = event["word"];
+      let word2 = event["word"];
       let word_id = event["word_id"];
-      this.word.name = word;
-      this.wordDetail.word = word;
-      this.wordAndPhrase.word = word;
+      this.word.name = word2;
+      this.wordDetail.word = word2;
+      this.wordAndPhrase.word = word2;
       let localDetails = uni.getStorageSync(word_id);
       if (localDetails) {
         this.word.pronunciation = localDetails.pronunciation;
         this.word.meanings = this.transformMeaningsToText(localDetails.meanings);
       }
       uni.request({
-        url: "/api/words/word_details",
+        url: "http://localhost:8080/api/words/word_details",
         method: "POST",
         header: {
           "content-type": "application/json",
@@ -643,25 +939,24 @@ if (uni.restoreGlobal) {
           word_id
         },
         success: (res) => {
-            //token失效
-            if(res.statusCode === 401){
-              uni.removeStorageSync('token');
-              uni.showToast({
-                title: '登录已过期，请重新登录',
-                icon: 'none',
-                duration: 2000
-              });
-              uni.navigateTo({
-                url: '../login/login'
-              });
-            }
+          if (res.statusCode === 401) {
+            uni.removeStorageSync("token");
+            uni.showToast({
+              title: "登录已过期，请重新登录",
+              icon: "none",
+              duration: 2e3
+            });
+            uni.navigateTo({
+              url: "../login/login"
+            });
+          }
           let detailedMeanings = res.data.detailed_meanings;
           this.wordDetail.details = this.transformDetailedMeaningsToDetails(detailedMeanings);
           this.wordAndPhrase.phraseAndMeanings = res.data.phrases;
           this.word.book = res.data.word_book;
         },
         fail: (res) => {
-          formatAppLog("log", "at pages/word_details/word_details.vue:236", res);
+          formatAppLog("log", "at pages/word_details/word_details.vue:248", res);
         }
       });
     },
@@ -669,7 +964,7 @@ if (uni.restoreGlobal) {
       transformMeaningsToText(meanings) {
         const transformedMeanings = [];
         for (const speech in meanings) {
-          if (meanings[speech] && meanings[speech].length > 0) {
+          if (meanings[speech] && meanings[speech].length > 1) {
             const speechAbbreviation = this.simplifiedSpeech[speech];
             const meaningText = `${speechAbbreviation}		${meanings[speech].join("; ")}
 `;
@@ -704,7 +999,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$w(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$x(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_CollapsibleView = vue.resolveComponent("CollapsibleView");
     return vue.openBlock(), vue.createElementBlock("view", null, [
       vue.createElementVNode("view", { class: "word-list-container" }, [
@@ -907,8 +1202,8 @@ if (uni.restoreGlobal) {
       )
     ]);
   }
-  const PagesWord_detailsWord_details = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["render", _sfc_render$w], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/word_details/word_details.vue"]]);
-  const _sfc_main$v = {
+  const PagesWord_detailsWord_details = /* @__PURE__ */ _export_sfc(_sfc_main$x, [["render", _sfc_render$x], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/word_details/word_details.vue"]]);
+  const _sfc_main$w = {
     data() {
       return {
         operation: 0,
@@ -934,34 +1229,31 @@ if (uni.restoreGlobal) {
         },
         questions: [
           // 题目和选项
-          {
-            word_id: 1,
-            word: "abandon",
-            phonetic: "[ə'bændən]",
-            choices: ["1", "2", "2", "放弃"]
+          /*{
+                 word_id: 1,
+          	word: 'abandon',
+          	phonetic: '[ə\'bændən]',
+          	choices: ['1', '2', '2', '放弃']
           },
           {
-            word_id: 2,
-            word: "abandon",
-            phonetic: "[ə'bændən]",
-            choices: ["1", "选项B", "选项C", "选项D"]
+                 word_id: 2,
+          	word: 'abandon',
+          	phonetic: '[ə\'bændən]',
+          	choices: ['1', '选项B', '选项C', '选项D']
           },
           {
-            word_id: 3,
-            word: "abandon2",
-            phonetic: "[ə'bændən]",
-            choices: ["1", "选项B", "选项C", "选项D"]
-          }
+                 word_id: 3,
+          	word: 'abandon2',
+          	phonetic: '[ə\'bændən]',
+          	choices: ['1', '选项B', '选项C', '选项D']
+          },*/
           // ...更多题目
         ],
         // 这里可以根据需要修改选项内容
         selectedChoice: "",
         // 用于存储用户选择的答案
         realAnswer: [
-          "放弃",
-          "选项B",
-          "选项C"
-          // 正确答案
+          /*'放弃', '选项B', '选项C' // 正确答案*/
         ]
       };
     },
@@ -971,36 +1263,24 @@ if (uni.restoreGlobal) {
       this.isCorrects = {};
       uni.request({
         //判断操作类型并发送请求
-        url: !operation ? "/api/main/take_punch" : "/api/main/take_review",
+        url: !operation ? "http://localhost:8080/api/main/take_punch" : "http://localhost:8080/api/main/take_review",
         method: "GET",
         header: {
           "Authorization": `Bearer ${uni.getStorageSync("token")}`
         },
         success: (res) => {
-            //token失效
-            if(res.statusCode === 401){
-              uni.removeStorageSync('token');
-              uni.showToast({
-                title: '登录已过期，请重新登录',
-                icon: 'none',
-                duration: 2000
-              });
-              uni.navigateTo({
-                url: '../login/login'
-              });
-            }
           formatAppLog("log", "at pages/Examination/Examination.vue:114", res);
           if (res.data.code == 200) {
             let word_list = res.data.word_list;
-            word_list.forEach((word, index) => {
+            word_list.forEach((word2, index) => {
               let question = {
-                word_id: word.word_id,
-                word: word.word,
-                phonetic: word.phonetic_us,
-                choices: Object.values(word.word_question)
+                word_id: word2.word_id,
+                word: word2.word,
+                phonetic: word2.phonetic_us,
+                choices: Object.values(word2.word_question)
               };
-              this.isCorrects[word.word_id] = false;
-              let realAnswer = word.word_question[word.answer];
+              this.isCorrects[word2.word_id] = false;
+              let realAnswer = word2.word_question[word2.answer];
               this.questions.push(question);
               this.realAnswer.push(realAnswer);
             });
@@ -1015,29 +1295,23 @@ if (uni.restoreGlobal) {
       handleBack() {
         this.$router.back();
       },
-      handleJump() {
-        uni.switchTab({
-          url: "../Vocab/Vocab"
-        });
+      handleJump(question) {
         uni.request({
-          url: "xxvcav",
+          url: "http://localhost:8080/api/words/add_new_word",
           method: "post",
+          header: {
+            "Authorization": `Bearer ${uni.getStorageSync("token")}`
+          },
           data: {
-            //data
+            word_id: question.word_id
           },
           success: (res) => {
-            //token失效
-            if(res.statusCode === 401){
-              uni.removeStorageSync('token');
-              uni.showToast({
-                title: '登录已过期，请重新登录',
-                icon: 'none',
-                duration: 2000
-              });
-              uni.navigateTo({
-                url: '../login/login'
-              });
-            }
+            uni.showToast({
+              title: "加入生词本成功",
+              icon: "none",
+              duration: 2e3
+            });
+            uni.setStorageSync(word, true);
           }
         });
       },
@@ -1060,27 +1334,35 @@ if (uni.restoreGlobal) {
           this.progress = value;
           this.current = value;
         } else {
-          formatAppLog("error", "at pages/Examination/Examination.vue:199", "进度值必须在 0 到 100 之间");
+          formatAppLog("error", "at pages/Examination/Examination.vue:208", "进度值必须在 0 到 100 之间");
         }
       },
       selectChoice(index) {
-        formatAppLog("log", "at pages/Examination/Examination.vue:203", index);
+        formatAppLog("log", "at pages/Examination/Examination.vue:212", index);
         let selectedChoice = this.questions[this.currentQuestionIndex].choices[index];
         let word_id = this.questions[this.currentQuestionIndex].word_id;
-        formatAppLog("log", "at pages/Examination/Examination.vue:207", word_id);
+        formatAppLog("log", "at pages/Examination/Examination.vue:216", word_id);
         let isCorrect = selectedChoice === this.realAnswer[this.currentQuestionIndex];
-        formatAppLog("log", "at pages/Examination/Examination.vue:210", isCorrect);
+        formatAppLog("log", "at pages/Examination/Examination.vue:219", isCorrect);
         this.isCorrects[word_id] = isCorrect;
         if (isCorrect) {
           let nextIndex = this.currentQuestionIndex;
-          this.updateProgressBar();
           this.$nextTick(() => {
-            this.showCorrectAnswer(this.realAnswer[nextIndex], nextIndex);
+            this.showCorrectAnswer(this.realAnswer[nextIndex], nextIndex, this.currentQuestionIndex);
           });
+        } else {
+          let currIndex = this.currentQuestionIndex;
+          this.$nextTick(() => {
+            this.showIncorrectAnswer(index);
+            this.showCorrectAnswer(this.realAnswer[currIndex], currIndex, this.currentQuestionIndex);
+          });
+        }
+        this.updateProgressBar();
+        setTimeout(() => {
           if (++this.currentQuestionIndex == this.questions.length) {
             uni.request({
               //判断操作类型并发送请求
-              url: !this.operation ? "/api/main/punched" : "/api/main/reviewed",
+              url: !this.operation ? "http://localhost:8080/api/main/punched" : "http://localhost:8080/api/main/reviewed",
               method: "POST",
               header: {
                 "Authorization": `Bearer ${uni.getStorageSync("token")}`
@@ -1089,64 +1371,50 @@ if (uni.restoreGlobal) {
                 punch_result: this.isCorrects
               },
               success: (res) => {
-            //token失效
-            if(res.statusCode === 401){
-              uni.removeStorageSync('token');
-              uni.showToast({
-                title: '登录已过期，请重新登录',
-                icon: 'none',
-                duration: 2000
-              });
-              uni.navigateTo({
-                url: '../login/login'
-              });
-            }
-                formatAppLog("log", "at pages/Examination/Examination.vue:237", res);
+                formatAppLog("log", "at pages/Examination/Examination.vue:255", res);
                 if (res.data.code == 200) {
                   uni.showToast({
                     title: this.operation ? "复习结束" : "打卡结束",
                     icon: "none",
                     duration: 2e3,
                     success: () => {
-                      uni.switchTab({
-                        url: "../home/home"
+                      uni.navigateTo({
+                        url: `../finishClockin/finishClockin?questionNum=${this.questions.length}&operation=${this.operation}}`
                       });
                     }
                   });
                 }
               },
               fail: (err) => {
-                formatAppLog("log", "at pages/Examination/Examination.vue:252", err);
+                formatAppLog("log", "at pages/Examination/Examination.vue:270", err);
               }
             });
           }
-        } else {
-          let currIndex = this.currentQuestionIndex;
-          this.$nextTick(() => {
-            this.showIncorrectAnswer(index);
-            this.showCorrectAnswer(this.realAnswer[currIndex]);
-          });
-        }
+        }, 10);
       },
-      showCorrectAnswer(answer, index) {
+      showCorrectAnswer(answer, index, currIndex) {
         const correctIndex = this.questions[index].choices.indexOf(answer);
-        const correctButton = this.$refs[`option${correctIndex}`];
-        if (correctButton) {
-          correctButton.classList.add("correct");
-        }
+        this.$nextTick(() => {
+          const correctButton = this.$refs[`option${correctIndex}`] && this.$refs[`option${correctIndex}`][currIndex];
+          if (correctButton && correctButton.classList) {
+            correctButton.classList.add("correct");
+          }
+        });
       },
-      showIncorrectAnswer(index) {
-        const incorrectButton = this.$refs[`option${index}`];
-        if (incorrectButton) {
-          incorrectButton.classList.add("incorrect");
-        }
+      showIncorrectAnswer(index, currIndex) {
+        this.$nextTick(() => {
+          const incorrectButton = this.$refs[`option${index}`][currIndex];
+          if (incorrectButton) {
+            incorrectButton.classList.add("incorrect");
+          }
+        });
       },
       preventSelect(event) {
         event.preventDefault();
       },
       getClass(index) {
         if (this.selectedChoice) {
-          formatAppLog("log", "at pages/Examination/Examination.vue:291", this.currentQuestionIndex);
+          formatAppLog("log", "at pages/Examination/Examination.vue:302", this.currentQuestionIndex);
           if (this.questions[this.currentQuestionIndex].choices[index] === this.selectedChoice) {
             return this.questions[this.currentQuestionIndex].choices[index] === this.realAnswer ? "correct" : "incorrect";
           }
@@ -1155,7 +1423,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$v(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$w(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       vue.createElementVNode(
         "text",
@@ -1186,7 +1454,8 @@ if (uni.restoreGlobal) {
         options: $data.swiperOptions,
         "easing-function": "linear",
         duration: 250,
-        onBeforeChange: _cache[3] || (_cache[3] = (...args) => $options.swiperChange && $options.swiperChange(...args))
+        onBeforeChange: _cache[2] || (_cache[2] = (...args) => $options.swiperChange && $options.swiperChange(...args)),
+        current: $data.currentQuestionIndex
       }, [
         (vue.openBlock(true), vue.createElementBlock(
           vue.Fragment,
@@ -1217,7 +1486,9 @@ if (uni.restoreGlobal) {
                     return vue.openBlock(), vue.createElementBlock("button", {
                       class: vue.normalizeClass(["option", $options.getClass(choiceIndex)]),
                       key: choiceIndex,
-                      onClick: ($event) => $options.selectChoice(choiceIndex)
+                      onClick: ($event) => $options.selectChoice(choiceIndex),
+                      ref_for: true,
+                      ref: `option${choiceIndex}`
                     }, vue.toDisplayString(choice), 11, ["onClick"]);
                   }),
                   128
@@ -1226,17 +1497,17 @@ if (uni.restoreGlobal) {
               ]),
               vue.createElementVNode("view", {
                 class: "jump-group",
-                onClick: _cache[1] || (_cache[1] = (...args) => $options.handleJump && $options.handleJump(...args))
+                onClick: ($event) => $options.handleJump(question)
               }, [
                 vue.createElementVNode("text", { class: "link" }, "加入生词本"),
                 vue.createElementVNode("image", {
                   class: "jump-icon",
                   src: "/static/jump.svg"
                 })
-              ]),
+              ], 8, ["onClick"]),
               vue.createElementVNode("view", {
                 class: "jump-group2",
-                onClick: _cache[2] || (_cache[2] = (...args) => _ctx.handleJump2 && _ctx.handleJump2(...args))
+                onClick: _cache[1] || (_cache[1] = (...args) => _ctx.handleJump2 && _ctx.handleJump2(...args))
               }, [
                 vue.createElementVNode("text", { class: "link" }, "不认识，下一个")
               ])
@@ -1246,16 +1517,16 @@ if (uni.restoreGlobal) {
           /* KEYED_FRAGMENT */
         )),
         vue.createCommentVNode(' <view class="text-info">\r\n				<text class="word">{{ questions[currentQuestionIndex].word }}</text>\r\n				<text class="phonetic">{{questions[currentQuestionIndex].phonetic}}</text>\r\n			</view>\r\n\r\n			<view class="button-group">\r\n				<button class="option" v-for="(choice, index) in \r\n				questions[currentQuestionIndex].choices" :key="index" :class="getClass(index)"\r\n					@click="selectChoice(index)">{{ choice }}</button>\r\n			</view> ')
-      ], 40, ["options"])
+      ], 40, ["options", "current"])
     ]);
   }
-  const PagesExaminationExamination = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["render", _sfc_render$v], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/Examination/Examination.vue"]]);
-  const _sfc_main$u = {};
-  function _sfc_render$u(_ctx, _cache) {
+  const PagesExaminationExamination = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["render", _sfc_render$w], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/Examination/Examination.vue"]]);
+  const _sfc_main$v = {};
+  function _sfc_render$v(_ctx, _cache) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "tab-bar" });
   }
-  const TabBar = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["render", _sfc_render$u], ["__scopeId", "data-v-89ca1f91"], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/components/TabBar.vue"]]);
-  const _sfc_main$t = {
+  const TabBar = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["render", _sfc_render$v], ["__scopeId", "data-v-89ca1f91"], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/components/TabBar.vue"]]);
+  const _sfc_main$u = {
     components: {
       TabBar
     },
@@ -1268,7 +1539,7 @@ if (uni.restoreGlobal) {
     },
     methods: {}
   };
-  function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$u(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_TabBar = vue.resolveComponent("TabBar");
     return vue.openBlock(), vue.createElementBlock("view", { class: "content" }, [
       vue.createVNode(_component_TabBar),
@@ -1283,15 +1554,15 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesIndexIndex = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["render", _sfc_render$t], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/index/index.vue"]]);
-  const _sfc_main$s = {};
-  function _sfc_render$s(_ctx, _cache) {
+  const PagesIndexIndex = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["render", _sfc_render$u], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/index/index.vue"]]);
+  const _sfc_main$t = {};
+  function _sfc_render$t(_ctx, _cache) {
     return vue.openBlock(), vue.createElementBlock("view", null, [
       vue.createElementVNode("text", { class: "hello-world" }, "Hello World!")
     ]);
   }
-  const PagesIndexHelloWorld = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$s], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/index/HelloWorld.vue"]]);
-  const _sfc_main$r = {
+  const PagesIndexHelloWorld = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["render", _sfc_render$t], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/index/HelloWorld.vue"]]);
+  const _sfc_main$s = {
     data() {
       return {
         punch_word_num: 120,
@@ -1299,7 +1570,67 @@ if (uni.restoreGlobal) {
         consecutive_punch_day: 7
       };
     },
+    onLoad() {
+      if (uni.getStorageSync("consecutivePunchDay")) {
+        this.consecutive_punch_day = uni.getStorageSync("consecutivePunchDay");
+      }
+      if (uni.getStorageSync("totalPunchDay")) {
+        this.total_punch_day = uni.getStorageSync("totalPunchDay");
+      }
+      if (uni.getStorageSync("addConsecutivePunchDay")) {
+        this.consecutive_punch_day += uni.getStorageSync("addConsecutivePunchDay");
+        uni.removeStorageSync("addConsecutivePunchDay");
+        uni.setStorageSync("consecutivePunchDay", this.consecutive_punch_day);
+      }
+      if (uni.getStorageSync("addTotalPunchDay")) {
+        this.total_punch_day += uni.getStorageSync("addTotalPunchDay");
+        uni.removeStorageSync("addTotalPunchDay");
+        uni.setStorageSync("totalPunchDay", this.total_punch_day);
+      }
+      uni.request({
+        url: "http://localhost:8080/api/users/my_punches",
+        method: "GET",
+        header: {
+          "Authorization": `Bearer ${uni.getStorageSync("token")}`
+          // 这里需要将 token 放到 header 中
+        },
+        success: (res) => {
+          if (res.statusCode === 401) {
+            uni.removeStorageSync("token");
+            uni.showToast({
+              title: "登录已过期，请重新登录",
+              icon: "none",
+              duration: 2e3
+            });
+            uni.navigateTo({
+              url: "../login/login"
+            });
+          }
+          if (res.statusCode === 200) {
+            const data2 = res.data;
+            this.punch_word_num = data2.punch_word_num;
+            this.total_punch_day = data2.total_punch_day;
+            this.consecutive_punch_day = data2.consecutive_punch_day;
+            uni.setStorageSync("consecutivePunchDay", data2.consecutive_punch_day);
+          }
+        },
+        fail: (err) => {
+          formatAppLog("log", "at pages/user/user.vue:138", err);
+        }
+      });
+    },
     methods: {
+      logout() {
+        uni.removeStorageSync("token");
+        uni.showToast({
+          title: "退出成功",
+          icon: "none",
+          duration: 2e3
+        });
+        uni.navigateTo({
+          url: "../login/login"
+        });
+      },
       goToTeam() {
         uni.navigateTo({
           url: "../MyTeam/MyTeam"
@@ -1318,132 +1649,133 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$r(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$s(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", null, [
       vue.createElementVNode("view", {
-        class: "personal-information",
-        onClick: _cache[0] || (_cache[0] = (...args) => $options.GotoPersonal_information && $options.GotoPersonal_information(...args))
+        class: "body-head",
+        style: { "display": "flex" }
       }, [
+        vue.createElementVNode("image", {
+          class: "back",
+          src: "/static/back.svg"
+        }),
+        vue.createElementVNode("image", {
+          class: "logout",
+          onClick: _cache[0] || (_cache[0] = (...args) => $options.logout && $options.logout(...args)),
+          src: "/static/logout.svg"
+        })
+      ]),
+      vue.createElementVNode("view", { class: "personal-information" }, [
         vue.createElementVNode("image", {
           class: "head",
           src: "/static/pikachu.jpg"
         }),
-        vue.createElementVNode("view", { style: { "display": "flex", "flex-direction": "column" } }, [
-          vue.createElementVNode("span", { class: "username" }, "user")
+        vue.createElementVNode("span", { class: "username" }, "user"),
+        vue.createElementVNode("view", { style: { "display": "flex", "flex-direction": "column" } }),
+        vue.createElementVNode("button", {
+          class: "discription",
+          onClick: _cache[1] || (_cache[1] = (...args) => $options.GotoPersonal_information && $options.GotoPersonal_information(...args))
+        }, "Edit Profile")
+      ]),
+      vue.createElementVNode("view", { class: "tail" }, [
+        vue.createElementVNode("view", { class: "container1" }, [
+          vue.createElementVNode("view", { class: "words-amount" }, [
+            vue.createElementVNode(
+              "span",
+              { class: "number1" },
+              vue.toDisplayString($data.punch_word_num),
+              1
+              /* TEXT */
+            ),
+            vue.createElementVNode("span", { class: "words1" }, "打卡单词数")
+          ]),
+          vue.createElementVNode("view", { class: "lianxudakatianshu" }, [
+            vue.createElementVNode(
+              "span",
+              { class: "number3" },
+              vue.toDisplayString($data.consecutive_punch_day),
+              1
+              /* TEXT */
+            ),
+            vue.createElementVNode("span", { class: "words3" }, "连续打卡天数")
+          ]),
+          vue.createElementVNode("view", { class: "dakatianshu" }, [
+            vue.createElementVNode(
+              "span",
+              { class: "number2" },
+              vue.toDisplayString($data.total_punch_day),
+              1
+              /* TEXT */
+            ),
+            vue.createElementVNode("span", { class: "words2" }, "总打卡天数")
+          ])
         ]),
-        vue.createElementVNode("image", {
-          class: "right1",
-          src: "/static/back.svg"
-        })
-      ]),
-      vue.createElementVNode("view", { class: "container1" }, [
-        vue.createElementVNode("view", { class: "words-amount" }, [
-          vue.createElementVNode(
-            "span",
-            { class: "number1" },
-            vue.toDisplayString($data.punch_word_num),
-            1
-            /* TEXT */
-          ),
-          vue.createElementVNode("span", { class: "words1" }, "打卡单词数")
+        vue.createElementVNode("view", {
+          class: "container2",
+          onClick: _cache[2] || (_cache[2] = (...args) => $options.goToCalendar && $options.goToCalendar(...args))
+        }, [
+          vue.createElementVNode("view", { class: "calendar-wrapper" }, [
+            vue.createElementVNode("image", {
+              class: "calendar",
+              src: "/static/calendar.png"
+            })
+          ]),
+          vue.createElementVNode("span", { class: "word2" }, "我的日历"),
+          vue.createElementVNode("image", {
+            class: "right",
+            src: "/static/back.svg"
+          })
         ]),
-        vue.createElementVNode("view", { class: "lianxudakatianshu" }, [
-          vue.createElementVNode(
-            "span",
-            { class: "number3" },
-            vue.toDisplayString($data.consecutive_punch_day),
-            1
-            /* TEXT */
-          ),
-          vue.createElementVNode("span", { class: "words3" }, "连续打卡天数")
+        vue.createElementVNode("view", { class: "container3" }, [
+          vue.createElementVNode("view", { class: "wordbook-wrapper" }, [
+            vue.createElementVNode("image", {
+              class: "wordbook",
+              src: "/static/biji2.svg"
+            })
+          ]),
+          vue.createElementVNode("span", { class: "word3" }, "我的单词本"),
+          vue.createElementVNode("image", {
+            class: "right",
+            src: "/static/back.svg"
+          })
         ]),
-        vue.createElementVNode("view", { class: "dakatianshu" }, [
-          vue.createElementVNode(
-            "span",
-            { class: "number2" },
-            vue.toDisplayString($data.total_punch_day),
-            1
-            /* TEXT */
-          ),
-          vue.createElementVNode("span", { class: "words2" }, "总打卡天数")
-        ])
+        vue.createElementVNode("view", {
+          class: "container3",
+          onClick: _cache[3] || (_cache[3] = (...args) => $options.goToTeam && $options.goToTeam(...args))
+        }, [
+          vue.createElementVNode("view", { class: "team-wrapper" }, [
+            vue.createElementVNode("image", {
+              class: "team",
+              src: "/static/team.svg"
+            })
+          ]),
+          vue.createElementVNode("span", { class: "word31" }, "我的团队"),
+          vue.createElementVNode("image", {
+            class: "right",
+            src: "/static/back.svg"
+          })
+        ]),
+        vue.createElementVNode("view", { class: "container4" }, [
+          vue.createElementVNode("view", { class: "setting-wrapper" }, [
+            vue.createElementVNode("image", {
+              class: "setting",
+              src: "/static/setting.png"
+            })
+          ]),
+          vue.createElementVNode("span", { class: "word4" }, "设置"),
+          vue.createElementVNode("image", {
+            class: "right",
+            src: "/static/back.svg"
+          })
+        ]),
+        vue.createElementVNode("view", { style: { "height": "22px" } }),
+        vue.createCommentVNode(' <view class="container5">\r\n        <view class="feedback-wrapper">\r\n        <image class="feedback" src="../../static/feedback.png"></image>\r\n        </view>\r\n        <span class="word5">反馈</span>\r\n        <image class="right" src="../../static/back.svg"></image>\r\n      </view> ')
       ]),
-      vue.createElementVNode("view", {
-        class: "container2",
-        onClick: _cache[1] || (_cache[1] = (...args) => $options.goToCalendar && $options.goToCalendar(...args))
-      }, [
-        vue.createElementVNode("image", {
-          class: "calendar",
-          src: "/static/calendar.png"
-        }),
-        vue.createElementVNode("span", { class: "word2" }, "我的日历"),
-        vue.createElementVNode("image", {
-          class: "right",
-          src: "/static/back.svg"
-        })
-      ]),
-      vue.createElementVNode("view", { class: "container3" }, [
-        vue.createElementVNode("image", {
-          class: "wordbook",
-          src: "/static/biji2.svg"
-        }),
-        vue.createElementVNode("span", { class: "word3" }, "我的单词本"),
-        vue.createElementVNode("image", {
-          class: "right",
-          src: "/static/back.svg"
-        })
-      ]),
-      vue.createElementVNode("view", {
-        class: "container3",
-        onClick: _cache[2] || (_cache[2] = (...args) => $options.goToTeam && $options.goToTeam(...args))
-      }, [
-        vue.createElementVNode("image", {
-          class: "team",
-          src: "/static/team.svg"
-        }),
-        vue.createElementVNode("span", { class: "word31" }, "我的团队"),
-        vue.createElementVNode("image", {
-          class: "right",
-          src: "/static/back.svg"
-        })
-      ]),
-      vue.createElementVNode("view", { class: "container4" }, [
-        vue.createElementVNode("image", {
-          class: "setting",
-          src: "/static/setting.png"
-        }),
-        vue.createElementVNode("span", { class: "word4" }, "设置"),
-        vue.createElementVNode("image", {
-          class: "right",
-          src: "/static/back.svg"
-        })
-      ]),
-      vue.createElementVNode("view", { class: "container5" }, [
-        vue.createElementVNode("image", {
-          class: "feedback",
-          src: "/static/feedback.png"
-        }),
-        vue.createElementVNode("span", { class: "word5" }, "反馈"),
-        vue.createElementVNode("image", {
-          class: "right",
-          src: "/static/back.svg"
-        })
-      ]),
-      vue.createElementVNode("view", { class: "container5" }, [
-        vue.createElementVNode("image", {
-          class: "feedback",
-          src: "/static/like.svg"
-        }),
-        vue.createElementVNode("span", { class: "word5" }, "给我们好评"),
-        vue.createElementVNode("image", {
-          class: "right",
-          src: "/static/back.svg"
-        })
-      ])
+      vue.createCommentVNode('\r\n\r\n    <view class="container5">\r\n      <image class="feedback" src="../../static/like.svg"></image>\r\n      <span class="word5">给我们好评</span>\r\n      <image class="right" src="../../static/back.svg"></image>\r\n    </view> ')
     ]);
   }
-  const PagesUserUser = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render$r], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/user/user.vue"]]);
-  const _sfc_main$q = {
+  const PagesUserUser = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$s], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/user/user.vue"]]);
+  const _sfc_main$r = {
     props: {
       word: String,
       pronunciation: String,
@@ -1486,7 +1818,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$q(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$r(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "word-card" }, [
       vue.createElementVNode("view", { class: "word-container" }, [
         vue.createElementVNode(
@@ -1516,7 +1848,10 @@ if (uni.restoreGlobal) {
           src: "/static/read-icon.svg",
           onClick: _cache[2] || (_cache[2] = (...args) => $options.readWord && $options.readWord(...args))
         }),
-        vue.createElementVNode("view", { class: "review-count" }, [
+        vue.createElementVNode("view", {
+          class: "review-count",
+          style: { "display": "none" }
+        }, [
           vue.createElementVNode("p", null, "复习次数:"),
           vue.createElementVNode(
             "p",
@@ -1529,8 +1864,8 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesWordBlockWordBlock = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$q], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/WordBlock/WordBlock.vue"]]);
-  const _sfc_main$p = {
+  const PagesWordBlockWordBlock = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render$r], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/WordBlock/WordBlock.vue"]]);
+  const _sfc_main$q = {
     name: "backTop",
     methods: {
       backToTop() {
@@ -1542,7 +1877,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$q(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
       class: "backTop",
       onClick: _cache[0] || (_cache[0] = (...args) => $options.backToTop && $options.backToTop(...args))
@@ -1550,8 +1885,8 @@ if (uni.restoreGlobal) {
       vue.createElementVNode("image", { src: "/static/backTop.svg" })
     ]);
   }
-  const backTop = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["render", _sfc_render$p], ["__scopeId", "data-v-de36d26c"], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/components/backTop.vue"]]);
-  const _sfc_main$o = {
+  const backTop = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$q], ["__scopeId", "data-v-de36d26c"], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/components/backTop.vue"]]);
+  const _sfc_main$p = {
     components: {
       WordBlock: PagesWordBlockWordBlock,
       backTop
@@ -1572,39 +1907,7 @@ if (uni.restoreGlobal) {
           preposition: "prep.",
           interjection: "int."
         },
-        words: [
-          {
-            word_id: 1,
-            spelling: "moral",
-            pronunciation: "/ˈmɔːrəl/",
-            meanings: {
-              verb: null,
-              adjective: ["道德的", "品行端正的", "伦理的", " 精神上的"],
-              noun: ["道德教训", "寓意", "品德", "品行"],
-              pronoun: null,
-              adverb: null,
-              conjunction: null,
-              preposition: null,
-              interjection: null
-            },
-            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
-          },
-          {
-            word_id: 2,
-            spelling: "abandon",
-            pronunciation: "/əˈbændən/",
-            meanings: {
-              verb: ["抛弃", "放弃", "弃置", "放弃治疗"],
-              noun: ["放弃物", "放弃的事物", "放弃的念头", "放弃的决定"],
-              pronoun: null,
-              adverb: null,
-              conjunction: null,
-              preposition: null,
-              interjection: null
-            },
-            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/abandon--_gb_1.mp3"
-          }
-        ],
+        words: [],
         // 单词列表
         cnt: 0,
         book: "cet4",
@@ -1616,33 +1919,45 @@ if (uni.restoreGlobal) {
         //是否显示返回顶部按钮
       };
     },
-    /*  onLoad() {
-        uni.request({
-          url: "/api/words/get_starbk",
-          method: "POST",
-          header: {
-            'Authorization': 'Bearer ' + uni.getStorageSync('token')
-          },
-          success: (res) => {
-            //token失效
-            if(res.statusCode === 401){
-              uni.removeStorageSync('token');
-              uni.showToast({
-                title: '登录已过期，请重新登录',
-                icon: 'none',
-                duration: 2000
-              });
-              uni.navigateTo({
-                url: '../login/login'
-              });
-            }
-            this.words = res.data.words;
-          },
-          fail: (res) => {
-            __f__('log','at pages/Vocab/Vocab.vue:98',"请求失败");
+    onLoad() {
+      this.cnt = this.words.length;
+      this.book = "cet4";
+      uni.showLoading({
+        title: "加载中"
+      });
+      uni.request({
+        url: "http://localhost:8080/api/words/get_starbk",
+        method: "GET",
+        header: {
+          "Authorization": "Bearer " + uni.getStorageSync("token")
+        },
+        success: (res) => {
+          uni.hideLoading();
+          if (res.statusCode === 401) {
+            uni.removeStorageSync("token");
+            uni.showToast({
+              title: "登录已过期，请重新登录",
+              icon: "none",
+              duration: 2e3
+            });
+            uni.navigateTo({
+              url: "../logins/login"
+            });
           }
-        });
-      },*/
+          if (res.data.code === 200 || res.data.code === "200") {
+            res.data.words.forEach((word2) => {
+              let res2 = word2;
+              res2["sound"] = this.getSoundUrl(res2);
+              this.words.push(res2);
+            });
+          }
+        },
+        fail: (res) => {
+          uni.hideLoading();
+          formatAppLog("log", "at pages/Vocab/Vocab.vue:95", "请求失败");
+        }
+      });
+    },
     onPageScroll(e) {
       let scrollTop = e.scrollTop;
       if (scrollTop > 100) {
@@ -1652,6 +1967,63 @@ if (uni.restoreGlobal) {
       }
     },
     methods: {
+      transformWordDescription(simpleDescription) {
+        try {
+          const word2 = JSON.parse(this.fixJsonString(simpleDescription));
+          const detailedDescription = {
+            word_id: word2.word_id,
+            spelling: word2.spelling,
+            pronunciation: word2.pronunciation,
+            meanings: {
+              verb: [],
+              adjective: null,
+              noun: null,
+              pronoun: null,
+              adverb: null,
+              conjunction: null,
+              preposition: null,
+              interjection: null
+            },
+            sound: null
+            // 假设没有提供发音链接
+          };
+          const meaningsArray = word2.meanings.split("，");
+          meaningsArray.forEach((meaning) => {
+            const [partOfSpeech, definition] = meaning.split(".");
+            if (partOfSpeech && definition) {
+              const pos = partOfSpeech.trim();
+              const def = definition.trim();
+              if (pos === this.simplifiedSpeech.verb) {
+                detailedDescription.meanings.verb.push(def);
+              } else if (pos === this.simplifiedSpeech.adjective) {
+                detailedDescription.meanings.adjective = [def];
+              } else if (pos === this.simplifiedSpeech.noun) {
+                detailedDescription.meanings.noun = [def];
+              }
+            }
+          });
+          return detailedDescription;
+        } catch (error) {
+          formatAppLog("error", "at pages/Vocab/Vocab.vue:155", "Error parsing JSON: ", error);
+          return null;
+        }
+      },
+      fixJsonString(str) {
+        return str.replace(/'/g, '"').replace(/(\w+):/g, '"$1":').replace(/:([a-zA-Z]+)/g, ':"$1"').replace(/,\s*}/g, "}").replace(/https":/, "https:");
+      },
+      isSimplifiedDescription(wordString) {
+        const fixedWordString = this.fixJsonString(wordString);
+        try {
+          const parsedWord = JSON.parse(fixedWordString);
+          return typeof parsedWord.meanings === "string";
+        } catch (error) {
+          formatAppLog("error", "at pages/Vocab/Vocab.vue:174", "Error parsing word description: ", error);
+          return false;
+        }
+      },
+      getSoundUrl(word2) {
+        return `https://ssl.gstatic.com/dictionary/static/sounds/oxford/${word2.spelling}--_gb_1.mp3`;
+      },
       getMeaningStr(meanings) {
         let meaningStr = "";
         let foundFirst = false;
@@ -1687,7 +2059,7 @@ if (uni.restoreGlobal) {
         const scrollHeight = e.target.scrollHeight;
         const clientHeight = e.target.clientHeight;
         if (scrollTop + clientHeight >= scrollHeight) {
-          formatAppLog("log", "at pages/Vocab/Vocab.vue:165", "滑动到底部");
+          formatAppLog("log", "at pages/Vocab/Vocab.vue:231", "滑动到底部");
         } else {
           wx.showToast({
             title: "Hello, World!",
@@ -1698,7 +2070,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$o(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_word_block = vue.resolveComponent("word-block");
     const _component_backTop = vue.resolveComponent("backTop");
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
@@ -1713,7 +2085,7 @@ if (uni.restoreGlobal) {
           src: "/static/book.png"
         }),
         vue.createElementVNode(
-          "view",
+          "h3",
           { class: "vocabook-title" },
           "单词书:" + vue.toDisplayString($data.book),
           1
@@ -1749,16 +2121,16 @@ if (uni.restoreGlobal) {
           (vue.openBlock(true), vue.createElementBlock(
             vue.Fragment,
             null,
-            vue.renderList($data.words, (word) => {
+            vue.renderList($data.words, (word2) => {
               return vue.openBlock(), vue.createBlock(_component_word_block, {
-                key: word.id,
-                word: word.spelling,
-                id: word.word_id,
-                pronunciation: word.pronunciation,
-                meaning: $options.getMeaningStr(word.meanings),
-                details: word,
+                key: word2.id,
+                word: word2.spelling,
+                id: word2.word_id,
+                pronunciation: word2.pronunciation,
+                meaning: $options.getMeaningStr(word2.meanings),
+                details: word2,
                 "review-count": 5,
-                sound: word.sound
+                sound: word2.sound
               }, null, 8, ["word", "id", "pronunciation", "meaning", "details", "sound"]);
             }),
             128
@@ -1773,8 +2145,8 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesVocabVocab = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["render", _sfc_render$o], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/Vocab/Vocab.vue"]]);
-  const _sfc_main$n = {
+  const PagesVocabVocab = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["render", _sfc_render$p], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/Vocab/Vocab.vue"]]);
+  const _sfc_main$o = {
     data() {
       return {
         title: "",
@@ -1864,7 +2236,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$n(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$o(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
       class: "react",
       id: "react"
@@ -1917,8 +2289,8 @@ if (uni.restoreGlobal) {
       vue.createElementVNode("view", { class: "right kong" }, " 右滑提交 ")
     ]);
   }
-  const sliderzz = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["render", _sfc_render$n], ["__scopeId", "data-v-12311208"], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/components/sliderzz.vue"]]);
-  const _sfc_main$m = {
+  const sliderzz = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["render", _sfc_render$o], ["__scopeId", "data-v-12311208"], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/components/sliderzz.vue"]]);
+  const _sfc_main$n = {
     data() {
       return {
         visible: false,
@@ -1940,7 +2312,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$m(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$n(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.withDirectives((vue.openBlock(), vue.createElementBlock(
       "div",
       { class: "toast" },
@@ -1951,8 +2323,8 @@ if (uni.restoreGlobal) {
       [vue.vShow, $data.visible]
     ]);
   }
-  const toast = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["render", _sfc_render$m], ["__scopeId", "data-v-c319bb4c"], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/components/toast.vue"]]);
-  const _sfc_main$l = {
+  const toast = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["render", _sfc_render$n], ["__scopeId", "data-v-c319bb4c"], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/components/toast.vue"]]);
+  const _sfc_main$m = {
     data() {
       return {
         showBackTop: true,
@@ -1978,7 +2350,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$m(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_sliderzz = vue.resolveComponent("sliderzz");
     const _component_toast = vue.resolveComponent("toast");
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
@@ -2068,208 +2440,8 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesExampleExample = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["render", _sfc_render$l], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/example/example.vue"]]);
-  const _sfc_main$k = {
-    data() {
-      return {
-        username: "",
-        password: "",
-        remember: false
-      };
-    },
-    beforeMount() {
-      let username = uni.getStorageSync("username");
-      let password = uni.getStorageSync("password");
-      let remember = uni.getStorageSync("remember");
-      if (username && password && remember) {
-        this.username = username;
-        this.password = password;
-        this.remember = remember;
-      }
-    },
-    methods: {
-      autoLogin() {
-        this.remember = !this.remember;
-        formatAppLog("log", "at pages/login/login.vue:57", this.remember);
-        formatAppLog("log", "at pages/login/login.vue:58", this.username);
-        formatAppLog("log", "at pages/login/login.vue:59", this.password);
-      },
-      login() {
-        let flag = true;
-        let username = this.username;
-        if (!username) {
-          this.$nextTick(() => {
-            let usernameInput = document.getElementById("username");
-            usernameInput.classList.add("inputActive");
-            setTimeout(() => {
-              usernameInput.classList.remove("inputActive");
-            }, 2e3);
-          });
-          flag = false;
-        }
-        let password = this.password;
-        if (!password) {
-          this.$nextTick(() => {
-            let passwordInput = document.getElementById("password");
-            passwordInput.classList.add("inputActive");
-            setTimeout(() => {
-              passwordInput.classList.remove("inputActive");
-            }, 2e3);
-          });
-          flag = false;
-        }
-        if (!flag) {
-          return;
-        }
-        let remember = this.remember;
-        uni.request({
-          url: "/api/user/login",
-          data: {
-            username,
-            password,
-            remember
-          },
-          method: "POST",
-          success: (res) => {
-            //token失效
-            if(res.statusCode === 401){
-              uni.removeStorageSync('token');
-              uni.showToast({
-                title: '登录已过期，请重新登录',
-                icon: 'none',
-                duration: 2000
-              });
-              uni.navigateTo({
-                url: '../login/login'
-              });
-            }
-            if (res.statusCode == 200) {
-              if (remember) {
-                uni.setStorageSync("username");
-                uni.setStorageSync("password");
-                uni.setStorageSync("remember");
-              }
-              let token = res.data.token;
-              uni.setStorageSync("token", token);
-              uni.navigateTo({
-                //TODO: 跳转到首页，或处理其他逻辑
-                url: res.data.have_word_book ? "../home/home" : `../Welcome/Welcome?operation=${res.data.have_word_book ? 1 : 0}`
-              });
-            } else if (res.statusCode == 400) {
-              let usernameInput = document.getElementById("username");
-              usernameInput.classList.add("inputActive");
-              setTimeout(() => {
-                usernameInput.classList.remove("inputActive");
-              }, 2e3);
-              let passwordInput = document.getElementById("password");
-              passwordInput.classList.add("inputActive");
-              setTimeout(() => {
-                passwordInput.classList.remove("inputActive");
-              }, 2e3);
-              uni.showToast({
-                title: "用户名或密码错误",
-                icon: "none"
-              });
-            }
-          },
-          fail: (res) => {
-            uni.showToast({
-              title: "登录失败",
-              icon: "none"
-            });
-          }
-        });
-      }
-    }
-  };
-  function _sfc_render$k(_ctx, _cache, $props, $setup, $data, $options) {
-    const _component_span1 = vue.resolveComponent("span1");
-    const _component_router_link = vue.resolveComponent("router-link");
-    return vue.openBlock(), vue.createElementBlock("view", null, [
-      vue.createElementVNode("view", { class: "all-container" }, [
-        vue.createElementVNode("image", {
-          class: "background",
-          src: "/static/login1.svg"
-        }),
-        vue.createElementVNode("view", { class: "container" }, [
-          vue.createVNode(_component_span1, null, {
-            default: vue.withCtx(() => [
-              vue.createTextVNode("Sign In")
-            ]),
-            _: 1
-            /* STABLE */
-          }),
-          vue.createElementVNode("view", { class: "white-container1" }, [
-            vue.createElementVNode("span", null, "账号"),
-            vue.withDirectives(vue.createElementVNode(
-              "input",
-              {
-                id: "username",
-                class: "search-box",
-                type: "text",
-                "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.username = $event),
-                placeholder: "请输入账号"
-              },
-              null,
-              512
-              /* NEED_PATCH */
-            ), [
-              [vue.vModelText, $data.username]
-            ])
-          ]),
-          vue.createElementVNode("view", { class: "white-container2" }, [
-            vue.createElementVNode("span", null, "密码"),
-            vue.createElementVNode("view", { class: "password-container" }, [
-              vue.withDirectives(vue.createElementVNode(
-                "input",
-                {
-                  id: "password",
-                  class: "search-box",
-                  type: "password",
-                  "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $data.password = $event),
-                  placeholder: "请输入密码"
-                },
-                null,
-                512
-                /* NEED_PATCH */
-              ), [
-                [vue.vModelText, $data.password]
-              ]),
-              vue.createElementVNode(
-                "img",
-                {
-                  ref: "errorIcon",
-                  class: "error-icon",
-                  src: "/static/errorCross.svg"
-                },
-                null,
-                512
-                /* NEED_PATCH */
-              )
-            ]),
-            vue.createElementVNode("view", { class: "forgot-password-link" }, "忘记密码?")
-          ]),
-          vue.createElementVNode("button", {
-            class: "login-button",
-            onClick: _cache[2] || (_cache[2] = (...args) => $options.login && $options.login(...args))
-          }, "登录"),
-          vue.createCommentVNode(' 	<button class="register-button">注册</button><button class="forget">忘记密码？</button>\r\n				<button class="button1"></button>\r\n				<span class="text">登录代表你同意用户协议、隐私政策和儿童隐私政策</span> '),
-          vue.createElementVNode("span", { class: "text" }, [
-            vue.createTextVNode("have no account? "),
-            vue.createVNode(_component_router_link, { to: "../register/register" }, {
-              default: vue.withCtx(() => [
-                vue.createTextVNode("click here")
-              ]),
-              _: 1
-              /* STABLE */
-            })
-          ])
-        ])
-      ])
-    ]);
-  }
-  const PagesLoginLogin = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["render", _sfc_render$k], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/login/login.vue"]]);
-  const _sfc_main$j = {
+  const PagesExampleExample = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["render", _sfc_render$m], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/example/example.vue"]]);
+  const _sfc_main$l = {
     data() {
       return {
         username: "",
@@ -2277,7 +2449,8 @@ if (uni.restoreGlobal) {
         password: "",
         password2: "",
         initialVerifyCodeInput: "",
-        verifyCode: ""
+        verifyCode: "",
+        vCode: ""
       };
     },
     methods: {
@@ -2299,28 +2472,28 @@ if (uni.restoreGlobal) {
         }
         let btn = document.getElementById("sendCodeBtn");
         uni.request({
-          url: "/api/register/sendCode",
+          url: "http://localhost:8080/api/register/sendCode",
           data: {
             email: this.email
           },
           withCredentials: false,
           method: "POST",
           success: (res) => {
-            //token失效
-            if(res.statusCode === 401){
-              uni.removeStorageSync('token');
+            if (res.statusCode === 401) {
+              uni.removeStorageSync("token");
               uni.showToast({
-                title: '登录已过期，请重新登录',
-                icon: 'none',
-                duration: 2000
+                title: "登录已过期，请重新登录",
+                icon: "none",
+                duration: 2e3
               });
               uni.navigateTo({
-                url: '../login/login'
+                url: "../login/login"
               });
             }
-            formatAppLog("log", "at pages/register/register.vue:73", res);
+            formatAppLog("log", "at pages/register/register.vue:86", res);
             if (res.statusCode === 200) {
               let vCode = res.data.data;
+              this.vCode = vCode;
               let codeAndExpiry = {
                 vCode,
                 expiry: (/* @__PURE__ */ new Date()).getTime() + 1e3 * 60 * 5
@@ -2356,7 +2529,7 @@ if (uni.restoreGlobal) {
             }
           },
           fail: (res) => {
-            formatAppLog("log", "at pages/register/register.vue:113", res);
+            formatAppLog("log", "at pages/register/register.vue:127", res);
             uni.showToast({
               title: "发送失败",
               icon: "error"
@@ -2412,27 +2585,27 @@ if (uni.restoreGlobal) {
         let email = this.email;
         let password = this.password;
         uni.request({
-          url: "/api/user/register",
+          url: "http://localhost:8080/api/user/register",
           data: {
             username,
             email,
-            password
+            password,
+            code: this.vCode
           },
           method: "POST",
           success: (res) => {
-            //token失效
-            if(res.statusCode === 401){
-              uni.removeStorageSync('token');
+            if (res.statusCode === 401) {
+              uni.removeStorageSync("token");
               uni.showToast({
-                title: '登录已过期，请重新登录',
-                icon: 'none',
-                duration: 2000
+                title: "登录已过期，请重新登录",
+                icon: "none",
+                duration: 2e3
               });
               uni.navigateTo({
-                url: '../login/login'
+                url: "../login/login"
               });
             }
-            formatAppLog("log", "at pages/register/register.vue:181", res);
+            formatAppLog("log", "at pages/register/register.vue:208", res);
             if (res.statusCode === 200) {
               uni.showToast({
                 title: "注册成功",
@@ -2459,7 +2632,7 @@ if (uni.restoreGlobal) {
             }
           },
           fail: (res) => {
-            formatAppLog("log", "at pages/register/register.vue:208", res);
+            formatAppLog("log", "at pages/register/register.vue:235", res);
             uni.showToast({
               title: "注册失败",
               icon: "error"
@@ -2469,7 +2642,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", null, [
       vue.createElementVNode("view", { class: "background" }, [
         vue.createElementVNode("span", { class: "span1" }, [
@@ -2609,8 +2782,8 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesRegisterRegister = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["render", _sfc_render$j], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/register/register.vue"]]);
-  const _sfc_main$i = {
+  const PagesRegisterRegister = /* @__PURE__ */ _export_sfc(_sfc_main$l, [["render", _sfc_render$l], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/register/register.vue"]]);
+  const _sfc_main$k = {
     data() {
       return {
         // 按钮id映射表
@@ -2812,25 +2985,24 @@ if (uni.restoreGlobal) {
       this.books = [];
       this.buttonIds = [];
       uni.request({
-        url: "/api/users/navigate_books",
+        url: "http://localhost:8080/api/users/navigate_books",
         method: "GET",
         header: {
           "Authorization": "Bearer " + uni.getStorageSync("token")
         },
         success: (res) => {
-            //token失效
-            if(res.statusCode === 401){
-              uni.removeStorageSync('token');
-              uni.showToast({
-                title: '登录已过期，请重新登录',
-                icon: 'none',
-                duration: 2000
-              });
-              uni.navigateTo({
-                url: '../login/login'
-              });
-            }
-          formatAppLog("log", "at pages/Welcome/Welcome.vue:250", res.data);
+          if (res.statusCode === 401) {
+            uni.removeStorageSync("token");
+            uni.showToast({
+              title: "登录已过期，请重新登录",
+              icon: "none",
+              duration: 2e3
+            });
+            uni.navigateTo({
+              url: "../login/login"
+            });
+          }
+          formatAppLog("log", "at pages/Welcome/Welcome.vue:262", res.data);
           let books = res.data.books;
           books.forEach((book) => {
             this.books.push({
@@ -2845,7 +3017,7 @@ if (uni.restoreGlobal) {
           });
         },
         fail: (err) => {
-          formatAppLog("log", "at pages/Welcome/Welcome.vue:267", err);
+          formatAppLog("log", "at pages/Welcome/Welcome.vue:279", err);
         }
       });
     },
@@ -2903,26 +3075,25 @@ if (uni.restoreGlobal) {
         }
       },
       bookConfirm(book_id, title) {
-        formatAppLog("log", "at pages/Welcome/Welcome.vue:330", book_id, title);
+        formatAppLog("log", "at pages/Welcome/Welcome.vue:342", book_id, title);
         uni.showModal({
           title: "提示",
           content: "确定要选择《" + title + "》吗？",
           success: (res) => {
-            //token失效
-            if(res.statusCode === 401){
-              uni.removeStorageSync('token');
+            if (res.statusCode === 401) {
+              uni.removeStorageSync("token");
               uni.showToast({
-                title: '登录已过期，请重新登录',
-                icon: 'none',
-                duration: 2000
+                title: "登录已过期，请重新登录",
+                icon: "none",
+                duration: 2e3
               });
               uni.navigateTo({
-                url: '../login/login'
+                url: "../login/login"
               });
             }
             if (res.confirm) {
               uni.request({
-                url: "/api/users/navigate_books",
+                url: "http://localhost:8080/api/users/navigate_books",
                 method: "POST",
                 header: {
                   "Authorization": "Bearer " + uni.getStorageSync("token")
@@ -2931,7 +3102,18 @@ if (uni.restoreGlobal) {
                   book_id
                 },
                 success: (res2) => {
-                  formatAppLog("log", "at pages/Welcome/Welcome.vue:346", res2.data);
+                  if (res2.statusCode === 401) {
+                    uni.removeStorageSync("token");
+                    uni.showToast({
+                      title: "登录已过期，请重新登录",
+                      icon: "none",
+                      duration: 2e3
+                    });
+                    uni.navigateTo({
+                      url: "../login/login"
+                    });
+                  }
+                  formatAppLog("log", "at pages/Welcome/Welcome.vue:382", res2.data);
                   if (res2.data.code === 200 || res2.data.code === "200") {
                     uni.showToast({
                       title: "选择词库成功",
@@ -2954,18 +3136,18 @@ if (uni.restoreGlobal) {
                   }
                 },
                 fail: (err) => {
-                  formatAppLog("log", "at pages/Welcome/Welcome.vue:369", err);
+                  formatAppLog("log", "at pages/Welcome/Welcome.vue:405", err);
                 }
               });
             } else if (res.cancel) {
-              formatAppLog("log", "at pages/Welcome/Welcome.vue:373", "取消");
+              formatAppLog("log", "at pages/Welcome/Welcome.vue:409", "取消");
             }
           }
         });
       }
     }
   };
-  function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$k(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", null, [
       vue.createElementVNode("view", { class: "topbar" }, [
         vue.createElementVNode("span", { class: "host-title" }, "选择您的打卡计划"),
@@ -3069,21 +3251,21 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesWelcomeWelcome = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$i], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/Welcome/Welcome.vue"]]);
-  const _sfc_main$h = {
+  const PagesWelcomeWelcome = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["render", _sfc_render$k], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/Welcome/Welcome.vue"]]);
+  const _sfc_main$j = {
     data() {
       return {};
     },
     methods: {}
   };
-  function _sfc_render$h(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "loading-container" }, [
       vue.createElementVNode("view", { class: "loading-text" }, "页面加载中..."),
       vue.createElementVNode("view", { class: "loading-arrow" })
     ]);
   }
-  const PagesLoadingLoading = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["render", _sfc_render$h], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/Loading/Loading.vue"]]);
-  const _sfc_main$g = {
+  const PagesLoadingLoading = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["render", _sfc_render$j], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/Loading/Loading.vue"]]);
+  const _sfc_main$i = {
     data() {
       return {
         showPopup: true,
@@ -3111,7 +3293,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$g(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
     return $data.showPopup ? (vue.openBlock(), vue.createElementBlock("view", {
       key: 0,
       class: "popup-container"
@@ -3137,8 +3319,8 @@ if (uni.restoreGlobal) {
       ])
     ])) : vue.createCommentVNode("v-if", true);
   }
-  const PagesPopUpPopUp = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$g], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/PopUp/PopUp.vue"]]);
-  const _sfc_main$f = {
+  const PagesPopUpPopUp = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$i], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/PopUp/PopUp.vue"]]);
+  const _sfc_main$h = {
     props: {
       label: String,
       value: String,
@@ -3166,7 +3348,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$h(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", {
       class: "item",
       onClick: _cache[4] || (_cache[4] = ($event) => $data.showModal = true)
@@ -3218,18 +3400,18 @@ if (uni.restoreGlobal) {
       ])) : vue.createCommentVNode("v-if", true)
     ]);
   }
-  const EditableItemView = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$f], ["__scopeId", "data-v-7226b2f7"], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/components/EditableItemView.vue"]]);
-  const _sfc_main$e = {
+  const EditableItemView = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["render", _sfc_render$h], ["__scopeId", "data-v-7226b2f7"], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/components/EditableItemView.vue"]]);
+  const _sfc_main$g = {
     components: {
       EditableItemView
     },
     data() {
       return {
-        username: "wwswad",
-        email: "3242412@xy.com",
-        phone: "12312312312",
-        birthday: "1999-01-01",
-        team: "无"
+        username: "kary",
+        email: "834479572@qq.com",
+        phone: "18923208090",
+        birthday: "2003-05-28",
+        team: "英语每日练小组"
         // 其他数据...  
       };
     },
@@ -3243,7 +3425,7 @@ if (uni.restoreGlobal) {
     }
     // 注意这里没有多余的闭合大括号 "}"  
   };
-  function _sfc_render$e(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$g(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_EditableItemView = vue.resolveComponent("EditableItemView");
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       vue.createElementVNode("image", {
@@ -3251,6 +3433,7 @@ if (uni.restoreGlobal) {
         src: "/static/back.svg",
         onClick: _cache[0] || (_cache[0] = (...args) => $options.GotoUser && $options.GotoUser(...args))
       }),
+      vue.createElementVNode("span", { class: "title" }, "个人信息"),
       vue.createElementVNode("view", { class: "edit" }, [
         vue.createElementVNode("image", {
           class: "photo",
@@ -3261,43 +3444,43 @@ if (uni.restoreGlobal) {
             id: "username",
             label: "用户名",
             value: $data.username,
-            placeholder: "wwswad",
+            placeholder: "kary",
             "onUpdate:value": _cache[1] || (_cache[1] = ($event) => $data.username = $event)
           }, null, 8, ["value"]),
           vue.createVNode(_component_EditableItemView, {
             id: "email",
             label: "邮箱",
             value: $data.email,
-            placeholder: "3242412@xy.com",
+            placeholder: "834479572@qq.com",
             "onUpdate:value": _cache[2] || (_cache[2] = ($event) => $data.email = $event)
           }, null, 8, ["value"]),
           vue.createVNode(_component_EditableItemView, {
             id: "phone",
             label: "手机号",
             value: $data.phone,
-            placeholder: "12312312312",
+            placeholder: "18923208090",
             "onUpdate:value": _cache[3] || (_cache[3] = ($event) => $data.phone = $event)
           }, null, 8, ["value"]),
           vue.createVNode(_component_EditableItemView, {
             id: "birthday",
             label: "生日",
             value: $data.birthday,
-            placeholder: "1999-01-01",
+            placeholder: "2003-05-28",
             "onUpdate:value": _cache[4] || (_cache[4] = ($event) => $data.birthday = $event)
           }, null, 8, ["value"]),
           vue.createVNode(_component_EditableItemView, {
             id: "team",
             label: "团队",
             value: $data.team,
-            placeholder: "无",
+            placeholder: "英语每日练小组",
             "onUpdate:value": _cache[5] || (_cache[5] = ($event) => $data.team = $event)
           }, null, 8, ["value"])
         ])
       ])
     ]);
   }
-  const PagesPersonalInformationPersonalInformation = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$e], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/personal-information/personal-information.vue"]]);
-  const _sfc_main$d = {
+  const PagesPersonalInformationPersonalInformation = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$g], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/personal-information/personal-information.vue"]]);
+  const _sfc_main$f = {
     data() {
       return {
         //最后一次打卡的日期
@@ -3460,7 +3643,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$d(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "body" }, [
       vue.createElementVNode("view", { class: "color" }),
       vue.createElementVNode("view", null, [
@@ -3568,11 +3751,11 @@ if (uni.restoreGlobal) {
               (vue.openBlock(true), vue.createElementBlock(
                 vue.Fragment,
                 null,
-                vue.renderList($data.punchWords, (word, index) => {
+                vue.renderList($data.punchWords, (word2, index) => {
                   return vue.openBlock(), vue.createElementBlock(
                     "span",
                     { key: index },
-                    vue.toDisplayString(word.word) + "： " + vue.toDisplayString(word.meanings.verb != null ? "v." : "") + vue.toDisplayString(word.meanings.verb) + " " + vue.toDisplayString(word.meanings.noun != null ? "n." : "") + " " + vue.toDisplayString(word.meanings.noun) + " " + vue.toDisplayString(word.meanings.adj != null ? "adj." : "") + " " + vue.toDisplayString(word.meanings.adj) + " " + vue.toDisplayString(word.meanings.adv != null ? "adv." : "") + " " + vue.toDisplayString(word.meanings.prep) + " " + vue.toDisplayString(word.meanings.prep != null ? "prep." : "") + " " + vue.toDisplayString(word.meanings.adv),
+                    vue.toDisplayString(word2.word) + "： " + vue.toDisplayString(word2.meanings.verb != null ? "v." : "") + vue.toDisplayString(word2.meanings.verb) + " " + vue.toDisplayString(word2.meanings.noun != null ? "n." : "") + " " + vue.toDisplayString(word2.meanings.noun) + " " + vue.toDisplayString(word2.meanings.adj != null ? "adj." : "") + " " + vue.toDisplayString(word2.meanings.adj) + " " + vue.toDisplayString(word2.meanings.adv != null ? "adv." : "") + " " + vue.toDisplayString(word2.meanings.prep) + " " + vue.toDisplayString(word2.meanings.prep != null ? "prep." : "") + " " + vue.toDisplayString(word2.meanings.adv),
                     1
                     /* TEXT */
                   );
@@ -3595,8 +3778,8 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesCalendarCalendar = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["render", _sfc_render$d], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/Calendar/Calendar.vue"]]);
-  const _sfc_main$c = {
+  const PagesCalendarCalendar = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$f], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/Calendar/Calendar.vue"]]);
+  const _sfc_main$e = {
     data() {
       return {
         examId: 1,
@@ -3691,7 +3874,7 @@ if (uni.restoreGlobal) {
       this.examId = options.exam_id;
       this.examName = options.exam_name;
       uni.request({
-        url: "/api/exams/examination_details",
+        url: "http://localhost:8080/api/exams/examination_details",
         method: "POST",
         data: {
           exam_id: this.examId
@@ -3701,18 +3884,17 @@ if (uni.restoreGlobal) {
           "Authorization": `Bearer ${uni.getStorageSync("token")}`
         },
         success: (res) => {
-            //token失效
-            if(res.statusCode === 401){
-              uni.removeStorageSync('token');
-              uni.showToast({
-                title: '登录已过期，请重新登录',
-                icon: 'none',
-                duration: 2000
-              });
-              uni.navigateTo({
-                url: '../login/login'
-              });
-            }
+          if (res.statusCode === 401) {
+            uni.removeStorageSync("token");
+            uni.showToast({
+              title: "登录已过期，请重新登录",
+              icon: "none",
+              duration: 2e3
+            });
+            uni.navigateTo({
+              url: "../login/login"
+            });
+          }
           this.examDate = res.data.exam_date;
           this.questionNum = res.data.question_num;
           this.correctNum = res.data.correct_num;
@@ -3778,7 +3960,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$e(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", null, [
       vue.createElementVNode("view", { class: "container" }, [
         vue.createElementVNode("view", { class: "left-container" }, [
@@ -3963,7 +4145,7 @@ if (uni.restoreGlobal) {
       ))
     ]);
   }
-  const PagesExam_detailsExam_details = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$c], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/exam_details/exam_details.vue"]]);
+  const PagesExam_detailsExam_details = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$e], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/exam_details/exam_details.vue"]]);
   const isObject = (val) => val !== null && typeof val === "object";
   const defaultDelimiters = ["{", "}"];
   class BaseFormatter {
@@ -4094,7 +4276,7 @@ if (uni.restoreGlobal) {
     }
   }
   class I18n {
-    constructor({ locale, fallbackLocale, messages: messages2, watcher, formater }) {
+    constructor({ locale, fallbackLocale, messages: messages2, watcher, formater: formater2 }) {
       this.locale = LOCALE_EN;
       this.fallbackLocale = LOCALE_EN;
       this.message = {};
@@ -4103,7 +4285,7 @@ if (uni.restoreGlobal) {
       if (fallbackLocale) {
         this.fallbackLocale = fallbackLocale;
       }
-      this.formater = formater || defaultFormatter;
+      this.formater = formater2 || defaultFormatter;
       this.messages = messages2 || {};
       this.setLocale(locale || LOCALE_EN);
       if (watcher) {
@@ -4274,7 +4456,7 @@ if (uni.restoreGlobal) {
   const {
     t
   } = initVueI18n(messages);
-  const _sfc_main$b = {
+  const _sfc_main$d = {
     name: "UniCountdown",
     emits: ["timeup"],
     props: {
@@ -4487,7 +4669,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$b(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$d(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "uni-countdown" }, [
       $props.showDay ? (vue.openBlock(), vue.createElementBlock(
         "text",
@@ -4578,8 +4760,44 @@ if (uni.restoreGlobal) {
       )) : vue.createCommentVNode("v-if", true)
     ]);
   }
-  const __easycom_0 = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$b], ["__scopeId", "data-v-c592f7f2"], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/uni_modules/uni-countdown/components/uni-countdown/uni-countdown.vue"]]);
-  const _sfc_main$a = {
+  const __easycom_0 = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["render", _sfc_render$d], ["__scopeId", "data-v-c592f7f2"], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/uni_modules/uni-countdown/components/uni-countdown/uni-countdown.vue"]]);
+  const _sfc_main$c = {
+    name: "InputContainer",
+    props: {
+      placeholderText: {
+        type: String,
+        default: "Username"
+      }
+    },
+    data() {
+      return {
+        focused: false
+      };
+    },
+    methods: {
+      handleFocus() {
+        this.focused = true;
+      },
+      handleBlur() {
+        this.focused = false;
+      }
+    }
+  };
+  function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
+    return vue.openBlock(), vue.createElementBlock("input", {
+      placeholder: $props.placeholderText,
+      type: "text",
+      class: vue.normalizeClass(["inner-input", { "has-focus": $data.focused }]),
+      onFocus: _cache[0] || (_cache[0] = (...args) => $options.handleFocus && $options.handleFocus(...args)),
+      onBlur: _cache[1] || (_cache[1] = (...args) => $options.handleBlur && $options.handleBlur(...args)),
+      required: ""
+    }, null, 42, ["placeholder"]);
+  }
+  const InputContainer = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$c], ["__scopeId", "data-v-fc6e57cb"], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/components/examinput.vue"]]);
+  const _sfc_main$b = {
+    components: {
+      InputContainer
+    },
     data() {
       return {
         swiperOptions: {
@@ -4641,6 +4859,17 @@ if (uni.restoreGlobal) {
             choices: ["1", "选项B", "选项C", "选项D"],
             fullScore: 5
             // 题目满分
+          },
+          {
+            question_id: 4,
+            question_type: 2,
+            //1单选2填空
+            question: "__ is your brother?",
+            activeButtonIndex: null,
+            // 用于存储当前激活的按钮索引
+            choices: null,
+            fullScore: 5
+            // 题目满分
           }
           // ...更多题目
         ],
@@ -4648,7 +4877,8 @@ if (uni.restoreGlobal) {
         realAnswer: [
           "放弃",
           "选项B",
-          "选项C"
+          "选项C",
+          "Who"
           // 正确答案
         ],
         maxButtonsPerRow: 5,
@@ -4683,11 +4913,11 @@ if (uni.restoreGlobal) {
       };
     },
     onLoad(event) {
-      let exam_id = parseInt(event.exam_id);
+      let exam_id = event.exam_id;
       this.exam_name = event.name;
       this.exam_id = exam_id;
       uni.request({
-        url: "/api/exams/take_examination",
+        url: "http://localhost:8080/api/exams/take_examination",
         method: "POST",
         data: {
           exam_id
@@ -4696,18 +4926,17 @@ if (uni.restoreGlobal) {
           "Authorization": `Bearer ${uni.getStorageSync("token")}`
         },
         success: (res) => {
-            //token失效
-            if(res.statusCode === 401){
-              uni.removeStorageSync('token');
-              uni.showToast({
-                title: '登录已过期，请重新登录',
-                icon: 'none',
-                duration: 2000
-              });
-              uni.navigateTo({
-                url: '../login/login'
-              });
-            }
+          if (res.statusCode === 401) {
+            uni.removeStorageSync("token");
+            uni.showToast({
+              title: "登录已过期，请重新登录",
+              icon: "none",
+              duration: 2e3
+            });
+            uni.navigateTo({
+              url: "../login/login"
+            });
+          }
           let questionAndAnswer = this.transformQuestions(res.data.question_list);
           this.questions = questionAndAnswer.questions;
           this.realAnswer = questionAndAnswer.realAnswer;
@@ -4803,7 +5032,7 @@ if (uni.restoreGlobal) {
         };
       },
       setCurrentQuestionIndexByQuestionId(question_id) {
-        formatAppLog("log", "at pages/exam/exam.vue:251", "setCurrentQuestionIndexByQuestionId:" + question_id);
+        formatAppLog("log", "at pages/exam/exam.vue:289", "setCurrentQuestionIndexByQuestionId:" + question_id);
         for (let i = 0; i < this.questions.length; i++) {
           if (this.questions[i].question_id === question_id) {
             this.currentQuestionIndex = i;
@@ -4835,7 +5064,7 @@ if (uni.restoreGlobal) {
           return;
         }
         let selectedChoice = this.questions[index].choices[this.selectedIndex];
-        formatAppLog("log", "at pages/exam/exam.vue:284", "第" + index + "题你选择了" + selectedChoice);
+        formatAppLog("log", "at pages/exam/exam.vue:322", "第" + index + "题你选择了" + selectedChoice);
         let question_id = this.questions[index].question_id;
         this.selectedChoiceAndScore[question_id].selectedChoice = this.selectedIndex;
         if (this.selectedIndex === this.realAnswer[index]) {
@@ -4877,16 +5106,15 @@ if (uni.restoreGlobal) {
           content: this.isAllFinished() ? "您已完成全部题目，是否确认提交" : "您还有题目未完成，是否确认提交",
           showCancel: true,
           success: (res) => {
-            //token失效
-            if(res.statusCode === 401){
-              uni.removeStorageSync('token');
+            if (res.statusCode === 401) {
+              uni.removeStorageSync("token");
               uni.showToast({
-                title: '登录已过期，请重新登录',
-                icon: 'none',
-                duration: 2000
+                title: "登录已过期，请重新登录",
+                icon: "none",
+                duration: 2e3
               });
               uni.navigateTo({
-                url: '../login/login'
+                url: "../login/login"
               });
             }
             if (res.confirm) {
@@ -4900,10 +5128,10 @@ if (uni.restoreGlobal) {
                 correctAnswers: this.correctAnswers
                 //正确答案数
               };
-              formatAppLog("log", "at pages/exam/exam.vue:348", examResult);
+              formatAppLog("log", "at pages/exam/exam.vue:398", examResult);
               uni.setStorageSync("examResult", examResult);
               uni.request({
-                url: `/api/exams/submitExamResult`,
+                url: `http://localhost:8080/api/exams/submitExamResult`,
                 method: "POST",
                 data: {
                   selectedChoiceAndScore: this.selectedChoiceAndScore,
@@ -4913,6 +5141,17 @@ if (uni.restoreGlobal) {
                   "Authorization": `Bearer ${uni.getStorageSync("token")}`
                 },
                 success: (res2) => {
+                  if (res2.statusCode === 401) {
+                    uni.removeStorageSync("token");
+                    uni.showToast({
+                      title: "登录已过期，请重新登录",
+                      icon: "none",
+                      duration: 2e3
+                    });
+                    uni.navigateTo({
+                      url: "../login/login"
+                    });
+                  }
                   uni.showToast({
                     title: "提交成功",
                     icon: "none"
@@ -4959,10 +5198,14 @@ if (uni.restoreGlobal) {
       },
       showQuestions() {
         this.isShow = !this.isShow;
+      },
+      highlightUnderline(text) {
+        return text.replace(/__/g, '<span class="red-underline">__</span>');
       }
     }
   };
-  function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$b(_ctx, _cache, $props, $setup, $data, $options) {
+    const _component_InputContainer = vue.resolveComponent("InputContainer");
     const _component_uni_countdown = resolveEasycom(vue.resolveDynamicComponent("uni-countdown"), __easycom_0);
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       vue.createElementVNode(
@@ -4994,13 +5237,10 @@ if (uni.restoreGlobal) {
                   /* TEXT */
                 ),
                 vue.createCommentVNode(" 以上是题目序号 "),
-                vue.createElementVNode(
-                  "text",
-                  { class: "question" },
-                  vue.toDisplayString(question.question),
-                  1
-                  /* TEXT */
-                )
+                vue.createElementVNode("text", {
+                  class: "question",
+                  innerHTML: $options.highlightUnderline(question.question)
+                }, null, 8, ["innerHTML"])
               ]),
               vue.createCommentVNode("        如果是单选题，则显示选项按钮，否则显示输入框"),
               vue.withDirectives(vue.createElementVNode(
@@ -5041,22 +5281,20 @@ if (uni.restoreGlobal) {
               vue.createCommentVNode("        TODO 填空题的输入框的样式"),
               vue.withDirectives(vue.createElementVNode(
                 "view",
-                { class: "input-container" },
+                { class: "input-group" },
                 [
-                  vue.withDirectives(vue.createElementVNode(
-                    "input",
-                    {
-                      type: "text",
+                  vue.createElementVNode("span", { class: "prompt" }, "请注意大小写"),
+                  vue.createCommentVNode(' <input type="text" placeholder="请输入答案" v-model="currentFillAnswer"\r\n						@blur="inputFillAnswer(currentQuestionIndex)"\r\n						@confirm="nextQuestionForFills(currentQuestionIndex)" /> '),
+                  vue.createElementVNode("view", { class: "input-items" }, [
+                    vue.createElementVNode("span", { class: "item-index" }, "1"),
+                    vue.createVNode(_component_InputContainer, {
+                      class: "input-item",
                       placeholder: "请输入答案",
+                      modelValue: $data.currentFillAnswer,
                       "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.currentFillAnswer = $event),
                       onBlur: _cache[1] || (_cache[1] = ($event) => $options.inputFillAnswer($data.currentQuestionIndex)),
                       onConfirm: _cache[2] || (_cache[2] = ($event) => $options.nextQuestionForFills($data.currentQuestionIndex))
-                    },
-                    null,
-                    544
-                    /* NEED_HYDRATION, NEED_PATCH */
-                  ), [
-                    [vue.vModelText, $data.currentFillAnswer]
+                    }, null, 8, ["modelValue"])
                   ])
                 ],
                 512
@@ -5130,58 +5368,58 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesExamExam = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$a], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/exam/exam.vue"]]);
+  const PagesExamExam = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$b], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/exam/exam.vue"]]);
   const _imports_0 = "/static/score1.svg";
   const _imports_1 = "/static/score2.svg";
   const _imports_2 = "/static/score3.png";
-  const _sfc_main$9 = {
+  const _sfc_main$a = {
     data() {
       return {
         exams: [
-          {
-            exam_id: 1,
-            name: "第一单元第一次小测",
-            start_time: "20:00",
-            duration: 60,
-            info: "共20题",
-            questionNum: 20
+          /*{
+          	exam_id: 1,
+          	name: '第一单元第一次小测',
+          	start_time: '20:00',
+          	duration: 60,
+          	info: '共20题',
+          	questionNum: 20,
           },
           {
-            exam_id: 2,
-            name: "第一单元第一次小测",
-            start_time: "20:00",
-            duration: 60,
-            info: "共20题",
-            questionNum: 20
-          }
-          // ...更多的考试对象
+          	exam_id: 2,
+          	name: '第一单元第一次小测',
+          	start_time: '20:00',
+          	duration: 60,
+          	info: '共20题',
+          	questionNum: 20
+          },
+          // ...更多的考试对象*/
         ],
         finishedExams: [
-          {
-            exam_id: 3,
-            name: "第一单元第一次小测",
-            date: "2023年1月1日",
-            info: "共20题",
-            questionNum: 20,
-            score: 95
+          /*{
+          	exam_id: 3,
+          	name: '第一单元第一次小测',
+          	date: '2023年1月1日',
+          	info: '共20题',
+          	questionNum: 20,
+          	score: 95
           },
           {
-            exam_id: 4,
-            name: "第一单元第二次小测",
-            date: "2023年1月1日",
-            info: "共20题",
-            questionNum: 20,
-            score: 35
+          	exam_id: 4,
+          	name: '第一单元第二次小测',
+          	date: '2023年1月1日',
+          	info: '共20题',
+          	questionNum: 20,
+          	score: 35
           },
           {
-            exam_id: 5,
-            name: "第二单元第一次小测",
-            date: "2023年1月1日",
-            info: "共20题",
-            questionNum: 20,
-            score: 70
-          }
-          // ...更多的考试结果对象
+          	exam_id: 5,
+          	name: '第二单元第一次小测',
+          	date: '2023年1月1日',
+          	info: '共20题',
+          	questionNum: 20,
+          	score: 70
+          },
+          // ...更多的考试结果对象*/
         ]
       };
     },
@@ -5241,7 +5479,7 @@ if (uni.restoreGlobal) {
       },
       getTodayExams() {
         uni.request({
-          url: "/api/exams/exam_date",
+          url: "http://localhost:8080/api/exams/exams_date",
           method: "POST",
           header: {
             "Authorization": `Bearer ${uni.getStorageSync("token")}`
@@ -5250,16 +5488,26 @@ if (uni.restoreGlobal) {
             date: this.getExamDate(/* @__PURE__ */ new Date())
           },
           success: (res) => {
-            //token失效
-            if(res.statusCode === 401){
-              uni.removeStorageSync('token');
+            if (res.statusCode === 401) {
+              uni.removeStorageSync("token");
               uni.showToast({
-                title: '登录已过期，请重新登录',
-                icon: 'none',
-                duration: 2000
+                title: "登录已过期，请重新登录",
+                icon: "none",
+                duration: 2e3
               });
               uni.navigateTo({
-                url: '../login/login'
+                url: "../login/login"
+              });
+            }
+            if (res.statusCode === 401) {
+              uni.removeStorageSync("token");
+              uni.showToast({
+                title: "登录已过期，请重新登录",
+                icon: "none",
+                duration: 2e3
+              });
+              uni.navigateTo({
+                url: "../login/login"
               });
             }
             if (res.data.code == 200) {
@@ -5267,28 +5515,27 @@ if (uni.restoreGlobal) {
             }
           },
           fail: (err) => {
-            formatAppLog("log", "at pages/ExamHistory/ExamHistory.vue:191", err);
+            formatAppLog("log", "at pages/ExamHistory/ExamHistory.vue:215", err);
           }
         });
       },
       getPreviousExams() {
         uni.request({
-          url: "/api/exams/previous_examinations",
+          url: "http://localhost:8080/api/exams/previous_examinations",
           method: "GET",
           header: {
             "Authorization": `Bearer ${uni.getStorageSync("token")}`
           },
           success: (res) => {
-            //token失效
-            if(res.statusCode === 401){
-              uni.removeStorageSync('token');
+            if (res.statusCode === 401) {
+              uni.removeStorageSync("token");
               uni.showToast({
-                title: '登录已过期，请重新登录',
-                icon: 'none',
-                duration: 2000
+                title: "登录已过期，请重新登录",
+                icon: "none",
+                duration: 2e3
               });
               uni.navigateTo({
-                url: '../login/login'
+                url: "../login/login"
               });
             }
             this.finishedExams = this.transformExams(res.data.exams);
@@ -5301,8 +5548,13 @@ if (uni.restoreGlobal) {
         });
       },
       transformExams(exams) {
+        if (exams == null) {
+          return [];
+        }
         return exams.map((exam) => {
           const dateParts = exam.exam_date.split("-");
+          formatAppLog("log", "at pages/ExamHistory/ExamHistory.vue:259", dateParts);
+          formatAppLog("log", "at pages/ExamHistory/ExamHistory.vue:260", exam.exam_id);
           const dateInChineseFormat = `${dateParts[0]}年${dateParts[1]}月${dateParts[2]}日`;
           return {
             exam_id: exam.exam_id,
@@ -5316,7 +5568,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", null, [
       vue.createElementVNode("view", { class: "today-container" }, [
         vue.createElementVNode("span", { class: "title" }, "今日考试"),
@@ -5466,8 +5718,8 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesExamHistoryExamHistory = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$9], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/ExamHistory/ExamHistory.vue"]]);
-  const _sfc_main$8 = {
+  const PagesExamHistoryExamHistory = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$a], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/ExamHistory/ExamHistory.vue"]]);
+  const _sfc_main$9 = {
     data() {
       return {
         screenWidth: 0
@@ -5522,18 +5774,17 @@ if (uni.restoreGlobal) {
     mounted() {
       uni.getSystemInfo({
         success: (res) => {
-            //token失效
-            if(res.statusCode === 401){
-              uni.removeStorageSync('token');
-              uni.showToast({
-                title: '登录已过期，请重新登录',
-                icon: 'none',
-                duration: 2000
-              });
-              uni.navigateTo({
-                url: '../login/login'
-              });
-            }
+          if (res.statusCode === 401) {
+            uni.removeStorageSync("token");
+            uni.showToast({
+              title: "登录已过期，请重新登录",
+              icon: "none",
+              duration: 2e3
+            });
+            uni.navigateTo({
+              url: "../login/login"
+            });
+          }
           this.screenWidth = res.screenWidth;
           if (this.isCircular) {
             this.drawCircularProgress();
@@ -5543,7 +5794,7 @@ if (uni.restoreGlobal) {
     },
     watch: {
       progress: function(val) {
-        formatAppLog("log", "at uni_modules/piaoyi-progress-bar/components/piaoyi-progress-bar/piaoyi-progress-bar.vue:87", val);
+        formatAppLog("log", "at uni_modules/piaoyi-progress-bar/components/piaoyi-progress-bar/piaoyi-progress-bar.vue:99", val);
         if (this.isCircular) {
           this.drawCircularProgress();
         }
@@ -5580,7 +5831,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock(
       "view",
       {
@@ -5654,8 +5905,8 @@ if (uni.restoreGlobal) {
       /* STYLE */
     );
   }
-  const piaoyiProgressBar = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$8], ["__scopeId", "data-v-1dec2857"], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/uni_modules/piaoyi-progress-bar/components/piaoyi-progress-bar/piaoyi-progress-bar.vue"]]);
-  const _sfc_main$7 = {
+  const piaoyiProgressBar = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$9], ["__scopeId", "data-v-1dec2857"], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/uni_modules/piaoyi-progress-bar/components/piaoyi-progress-bar/piaoyi-progress-bar.vue"]]);
+  const _sfc_main$8 = {
     components: {
       piaoyiProgressBar
     },
@@ -5710,7 +5961,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_piaoyiProgressBar = vue.resolveComponent("piaoyiProgressBar");
     return vue.openBlock(), vue.createElementBlock("view", null, [
       vue.createElementVNode("view", { class: "background" }, [
@@ -5789,8 +6040,8 @@ if (uni.restoreGlobal) {
       }, "完成")
     ]);
   }
-  const PagesFinishexamFinishexam = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7], ["__scopeId", "data-v-6238ca85"], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/finishexam/finishexam.vue"]]);
-  const _sfc_main$6 = {
+  const PagesFinishexamFinishexam = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$8], ["__scopeId", "data-v-6238ca85"], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/finishexam/finishexam.vue"]]);
+  const _sfc_main$7 = {
     components: {
       CollapsibleView
     },
@@ -5811,7 +6062,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_CollapsibleView = vue.resolveComponent("CollapsibleView");
     return vue.openBlock(), vue.createElementBlock("view", null, [
       vue.createElementVNode("view", { class: "title-container" }, [
@@ -5874,8 +6125,8 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesQuestionDetailQuestionDetail = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/questionDetail/questionDetail.vue"]]);
-  const _sfc_main$5 = {
+  const PagesQuestionDetailQuestionDetail = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/questionDetail/questionDetail.vue"]]);
+  const _sfc_main$6 = {
     data() {
       return {
         // 考试信息的数据属性
@@ -5910,7 +6161,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", null, [
       vue.createCommentVNode(" 头部标题栏 "),
       vue.createElementVNode("view", { class: "title-container" }, [
@@ -5949,31 +6200,169 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesStartexamStartexam = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/startexam/startexam.vue"]]);
-  const _sfc_main$4 = {
+  const PagesStartexamStartexam = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/startexam/startexam.vue"]]);
+  const _sfc_main$5 = {
     data() {
       return {
+        // 今天学了多少个单词
+        todayLearned: 10,
+        // 今天是否有考试
         haveExam: true,
-        examcnt: 1,
+        // 连续学习天数
+        consecutivePunchDay: 10,
+        // 今天考试数量
+        examCnt: 2,
+        operation: 0,
+        // 考试列表
         exams: [
-          { id: 1, title: "第一单元第一次小测", time: "20:00 " },
-          { id: 2, title: "第二单元第一次小测", time: "21:00 " }
+          /*{
+                exam_id: 1,
+                name: '第一单元第一次小测',
+                start_time: '20:00',
+                duration: 60,
+                info:"共10题",
+                question_num: 10
+              },
+          {
+                exam_id: 2,
+                name: '第二单元第一次小测',
+                start_time: '21:00',
+                duration: 60,
+                info:"共10题",
+                question_num: 10
+              }*/
         ]
       };
     },
+    onLoad(event) {
+      this.todayLearned = event.questionNum;
+      this.operation = parseInt(event.operation);
+      const consecutivePunchDay = uni.getStorageSync("consecutivePunchDay");
+      if (consecutivePunchDay) {
+        this.consecutivePunchDay = consecutivePunchDay;
+      } else {
+        uni.request({
+          url: "http://localhost:8080/api/users/my_punches",
+          method: "GET",
+          header: {
+            "Authorization": `Bearer ${uni.getStorageSync("token")}`
+          },
+          success: (res) => {
+            if (res.statusCode === 401) {
+              uni.removeStorageSync("token");
+              uni.showToast({
+                title: "登录已过期，请重新登录",
+                icon: "none",
+                duration: 2e3
+              });
+              uni.navigateTo({
+                url: "../login/login"
+              });
+            }
+            const data2 = res.data;
+            if (data2.code === 0) {
+              this.consecutivePunchDay = data2.consecutive_punch_day;
+              uni.setStorageSync("consecutivePunchDay", data2.consecutive_punch_day);
+            }
+          },
+          fail: (err) => {
+            formatAppLog("log", "at pages/finishClockin/finishClockin.vue:104", err);
+          }
+        });
+      }
+      uni.request({
+        url: "http://localhost:8080/api/exams/exams_date",
+        method: "POST",
+        header: {
+          "Authorization": `Bearer ${uni.getStorageSync("token")}`
+        },
+        data: {
+          date: this.getExamDate(/* @__PURE__ */ new Date())
+        },
+        success: (res) => {
+          if (res.statusCode === 401) {
+            uni.removeStorageSync("token");
+            uni.showToast({
+              title: "登录已过期，请重新登录",
+              icon: "none",
+              duration: 2e3
+            });
+            uni.navigateTo({
+              url: "../login/login"
+            });
+          }
+          if (res.data.code == 200) {
+            this.exams = this.transformExams(res.data.exams);
+            this.haveExam = this.exams.length > 0;
+            this.examCnt = this.exams.length;
+          }
+        },
+        fail: (err) => {
+          formatAppLog("log", "at pages/finishClockin/finishClockin.vue:138", err);
+        }
+      });
+    },
     methods: {
-      toexam() {
-        this.$router.push("/exam");
+      toHome() {
+        if (this.operation == 0)
+          uni.setStorageSync("toReview", true);
+        else if (this.operation == 1)
+          uni.setStorageSync("reviewed", true);
+        uni.switchTab({
+          url: `../home/home`
+        });
+        if (this.operation == 0) {
+          uni.setStorageSync("addTotalPunchDay", 1);
+          uni.setStorageSync("addConsecutivePunchDay", 1);
+        }
+      },
+      transformExams(exams) {
+        if (exams == null) {
+          return [];
+        }
+        return exams.map((exam) => {
+          const dateParts = exam.exam_date.split("-");
+          const dateInChineseFormat = `${dateParts[0]}年${dateParts[1]}月${dateParts[2]}日`;
+          return {
+            exam_id: exam.exam_id,
+            name: exam.exam_name,
+            date: dateInChineseFormat,
+            info: `共${exam.question_num}题`,
+            questionNum: exam.question_num,
+            score: exam.exam_score
+          };
+        });
+      },
+      //由date类型转为类似于'2022-01-03'字符串类型
+      getExamDate(date) {
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const formattedMonth = month < 10 ? "0" + month : month;
+        const formattedDay = day < 10 ? "0" + day : day;
+        return `${year}-${formattedMonth}-${formattedDay}`;
+      },
+      toExam(exam) {
+        uni.setStorageSync("startExam", JSON.stringify(exam));
+        uni.navigateTo({
+          url: `../startexam/startexam`
+        });
       }
     }
   };
-  function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", null, [
       vue.createElementVNode("view", { class: "background" }, [
         vue.createElementVNode("span", null, "Go for it！"),
         vue.createElementVNode("span", { style: { "color": "grey", "font-weight": "lighter", "margin-top": "20rpx", "font-size": "20px" } }, [
           vue.createTextVNode("今日已学"),
-          vue.createElementVNode("span", { class: "study-num" }, "10"),
+          vue.createElementVNode(
+            "span",
+            { class: "study-num" },
+            vue.toDisplayString($data.todayLearned),
+            1
+            /* TEXT */
+          ),
           vue.createTextVNode("个单词")
         ]),
         vue.createElementVNode("image", {
@@ -5985,7 +6374,13 @@ if (uni.restoreGlobal) {
         vue.createElementVNode("view", { class: "border1" }, [
           vue.createElementVNode("span", { style: { "font-size": "20px", "margin-left": "-160px" } }, "你已连续学习"),
           vue.createElementVNode("br"),
-          vue.createElementVNode("span", { class: "study-day" }, "10"),
+          vue.createElementVNode(
+            "span",
+            { class: "study-day" },
+            vue.toDisplayString($data.consecutivePunchDay),
+            1
+            /* TEXT */
+          ),
           vue.createElementVNode("span", { style: { "color": "#6200EE", "font-size": "20px", "margin-left": "-10px" } }, "天"),
           vue.createElementVNode("image", {
             src: "/static/flash.png",
@@ -6002,7 +6397,7 @@ if (uni.restoreGlobal) {
           vue.createElementVNode(
             "span",
             null,
-            vue.toDisplayString($data.examcnt),
+            vue.toDisplayString($data.examCnt),
             1
             /* TEXT */
           ),
@@ -6023,13 +6418,13 @@ if (uni.restoreGlobal) {
             vue.renderList($data.exams, (exam) => {
               return vue.openBlock(), vue.createElementBlock("view", {
                 class: "border2",
-                key: exam.id
+                key: exam.exam_id
               }, [
                 vue.createElementVNode("view", { class: "exam-info" }, [
                   vue.createElementVNode(
                     "h3",
                     null,
-                    vue.toDisplayString(exam.title),
+                    vue.toDisplayString(exam.name),
                     1
                     /* TEXT */
                   ),
@@ -6037,15 +6432,15 @@ if (uni.restoreGlobal) {
                   vue.createElementVNode(
                     "h4",
                     null,
-                    "开始时间：" + vue.toDisplayString(exam.time),
+                    "开始时间：" + vue.toDisplayString(exam.start_time),
                     1
                     /* TEXT */
                   ),
                   vue.createCommentVNode(" 使用考试时间 "),
                   vue.createElementVNode("view", {
                     class: "small-btn",
-                    onClick: _cache[0] || (_cache[0] = (...args) => $options.toexam && $options.toexam(...args))
-                  }, "去考试")
+                    onClick: ($event) => $options.toExam(exam)
+                  }, "去考试", 8, ["onClick"])
                 ]),
                 vue.createElementVNode("image", {
                   src: "/static/gotoexam.png",
@@ -6064,12 +6459,13 @@ if (uni.restoreGlobal) {
       ]),
       vue.createElementVNode("view", {
         class: "btn",
-        style: { "background-color": "#456de7", "font-size": "26px" }
+        style: { "background-color": "#456de7", "font-size": "26px" },
+        onClick: _cache[0] || (_cache[0] = (...args) => $options.toHome && $options.toHome(...args))
       }, "完成")
     ]);
   }
-  const PagesFinishClockinFinishClockin = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/finishClockin/finishClockin.vue"]]);
-  const _sfc_main$3 = {
+  const PagesFinishClockinFinishClockin = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/finishClockin/finishClockin.vue"]]);
+  const _sfc_main$4 = {
     data() {
       return {
         inputClearValue: ""
@@ -6086,7 +6482,7 @@ if (uni.restoreGlobal) {
       },
       joinTeam() {
         uni.request({
-          url: "/api/users/my_team/join_team",
+          url: "http://localhost:8080/api/users/my_team/join_team",
           method: "POST",
           data: {
             invitation_code: this.inputClearValue
@@ -6097,16 +6493,15 @@ if (uni.restoreGlobal) {
             "Authorization": `Bearer ${uni.getStorageSync("token")}`
           },
           success: (res) => {
-            //token失效
-            if(res.statusCode === 401){
-              uni.removeStorageSync('token');
+            if (res.statusCode === 401) {
+              uni.removeStorageSync("token");
               uni.showToast({
-                title: '登录已过期，请重新登录',
-                icon: 'none',
-                duration: 2000
+                title: "登录已过期，请重新登录",
+                icon: "none",
+                duration: 2e3
               });
               uni.navigateTo({
-                url: '../login/login'
+                url: "../login/login"
               });
             }
             if (res.data.code === 200 || res.data.code === "200") {
@@ -6137,7 +6532,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       vue.createElementVNode("view", { class: "head" }, [
         vue.createElementVNode("image", {
@@ -6173,8 +6568,8 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesJoinJoin = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/Join/Join.vue"]]);
-  const _sfc_main$2 = {
+  const PagesJoinJoin = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/Join/Join.vue"]]);
+  const _sfc_main$3 = {
     data() {
       return {
         teamName: "春田花花幼稚园",
@@ -6196,24 +6591,23 @@ if (uni.restoreGlobal) {
     },
     onLoad() {
       uni.request({
-        url: "/api/users/my_team",
+        url: "http://localhost:8080/api/users/my_team",
         method: "GET",
         header: {
           "Authorization": `Bearer ${uni.getStorageSync("token")}`
         },
         success: (res) => {
-            //token失效
-            if(res.statusCode === 401){
-              uni.removeStorageSync('token');
-              uni.showToast({
-                title: '登录已过期，请重新登录',
-                icon: 'none',
-                duration: 2000
-              });
-              uni.navigateTo({
-                url: '../login/login'
-              });
-            }
+          if (res.statusCode === 401) {
+            uni.removeStorageSync("token");
+            uni.showToast({
+              title: "登录已过期，请重新登录",
+              icon: "none",
+              duration: 2e3
+            });
+            uni.navigateTo({
+              url: "../login/login"
+            });
+          }
           if (res.data.code == 200) {
             let teamInfo = res.data.team;
             this.teamName = teamInfo.team_name;
@@ -6232,7 +6626,7 @@ if (uni.restoreGlobal) {
           }
         },
         fail: (error) => {
-          formatAppLog("log", "at pages/MyTeam/MyTeam.vue:94", error);
+          formatAppLog("log", "at pages/MyTeam/MyTeam.vue:106", error);
         }
       });
     },
@@ -6244,7 +6638,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
       vue.createElementVNode("view", { class: "head" }, [
         vue.createElementVNode("image", {
@@ -6253,9 +6647,11 @@ if (uni.restoreGlobal) {
           onClick: _cache[0] || (_cache[0] = (...args) => _ctx.handleBack && _ctx.handleBack(...args))
         }),
         vue.createElementVNode("span", { class: "title" }, "我的团队"),
-        vue.createElementVNode("button", {
+        vue.createElementVNode("image", {
+          class: "join",
+          src: "/static/add.png",
           onClick: _cache[1] || (_cache[1] = (...args) => $options.goToJoin && $options.goToJoin(...args))
-        }, "加入团队")
+        }, "+")
       ]),
       vue.createElementVNode("view", { class: "container1" }, [
         vue.createElementVNode("view", { class: "team-icon-container" }, [
@@ -6341,104 +6737,8 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesMyTeamMyTeam = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/MyTeam/MyTeam.vue"]]);
-  const dbName = "dailyenglish";
-  const dbPath = "_doc/dailyEnglish.db";
-  function open() {
-    plus.sqlite.openDatabase({
-      name: dbName,
-      path: dbPath,
-      success(e) {
-        formatAppLog("log", "at sqlite/sqlite.js:8", "打开数据库成功");
-        formatAppLog("log", "at sqlite/sqlite.js:9", e);
-        resolve(e);
-      },
-      fail(e) {
-        formatAppLog("log", "at sqlite/sqlite.js:13", "打开数据库失败");
-        reject(e);
-      }
-    });
-  }
-  function close() {
-    plus.sqlite.closeDatabase({
-      name: dbName,
-      success(e) {
-        formatAppLog("log", "at sqlite/sqlite.js:30", "关闭数据库成功");
-        resolve(e);
-      },
-      fail(e) {
-        formatAppLog("log", "at sqlite/sqlite.js:34", "关闭数据库失败");
-        reject(e);
-      }
-    });
-  }
-  function createWordsTable() {
-    const sql = `CREATE TABLE word (
-    new_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    word_id INTEGER NOT NULL,
-    word TEXT NOT NULL,
-    phonetic_us TEXT NOT NULL,
-    describe TEXT NOT NULL,
-    morpheme TEXT,
-    example_sentence TEXT,
-    other TEXT,
-    word_quetion TEXT,
-    answer TEXT,
-    learn_times INTEGER NOT NULL,
-    interval_history TEXT NOT NULL,
-    feedback_history TEXT NOT NULL,
-    review_date DATE NOT NULL,
-    difficulty INTEGER NOT NULL,
-    is_memory INTEGER NOT NULL
-  );`;
-    plus.sqlite.executeSql({
-      name: dbName,
-      sql,
-      success(e) {
-        formatAppLog("log", "at sqlite/sqlite.js:63", "创建表成功");
-        resolve(e);
-      },
-      fail(e) {
-        formatAppLog("log", "at sqlite/sqlite.js:67", "创建表失败");
-        formatAppLog("log", "at sqlite/sqlite.js:68", e);
-        reject(e);
-      }
-    });
-  }
-  function insertword(words) {
-    const sql = `INSERT INTO word (word_id, word, phonetic_us, describe, morpheme, example_sentence, other, word_quetion, answer, learn_times, interval_history, feedback_history, interval_days, difficulty, is_memory) VALUES (${words.word_id}, '${words.word}', '${words.phonetic_us}', '${words.describe}', '${words.morpheme}', '${words.example_sentence}', '${words.other}', '${words.word_quetion}', '${words.answer}', ${words.learn_times}, '${words.interval_history}', '${words.feedback_history}', ${words.interval_days}, ${words.difficulty}, ${words.is_memory})`;
-    plus.sqlite.executeSql({
-      name: dbName,
-      sql,
-      success(e) {
-        formatAppLog("log", "at sqlite/sqlite.js:80", "插入数据成功");
-        resolve(e);
-      },
-      fail(e) {
-        formatAppLog("log", "at sqlite/sqlite.js:84", "插入数据失败");
-        formatAppLog("log", "at sqlite/sqlite.js:85", e);
-        reject(e);
-      }
-    });
-  }
-  function selectword() {
-    const sql = `SELECT * FROM word`;
-    plus.sqlite.selectSql({
-      name: dbName,
-      sql,
-      success(data2) {
-        formatAppLog("log", "at sqlite/sqlite.js:151", "查询数据成功");
-        formatAppLog("log", "at sqlite/sqlite.js:152", data2);
-        resolve(data2);
-        return data2;
-      },
-      fail(e) {
-        formatAppLog("log", "at sqlite/sqlite.js:157", "查询数据失败");
-        reject(e);
-      }
-    });
-  }
-  const _sfc_main$1 = {
+  const PagesMyTeamMyTeam = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/MyTeam/MyTeam.vue"]]);
+  const _sfc_main$2 = {
     data() {
       return {
         words: []
@@ -6448,29 +6748,29 @@ if (uni.restoreGlobal) {
       async openDatabase() {
         try {
           await open();
-          formatAppLog("log", "at pages/sql/sql.vue:50", "数据库已打开");
+          formatAppLog("log", "at pages/sql/sql.vue:48", "数据库已打开");
         } catch (error) {
-          formatAppLog("error", "at pages/sql/sql.vue:52", `打开数据库失败: ${error.message}`);
+          formatAppLog("error", "at pages/sql/sql.vue:50", `打开数据库失败: ${error.message}`);
         }
       },
       async closeDatabase() {
         try {
           await close();
-          formatAppLog("log", "at pages/sql/sql.vue:58", "数据库已关闭");
+          formatAppLog("log", "at pages/sql/sql.vue:56", "数据库已关闭");
         } catch (error) {
-          formatAppLog("error", "at pages/sql/sql.vue:60", `关闭数据库失败: ${error.message}`);
+          formatAppLog("error", "at pages/sql/sql.vue:58", `关闭数据库失败: ${error.message}`);
         }
       },
       async createTable() {
         try {
           await createWordsTable();
-          formatAppLog("log", "at pages/sql/sql.vue:66", "表已创建");
+          formatAppLog("log", "at pages/sql/sql.vue:64", "表已创建");
         } catch (error) {
-          formatAppLog("error", "at pages/sql/sql.vue:68", `创建表失败: ${error.message}`);
+          formatAppLog("error", "at pages/sql/sql.vue:66", `创建表失败: ${error.message}`);
         }
       },
       async insertWord() {
-        const word = {
+        const word2 = {
           word_id: 1,
           word: "apple",
           phonetic_us: "/",
@@ -6488,24 +6788,24 @@ if (uni.restoreGlobal) {
           is_memory: 0
         };
         try {
-          await insertword(word);
-          formatAppLog("log", "at pages/sql/sql.vue:92", "单词已插入");
+          await insertword(word2);
+          formatAppLog("log", "at pages/sql/sql.vue:90", "单词已插入");
         } catch (error) {
-          formatAppLog("error", "at pages/sql/sql.vue:94", `插入单词失败: ${error.message}`);
+          formatAppLog("error", "at pages/sql/sql.vue:92", `插入单词失败: ${error.message}`);
         }
       },
       async selectWords() {
         try {
           this.words = await selectword();
-          formatAppLog("log", "at pages/sql/sql.vue:100", this.words);
-          formatAppLog("log", "at pages/sql/sql.vue:101", "查询成功");
+          formatAppLog("log", "at pages/sql/sql.vue:98", this.words);
+          formatAppLog("log", "at pages/sql/sql.vue:99", "查询成功");
         } catch (error) {
-          formatAppLog("error", "at pages/sql/sql.vue:103", `查询失败: ${error.message}`);
+          formatAppLog("error", "at pages/sql/sql.vue:101", `查询失败: ${error.message}`);
         }
       }
     }
   };
-  function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("div", null, [
       vue.createElementVNode("button", {
         onClick: _cache[0] || (_cache[0] = (...args) => $options.openDatabase && $options.openDatabase(...args))
@@ -6531,54 +6831,52 @@ if (uni.restoreGlobal) {
               vue.createElementVNode("th", null, "word_id"),
               vue.createElementVNode("th", null, "word"),
               vue.createElementVNode("th", null, "phonetic_us"),
-              vue.createElementVNode("th", null, "describe"),
-              vue.createCommentVNode(" 添加其他列的表头 ")
+              vue.createElementVNode("th", null, "describe")
             ])
           ]),
           vue.createElementVNode("tbody", null, [
             (vue.openBlock(true), vue.createElementBlock(
               vue.Fragment,
               null,
-              vue.renderList($data.words, (word) => {
+              vue.renderList($data.words, (word2) => {
                 return vue.openBlock(), vue.createElementBlock("tr", {
-                  key: word.new_id
+                  key: word2.new_id
                 }, [
                   vue.createElementVNode(
                     "td",
                     null,
-                    vue.toDisplayString(word.new_id),
+                    vue.toDisplayString(word2.new_id),
                     1
                     /* TEXT */
                   ),
                   vue.createElementVNode(
                     "td",
                     null,
-                    vue.toDisplayString(word.word_id),
+                    vue.toDisplayString(word2.word_id),
                     1
                     /* TEXT */
                   ),
                   vue.createElementVNode(
                     "td",
                     null,
-                    vue.toDisplayString(word.word),
+                    vue.toDisplayString(word2.word),
                     1
                     /* TEXT */
                   ),
                   vue.createElementVNode(
                     "td",
                     null,
-                    vue.toDisplayString(word.phonetic_us),
+                    vue.toDisplayString(word2.phonetic_us),
                     1
                     /* TEXT */
                   ),
                   vue.createElementVNode(
                     "td",
                     null,
-                    vue.toDisplayString(word.describe),
+                    vue.toDisplayString(word2.describe),
                     1
                     /* TEXT */
-                  ),
-                  vue.createCommentVNode(" 显示其他列的数据 ")
+                  )
                 ]);
               }),
               128
@@ -6589,7 +6887,134 @@ if (uni.restoreGlobal) {
       ])
     ]);
   }
-  const PagesSqlSql = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/pages/sql/sql.vue"]]);
+  const PagesSqlSql = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/sql/sql.vue"]]);
+  const _sfc_main$1 = {
+    data() {
+      return {
+        userId: "",
+        taskToday: null,
+        socket: null
+      };
+    },
+    methods: {
+      connectWebSocket() {
+        if (this.userId === "") {
+          uni.showToast({
+            title: "请输入用户ID",
+            icon: "none"
+          });
+          return;
+        }
+        this.socket = uni.connectSocket({
+          url: "ws://localhost:8080/api/punch/main_menu",
+          success: () => {
+            formatAppLog("log", "at pages/websocket/websocket.vue:40", "WebSocket连接成功");
+          },
+          fail: (err) => {
+            formatAppLog("error", "at pages/websocket/websocket.vue:43", "WebSocket连接失败", err);
+          }
+        });
+        this.socket.onOpen(() => {
+          formatAppLog("log", "at pages/websocket/websocket.vue:48", "WebSocket已打开");
+          this.socket.send({
+            data: JSON.stringify({
+              userId: this.userId
+            })
+          });
+        });
+        this.socket.onMessage((res) => {
+          const data2 = JSON.parse(res.data);
+          if (data2.code === 200) {
+            this.taskToday = data2.task_today;
+            formatAppLog("log", "at pages/websocket/websocket.vue:60", "当前时间:", data2.current_time);
+          } else {
+            uni.showToast({
+              title: data2.msg,
+              icon: "none"
+            });
+          }
+        });
+        this.socket.onClose(() => {
+          formatAppLog("log", "at pages/websocket/websocket.vue:71", "WebSocket已关闭");
+        });
+        this.socket.onError((err) => {
+          formatAppLog("error", "at pages/websocket/websocket.vue:75", "WebSocket错误", err);
+        });
+      }
+    }
+  };
+  function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+    return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
+      vue.withDirectives(vue.createElementVNode(
+        "input",
+        {
+          "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.userId = $event),
+          placeholder: "请输入用户ID"
+        },
+        null,
+        512
+        /* NEED_PATCH */
+      ), [
+        [vue.vModelText, $data.userId]
+      ]),
+      vue.createElementVNode("button", {
+        onClick: _cache[1] || (_cache[1] = (...args) => $options.connectWebSocket && $options.connectWebSocket(...args))
+      }, "连接"),
+      $data.taskToday ? (vue.openBlock(), vue.createElementBlock("view", { key: 0 }, [
+        vue.createElementVNode(
+          "text",
+          null,
+          "书本学习: " + vue.toDisplayString($data.taskToday.book_learning),
+          1
+          /* TEXT */
+        ),
+        vue.createElementVNode(
+          "text",
+          null,
+          "已学单词数: " + vue.toDisplayString($data.taskToday.word_num_learned),
+          1
+          /* TEXT */
+        ),
+        vue.createElementVNode(
+          "text",
+          null,
+          "总单词数: " + vue.toDisplayString($data.taskToday.word_num_total),
+          1
+          /* TEXT */
+        ),
+        vue.createElementVNode(
+          "text",
+          null,
+          "剩余天数: " + vue.toDisplayString($data.taskToday.days_left),
+          1
+          /* TEXT */
+        ),
+        vue.createElementVNode(
+          "text",
+          null,
+          "打卡数: " + vue.toDisplayString($data.taskToday.punch_num),
+          1
+          /* TEXT */
+        ),
+        vue.createElementVNode(
+          "text",
+          null,
+          "复习数: " + vue.toDisplayString($data.taskToday.review_num),
+          1
+          /* TEXT */
+        ),
+        vue.createElementVNode(
+          "text",
+          null,
+          "是否打卡: " + vue.toDisplayString($data.taskToday.ispunched ? "是" : "否"),
+          1
+          /* TEXT */
+        )
+      ])) : vue.createCommentVNode("v-if", true)
+    ]);
+  }
+  const PagesWebsocketWebsocket = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-5f987691"], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/pages/websocket/websocket.vue"]]);
+  __definePage("pages/login/login", PagesLoginLogin);
   __definePage("pages/home/home", PagesHomeHome);
   __definePage("pages/word_details/word_details", PagesWord_detailsWord_details);
   __definePage("pages/Examination/Examination", PagesExaminationExamination);
@@ -6598,7 +7023,6 @@ if (uni.restoreGlobal) {
   __definePage("pages/user/user", PagesUserUser);
   __definePage("pages/Vocab/Vocab", PagesVocabVocab);
   __definePage("pages/example/example", PagesExampleExample);
-  __definePage("pages/login/login", PagesLoginLogin);
   __definePage("pages/register/register", PagesRegisterRegister);
   __definePage("pages/Welcome/Welcome", PagesWelcomeWelcome);
   __definePage("pages/Loading/Loading", PagesLoadingLoading);
@@ -6616,6 +7040,7 @@ if (uni.restoreGlobal) {
   __definePage("pages/Join/Join", PagesJoinJoin);
   __definePage("pages/MyTeam/MyTeam", PagesMyTeamMyTeam);
   __definePage("pages/sql/sql", PagesSqlSql);
+  __definePage("pages/websocket/websocket", PagesWebsocketWebsocket);
   const _sfc_main = {
     components: {
       TabBar
@@ -6640,7 +7065,7 @@ if (uni.restoreGlobal) {
       vue.createVNode(_component_router_view)
     ]);
   }
-  const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__file", "D:/code/DailyEnglish/app/DailyEnglish/App.vue"]]);
+  const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__file", "D:/beidanci/DailyEnglish/app/DailyEnglish/App.vue"]]);
   function createApp() {
     const app = vue.createVueApp(App);
     return {
