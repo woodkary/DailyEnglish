@@ -17,12 +17,25 @@ import (
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
+	"github.com/gorilla/websocket"
 	"golang.org/x/net/context"
 )
 
 func tokenAuthMiddleware() gin.HandlerFunc {
 	return middlewares.TokenAuthMiddleware("User")
 }
+
+// 升级http连接
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
+var (
+	connections = make(map[string]*websocket.Conn) //
+	mutex       = &sync.Mutex{}                    //互斥锁
+)
 
 // FormatWordData formats the word data into the desired string format
 func FormatWordData(wordData map[string]interface{}) string {
@@ -409,73 +422,168 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 	})
 
 	//主页面
-	r.POST("/api/punch/main_menu", tokenAuthMiddleware(), func(c *gin.Context) {
-		user, _ := c.Get("user")
-		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
-		if !ok {
-			c.JSON(500, "服务器错误")
-			return
-		}
-		type Request struct {
-			Time int `json:"time"`
-		}
-		var request Request
-		if err := c.ShouldBind(&request); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
-				"msg":  "请求参数错误",
-			})
-			return
-		}
-		//查询用户信息
-		Item, err := controlsql.GetUserStudy(db, UserClaims.UserID)
-		if err != nil && err != sql.ErrNoRows {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
-				"msg":  "服务器内部错误"})
-			return
-		}
-		type TaskToday struct {
-			BookLearning   string `json:"book_learning"`
-			WordNumLearned int    `json:"word_num_learned"`
-			WordNumTotal   int    `json:"word_num_total"`
-			DaysLeft       int    `json:"days_left"`
-			PunchNum       int    `json:"punch_num"`
-			ReviewNum      int    `json:"review_num"`
-			IsPunched      bool   `json:"ispunched"`
-		}
-		type Response struct {
-			Code      int       `json:"code"`
-			Msg       string    `json:"msg"`
-			TaskToday TaskToday `json:"task_today"`
-		}
-		var response Response
-		if request.Time == 0 {
-			response.TaskToday.PunchNum = 20
-			response.TaskToday.ReviewNum = 5 //这里写死的@TODO去找那些单词需要复习
-			response.TaskToday.IsPunched = false
-		} else if request.Time == 1 {
-			response.TaskToday.PunchNum = 0
-			response.TaskToday.ReviewNum = 5 //这里写死的@TODO去找那些单词需要复习
-			response.TaskToday.IsPunched = true
-		} else {
-			response.TaskToday.PunchNum = 0
-			response.TaskToday.ReviewNum = 0
-			response.TaskToday.IsPunched = true
-		}
-		response.TaskToday.BookLearning = Item.BookLearning
-		response.TaskToday.WordNumLearned = Item.WordNumLearned
-		response.TaskToday.WordNumTotal = Item.WordNumTotal
-		response.TaskToday.DaysLeft = Item.Days_left
+	// r.POST("/api/punch/main_menu", tokenAuthMiddleware(), func(c *gin.Context) {
+	// 	user, _ := c.Get("user")
+	// 	UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+	// 	if !ok {
+	// 		c.JSON(500, "服务器错误")
+	// 		return
+	// 	}
+	// 	type Request struct {
+	// 		Time int `json:"time"`
+	// 	}
+	// 	var request Request
+	// 	if err := c.ShouldBind(&request); err != nil {
+	// 		c.JSON(http.StatusBadRequest, gin.H{
+	// 			"code": "400",
+	// 			"msg":  "请求参数错误",
+	// 		})
+	// 		return
+	// 	}
+	// 	//查询用户信息
+	// 	Item, err := controlsql.GetUserStudy(db, UserClaims.UserID)
+	// 	if err != nil && err != sql.ErrNoRows {
+	// 		c.JSON(http.StatusInternalServerError, gin.H{
+	// 			"code": "500",
+	// 			"msg":  "服务器内部错误"})
+	// 		return
+	// 	}
+	// 	type TaskToday struct {
+	// 		BookLearning   string `json:"book_learning"`
+	// 		WordNumLearned int    `json:"word_num_learned"`
+	// 		WordNumTotal   int    `json:"word_num_total"`
+	// 		DaysLeft       int    `json:"days_left"`
+	// 		PunchNum       int    `json:"punch_num"`
+	// 		ReviewNum      int    `json:"review_num"`
+	// 		IsPunched      bool   `json:"ispunched"`
+	// 	}
+	// 	type Response struct {
+	// 		Code      int       `json:"code"`
+	// 		Msg       string    `json:"msg"`
+	// 		TaskToday TaskToday `json:"task_today"`
+	// 	}
+	// 	var response Response
+	// 	if request.Time == 0 {
+	// 		response.TaskToday.PunchNum = 20
+	// 		response.TaskToday.ReviewNum = 5 //这里写死的@TODO去找那些单词需要复习
+	// 		response.TaskToday.IsPunched = false
+	// 	} else if request.Time == 1 {
+	// 		response.TaskToday.PunchNum = 0
+	// 		response.TaskToday.ReviewNum = 5 //这里写死的@TODO去找那些单词需要复习
+	// 		response.TaskToday.IsPunched = true
+	// 	} else {
+	// 		response.TaskToday.PunchNum = 0
+	// 		response.TaskToday.ReviewNum = 0
+	// 		response.TaskToday.IsPunched = true
+	// 	}
+	// 	response.TaskToday.BookLearning = Item.BookLearning
+	// 	response.TaskToday.WordNumLearned = Item.WordNumLearned
+	// 	response.TaskToday.WordNumTotal = Item.WordNumTotal
+	// 	response.TaskToday.DaysLeft = Item.Days_left
 
-		response.Code = 200
-		response.Msg = "成功"
-		if err == sql.ErrNoRows {
-			response.Code = 404
-			response.Msg = "您还没有打卡"
+	// 	response.Code = 200
+	// 	response.Msg = "成功"
+	// 	if err == sql.ErrNoRows {
+	// 		response.Code = 404
+	// 		response.Msg = "您还没有打卡"
+	// 	}
+	// 	c.JSON(200, response)
+	// })
+
+	r.GET("/api/punch/main_menu", func(c *gin.Context) {
+		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+		if err != nil {
+			c.AbortWithStatus(http.StatusUpgradeRequired)
+			return
 		}
-		c.JSON(200, response)
+	
+		go func(conn *websocket.Conn) {
+			defer func() {
+				conn.Close()
+				mutex.Lock()
+				delete(connections, conn.RemoteAddr().String())
+				mutex.Unlock()
+			}()
+	
+			type TaskToday struct {
+				BookLearning   string `json:"book_learning"`
+				WordNumLearned int    `json:"word_num_learned"`
+				WordNumTotal   int    `json:"word_num_total"`
+				DaysLeft       int    `json:"days_left"`
+				PunchNum       int    `json:"punch_num"`
+				ReviewNum      int    `json:"review_num"`
+				IsPunched      bool   `json:"ispunched"`
+			}
+			type Response struct {
+				Code      int       `json:"code"`
+				Msg       string    `json:"msg"`
+				TaskToday TaskToday `json:"task_today"`
+			}
+			var response Response
+	
+			// 等待前端发送的用户 ID
+			_, message, err := conn.ReadMessage()
+			if err != nil {
+				response.Code = 400
+				response.Msg = "无法读取用户ID"
+				conn.WriteJSON(response)
+				return
+			}
+	
+			var request map[string]string
+			if err := json.Unmarshal(message, &request); err != nil {
+				response.Code = 400
+				response.Msg = "无效的用户ID格式"
+				conn.WriteJSON(response)
+				return
+			}
+	
+			userId, ok := request["userId"]
+			if !ok {
+				response.Code = 400
+				response.Msg = "缺少用户ID"
+				conn.WriteJSON(response)
+				return
+			}
+			userIdInt,_ := strconv.Atoi(userId)
+	
+			ticker := time.NewTicker(5 * time.Second)
+			defer ticker.Stop()
+	
+			for {
+				select {
+				case <-ticker.C:
+					Item, err := controlsql.GetUserStudy(db, userIdInt)
+					if err != nil && err != sql.ErrNoRows {
+						response.Code = 500
+						response.Msg = "服务器内部错误"
+						if err := conn.WriteJSON(response); err != nil {
+							fmt.Printf("Failed to send message: %v\n", err)
+							return
+						}
+						continue
+					}
+	
+					response.Code = 200
+					response.Msg = "success"
+					response.TaskToday.BookLearning = Item.BookLearning
+					response.TaskToday.WordNumLearned = Item.WordNumLearned
+					response.TaskToday.WordNumTotal = Item.WordNumTotal
+					response.TaskToday.DaysLeft = Item.Days_left
+					response.TaskToday.PunchNum = Item.PunchNum
+					response.TaskToday.ReviewNum = 10
+					response.TaskToday.IsPunched = Item.IsPunched
+	
+					if err := conn.WriteJSON(response); err != nil {
+						fmt.Printf("Failed to send message: %v\n", err)
+						return
+					}
+				}
+			}
+		}(conn)
 	})
+	
+
 	//打卡
 	r.GET("/api/main/take_punch", tokenAuthMiddleware(), func(c *gin.Context) {
 		//打卡单词
