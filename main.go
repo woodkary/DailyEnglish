@@ -55,8 +55,8 @@ func init() {
 	}
 
 	// 连接es
-	esURL := "https://b8fde32e62044f12b769b107e7e2346f.us-central1.gcp.cloud.es.io"
-	esAPIKey := "RzQ0VC1JOEJMQ0gwOXRlMFloZkQ6M2dpNUFMRF9SeE9wMkxhNjAxUjF5dw=="
+	esURL := "https://8af9afd9e4bf4d88b97b14488467361d.us-central1.gcp.cloud.es.io"
+	esAPIKey := "SEZ3cUI1QUJaclpXZ01wZGhPckE6UlRkcjZXeENRQjJXaEhISnF2eTBZQQ=="
 	cfg := elasticsearch.Config{
 		APIKey: esAPIKey,
 		Addresses: []string{

@@ -885,26 +885,26 @@ func UpdateUserLearnIndex(db *sql.DB, userID int) error {
 		return err
 	}
 	//更新用户learn_index和study_day
-    var old_index int
-    var plan_num int
-    var study_day int
-    db.QueryRow("SELECT learn_index,plan_num,study_day FROM user_study WHERE user_id = ?", userID).Scan(&old_index, &plan_num, &study_day)
-    new_index := old_index + plan_num
-    study_day++
-    updateQuery, err = db.Prepare("UPDATE user_study SET learn_index = ?,study_day = ? WHERE user_id = ?")
-    if err != nil {
-        log.Panic(err)
-        return err
-    }
-    defer updateQuery.Close()
-    _, err = updateQuery.Exec(new_index, study_day, userID)
-    if err != nil {
-        log.Panic(err)
-        return err
-    }
+	var old_index int
+	var plan_num int
+	var study_day int
+	db.QueryRow("SELECT learn_index,plan_num,study_day FROM user_study WHERE user_id = ?", userID).Scan(&old_index, &plan_num, &study_day)
+	new_index := old_index + plan_num
+	study_day++
+	updateQuery, err := db.Prepare("UPDATE user_study SET learn_index = ?,study_day = ? WHERE user_id = ?")
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	defer updateQuery.Close()
+	_, err = updateQuery.Exec(new_index, study_day, userID)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
 
 	// 将learnedIndex+planNum更新到user_punch-learn，并将user_punch-learn的punch_num加上计划的词数
-	updateQuery, err := tx.Prepare("UPDATE `user_punch-learn` SET learned_index = ?, punch_num = punch_num + ? WHERE user_id = ?")
+	updateQuery, err = tx.Prepare("UPDATE `user_punch-learn` SET learned_index = ?, punch_num = punch_num + ? WHERE user_id = ?")
 	if err != nil {
 		tx.Rollback()
 		log.Panic(err)
@@ -1182,6 +1182,7 @@ func CheckUserBook(db *sql.DB, user_id int) int {
 	}
 	return 1
 }
+
 // 查询review_date<=now的word_id列表
 func GetReviewWordID(db *sql.DB, user_id int) ([]int, error) {
 	var wordIDs []int
@@ -1202,6 +1203,7 @@ func GetReviewWordID(db *sql.DB, user_id int) ([]int, error) {
 	}
 	return wordIDs, nil
 }
+
 type UserPunchInfo struct {
 	PunchWordNum        int `json:"punch_word_num"`        //打卡单词数
 	TotalPunchDay       int `json:"total_punch_day"`       //总打卡天数
@@ -1258,8 +1260,6 @@ type EngWord struct {
 	Pronunciation string    `json:"pronunciation"`
 	Meanings      *Meanings `json:"meanings"`
 }
-
-
 
 // 先在es中搜索，如果没有搜索到，再在mysql中搜索
 // 返回EngWord数组
@@ -1454,4 +1454,3 @@ func toStringSlice(value interface{}) []string {
 	}
 	return []string{}
 }
-

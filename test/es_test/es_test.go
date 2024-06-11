@@ -15,8 +15,8 @@ import (
 func TestCreateIndex(t *testing.T) {
 	// Set up the Elasticsearch client
 	cfg := elasticsearch.Config{
-		Addresses: []string{"https://b8fde32e62044f12b769b107e7e2346f.us-central1.gcp.cloud.es.io"},
-		APIKey:    "RzQ0VC1JOEJMQ0gwOXRlMFloZkQ6M2dpNUFMRF9SeE9wMkxhNjAxUjF5dw==",
+		Addresses: []string{"https://8af9afd9e4bf4d88b97b14488467361d.us-central1.gcp.cloud.es.io"},
+		APIKey:    "SEZ3cUI1QUJaclpXZ01wZGhPckE6UlRkcjZXeENRQjJXaEhISnF2eTBZQQ==",
 	}
 	es, err := elasticsearch.NewClient(cfg)
 	if err != nil {
