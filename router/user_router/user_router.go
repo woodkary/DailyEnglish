@@ -1476,6 +1476,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		response.UserPunchInfo = userPunchInfo
 		c.JSON(http.StatusOK, response)
 	})
+	//查找单词
 	r.POST("/api/users/search_words", func(ctx *gin.Context) {
 		type Request struct {
 			Input string `json:"input"`
