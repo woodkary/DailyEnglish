@@ -957,7 +957,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
-	//提交考试@TODO
+	//提交考试
 	//redis------studentId:question_type:["score","num"]
 	r.POST("/api/exams/submitExamResult", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
@@ -997,6 +997,9 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 				"msg":  "服务器内部错误"})
 			return
 		}
+
+		// 更新该场考试的 question_statistics 表
+
 		//向redis插入学生各题型总分信息
 		averageScores, err := controlsql.UpdateStudentRDB(db, rdb, UserClaims.UserID, UserClaims.TeamID, request.Exam_result)
 		if err != nil {

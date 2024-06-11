@@ -76,6 +76,7 @@ func init() {
 		log.Fatalf("Error pinging Elasticsearch: %s", err)
 	}
 }
+
 func main() {
 	r := gin.Default()
 	r.Use(middlewares.Cors())
