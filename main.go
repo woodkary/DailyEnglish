@@ -5,24 +5,25 @@ package main
 
 import (
 	middlewares "DailyEnglish/middlewares"
-    	adminrouter "DailyEnglish/router/admin_router"
-    	teamrouter "DailyEnglish/router/team_router"
-    	userrouter "DailyEnglish/router/user_router"
-    	"database/sql"
-    	"fmt"
-    	"log"
+	adminrouter "DailyEnglish/router/admin_router"
+	teamrouter "DailyEnglish/router/team_router"
+	userrouter "DailyEnglish/router/user_router"
+	"database/sql"
+	"fmt"
+	"log"
 
-    	"github.com/elastic/go-elasticsearch/v8"
-    	"github.com/gin-gonic/gin"
-    	"github.com/go-redis/redis/v8"
-    	_ "github.com/go-sql-driver/mysql"
-    	_ "github.com/mattn/go-sqlite3"
+	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
+	_ "github.com/go-sql-driver/mysql"
 )
+
 var (
 	db  *sql.DB
 	rdb *redis.Client
 	es  *elasticsearch.Client
 )
+
 func init() {
 	// 数据库连接信息
 	username := "mimahezhanghao1yang"
@@ -119,7 +120,7 @@ func main() {
 	go func() {
 		r1 := gin.Default()
 		r1.Use(middlewares.Cors())
-		userrouter.InitUserRouter(r1, db, rdb)
+		userrouter.InitUserRouter(r1, db, rdb, es)
 		r1.Run(":8080")
 	}()
 	r.Run(":8081")
