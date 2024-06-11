@@ -104,16 +104,22 @@ func newMeanings() *Meanings {
 // 将输入字符串转换为meanings结构体
 func parseMeanings(input string) *Meanings {
 	meanings := newMeanings()
-	//先根据/号分隔各词性
-	parts := strings.Split(input, "/")
+	//先根据~号分隔各词性
+	parts := strings.Split(input, "~")
 
 	for _, part := range parts {
 		//再根据.号分隔词性和词义
-		posMeaning := strings.SplitN(part, ".", 2)
+		posMeaning := strings.SplitN(part, ":", 2)
 		if len(posMeaning) == 2 {
+			//将vt和vi转换为v
+			if posMeaning[0] == "vt" {
+				posMeaning[0] = "v"
+			} else if posMeaning[0] == "vi" {
+				posMeaning[0] = "v"
+			}
 			pos := posMeaning[0] + "."
 			//最后根据中文逗号分隔词义
-			meaning := strings.Split(posMeaning[1], "，")
+			meaning := strings.Split(posMeaning[1], "；")
 			if posName, ok := posMap[pos]; ok {
 				switch posName {
 				case Verb:
@@ -1011,6 +1017,10 @@ type EngWord struct {
 	Meanings      *Meanings `json:"meanings"`
 }
 
+func engWordToString(word *EngWord) string {
+	return fmt.Sprintf("%d %s %s %v", word.WordID, word.Spelling, word.Pronunciation, word.Meanings)
+}
+
 // 先在es中搜索，如果没有搜索到，再在mysql中搜索
 // 返回EngWord数组
 func SearchWords(db *sql.DB, es *elasticsearch.Client, input string) ([]EngWord, error) {
@@ -1079,7 +1089,7 @@ func SearchWords(db *sql.DB, es *elasticsearch.Client, input string) ([]EngWord,
 				Meanings:      parseMeaningsFromMap(source["meanings"].(map[string]interface{})),
 			}
 			words = append(words, word)
-			fmt.Println("word:", word)
+			// fmt.Println("从Elasticsearch搜索的单词:", engWordToString(&word))
 		}
 		if len(words) > 0 {
 			return words, nil
@@ -1105,6 +1115,7 @@ func SearchWords(db *sql.DB, es *elasticsearch.Client, input string) ([]EngWord,
 		}
 
 		word.Meanings = parseMeanings(meanings)
+		// fmt.Println("从sql中搜索的单词:", engWordToString(&word))
 		words = append(words, word)
 
 		// 先插入{"index":{"_index":"dailyenglish","_id":1}}部分
