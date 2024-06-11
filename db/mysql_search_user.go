@@ -795,7 +795,6 @@ func UpdateUserPunch(db *sql.DB, userID int, today string, rdb *redis.Client, pu
 		return err
 	}
 	fmt.Printf("User %d punch record updated successfully.\n", userID)
-	return nil
 
 	//计算isPunch中连续的1的个数，这是用户连续打卡到的天数
 	count := 0
