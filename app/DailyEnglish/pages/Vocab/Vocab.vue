@@ -45,87 +45,7 @@
 					preposition: "prep.",
 					interjection: "int."
 				},
-				words: [
-            /*{
-						word_id: 1,
-						spelling: "moral",
-						pronunciation: "/ˈmɔːrəl/",
-						meanings: {
-							verb: null,
-							adjective: ["道德的", "品行端正的", "伦理的", " 精神上的"],
-							noun: ["道德教训", "寓意", "品德", "品行"],
-							pronoun: null,
-							adverb: null,
-							conjunction: null,
-							preposition: null,
-							interjection: null
-						},
-						sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
-					},
-					{
-						word_id: 2,
-						spelling: "abandon",
-						pronunciation: "/əˈbændən/",
-						meanings: {
-							verb: ["抛弃", "放弃", "弃置", "放弃治疗"],
-							noun: ["放弃物", "放弃的事物", "放弃的念头", "放弃的决定"],
-							pronoun: null,
-							adverb: null,
-							conjunction: null,
-							preposition: null,
-							interjection: null
-						},
-						sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/abandon--_gb_1.mp3"
-					},*/
-          // {
-          //   word_id: 3,
-          //   spelling: "apple",
-          //   pronunciation: "/'æpl/",
-          //   meanings: {
-          //     verb: null,
-          //     adjective: null,
-          //     noun: ["苹果", "苹果树"],
-          //     pronoun: null,
-          //     adverb: null,
-          //     conjunction: null,
-          //     preposition: null,
-          //     interjection: null
-          //   },
-          //   sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
-          // },
-          // {
-          //   word_id: 4,
-          //   spelling: "orange",
-          //   pronunciation: "/'ɔːrɪndʒ/",
-          //   meanings: {
-          //     verb: null,
-          //     adjective: ["橙黄色的", "橙色的","橘色的"],
-          //     noun: ["柑橘", "橙树","橙黄色"],
-          //     pronoun: null,
-          //     adverb: null,
-          //     conjunction: null,
-          //     preposition: null,
-          //     interjection: null
-          //   },
-          //   sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
-          // },
-          // {
-          //   word_id: 5,
-          //   spelling: "grape",
-          //   pronunciation: "/ɡreɪp/",
-          //   meanings: {
-          //     verb: null,
-          //     adjective: null,
-          //     noun: ["葡萄", "葡萄酒","葡萄树","葡萄色"],
-          //     pronoun: null,
-          //     adverb: null,
-          //     conjunction: null,
-          //     preposition: null,
-          //     interjection: null
-          //   },
-          //   sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
-          // }
-				], // 单词列表
+				words: [], // 单词列表
 				cnt: 0,
 				book: "cet4",
 				startIndex: 0, // 开始加载的索引
@@ -134,167 +54,12 @@
 			};
 		},
     onLoad() {
-      if(uni.getStorageSync("grape")){
-        this.words.push({
-            word_id: 5,
-            spelling: "grape",
-            pronunciation: "/ɡreɪp/",
-            meanings: {
-              verb: null,
-              adjective: null,
-              noun: ["葡萄", "葡萄酒","葡萄树","葡萄色"],
-              pronoun: null,
-              adverb: null,
-              conjunction: null,
-              preposition: null,
-              interjection: null
-            },
-            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
-          });
-      }
-      if(uni.getStorageSync("apple")){
-        this.words.push({
-            word_id: 3,
-            spelling: "apple",
-            pronunciation: "/'æpl/",
-            meanings: {
-              verb: null,
-              adjective: null,
-              noun: ["苹果", "苹果树"],
-              pronoun: null,
-              adverb: null,
-              conjunction: null,
-              preposition: null,
-              interjection: null
-            },
-            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
-          });
-      }
-      if(uni.getStorageSync("orange")){
-        this.words.push({
-            word_id: 4,
-            spelling: "orange",
-            pronunciation: "/'ɔːrɪndʒ/",
-            meanings: {
-              verb: null,
-              adjective: ["橙黄色的", "橙色的","橘色的"],
-              noun: ["柑橘", "橙树","橙黄色"],
-              pronoun: null,
-              adverb: null,
-              conjunction: null,
-              preposition: null,
-              interjection: null
-            },
-            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
-          });
-      }
-      if(uni.getStorageSync("banana")){
-        this.words.push({
-            word_id: 6,
-            spelling: "banana",
-            pronunciation: "/'bænən/",
-            meanings: {
-              verb: null,
-              adjective: null,
-              noun: ["香蕉", "香蕉树"],
-              pronoun: null,
-              adverb: null,
-              conjunction: null,
-              preposition: null,
-              interjection: null
-            },
-            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
-          });
-      }
-
-      if(uni.getStorageSync("pear")){
-        this.words.push({
-            word_id: 7,
-            spelling: "pear",
-            pronunciation: "/pɪər/",
-            meanings: {
-              verb: null,
-              adjective: null,
-              noun: ["梨", "梨树"],
-              pronoun: null,
-              adverb: null,
-              conjunction: null,
-              preposition: null,
-              interjection: null
-            },
-            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
-          });
-      }
-      if(uni.getStorageSync("abroad")){
-        this.words.push({
-            word_id: 8,
-            spelling: "abroad",
-            pronunciation: "/əˈbrɔːd/",
-            meanings: {
-              adverb: ["到处", "到处去", "到处旅行"],
-              interjection: null
-            },
-            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
-          });
-      }
-      if(uni.getStorageSync("absorb")){
-
-        this.words.push({
-            word_id: 9,
-            spelling: "absorb",
-            pronunciation: "/əˈbɒsəb/",
-            meanings: {
-              verb: ["吸收", "吸收力", "吸收营养", "吸收影响"],
-              noun: ["吸收物", "吸收的事物", "吸收的能量", "吸收的能量"],
-              pronoun: null,
-              adverb: null,
-              conjunction: null,
-              preposition: null,
-              interjection: null
-            },
-            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
-          });
-      }
-
-      if(uni.getStorageSync("bargain")){
-
-        this.words.push({
-            word_id: 10,
-            spelling: "bargain",
-            pronunciation: "/ˈbɑːɡɪn/",
-            meanings: {
-              verb: ["讨价还价", "谈价", "谈价交易", "谈判"],
-              noun: ["讨价", "谈价", "谈价交易", "谈判"],
-              pronoun: null,
-              adverb: null,
-              conjunction: null,
-              preposition: null,
-              interjection: null
-            },
-            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
-          });
-      }
-      if(uni.getStorageSync("satisfy")){
-
-
-        this.words.push({
-            word_id: 11,
-            spelling: "satisfy",
-            pronunciation: "/səˈfɪtɪ/",
-            meanings: {
-              verb: ["满足", "使满足", "使满意", "使满意"],
-              noun: ["满足感", "满足的感觉", "满足的要求", "满足的条件"],
-              pronoun: null,
-              adverb: null,
-              conjunction: null,
-              preposition: null,
-              interjection: null
-            },
-            sound: "https://ssl.gstatic.com/dictionary/static/sounds/oxford/moral--_gb_1.mp3"
-          });
-      }
       this.cnt = this.words.length;
       this.book = "cet4";
+      // 显示加载进度条
+      uni.showLoading({
+        title: '加载中'
+      });
       uni.request({
         url: "http://localhost:8080/api/words/get_starbk",
         method: "GET",
@@ -302,6 +67,8 @@
           'Authorization': 'Bearer ' + uni.getStorageSync('token')
         },
         success: (res) => {
+          // 隐藏加载进度条
+          uni.hideLoading();
           // token失效
           if (res.statusCode === 401) {
             uni.removeStorageSync('token');
@@ -323,6 +90,8 @@
           }
         },
         fail: (res) => {
+          // 隐藏加载进度条
+          uni.hideLoading();
           console.log("请求失败");
         }
       });

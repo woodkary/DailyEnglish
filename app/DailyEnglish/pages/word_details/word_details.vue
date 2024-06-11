@@ -253,7 +253,7 @@ export default {
       transformMeaningsToText(meanings) {
           const transformedMeanings = [];
           for (const speech in meanings) {
-            if (meanings[speech] && meanings[speech].length > 0) {
+            if (meanings[speech] && meanings[speech].length > 1) {
               // 获取词性简写
               const speechAbbreviation = this.simplifiedSpeech[speech];
               // 生成词性及其意思的字符串，之间加入两个制表符

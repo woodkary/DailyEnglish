@@ -355,6 +355,7 @@ func SearchQuestionStatistics(db *sql.DB, examID int, questionID int) ([]int, er
 	var A_num, B_num, C_num, D_num int = 0, 0, 0, 0
 	var correctAnswer string
 	fmt.Println("question_id: ", questionID)
+	fmt.Println("exam_id: ", examID)
 	// 查询题目统计信息
 	err := db.QueryRow("SELECT A_num, B_num, C_num, D_num FROM question_statistics WHERE exam_id = ? AND question_id = ?", examID, questionID).Scan(&A_num, &B_num, &C_num, &D_num)
 	if err != nil {

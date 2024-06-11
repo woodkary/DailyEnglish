@@ -25,7 +25,7 @@ function getExamDates(){
                 //token失效
                 alert('登录已过期，请重新登录');
                 localStorage.removeItem('token');
-                window.location.href = './login.html';
+                window.location.href = './login&register.html';
             }
             if (response.ok) {
                 return response.json();
@@ -326,6 +326,8 @@ function renderExamData(date){
         cardDiv.appendChild(jumpBtn);
         jumpBtn.addEventListener('click',()=>{
             window.location.href='./test-statistics.html?date='+date.toLocaleDateString()+"&team_id="+exams[i].team_id+"&exam_id="+exams[i].exam_id;
+            sessionStorage.setItem('team_id',exams[i].team_id);
+            sessionStorage.setItem('exam_id',exams[i].exam_id);
         });
     }
 }

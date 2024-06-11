@@ -522,6 +522,14 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			c.JSON(500, "服务器错误")
 			return
 		}
+		// 初始化QuestionStatistics
+		// err = controlsql.InitQuestionStatistics(db, exam_id, question_num))
+		// if err != nil {
+		// 	log.Panic(err)
+		// 	c.JSON(500, "服务器错误")
+		// 	return
+		// }
+
 		c.JSON(200, "发布成功")
 		//@TODO具体逻辑待议
 		//发布考试后在考试的当天设置定时任务，检查是否需要更新数据库，需要则更新并停止任务，不需要则继续等待

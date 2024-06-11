@@ -2,8 +2,10 @@ package db
 
 import (
 	utils "DailyEnglish/utils"
+	"bytes"
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -11,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -48,6 +51,40 @@ type Meanings struct {
 	Preposition  []string `json:"preposition"`
 	Conjunction  []string `json:"conjunction"`
 	Interjection []string `json:"interjection"`
+}
+
+// MarshalJSON 自定义序列化方法
+func (m Meanings) MarshalJSON() ([]byte, error) {
+	type Alias Meanings
+	return json.Marshal(&struct {
+		Alias
+		Verb         []string `json:"verb"`
+		Noun         []string `json:"noun"`
+		Pronoun      []string `json:"pronoun"`
+		Adjective    []string `json:"adjective"`
+		Adverb       []string `json:"adverb"`
+		Preposition  []string `json:"preposition"`
+		Conjunction  []string `json:"conjunction"`
+		Interjection []string `json:"interjection"`
+	}{
+		Alias:        (Alias)(m),
+		Verb:         ensureNotNil(m.Verb),
+		Noun:         ensureNotNil(m.Noun),
+		Pronoun:      ensureNotNil(m.Pronoun),
+		Adjective:    ensureNotNil(m.Adjective),
+		Adverb:       ensureNotNil(m.Adverb),
+		Preposition:  ensureNotNil(m.Preposition),
+		Conjunction:  ensureNotNil(m.Conjunction),
+		Interjection: ensureNotNil(m.Interjection),
+	})
+}
+
+// ensureNotNil 确保切片不为 nil
+func ensureNotNil(slice []string) []string {
+	if slice == nil {
+		return []string{}
+	}
+	return slice
 }
 
 // 初始化meanings结构体
@@ -248,15 +285,15 @@ type UserStudy struct {
 	IsPunched      bool
 }
 
-// 添加用户学习信息
+// 添加用户学习词书信息
 func AddUserBook(db *sql.DB, user_id int, book_id int) error {
 	// 首先检查是否已经存在相同的记录
 	var count int
-	err := db.QueryRow("SELECT COUNT(*) FROM user_study WHERE user_id = ? AND book_id = ?", user_id, book_id).Scan(&count)
+	err := db.QueryRow("SELECT COUNT(*) FROM user_study WHERE user_id = ?", user_id).Scan(&count)
 	if err != nil {
 		return err
 	}
-
+	fmt.Println("count:", count)
 	// 如果已经存在记录，则返回"已完成"
 	if count > 0 {
 		return errors.New("已完成")
@@ -268,14 +305,68 @@ func AddUserBook(db *sql.DB, user_id int, book_id int) error {
 		return err
 	}
 	defer stmt.Close()
-
-	_, err = stmt.Exec(user_id, book_id, 20, 0)
+	//默认计划10个单词每天学习
+	_, err = stmt.Exec(user_id, book_id, 10, 0)
 	if err != nil {
 		return err
 	}
 
 	return nil
 }
+func AddUserPunchLearn(db *sql.DB, user_id int) error {
+	//向user_punch-learn插入一项记录
+	//由于其几乎所有字段都有默认值，所以只需根据user_id插入即可
+	stmt2, err := db.Prepare("INSERT INTO `user_punch-learn`(user_id,date) VALUES(?,?)")
+	if err != nil {
+		return err
+	}
+	defer stmt2.Close()
+	_, err = stmt2.Exec(user_id, utils.GetCurrentDate())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// 更新用户学习词书信息
+func UpdateUserBook(db *sql.DB, user_id int, book_id int) error {
+	plan_num := 20 // 默认计划每天学习10个单词
+	// 首先检查用户是否已经选择一本词书
+	var count int
+	err := db.QueryRow("SELECT COUNT(*) FROM user_study WHERE user_id = ?", user_id).Scan(&count)
+	if err != nil {
+		return err
+	}
+	// 如果已经存在，则更新
+	if count > 0 {
+		stmt, err := db.Prepare("UPDATE user_study SET plan_num =?,study_day =? WHERE user_id =?")
+		if err != nil {
+			log.Panic(err)
+			return err
+		}
+		defer stmt.Close()
+		_, err = stmt.Exec(plan_num, book_id, user_id)
+		if err != nil {
+			log.Panic(err)
+			return err
+		}
+	} else {
+		// 如果不存在，则插入
+		stmt, err := db.Prepare("INSERT INTO user_study(user_id,book_id,plan_num) VALUES(?,?,?)")
+		if err != nil {
+			log.Panic(err)
+			return err
+		}
+		defer stmt.Close()
+		_, err = stmt.Exec(user_id, book_id, plan_num)
+		if err != nil {
+			log.Panic(err)
+			return err
+		}
+	}
+	return nil
+}
+
 func GetUserStudy(db *sql.DB, user_id int) (UserStudy, error) {
 	var userStudy UserStudy
 	var book_id int
@@ -620,8 +711,10 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 				log.Panic(err)
 				return err
 			}
+			lastPunchdate = today
+		} else {
+			return err
 		}
-		return err
 	}
 
 	// 解析最后打卡日期
@@ -656,6 +749,35 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 	fmt.Println("1111111", updateQuery)
 	defer updateQuery.Close()
 	_, err = updateQuery.Exec(isPunch, today, userID)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	//计算isPunch中连续的1的个数，这是用户连续打卡到的天数
+	count := 0
+	maxCount := 0
+	for isPunch > 0 {
+		if isPunch&0x01 == 1 {
+			count++
+			if count > maxCount {
+				maxCount = count
+			}
+		} else {
+			count = 0
+		}
+		isPunch >>= 1
+	}
+	count = maxCount
+	fmt.Println("连续打卡天数:", count)
+	//更新user_study表中的continuous_study字段，其值为现有值和count的最大值
+	//表示连续打卡天数
+	updateQuery, err = db.Prepare("UPDATE user_study SET continuous_study = GREATEST(continuous_study,?) WHERE user_id = ?")
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	defer updateQuery.Close()
+	_, err = updateQuery.Exec(count, userID)
 	if err != nil {
 		log.Panic(err)
 		return err
@@ -893,4 +1015,225 @@ func GetReviewWordID(db *sql.DB, user_id int) ([]int, error) {
 		wordIDs = append(wordIDs, wordID)
 	}
 	return wordIDs, nil
+}
+
+type UserPunchInfo struct {
+	PunchWordNum        int `json:"punch_word_num"`        //打卡单词数
+	TotalPunchDay       int `json:"total_punch_day"`       //总打卡天数
+	ConsecutivePunchDay int `json:"consecutive_punch_day"` //连续打卡天数
+}
+
+// 查询个人中心页面
+func GetUserCenter(db *sql.DB, user_id int) (UserPunchInfo, error) {
+	var punchWordNum int = 0
+	var totalPunchDay int = 0
+	var consecutivePunchDay int = 0
+	//首先从user_punch-learn查punch_num作为打卡单词数
+	err := db.QueryRow("SELECT punch_num FROM `user_punch-learn` WHERE user_id = ?", user_id).Scan(&punchWordNum)
+	if err != nil && err != sql.ErrNoRows {
+		log.Panic(err)
+		return UserPunchInfo{}, err
+	}
+	//再从user_study查study_day和continuous_study作为总打卡天数和连续打卡天数
+	err = db.QueryRow("SELECT study_day,continuous_study FROM user_study WHERE user_id = ?", user_id).Scan(&totalPunchDay, &consecutivePunchDay)
+	if err != nil && err != sql.ErrNoRows {
+		log.Panic(err)
+		return UserPunchInfo{}, err
+	}
+	return UserPunchInfo{PunchWordNum: punchWordNum, TotalPunchDay: totalPunchDay, ConsecutivePunchDay: consecutivePunchDay}, nil
+}
+
+// 查询该用户当前词书是否被打卡完
+func CheckUserPunchFinish(db *sql.DB, user_id int, book_id int) (int, error) {
+	// 查询user_study的learn_num -- 当前词书的学习进度
+	var learn_num int
+	err := db.QueryRow("SELECT learn_index FROM user_study WHERE user_id = ?", user_id).Scan(&learn_num)
+	if err != nil {
+		log.Panic(err)
+		return 0, err
+	}
+	// 查询book_info的word_num -- 当前词库的单词数量
+	var word_num int
+	err = db.QueryRow("SELECT word_num FROM book_info WHERE book_id = ?", book_id).Scan(&word_num)
+	if err != nil {
+		log.Panic(err)
+		return 0, err
+	}
+
+	// 如果learn_num等于word_num，则表示该用户当前词书已被打卡完
+	if learn_num == word_num {
+		return 1, nil
+	}
+	return 0, nil
+}
+
+type EngWord struct {
+	WordID        int       `json:"word_id"`
+	Spelling      string    `json:"spelling"`
+	Pronunciation string    `json:"pronunciation"`
+	Meanings      *Meanings `json:"meanings"`
+}
+
+// 先在es中搜索，如果没有搜索到，再在mysql中搜索
+// 返回EngWord数组
+func SearchWords(db *sql.DB, es *elasticsearch.Client, input string) ([]EngWord, error) {
+	ctx := context.Background()
+
+	// Step 1: Search in Elasticsearch
+	var buf bytes.Buffer
+	query := map[string]interface{}{
+		"query": map[string]interface{}{
+			"wildcard": map[string]interface{}{
+				"spelling": fmt.Sprintf("*%s*", input),
+			},
+		},
+	}
+	/*查询es中所有包含input的词，返回结果
+	POST /dailyenglish/_search
+		{
+			"query":{
+				"wildcard":{
+				"spelling":"*input*"
+				}
+			}
+		}
+	*/
+
+	if err := json.NewEncoder(&buf).Encode(query); err != nil {
+		log.Panicf("Error encoding query: %s", err)
+	}
+
+	res, err := es.Search(
+		es.Search.WithContext(ctx),
+		es.Search.WithIndex("dailyenglish"),
+		es.Search.WithBody(&buf),
+		es.Search.WithTrackTotalHits(true),
+	)
+	if err != nil {
+		if !strings.Contains(err.Error(), "index_not_found_exception") {
+			log.Panicf("Error searching for documents: %s", err)
+		} else {
+			log.Printf("Index not found: %v", err)
+		}
+	}
+
+	defer res.Body.Close()
+
+	var words []EngWord
+
+	//检查es是否有结果
+	if res.IsError() {
+		log.Printf("Failed to search documents: %s", res.Status())
+	} else {
+		var r map[string]interface{}
+		if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
+			log.Printf("Error parsing the response body: %s", err)
+		}
+		//查找json中hits下的hits数组
+		hits := r["hits"].(map[string]interface{})["hits"].([]interface{})
+		for _, hit := range hits {
+			//解析hit下的_source字段
+			source := hit.(map[string]interface{})["_source"].(map[string]interface{})
+			//_source字段结构和EngWord结构相同，直接解析为EngWord
+			word := EngWord{
+				WordID:        (int)(source["word_id"].(float64)),
+				Spelling:      source["spelling"].(string),
+				Pronunciation: source["pronunciation"].(string),
+				Meanings:      parseMeaningsFromMap(source["meanings"].(map[string]interface{})),
+			}
+			words = append(words, word)
+			fmt.Println("word:", word)
+		}
+		if len(words) > 0 {
+			return words, nil
+		}
+	}
+
+	// 如果es没有结果，则在mysql中搜索
+	queryStr := fmt.Sprintf("SELECT word_id, word, pronunciation, meanings FROM word WHERE word LIKE '%%%s%%'", input)
+	rows, err := db.Query(queryStr)
+	if err != nil {
+		return nil, fmt.Errorf("MySQL query failed: %w", err)
+	}
+	defer rows.Close()
+
+	//在搜索的同时，将搜索结果插入到请求体bulkBuf中，准备批量插入es
+	var bulkBuf bytes.Buffer
+	for rows.Next() {
+		var word EngWord
+		var meanings string
+
+		if err := rows.Scan(&word.WordID, &word.Spelling, &word.Pronunciation, &meanings); err != nil {
+			return nil, fmt.Errorf("Failed to scan MySQL row: " + err.Error())
+		}
+
+		word.Meanings = parseMeanings(meanings)
+		words = append(words, word)
+
+		// 先插入{"index":{"_index":"dailyenglish","_id":1}}部分
+		meta := []byte(fmt.Sprintf(`{ "index" : { "_index" : "dailyenglish", "_id" : "%d" } }%s`, word.WordID, "\n"))
+		bulkBuf.Write(meta)
+
+		doc, err := json.Marshal(word)
+		if err != nil {
+			return nil, fmt.Errorf("Failed to marshal document" + err.Error())
+		}
+		// 再插入{"word_id":1,"spelling":"input","pronunciation":"input","meanings":{"verb":[]}}部分
+		bulkBuf.Write(doc)
+		bulkBuf.Write([]byte("\n"))
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("MySQL rows error: %w", err)
+	}
+
+	// 如果bulkBuf有内容，则批量插入es
+	if bulkBuf.Len() > 0 {
+		res, err := es.Bulk(
+			bytes.NewReader(bulkBuf.Bytes()),
+			es.Bulk.WithContext(ctx),
+			es.Bulk.WithIndex("dailyenglish"),
+			es.Bulk.WithRefresh("true"),
+		)
+		if err != nil {
+			return nil, fmt.Errorf("Failed to execute bulk insert: " + err.Error())
+		}
+		defer res.Body.Close()
+
+		if res.IsError() {
+			log.Printf("Bulk insert error: %s", res.String())
+		}
+	}
+
+	return words, nil
+}
+
+// 说实话，实在懒得再把这些搬进utils包里了，直接写在这里吧。
+func parseMeaningsFromMap(meanings map[string]interface{}) *Meanings {
+	meaningMap := Meanings{
+		Verb:         toStringSlice(meanings["verb"]),
+		Noun:         toStringSlice(meanings["noun"]),
+		Pronoun:      toStringSlice(meanings["pronoun"]),
+		Adjective:    toStringSlice(meanings["adjective"]),
+		Adverb:       toStringSlice(meanings["adverb"]),
+		Preposition:  toStringSlice(meanings["preposition"]),
+		Conjunction:  toStringSlice(meanings["conjunction"]),
+		Interjection: toStringSlice(meanings["interjection"]),
+	}
+	return &meaningMap
+}
+
+// toStringSlice converts an interface to a []string.
+func toStringSlice(value interface{}) []string {
+	if value == nil {
+		return []string{}
+	}
+	if slice, ok := value.([]interface{}); ok {
+		result := make([]string, len(slice))
+		for i, v := range slice {
+			result[i] = v.(string)
+		}
+		return result
+	}
+	return []string{}
 }
