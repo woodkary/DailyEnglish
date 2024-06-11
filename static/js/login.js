@@ -305,3 +305,8 @@ function checkVerifyCode(verifyCode) {
     }
     return false;
 }
+function logout() {
+    localStorage.removeItem("token");
+    sessionStorage.removeItem("username");
+    localStorage.removeItem("team_info");
+}

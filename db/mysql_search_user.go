@@ -2,16 +2,19 @@ package db
 
 import (
 	utils "DailyEnglish/utils"
-	"context"
-	"database/sql"
-	"errors"
-	"fmt"
-	"log"
-	"strconv"
-	"strings"
-	"time"
+    	"bytes"
+    	"context"
+    	"database/sql"
+    	"encoding/json"
+    	"errors"
+    	"fmt"
+    	"log"
+    	"strconv"
+    	"strings"
+    	"time"
 
-	"github.com/go-redis/redis/v8"
+    	"github.com/elastic/go-elasticsearch/v8"
+    	"github.com/go-redis/redis/v8"
 )
 
 // 定义词性的常量
@@ -49,6 +52,39 @@ type Meanings struct {
 	Conjunction  []string `json:"conjunction"`
 	Interjection []string `json:"interjection"`
 }
+// MarshalJSON 自定义序列化方法
+func (m Meanings) MarshalJSON() ([]byte, error) {
+	type Alias Meanings
+	return json.Marshal(&struct {
+		Alias
+		Verb         []string `json:"verb"`
+		Noun         []string `json:"noun"`
+		Pronoun      []string `json:"pronoun"`
+		Adjective    []string `json:"adjective"`
+		Adverb       []string `json:"adverb"`
+		Preposition  []string `json:"preposition"`
+		Conjunction  []string `json:"conjunction"`
+		Interjection []string `json:"interjection"`
+	}{
+		Alias:        (Alias)(m),
+		Verb:         ensureNotNil(m.Verb),
+		Noun:         ensureNotNil(m.Noun),
+		Pronoun:      ensureNotNil(m.Pronoun),
+		Adjective:    ensureNotNil(m.Adjective),
+		Adverb:       ensureNotNil(m.Adverb),
+		Preposition:  ensureNotNil(m.Preposition),
+		Conjunction:  ensureNotNil(m.Conjunction),
+		Interjection: ensureNotNil(m.Interjection),
+	})
+}
+
+// ensureNotNil 确保切片不为 nil
+func ensureNotNil(slice []string) []string {
+	if slice == nil {
+		return []string{}
+	}
+	return slice
+}
 
 // 初始化meanings结构体
 func newMeanings() *Meanings {
@@ -67,16 +103,22 @@ func newMeanings() *Meanings {
 // 将输入字符串转换为meanings结构体
 func parseMeanings(input string) *Meanings {
 	meanings := newMeanings()
-	//先根据/号分隔各词性
-	parts := strings.Split(input, "/")
+	//先根据~号分隔各词性
+	parts := strings.Split(input, "~")
 
 	for _, part := range parts {
 		//再根据.号分隔词性和词义
-		posMeaning := strings.SplitN(part, ".", 2)
+		posMeaning := strings.SplitN(part, ":", 2)
 		if len(posMeaning) == 2 {
+			//将vt和vi转换为v
+			if posMeaning[0] == "vt" {
+				posMeaning[0] = "v"
+			} else if posMeaning[0] == "vi" {
+				posMeaning[0] = "v"
+			}
 			pos := posMeaning[0] + "."
 			//最后根据中文逗号分隔词义
-			meaning := strings.Split(posMeaning[1], "，")
+			meaning := strings.Split(posMeaning[1], "；")
 			if posName, ok := posMap[pos]; ok {
 				switch posName {
 				case Verb:
@@ -570,7 +612,6 @@ type Word struct {
 	WordQuestion map[string]string `json:"word_question"`
 	Answer       string            `json:"answer"`
 }
-
 // 根据wordIDs查询word
 func GetWordByWordID(db *sql.DB, wordIDs []int) ([]Word, error) {
 	var WordList []Word
@@ -654,31 +695,31 @@ func GetUserPunchContent(db *sql.DB, userID int) ([]Word, error) {
 }
 
 // 更新一次打卡信息
-func UpdateUserPunch(db *sql.DB, userID int, today string) error {
+func UpdateUserPunch(db *sql.DB, userID int, today string, rdb *redis.Client, punchResult map[int]bool) error {
 	// 查询当前用户的打卡记录
-	query := "SELECT is_punch, last_punchdate FROM user_punch WHERE user_id = ?"
-	var isPunch int64
-	var lastPunchdate string
-	err := db.QueryRow(query, userID).Scan(&isPunch, &lastPunchdate)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			// 说明当前用户没有打卡记录，则插入一条新的记录
-			insertQuery, err := db.Prepare("INSERT INTO user_punch(user_id, is_punch, last_punchdate) VALUES(?,?,?)")
-			if err != nil {
-				log.Panic(err)
-				return err
-			}
-			defer insertQuery.Close()
-			_, err = insertQuery.Exec(userID, 0x01, today)
-			if err != nil {
-				log.Panic(err)
-				return err
-			}
-			lastPunchdate = today
-		} else {
-			return err
-		}
-	}
+    	query := "SELECT is_punch, last_punchdate FROM user_punch WHERE user_id = ?"
+    	var isPunch int64
+    	var lastPunchdate string
+    	err := db.QueryRow(query, userID).Scan(&isPunch, &lastPunchdate)
+    	if err != nil {
+    		if err == sql.ErrNoRows {
+    			// 说明当前用户没有打卡记录，则插入一条新的记录
+    			insertQuery, err := db.Prepare("INSERT INTO user_punch(user_id, is_punch, last_punchdate) VALUES(?,?,?)")
+    			if err != nil {
+    				log.Panic(err)
+    				return err
+    			}
+    			defer insertQuery.Close()
+    			_, err = insertQuery.Exec(userID, 0x01, today)
+    			if err != nil {
+    				log.Panic(err)
+    				return err
+    			}
+    			lastPunchdate = today
+    		} else {
+    			return err
+    		}
+    	}
 
 	// 解析最后打卡日期
 	lastPunchTime, err := time.Parse("2006-01-02", lastPunchdate)
@@ -716,49 +757,79 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 		log.Panic(err)
 		return err
 	}
-<<<<<<< HEAD
-	//计算isPunch中连续的1的个数，这是用户连续打卡到的天数
-	count := 0
-	for isPunch > 0 {
-		if isPunch&0x01 == 1 {
-			count++
-		}
-		isPunch >>= 1
-	}
-	fmt.Println("连续打卡天数:", count)
-	//更新user_study表中的continuous_study字段，其值为现有值和count的最大值
-	//表示连续打卡天数
-	updateQuery, err = db.Prepare("UPDATE user_study SET continuous_study = GREATEST(continuous_study,?) WHERE user_id = ?")
-=======
 	//更新用户learn_index和study_day
-	var old_index int
-	var plan_num int
-	var study_day int
-	db.QueryRow("SELECT learn_index,plan_num,study_day FROM user_study WHERE user_id = ?", userID).Scan(&old_index, &plan_num, &study_day)
-	new_index := old_index + plan_num
-	study_day++
-	updateQuery, err = db.Prepare("UPDATE user_study SET learn_index = ?,study_day = ? WHERE user_id = ?")
->>>>>>> 808fcf39a5cc24b92ba4a27465f395cbb5a681e6
-	if err != nil {
-		log.Panic(err)
-		return err
-	}
-	defer updateQuery.Close()
-<<<<<<< HEAD
-	_, err = updateQuery.Exec(count, userID)
-=======
-	_, err = updateQuery.Exec(new_index, study_day, userID)
->>>>>>> 808fcf39a5cc24b92ba4a27465f395cbb5a681e6
-	if err != nil {
-		log.Panic(err)
-		return err
-	}
-<<<<<<< HEAD
+    	var old_index int
+    	var plan_num int
+    	var study_day int
+    	db.QueryRow("SELECT learn_index,plan_num,study_day FROM user_study WHERE user_id = ?", userID).Scan(&old_index, &plan_num, &study_day)
+    	new_index := old_index + plan_num
+    	study_day++
+    	updateQuery, err = db.Prepare("UPDATE user_study SET learn_index = ?,study_day = ? WHERE user_id = ?")
+    	if err != nil {
+    		log.Panic(err)
+    		return err
+    	}
+    	defer updateQuery.Close()
+    	_, err = updateQuery.Exec(new_index, study_day, userID)
+    	if err != nil {
+    		log.Panic(err)
+    		return err
+    	}
+    	fmt.Printf("User %d punch record updated successfully.\n", userID)
+    	return nil
 
-=======
->>>>>>> 808fcf39a5cc24b92ba4a27465f395cbb5a681e6
-	fmt.Printf("User %d punch record updated successfully.\n", userID)
-	return nil
+	//计算isPunch中连续的1的个数，这是用户连续打卡到的天数
+    	count := 0
+    	maxCount := 0
+    	for isPunch > 0 {
+    		if isPunch&0x01 == 1 {
+    			count++
+    			if count > maxCount {
+    				maxCount = count
+    			}
+    		} else {
+    			count = 0
+    		}
+    		isPunch >>= 1
+    	}
+    	count = maxCount
+    	fmt.Println("连续打卡天数:", count)
+    	//更新user_study表中的continuous_study字段，其值为现有值和count的最大值
+    	//表示连续打卡天数
+    	updateQuery, err = db.Prepare("UPDATE user_study SET continuous_study = GREATEST(continuous_study,?) WHERE user_id = ?")
+    	if err != nil {
+    		log.Panic(err)
+    		return err
+    	}
+    	defer updateQuery.Close()
+    	_, err = updateQuery.Exec(count, userID)
+    	if err != nil {
+    		log.Panic(err)
+    		return err
+    	}
+
+    	// 构建键名
+    	redisKey := fmt.Sprintf("punchResult:%d:%s", userID, today)
+
+    	// 准备哈希的键值对
+    	hashData := make(map[string]interface{})
+    	for k, v := range punchResult {
+    		// 由于Redis的哈希字段和值都是字符串，所以这里需要将整数键转换为字符串
+    		keyStr := strconv.Itoa(k)
+    		// 布尔值在Go中转换为字符串时，"true"会被转换为"1"，"false"会被转换为"0"
+    		valueStr := strconv.FormatBool(v)
+    		hashData[keyStr] = valueStr
+    	}
+
+    	// 使用HMSet将所有键值对存入Redis哈希
+    	_, err = rdb.HMSet(context.Background(), redisKey, hashData).Result()
+    	if err != nil {
+    		log.Panic(err)
+    		return err
+    	}
+
+    	fmt.Printf("User %d punch record updated successfully.\n", userID)
+    	return nil
 }
 func UpdateUserLearnIndex(db *sql.DB, userID int) error {
 	// 开启事务
@@ -836,7 +907,6 @@ func UpdateUserLearnIndex(db *sql.DB, userID int) error {
 	fmt.Printf("User %d learn index updated successfully.\n", userID)
 	return nil
 }
-
 // 打卡后插入学习记录并更新复习时间
 func InsertUserMemory(db *sql.DB, userID int, wordID int, isCorret bool) error {
 	//先根据wordID查询difficulty
@@ -911,7 +981,6 @@ func UpdatetUserMemory(db *sql.DB, userID int, wordID int, isCorret bool) error 
 	}
 	return nil
 }
-
 // redis------user_id:question_type:["score","num"]
 // 向redis中插入学生的题目总分和题目数量
 func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, teamID int, examResult map[int]Exam_score) (map[int]float64, error) {
@@ -1028,8 +1097,6 @@ func CheckUserBook(db *sql.DB, user_id int) int {
 	}
 	return 1
 }
-
-<<<<<<< HEAD
 type UserPunchInfo struct {
 	PunchWordNum        int `json:"punch_word_num"`        //打卡单词数
 	TotalPunchDay       int `json:"total_punch_day"`       //总打卡天数
@@ -1078,7 +1145,212 @@ func CheckUserPunchFinish(db *sql.DB, user_id int, book_id int) (int, error) {
 		return 1, nil
 	}
 	return 0, nil
-=======
+}
+
+type EngWord struct {
+	WordID        int       `json:"word_id"`
+	Spelling      string    `json:"spelling"`
+	Pronunciation string    `json:"pronunciation"`
+	Meanings      *Meanings `json:"meanings"`
+}
+
+func engWordToString(word *EngWord) string {
+	return fmt.Sprintf("%d %s %s %v", word.WordID, word.Spelling, word.Pronunciation, word.Meanings)
+}
+
+// 先在es中搜索，如果没有搜索到，再在mysql中搜索
+// 返回EngWord数组
+func SearchWords(db *sql.DB, es *elasticsearch.Client, input string) ([]EngWord, error) {
+	ctx := context.Background()
+
+	// Step 1: Search in Elasticsearch
+	var buf bytes.Buffer
+	query := map[string]interface{}{
+		"query": map[string]interface{}{
+			"wildcard": map[string]interface{}{
+				"spelling": fmt.Sprintf("*%s*", input),
+			},
+		},
+	}
+	/*查询es中所有包含input的词，返回结果
+	POST /dailyenglish/_search
+		{
+			"query":{
+				"wildcard":{
+				"spelling":"*input*"
+				}
+			}
+		}
+	*/
+
+	if err := json.NewEncoder(&buf).Encode(query); err != nil {
+		log.Panicf("Error encoding query: %s", err)
+	}
+
+	res, err := es.Search(
+		es.Search.WithContext(ctx),
+		es.Search.WithIndex("dailyenglish"),
+		es.Search.WithBody(&buf),
+		es.Search.WithTrackTotalHits(true),
+	)
+	if err != nil {
+		if !strings.Contains(err.Error(), "index_not_found_exception") {
+			log.Panicf("Error searching for documents: %s", err)
+		} else {
+			log.Printf("Index not found: %v", err)
+		}
+	}
+
+	defer res.Body.Close()
+
+	var words []EngWord
+
+	//检查es是否有结果
+	if res.IsError() {
+		log.Printf("Failed to search documents: %s", res.Status())
+	} else {
+		var r map[string]interface{}
+		if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
+			log.Printf("Error parsing the response body: %s", err)
+		}
+		//查找json中hits下的hits数组
+		hits := r["hits"].(map[string]interface{})["hits"].([]interface{})
+		for _, hit := range hits {
+			//解析hit下的_source字段
+			source := hit.(map[string]interface{})["_source"].(map[string]interface{})
+			//_source字段结构和EngWord结构相同，直接解析为EngWord
+			word := EngWord{
+				WordID:        (int)(source["word_id"].(float64)),
+				Spelling:      source["spelling"].(string),
+				Pronunciation: source["pronunciation"].(string),
+				Meanings:      parseMeaningsFromMap(source["meanings"].(map[string]interface{})),
+			}
+			words = append(words, word)
+			// fmt.Println("从Elasticsearch搜索的单词:", engWordToString(&word))
+		}
+		if len(words) > 0 {
+			return words, nil
+		}
+	}
+
+	// 如果es没有结果，则在mysql中搜索
+	queryStr := fmt.Sprintf("SELECT word_id, word, pronunciation, meanings FROM word WHERE word LIKE '%%%s%%'", input)
+	rows, err := db.Query(queryStr)
+	if err != nil {
+		return nil, fmt.Errorf("MySQL query failed: %w", err)
+	}
+	defer rows.Close()
+
+	//在搜索的同时，将搜索结果插入到请求体bulkBuf中，准备批量插入es
+	var bulkBuf bytes.Buffer
+	for rows.Next() {
+		var word EngWord
+		var meanings string
+
+		if err := rows.Scan(&word.WordID, &word.Spelling, &word.Pronunciation, &meanings); err != nil {
+			return nil, fmt.Errorf("Failed to scan MySQL row: " + err.Error())
+		}
+
+		word.Meanings = parseMeanings(meanings)
+		// fmt.Println("从sql中搜索的单词:", engWordToString(&word))
+		words = append(words, word)
+
+		// 先插入{"index":{"_index":"dailyenglish","_id":1}}部分
+		meta := []byte(fmt.Sprintf(`{ "index" : { "_index" : "dailyenglish", "_id" : "%d" } }%s`, word.WordID, "\n"))
+		bulkBuf.Write(meta)
+
+		doc, err := json.Marshal(word)
+		if err != nil {
+			return nil, fmt.Errorf("Failed to marshal document" + err.Error())
+		}
+		// 再插入{"word_id":1,"spelling":"input","pronunciation":"input","meanings":{"verb":[]}}部分
+		bulkBuf.Write(doc)
+		bulkBuf.Write([]byte("\n"))
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("MySQL rows error: %w", err)
+	}
+
+	// 如果bulkBuf有内容，则批量插入es
+	if bulkBuf.Len() > 0 {
+		res, err := es.Bulk(
+			bytes.NewReader(bulkBuf.Bytes()),
+			es.Bulk.WithContext(ctx),
+			es.Bulk.WithIndex("dailyenglish"),
+			es.Bulk.WithRefresh("true"),
+		)
+		if err != nil {
+			return nil, fmt.Errorf("Failed to execute bulk insert: " + err.Error())
+		}
+		defer res.Body.Close()
+
+		if res.IsError() {
+			log.Printf("Bulk insert error: %s", res.String())
+		}
+	}
+
+	return words, nil
+}
+
+func GetThirdPunchResultForDay(rdb *redis.Client, ctx context.Context, userID int, today string) (map[int]bool, error) {
+	//先构造punchResult:userID:today的键
+	punchResultKey := fmt.Sprintf("punchResult:%d:%s", userID, today)
+	//根据punchResultKey获取对应的hash集合，这通常只有一个元素，即今天的打卡结果
+	punchResult, err := rdb.HGetAll(ctx, punchResultKey).Result()
+	if err != nil {
+		return nil, err
+	}
+	//如果punchResult为空，则说明今天还没有打卡，返回空map
+	if len(punchResult) == 0 {
+		return nil, nil
+	}
+	//如果punchResult不为空，则解析出每道题的结果，并返回
+	resultMap := make(map[int]bool)
+	for key, value := range punchResult {
+		//key是题目ID，value是bool值，转换成int
+		questionID, err := strconv.Atoi(key)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse question id: %s", key)
+		}
+		result, err := strconv.ParseBool(value)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse result: %s", value)
+		}
+		resultMap[questionID] = result
+	}
+	return resultMap, nil
+}
+
+// 说实话，实在懒得再把这些搬进utils包里了，直接写在这里吧。
+func parseMeaningsFromMap(meanings map[string]interface{}) *Meanings {
+	meaningMap := Meanings{
+		Verb:         toStringSlice(meanings["verb"]),
+		Noun:         toStringSlice(meanings["noun"]),
+		Pronoun:      toStringSlice(meanings["pronoun"]),
+		Adjective:    toStringSlice(meanings["adjective"]),
+		Adverb:       toStringSlice(meanings["adverb"]),
+		Preposition:  toStringSlice(meanings["preposition"]),
+		Conjunction:  toStringSlice(meanings["conjunction"]),
+		Interjection: toStringSlice(meanings["interjection"]),
+	}
+	return &meaningMap
+}
+
+// toStringSlice converts an interface to a []string.
+func toStringSlice(value interface{}) []string {
+	if value == nil {
+		return []string{}
+	}
+	if slice, ok := value.([]interface{}); ok {
+		result := make([]string, len(slice))
+		for i, v := range slice {
+			result[i] = v.(string)
+		}
+		return result
+	}
+	return []string{}
+}
 // 查询review_date<=now的word_id列表
 func GetReviewWordID(db *sql.DB, user_id int) ([]int, error) {
 	var wordIDs []int
@@ -1098,5 +1370,4 @@ func GetReviewWordID(db *sql.DB, user_id int) ([]int, error) {
 		wordIDs = append(wordIDs, wordID)
 	}
 	return wordIDs, nil
->>>>>>> 808fcf39a5cc24b92ba4a27465f395cbb5a681e6
 }

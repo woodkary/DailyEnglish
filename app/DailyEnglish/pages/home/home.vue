@@ -4,14 +4,14 @@
 			<view class="search-head" style="display: flex;">
 				<view class="search" :class="{active:isHistoryVisible}" @click="handleSearchShow()">
 					<image class="search-icon" src="/static/search.svg"></image>
-					<input placeholder="搜索" v-model="searchInput" @confirm="handleSearchRouter">
+					<input placeholder="搜索" v-model="searchInput" @input="handleSearchInput(searchInput)" @confirm="handleSearchRouter">
 				</view>
 				<button class="cancel" v-if="isHistoryVisible" @click="cancelSearch">取消</button>
 				<image class="Msg-icon" v-else src="/static/email.png"></image>
 			</view>
 			<view class="history" v-show="isHistoryVisible">
 				<view class="history-header">
-					<text class="title">历史搜索</text>
+					<text class="title">搜索</text>
 					<text class="clean">清空</text>
 				</view>
 				<view class="list">
@@ -540,7 +540,9 @@
 				wordNumPunched: 5,
 				wordNumToReview: 5,
 				wordNumReviewed: 5,
-				items: [{
+        searchHistory: {}, //历史搜索记录
+        //历史搜索记录
+				items: [/*{
 					word: 'apple',
 					phonetic: '/ˈæpl/',
 					meaning: '苹果'
@@ -548,11 +550,13 @@
 					word: 'banana',
 					phonetic: '/bəˈnɑː.nə/',
 					meaning: '香蕉'
-				}]
+				}*/]
 			}
 		},
     //switchTab后调用的函数
     onShow() {
+      // 从本地缓存中获取搜索记录
+      this.items=uni.getStorageSync('searchHistory')||[];
       let toReview = uni.getStorageSync('toReview');
       if(toReview){
         this.isDaka=true;
@@ -570,6 +574,25 @@
       console.log("hi");
     },
 		methods: {
+      transformWordObject(original) {
+        // 创建一个新的对象，用于存储转换后的结构
+        let transformed = {
+          word: original.spelling,
+          phonetic: original.pronunciation
+        };
+
+        // 遍历原始对象的meanings属性，找到第一个非空的词性数组
+        for (let partOfSpeech in original.meanings) {
+          if (original.meanings[partOfSpeech].length > 0) {
+            // 使用第一个词义作为meaning属性的值
+            transformed.meaning = original.meanings[partOfSpeech][0];
+            break; // 找到第一个非空的词性后，跳出循环
+          }
+        }
+
+        // 返回转换后的对象
+        return transformed;
+      },
 			handleDaka() {
 				//operation 0：打卡，1：复习
 				uni.navigateTo({
@@ -640,19 +663,64 @@
 				this.isHistoryVisible = true;
 			},
 			handleSearchRouter() {
-				// 跳转到搜索结果页
-				uni.navigateTo({
-					// url: `/pages/word_details/word_details?word=${this.searchInput}`
-					url: `/pages/word_details/word_details`
-				});
-				uni.showToast({
-					title: '搜索成功',
-					icon: 'none'
-				});
-				console.log("本次搜索内容是", this.searchInput);
-			},
-			handleSearchInput(input) {
-				this.searchInput = input;
+        // 保存搜索记录
+        let searchHistory = uni.getStorageSync('searchHistory');
+        if(searchHistory){
+          //搜索记录是this.searchInput+"_words"对应的结构体
+          searchHistory.push(this.searchHistory[this.searchInput+"_words"]);
+          uni.setStorageSync('searchHistory', searchHistory);
+        }else{
+          uni.setStorageSync('searchHistory', [this.searchHistory[this.searchInput+"_words"]]);
+        }
+			// 跳转到搜索结果页
+			uni.navigateTo({
+				// url: `/pages/word_details/word_details?word=${this.searchInput}`
+				url: `/pages/word_details/word_details`
+			});
+			uni.showToast({
+				title: '搜索成功',
+				icon: 'none'
+			});
+			console.log("本次搜索内容是", this.searchInput);
+		},
+		handleSearchInput(input) {
+        if(input.length==0){
+          this.searchHistory = uni.getStorageSync('searchHistory');
+		  return;
+        }
+		    this.searchInput = input;
+        let input_words = this.searchHistory[input+"_words"];
+        // 从本地缓存中获取上次的搜索记录
+        if(input_words){
+          this.items = input_words;
+          return;
+        }
+        //向后端传递搜索结果searchInput
+        uni.request({
+          url: "http://localhost:8080/api/users/search_words",
+          data: {
+            input: this.searchInput
+          },
+          method: 'POST',
+          success: (res) => {
+            if (res.statusCode === 200) {
+              let words = res.data.words;
+			  if(words==null) words = [];
+              this.items = [];//清空原有记录
+              // 遍历words数组，将每一个对象转换为新的结构，并添加到items数组中
+              words.forEach(word => {
+                this.items.push(this.transformWordObject(word));
+              });
+              // 缓存搜索结果
+              this.searchHistory[input+"_words"]=Array.from(this.items);
+            } else {
+              console.error("请求失败", res);
+            }
+          },
+          fail: (err) => {
+            console.error("请求失败", err);
+          }
+        });
 			},
 			cancelSearch() {
 				this.isHistoryVisible = false;

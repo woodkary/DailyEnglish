@@ -14,6 +14,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"golang.org/x/net/context"
@@ -52,7 +53,7 @@ func jsonValue(v interface{}) string {
 	}
 	return string(b)
 }
-func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
+func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsearch.Client) {
 	//发送验证码
 	r.POST("/api/register/sendCode", func(c *gin.Context) {
 		type response struct {
@@ -359,7 +360,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		})
 
 	})
-
 	//修改词书
 	r.PUT("/api/users/navigate_books", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
@@ -497,6 +497,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			c.JSON(500, "服务器内部错误")
 			return
 		}
+
 		var aword Word
 		for _, word := range wordlist {
 			aword.WordID = word.WordID
@@ -536,7 +537,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		userId := UserClaims.UserID //获取用户id
 		fmt.Println("打卡的用户id为", userId)
 		//更新用户学习进度
-		err := controlsql.UpdateUserPunch(db, userId, time.Now().Format("2006-01-02"))
+		err := controlsql.UpdateUserPunch(db, userId, time.Now().Format("2006-01-02"), rdb, request.PunchResult)
 		if err != nil && err != sql.ErrNoRows {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -545,7 +546,35 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			})
 			return
 		}
-
+		//更新learned_index
+		err = controlsql.UpdateUserLearnIndex(db, userId)
+		if err != nil {
+			if err.Error() == "请先选择词书" {
+				c.JSON(http.StatusNotFound, gin.H{
+					"code": 404,
+					"msg":  "请先选择词书",
+				})
+				return
+			}
+			log.Panic(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": 500,
+				"msg":  "服务器内部错误",
+			})
+			return
+		}
+		//打卡后插入学习记录并更新复习时间
+		for k, v := range request.PunchResult {
+			err := controlsql.InsertUserMemory(db, userId, k, v)
+			if err != nil && err != sql.ErrNoRows {
+				log.Panic(err)
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"code": 500,
+					"msg":  "服务器内部错误",
+				})
+				return
+			}
+		}
 		type Response struct {
 			Code int    `json:"code"`
 			Msg  string `json:"msg"`
@@ -1374,5 +1403,39 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		response.Msg = "成功"
 		response.UserPunchInfo = userPunchInfo
 		c.JSON(http.StatusOK, response)
+	})
+	//查找单词
+	r.POST("/api/users/search_words", func(ctx *gin.Context) {
+		type Request struct {
+			Input string `json:"input"`
+		}
+
+		var req Request
+		if err := ctx.ShouldBind(&req); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+		//根据input，搜索词库中的所有匹配的单词
+		words, err := controlsql.SearchWords(db, es, req.Input)
+
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+			return
+		}
+		type Response struct {
+			Code  int                  `json:"code"`
+			Msg   string               `json:"msg"`
+			Words []controlsql.EngWord `json:"words"`
+		}
+		var response Response
+		response.Code = 200
+		response.Msg = "成功"
+		response.Words = words
+		ctx.JSON(http.StatusOK, response)
 	})
 }

@@ -1,10 +1,13 @@
 module DailyEnglish
 
-go 1.20
+go 1.21
+
+toolchain go1.22.0
 
 require (
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/elastic/go-elasticsearch/v8 v8.14.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/k3a/html2text v1.2.1
@@ -16,16 +19,13 @@ require (
 require (
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
-<<<<<<< HEAD
-	github.com/google/go-cmp v0.6.0 // indirect
-	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
-=======
-	github.com/howeyc/fsnotify v0.9.0 // indirect
-	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-sqlite3 v1.14.22 // indirect
-	github.com/pilu/config v0.0.0-20131214182432-3eb99e6c0b9a // indirect
-	github.com/pilu/fresh v0.0.0-20190826141211-0fa698148017 // indirect
->>>>>>> 808fcf39a5cc24b92ba4a27465f395cbb5a681e6
+	github.com/elastic/elastic-transport-go/v8 v8.6.0 // indirect
+	github.com/go-logr/logr v1.4.1 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
+	github.com/smartystreets/assertions v1.1.1 // indirect
+	go.opentelemetry.io/otel v1.24.0 // indirect
+	go.opentelemetry.io/otel/metric v1.24.0 // indirect
+	go.opentelemetry.io/otel/trace v1.24.0 // indirect
 )
 
 require (

@@ -25,7 +25,7 @@ function getExamDates(){
                 //token失效
                 alert('登录已过期，请重新登录');
                 localStorage.removeItem('token');
-                window.location.href = './login.html';
+                window.location.href = './login&register.html';
             }
             if (response.ok) {
                 return response.json();
