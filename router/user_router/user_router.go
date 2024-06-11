@@ -451,12 +451,12 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		}
 		var response Response
 		if request.Time == 0 {
-			response.TaskToday.PunchNum = 20
-			response.TaskToday.ReviewNum = 5 //这里写死的@TODO去找那些单词需要复习
+			response.TaskToday.PunchNum = 10
+			response.TaskToday.ReviewNum = 10
 			response.TaskToday.IsPunched = false
 		} else if request.Time == 1 {
 			response.TaskToday.PunchNum = 0
-			response.TaskToday.ReviewNum = 5 //这里写死的@TODO去找那些单词需要复习
+			response.TaskToday.ReviewNum = 10 //这里写死的@TODO去找那些单词需要复习
 			response.TaskToday.IsPunched = true
 		} else {
 			response.TaskToday.PunchNum = 0
@@ -600,7 +600,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		userId := UserClaims.UserID //获取用户id
 		fmt.Println("打卡的用户id为", userId)
 		//更新用户学习进度
-		err := controlsql.UpdateUserPunch(db, userId, time.Now().Format("2006-01-02"))
+		err := controlsql.UpdateUserPunch(db, userId, time.Now().Format("2006-01-02"), rdb, request.PunchResult)
 		if err != nil && err != sql.ErrNoRows {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{

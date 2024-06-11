@@ -671,7 +671,7 @@ func GetUserPunchContent(db *sql.DB, userID int) ([]Word, error) {
 }
 
 // 更新一次打卡信息
-func UpdateUserPunch(db *sql.DB, userID int, today string) error {
+func UpdateUserPunch(db *sql.DB, userID int, today string, rdb *redis.Client, punchResult map[int]bool) error {
 	// 查询当前用户的打卡记录
 	query := "SELECT is_punch, last_punchdate FROM user_punch WHERE user_id = ?"
 	var isPunch int64
@@ -758,6 +758,26 @@ func UpdateUserPunch(db *sql.DB, userID int, today string) error {
 	}
 	defer updateQuery.Close()
 	_, err = updateQuery.Exec(count, userID)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+
+	// 构建键名
+	redisKey := fmt.Sprintf("punchResult:%d:%s", userID, today)
+
+	// 准备哈希的键值对
+	hashData := make(map[string]interface{})
+	for k, v := range punchResult {
+		// 由于Redis的哈希字段和值都是字符串，所以这里需要将整数键转换为字符串
+		keyStr := strconv.Itoa(k)
+		// 布尔值在Go中转换为字符串时，"true"会被转换为"1"，"false"会被转换为"0"
+		valueStr := strconv.FormatBool(v)
+		hashData[keyStr] = valueStr
+	}
+
+	// 使用HMSet将所有键值对存入Redis哈希
+	_, err = rdb.HMSet(context.Background(), redisKey, hashData).Result()
 	if err != nil {
 		log.Panic(err)
 		return err
@@ -1154,6 +1174,35 @@ func SearchWords(db *sql.DB, es *elasticsearch.Client, input string) ([]EngWord,
 	}
 
 	return words, nil
+}
+
+func GetThirdPunchResultForDay(rdb *redis.Client, ctx context.Context, userID int, today string) (map[int]bool, error) {
+	//先构造punchResult:userID:today的键
+	punchResultKey := fmt.Sprintf("punchResult:%d:%s", userID, today)
+	//根据punchResultKey获取对应的hash集合，这通常只有一个元素，即今天的打卡结果
+	punchResult, err := rdb.HGetAll(ctx, punchResultKey).Result()
+	if err != nil {
+		return nil, err
+	}
+	//如果punchResult为空，则说明今天还没有打卡，返回空map
+	if len(punchResult) == 0 {
+		return nil, nil
+	}
+	//如果punchResult不为空，则解析出每道题的结果，并返回
+	resultMap := make(map[int]bool)
+	for key, value := range punchResult {
+		//key是题目ID，value是bool值，转换成int
+		questionID, err := strconv.Atoi(key)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse question id: %s", key)
+		}
+		result, err := strconv.ParseBool(value)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse result: %s", value)
+		}
+		resultMap[questionID] = result
+	}
+	return resultMap, nil
 }
 
 // 说实话，实在懒得再把这些搬进utils包里了，直接写在这里吧。
