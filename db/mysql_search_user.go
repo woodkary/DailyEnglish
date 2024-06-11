@@ -336,7 +336,7 @@ func AddUserPunchLearn(db *sql.DB, user_id int) error {
 
 // 更新用户学习词书信息
 func UpdateUserBook(db *sql.DB, user_id int, book_id int) error {
-	plan_num := 20 // 默认计划每天学习10个单词
+	plan_num := 10 // 默认计划每天学习10个单词
 	// 首先检查用户是否已经选择一本词书
 	var count int
 	err := db.QueryRow("SELECT COUNT(*) FROM user_study WHERE user_id = ?", user_id).Scan(&count)
@@ -376,15 +376,33 @@ func UpdateUserBook(db *sql.DB, user_id int, book_id int) error {
 func GetUserStudy(db *sql.DB, user_id int) (UserStudy, error) {
 	var userStudy UserStudy
 	var book_id int
-	err := db.QueryRow("SELECT book_id,plan_num,study_day FROM user_study WHERE user_id =?", user_id).Scan(&book_id, &userStudy.PunchNum, &userStudy.WordNumLearned)
+	//根据user_id，先查询book_id,plan_num,learn_index
+	var plan_num int
+	var learn_index int
+	err := db.QueryRow("SELECT book_id,plan_num,learn_index FROM user_study WHERE user_id = ?", user_id).Scan(&book_id, &plan_num, &learn_index)
+	if err != nil {
+		log.Panic(err)
+		return userStudy, err
+	}
+	// 查找该book从learned_index以后plan_num个未学习过的词,并作为punchNum
+
+	query := "SELECT COUNT(*) FROM word_book WHERE book_id = ? AND word_id > ? AND word_id <= ?"
+	err = db.QueryRow(query, book_id, learn_index, learn_index+plan_num).Scan(&userStudy.PunchNum)
 	if err != nil {
 		return userStudy, err
 	}
+	// 查找WordNumLearned_该用户已学词数
+	err = db.QueryRow("SELECT book_id,learn_index FROM user_study WHERE user_id =?", user_id).Scan(&book_id, &userStudy.WordNumLearned)
+	if err != nil {
+		return userStudy, err
+	}
+	// 查找WordNumTotal_该词书总词数,BookLearning_该词书名称
 	err = db.QueryRow("SELECT word_num,book_name FROM book_info WHERE book_id =?", book_id).Scan(&userStudy.WordNumTotal, &userStudy.BookLearning)
 	if err != nil {
 		return userStudy, err
 	}
-	userStudy.Days_left = (userStudy.WordNumTotal - userStudy.WordNumLearned) / userStudy.PunchNum
+	//计算Days_left_剩余天数,PunchNum_打卡次数
+	userStudy.Days_left = (userStudy.WordNumTotal - userStudy.WordNumLearned) / 10 //每个用户每天计划打卡10个单词——这是固定死的
 	var date string
 	err = db.QueryRow("SELECT last_punchdate FROM user_punch WHERE user_id =?", user_id).Scan(&date)
 	if err != nil {
@@ -1157,10 +1175,6 @@ type EngWord struct {
 	Spelling      string    `json:"spelling"`
 	Pronunciation string    `json:"pronunciation"`
 	Meanings      *Meanings `json:"meanings"`
-}
-
-func engWordToString(word *EngWord) string {
-	return fmt.Sprintf("%d %s %s %v", word.WordID, word.Spelling, word.Pronunciation, word.Meanings)
 }
 
 // 先在es中搜索，如果没有搜索到，再在mysql中搜索
