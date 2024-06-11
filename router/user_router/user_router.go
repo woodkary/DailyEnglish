@@ -17,12 +17,25 @@ import (
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
+	"github.com/gorilla/websocket"
 	"golang.org/x/net/context"
 )
 
 func tokenAuthMiddleware() gin.HandlerFunc {
 	return middlewares.TokenAuthMiddleware("User")
 }
+
+// 升级http连接
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
+var (
+	connections = make(map[string]*websocket.Conn) //
+	mutex       = &sync.Mutex{}                    //互斥锁
+)
 
 // FormatWordData formats the word data into the desired string format
 func FormatWordData(wordData map[string]interface{}) string {
@@ -360,6 +373,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		})
 
 	})
+
 	//修改词书
 	r.PUT("/api/users/navigate_books", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
@@ -379,60 +393,14 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			})
 			return
 		}
-
-		//修改用户词书
-		err := controlsql.UpdateUserBook(db, UserClaims.UserID, request.BookID)
-		if err != nil {
-			// 其他错误
-			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
-				"msg":  "服务器内部错误",
-			})
-			return
-		}
-		//todo 向user_punch-learn表更新一项数据
-		/*[
-		{
-			"user_id": 1,
-			"learned_index": 50,//目前打卡到的单词本的下标
-			"punch_num": 20,//打卡总单词数
-			"review_num": 20,//复习总单词数
-			"date": "2024-05-22"//第一次选择词书的日期
-		}
-		]*/
-		c.JSON(200, gin.H{
-			"code": "200",
-			"msg":  "修改词书成功",
-		})
-	})
-
-	//主页面
-	r.POST("/api/punch/main_menu", tokenAuthMiddleware(), func(c *gin.Context) {
-		user, _ := c.Get("user")
-		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
-		if !ok {
-			c.JSON(500, "服务器错误")
-			return
-		}
-		type Request struct {
-			Time int `json:"time"`
-		}
-		var request Request
-		if err := c.ShouldBind(&request); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
-				"msg":  "请求参数错误",
-			})
-			return
-		}
 		//查询用户信息
 		Item, err := controlsql.GetUserStudy(db, UserClaims.UserID)
 		Item2, err := controlsql.GetReviewWordID(db, UserClaims.UserID)
 		if err != nil && err != sql.ErrNoRows {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": "500",
-				"msg":  "服务器内部错误"})
+				"msg":  "服务器内部错误",
+			})
 			return
 		}
 		type TaskToday struct {
@@ -450,9 +418,19 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			TaskToday TaskToday `json:"task_today"`
 		}
 		var response Response
-		response.TaskToday.PunchNum = Item.PunchNum
-		response.TaskToday.IsPunched = Item.IsPunched
-		response.TaskToday.ReviewNum = len(Item2)
+		if request.Time == 0 {
+			response.TaskToday.PunchNum = 20
+			response.TaskToday.ReviewNum = 5 //这里写死的@TODO去找那些单词需要复习
+			response.TaskToday.IsPunched = false
+		} else if request.Time == 1 {
+			response.TaskToday.PunchNum = 0
+			response.TaskToday.ReviewNum = 5 //这里写死的@TODO去找那些单词需要复习
+			response.TaskToday.IsPunched = true
+		} else {
+			response.TaskToday.PunchNum = 0
+			response.TaskToday.ReviewNum = 0
+			response.TaskToday.IsPunched = true
+		}
 		response.TaskToday.BookLearning = Item.BookLearning
 		response.TaskToday.WordNumLearned = Item.WordNumLearned
 		response.TaskToday.WordNumTotal = Item.WordNumTotal
@@ -497,7 +475,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			c.JSON(500, "服务器内部错误")
 			return
 		}
-
 		var aword Word
 		for _, word := range wordlist {
 			aword.WordID = word.WordID
@@ -537,7 +514,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		userId := UserClaims.UserID //获取用户id
 		fmt.Println("打卡的用户id为", userId)
 		//更新用户学习进度
-		err := controlsql.UpdateUserPunch(db, userId, time.Now().Format("2006-01-02"), rdb, request.PunchResult)
+		err := controlsql.UpdateUserPunch(db, userId, time.Now().Format("2006-01-02"))
 		if err != nil && err != sql.ErrNoRows {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -546,35 +523,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			})
 			return
 		}
-		//更新learned_index
-		err = controlsql.UpdateUserLearnIndex(db, userId)
-		if err != nil {
-			if err.Error() == "请先选择词书" {
-				c.JSON(http.StatusNotFound, gin.H{
-					"code": 404,
-					"msg":  "请先选择词书",
-				})
-				return
-			}
-			log.Panic(err)
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": 500,
-				"msg":  "服务器内部错误",
-			})
-			return
-		}
-		//打卡后插入学习记录并更新复习时间
-		for k, v := range request.PunchResult {
-			err := controlsql.InsertUserMemory(db, userId, k, v)
-			if err != nil && err != sql.ErrNoRows {
-				log.Panic(err)
-				c.JSON(http.StatusInternalServerError, gin.H{
-					"code": 500,
-					"msg":  "服务器内部错误",
-				})
-				return
-			}
-		}
+
 		type Response struct {
 			Code int    `json:"code"`
 			Msg  string `json:"msg"`
@@ -952,7 +901,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
-	//提交考试
+	//提交考试@TODO
 	//redis------studentId:question_type:["score","num"]
 	r.POST("/api/exams/submitExamResult", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
@@ -992,9 +941,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 				"msg":  "服务器内部错误"})
 			return
 		}
-
-		// 更新该场考试的 question_statistics 表
-
 		//向redis插入学生各题型总分信息
 		averageScores, err := controlsql.UpdateStudentRDB(db, rdb, UserClaims.UserID, UserClaims.TeamID, request.Exam_result)
 		if err != nil {
