@@ -372,19 +372,36 @@ func UpdateUserBook(db *sql.DB, user_id int, book_id int) error {
 	}
 	return nil
 }
-
 func GetUserStudy(db *sql.DB, user_id int) (UserStudy, error) {
 	var userStudy UserStudy
 	var book_id int
-	err := db.QueryRow("SELECT book_id,plan_num,study_day FROM user_study WHERE user_id =?", user_id).Scan(&book_id, &userStudy.PunchNum, &userStudy.WordNumLearned)
+	//根据user_id，先查询book_id,plan_num,learn_index
+	var plan_num int
+	var learn_index int
+	err := db.QueryRow("SELECT book_id,plan_num,learn_index FROM user_study WHERE user_id = ?", user_id).Scan(&book_id, &plan_num, &learn_index)
+	if err != nil {
+		log.Panic(err)
+		return userStudy, err
+	}
+	// 查找该book从learned_index以后plan_num个未学习过的词,并作为punchNum
+
+	query := "SELECT COUNT(*) FROM word_book WHERE book_id = ? AND word_id > ? AND word_id <= ?"
+	err = db.QueryRow(query, book_id, learn_index, learn_index+plan_num).Scan(&userStudy.PunchNum)
 	if err != nil {
 		return userStudy, err
 	}
+	// 查找WordNumLearned_该用户已学词数
+	err = db.QueryRow("SELECT book_id,learn_index FROM user_study WHERE user_id =?", user_id).Scan(&book_id, &userStudy.WordNumLearned)
+	if err != nil {
+		return userStudy, err
+	}
+	// 查找WordNumTotal_该词书总词数,BookLearning_该词书名称
 	err = db.QueryRow("SELECT word_num,book_name FROM book_info WHERE book_id =?", book_id).Scan(&userStudy.WordNumTotal, &userStudy.BookLearning)
 	if err != nil {
 		return userStudy, err
 	}
-	userStudy.Days_left = (userStudy.WordNumTotal - userStudy.WordNumLearned) / userStudy.PunchNum
+	//计算Days_left_剩余天数,PunchNum_打卡次数
+	userStudy.Days_left = (userStudy.WordNumTotal - userStudy.WordNumLearned) / 10 //每个用户每天计划打卡10个单词——这是固定死的
 	var date string
 	err = db.QueryRow("SELECT last_punchdate FROM user_punch WHERE user_id =?", user_id).Scan(&date)
 	if err != nil {
@@ -778,7 +795,6 @@ func UpdateUserPunch(db *sql.DB, userID int, today string, rdb *redis.Client, pu
 		return err
 	}
 	fmt.Printf("User %d punch record updated successfully.\n", userID)
-	return nil
 
 	//计算isPunch中连续的1的个数，这是用户连续打卡到的天数
 	count := 0
@@ -867,9 +883,27 @@ func UpdateUserLearnIndex(db *sql.DB, userID int) error {
 		log.Panic(err)
 		return err
 	}
+	//更新用户learn_index和study_day
+	var old_index int
+	var plan_num int
+	var study_day int
+	db.QueryRow("SELECT learn_index,plan_num,study_day FROM user_study WHERE user_id = ?", userID).Scan(&old_index, &plan_num, &study_day)
+	new_index := old_index + plan_num
+	study_day++
+	updateQuery, err := db.Prepare("UPDATE user_study SET learn_index = ?,study_day = ? WHERE user_id = ?")
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	defer updateQuery.Close()
+	_, err = updateQuery.Exec(new_index, study_day, userID)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
 
 	// 将learnedIndex+planNum更新到user_punch-learn，并将user_punch-learn的punch_num加上计划的词数
-	updateQuery, err := tx.Prepare("UPDATE `user_punch-learn` SET learned_index = ?, punch_num = punch_num + ? WHERE user_id = ?")
+	updateQuery, err = tx.Prepare("UPDATE `user_punch-learn` SET learned_index = ?, punch_num = punch_num + ? WHERE user_id = ?")
 	if err != nil {
 		tx.Rollback()
 		log.Panic(err)
@@ -1148,6 +1182,27 @@ func CheckUserBook(db *sql.DB, user_id int) int {
 	return 1
 }
 
+// 查询review_date<=now的word_id列表
+func GetReviewWordID(db *sql.DB, user_id int) ([]int, error) {
+	var wordIDs []int
+	nowdate := utils.GetCurrentDate()
+	rows, err := db.Query("SELECT word_id FROM user_word_memory WHERE user_id = ? AND review_date <= ?", user_id, nowdate)
+	if err != nil {
+		log.Panic(err)
+		return nil, err
+	}
+	for rows.Next() {
+		var wordID int
+		err := rows.Scan(&wordID)
+		if err != nil {
+			log.Panic(err)
+			return nil, err
+		}
+		wordIDs = append(wordIDs, wordID)
+	}
+	return wordIDs, nil
+}
+
 type UserPunchInfo struct {
 	PunchWordNum        int `json:"punch_word_num"`        //打卡单词数
 	TotalPunchDay       int `json:"total_punch_day"`       //总打卡天数
@@ -1203,10 +1258,6 @@ type EngWord struct {
 	Spelling      string    `json:"spelling"`
 	Pronunciation string    `json:"pronunciation"`
 	Meanings      *Meanings `json:"meanings"`
-}
-
-func engWordToString(word *EngWord) string {
-	return fmt.Sprintf("%d %s %s %v", word.WordID, word.Spelling, word.Pronunciation, word.Meanings)
 }
 
 // 先在es中搜索，如果没有搜索到，再在mysql中搜索
@@ -1401,25 +1452,4 @@ func toStringSlice(value interface{}) []string {
 		return result
 	}
 	return []string{}
-}
-
-// 查询review_date<=now的word_id列表
-func GetReviewWordID(db *sql.DB, user_id int) ([]int, error) {
-	var wordIDs []int
-	nowdate := utils.GetCurrentDate()
-	rows, err := db.Query("SELECT word_id FROM user_word_memory WHERE user_id = ? AND review_date <= ?", user_id, nowdate)
-	if err != nil {
-		log.Panic(err)
-		return nil, err
-	}
-	for rows.Next() {
-		var wordID int
-		err := rows.Scan(&wordID)
-		if err != nil {
-			log.Panic(err)
-			return nil, err
-		}
-		wordIDs = append(wordIDs, wordID)
-	}
-	return wordIDs, nil
 }

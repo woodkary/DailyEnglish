@@ -1,7 +1,7 @@
 <template>
   <view>
     <view class="body-head" style="display:flex">
-      <image class="back" src="../../static/back.svg"></image>
+      <image class="back" src="../../static/undraw_question-mark.svg"></image>
       <image class="logout" @click="logout" src="../../static/logout.svg"></image>
     </view>
     <view class="personal-information" >

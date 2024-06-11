@@ -33,7 +33,6 @@
       <view>
         <view v-for="detail in wordDetail.details" :key="detail.partOfSpeech">
           <view style="display: flex; justify-content: flex-start;">
-            <p class="partofspeech">{{ detail.partOfSpeech }}</p>
             <p>{{ detail.chineseMeaning }}</p>
           </view>
           <view style="display: flex; flex-direction: row; align-items: center;">
@@ -93,32 +92,26 @@ export default {
         {
           word: 'abandon',
           details: [{
-            partOfSpeech: 'v.',
             chineseMeaning: '抛弃',
             exampleSentence: 'Should I tell you to abandon me and save yourself, you must to do so. ',
             sentenceMeaning: '我若是让你别管我，救自己，你也必须照做。',
           },
           {
-            partOfSpeech: 'v.',
             chineseMeaning: '放弃',
             exampleSentence: 'The girl has totally abandoned the use of computer for her homework.',
             sentenceMeaning: '这个女生彻底放弃使用电脑做作业了。',
           },
           {
-            partOfSpeech: 'v.',
             chineseMeaning: '沉湎于（某种情感）',
           },
           {
-            partOfSpeech: 'v.',
             chineseMeaning: '舍弃，废弃',
             exampleSentence: 'The mining factory was abandoned a long time ago.',
             sentenceMeaning: '这个采矿工厂早已被放弃。',
           },
           {
-            partOfSpeech: 'n.',
             chineseMeaning: '尽情，放纵',
-          }
-          ],
+          }],
         },
       //wordAndPhrases是一个数组，元素是结构体，有word、phraseAndMeanings两个属性，分别代表单词和短语释义
       //其中phraseAndMeanings是一个数组，元素是结构体，有phrase、meaning两个属性，分别代表短语和释义
@@ -208,38 +201,7 @@ export default {
             }
         //发送请求，获取详细释义和短语释义
         let detailedMeanings=res.data.detailed_meanings;
-        //原格式：
-        /*
-    "detailed_meanings": {
-		"verb": [
-			{
-				"chinese_meaning": "抛弃",
-				"example_sentence": "Should I tell you to abandon me and save yourself, you must to do so. ",
-				"sentence_meaning": "我若是让你别管我，救自己，你也必须照做。",
-				"sentence_sound": "https://example1.mp3"
-			},
-			{
-				"chinese_meaning": "放弃",
-				"example_sentence": "The girl has totally abandoned the use of computer for her homework.",
-				"sentence_meaning": "这个女生彻底放弃使用电脑做作业了。",
-				"sentence_sound": "https://example2.mp3"
-			}
-		],
-		"noun": [
-			{
-				"chinese_meaning": "放任，放纵",
-				"example_sentence": "she sings and sways with total abandon.",
-				"sentence_meaning": "她纵情地边唱边晃。",
-				"sentence_sound": "https://example3.mp3"
-			}
-		],
-        "pronoun": null,
-        "adjective": null,
-        "adverb": null,
-        "preposition": null,
-        "conjunction": null,
-        "interjection": null
-	},*/
+        //转换格式
         this.wordDetail.details=this.transformDetailedMeaningsToDetails(detailedMeanings);
         this.wordAndPhrase.phraseAndMeanings=res.data.phrases;
         this.word.book=res.data.word_book;
@@ -266,22 +228,13 @@ export default {
     },
     transformDetailedMeaningsToDetails(detailedMeanings) {
       const details = [];
-      for (const speech in detailedMeanings) {
-        if (detailedMeanings[speech] && detailedMeanings[speech].length > 0) {
-          // 获取词性简写
-          const partOfSpeech = this.simplifiedSpeech[speech];
-          detailedMeanings[speech].forEach(meaning => {
-            // 创建一个对象，包含词性、中文意思、示例句子和句子意思
-            const detail = {
-              partOfSpeech: partOfSpeech,
-              chineseMeaning: meaning.chinese_meaning,
-              exampleSentence: meaning.example_sentence,
-              sentenceMeaning: meaning.sentence_meaning
-            };
-            // 添加到details数组中
-            details.push(detail);
-          });
+      for (const meaning in detailedMeanings) {
+        let detail={
+          chineseMeaning: meaning.chinese_meaning,
+          exampleSentence: meaning.example_sentence,
+          sentenceMeaning: meaning.sentence_meaning,
         }
+        details.push(detail);
       }
       return details;
     },

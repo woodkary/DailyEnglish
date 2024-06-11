@@ -158,22 +158,3 @@ func GetTokenParamsByManagerId(db *sql.DB, managerID int) (int, map[int]string, 
 
 	return managerID, team, nil
 }
-
-// 团队管理员发布考试时，向 某个exam_id的考试的question对应的 question_statistics 表中插入数据,
-// result_to_store键为question_id，值为用户回答的答案
-func InitQuestionStatistics(db *sql.DB, examID int, questionIDs []int) error {
-	// 循环插入examID, questionID 对应的questionStatistics表， 对应的A_num,B_num,C_num,D_num都为0
-	for _, questionID := range questionIDs {
-		stmt, err := db.Prepare("INSERT INTO question_statistics(exam_id, question_id, A_num, B_num, C_num, D_num) VALUES(?, ?, ?, ?, ?, ?)")
-		if err != nil {
-			return err
-		}
-		defer stmt.Close()
-
-		_, err = stmt.Exec(examID, questionID, 0, 0, 0, 0)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}

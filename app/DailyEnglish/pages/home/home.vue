@@ -561,12 +561,13 @@
       if(toReview){
         this.isDaka=true;
         this.isReview = false;
+        this.wordNumPunched=this.wordNumToPunch;
       }
       let reviewed = uni.getStorageSync('reviewed');
       if(reviewed){
         this.isReview=true;
         this.isDaka = true;
-
+        this.wordNumReviewed = this.wordNumToReview;
       }
       this.fetchData();
     },
@@ -632,21 +633,14 @@
 							this.wordNumLearned = res.data.task_today.word_num_learned;
 							this.wordNumTotal = res.data.task_today.word_num_total;
 							this.daysLeft = res.data.task_today.days_left;
-							this.wordNumToPunch = res.data.task_today.punch_num;
-							if (this.wordNumToPunch == 0) {
-								this.isDaka = true;
-							}
-							this.wordNumPunched = res.data.task_today.word_num_punched;//todo 没有
-              if(this.wordNumPunched==null){
-                this.wordNumPunched=5;
-              }
+							this.wordNumToPunch = 10;
 							this.wordNumToReview = res.data.task_today.review_num;
-							if (this.wordNumToReview == 0) {
-								this.isReview = true;
-							}
-							this.wordNumReviewed = res.data.task_today.word_num_reviewed;//todo 没有
-              if(this.wordNumReviewed==null) {
-                this.wordNumReviewed = 5;
+              if(res.data.task_today.punch_num==0){
+                //说明今天已经打卡完，转到复习模式
+                uni.setStorageSync('toReview', true);
+                this.isDaka=true;
+                this.isReview = false;
+                this.wordNumPunched=this.wordNumToPunch;
               }
             } else {
 							console.error("请求失败", res);
