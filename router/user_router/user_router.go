@@ -496,7 +496,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			c.AbortWithStatus(http.StatusUpgradeRequired)
 			return
 		}
-	
+
 		go func(conn *websocket.Conn) {
 			defer func() {
 				conn.Close()
@@ -504,7 +504,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 				delete(connections, conn.RemoteAddr().String())
 				mutex.Unlock()
 			}()
-	
+
 			type TaskToday struct {
 				BookLearning   string `json:"book_learning"`
 				WordNumLearned int    `json:"word_num_learned"`
@@ -515,12 +515,13 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 				IsPunched      bool   `json:"ispunched"`
 			}
 			type Response struct {
-				Code      int       `json:"code"`
-				Msg       string    `json:"msg"`
-				TaskToday TaskToday `json:"task_today"`
+				Code        int       `json:"code"`
+				Msg         string    `json:"msg"`
+				TaskToday   TaskToday `json:"task_today"`
+				CurrentTime string    `json:"current_time"`
 			}
 			var response Response
-	
+
 			// 等待前端发送的用户 ID
 			_, message, err := conn.ReadMessage()
 			if err != nil {
@@ -529,7 +530,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 				conn.WriteJSON(response)
 				return
 			}
-	
+
 			var request map[string]string
 			if err := json.Unmarshal(message, &request); err != nil {
 				response.Code = 400
@@ -537,7 +538,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 				conn.WriteJSON(response)
 				return
 			}
-	
+
 			userId, ok := request["userId"]
 			if !ok {
 				response.Code = 400
@@ -545,11 +546,11 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 				conn.WriteJSON(response)
 				return
 			}
-			userIdInt,_ := strconv.Atoi(userId)
-	
+			userIdInt, _ := strconv.Atoi(userId)
+
 			ticker := time.NewTicker(5 * time.Second)
 			defer ticker.Stop()
-	
+
 			for {
 				select {
 				case <-ticker.C:
@@ -563,7 +564,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 						}
 						continue
 					}
-	
+
 					response.Code = 200
 					response.Msg = "success"
 					response.TaskToday.BookLearning = Item.BookLearning
@@ -573,7 +574,8 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 					response.TaskToday.PunchNum = Item.PunchNum
 					response.TaskToday.ReviewNum = 10
 					response.TaskToday.IsPunched = Item.IsPunched
-	
+					response.CurrentTime = time.Now().Format("2006-01-02 15:04:05")
+
 					if err := conn.WriteJSON(response); err != nil {
 						fmt.Printf("Failed to send message: %v\n", err)
 						return
@@ -582,7 +584,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			}
 		}(conn)
 	})
-	
 
 	//打卡
 	r.GET("/api/main/take_punch", tokenAuthMiddleware(), func(c *gin.Context) {
