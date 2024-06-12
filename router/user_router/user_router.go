@@ -24,6 +24,7 @@ import (
 func tokenAuthMiddleware() gin.HandlerFunc {
 	return middlewares.TokenAuthMiddleware("User")
 }
+
 // 升级http连接
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
