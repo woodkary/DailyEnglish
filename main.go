@@ -89,7 +89,7 @@ func main() {
 	r.Use(middlewares.Cors())
 	r.Static("static/team_manager", "./static")
 	adminrouter.InitAdminRouter(r, db, rdb)
-	teamrouter.InitTeamRouter(r, db, rdb)
+	teamrouter.InitTeamRouter(r, db, rdb, es)
 	go func() {
 		r1 := gin.Default()
 		r1.Use(middlewares.Cors()) //跨域

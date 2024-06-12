@@ -86,6 +86,10 @@ export default {
         meanings: ['v.    抛弃；放弃；沉湎于（某种情感）；舍弃，废弃','n.    尽情，放纵'],
         book: '高中/ CET4 / CET6 / 考研 / IELTS / TOEFL / GRE'
       },
+      wordDistortion: {
+        "第三人称单数": "abandons",
+        "过去式": "abandoned"
+      },
       //这是一个数组，元素是结构体，有word、details两个属性，分别代表单词和详细释义
       //其中details是一个数组，元素是结构体，有partOfSpeech、chineseMeaning、exampleSentence、sentenceMeaning四个属性，分别代表词性、中文释义、例句、英文释义
       wordDetail:
@@ -145,7 +149,8 @@ export default {
   onLoad(event) {
     //获取请求参数中的word和word_id，从Vocab页面中传来
     let word=event["word"];
-    let word_id=event["word_id"];
+    let word_id=parseInt(event["word_id"]);
+
     this.word.name=word;
     this.wordDetail.word=word;
     this.wordAndPhrase.word=word;
@@ -177,7 +182,7 @@ export default {
       this.word.meanings=this.transformMeaningsToText(localDetails.meanings);
     }
     uni.request({
-      url: 'http://localhost:8080/api/words/word_details',
+      url: 'http://localhost:8080/api/words/get_word_detail',
       method: 'POST',
       header: {
         'content-type': 'application/json', // 默认值
@@ -204,6 +209,7 @@ export default {
         //转换格式
         this.wordDetail.details=this.transformDetailedMeaningsToDetails(detailedMeanings);
         this.wordAndPhrase.phraseAndMeanings=res.data.phrases;
+        this.wordDistortion=res.data.word_distortion;
         this.word.book=res.data.word_book;
       },
       fail: (res) => {
@@ -228,14 +234,14 @@ export default {
     },
     transformDetailedMeaningsToDetails(detailedMeanings) {
       const details = [];
-      for (const meaning in detailedMeanings) {
+      detailedMeanings.forEach(meaning =>  {
         let detail={
           chineseMeaning: meaning.chinese_meaning,
           exampleSentence: meaning.example_sentence,
           sentenceMeaning: meaning.sentence_meaning,
         }
         details.push(detail);
-      }
+      });
       return details;
     },
   toggleCollapse1() {

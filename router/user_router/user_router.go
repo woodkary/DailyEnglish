@@ -24,6 +24,7 @@ import (
 func tokenAuthMiddleware() gin.HandlerFunc {
 	return middlewares.TokenAuthMiddleware("User")
 }
+
 // 升级http连接
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
@@ -439,7 +440,8 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			return
 		}
 		//查询用户信息
-		Item, err := controlsql.GetUserStudy(db, UserClaims.UserID)
+		Item, _ := controlsql.GetUserStudy(db, UserClaims.UserID)
+
 		Item2, err := controlsql.GetReviewWordID(db, UserClaims.UserID)
 		if err != nil && err != sql.ErrNoRows {
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -1271,6 +1273,81 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			"msg":   "获取用户存储的单词成功",
 			"words": words,
 		})
+	})
+
+	// 获取单词详情
+	r.POST("/api/words/get_word_detail", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			WordID int `json:"word_id"`
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+
+		// 构造返回数据结构
+		type Response struct {
+			Code              int                 `json:"code"`
+			Msg               string              `json:"msg"`
+			Word_Spelling     string              `json:"word_spelling"`
+			Word_Phonetic     string              `json:"word_phonetic"`
+			Word_Distortion   map[string]string   `json:"word_distortion"`
+			Detailed_Meanings []map[string]string `json:"detailed_meanings"`
+			Phrases           []map[string]string `json:"phrases"`
+		}
+
+		// 从MySQL根据wordID获取单词信息
+		wordDetail, err := controlsql.GetWordDetailByWordId(db, request.WordID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误",
+			})
+			return
+		}
+
+		var response Response
+		response.Code = 200
+		response.Msg = "成功"
+		response.Word_Spelling = wordDetail.Word
+		response.Word_Phonetic = wordDetail.Pronounciation
+		response.Word_Distortion = map[string]string{
+			"过去式":    wordDetail.Morpheme1,
+			"第三人称单数": wordDetail.Morpheme2,
+		}
+
+		response.Detailed_Meanings = make([]map[string]string, 0)
+		var item1, item2 map[string]string
+		item1 = make(map[string]string)
+		item1["chinese_meaning"] = wordDetail.Word_Meaning1
+		item1["example_sentence"] = wordDetail.Sentence1
+		item1["sentence_meaning"] = wordDetail.Sentence_Meaning1
+		response.Detailed_Meanings = append(response.Detailed_Meanings, item1)
+		item2 = make(map[string]string)
+		item2["chinese_meaning"] = wordDetail.Word_Meaning2
+		item2["example_sentence"] = wordDetail.Sentence2
+		item2["sentence_meaning"] = wordDetail.Sentence_Meaning2
+		response.Detailed_Meanings = append(response.Detailed_Meanings, item2)
+
+		fmt.Println(response.Detailed_Meanings)
+
+		response.Phrases = make([]map[string]string, 0)
+		var item3, item4 map[string]string
+		item3 = make(map[string]string)
+		item3["phrase"] = wordDetail.Phrase1
+		item3["meaning"] = wordDetail.Phrase_Meaning1
+		response.Phrases = append(response.Phrases, item3)
+		item4 = make(map[string]string)
+		item4["phrase"] = wordDetail.Phrase2
+		item4["meaning"] = wordDetail.Phrase_Meaning2
+		response.Phrases = append(response.Phrases, item4)
+
+		c.JSON(http.StatusOK, response)
+
 	})
 
 	// 添加生词
