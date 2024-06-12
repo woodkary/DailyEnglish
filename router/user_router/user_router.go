@@ -1276,7 +1276,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 	})
 
 	// 获取单词详情
-	r.GET("/api/words/get_word_detail", tokenAuthMiddleware(), func(c *gin.Context) {
+	r.POST("/api/words/get_word_detail", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
 			WordID int `json:"word_id"`
 		}
