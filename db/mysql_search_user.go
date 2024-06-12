@@ -1175,6 +1175,8 @@ func UpdatetUserMemory(db *sql.DB, userID int, wordID int, isCorret bool) error 
 func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, teamID int, examResult map[int]Exam_score) (map[int]float64, error) {
 	averageScores := make(map[int]float64)
 	ctx := context.Background()
+	username := ""
+	teamName := ""
 
 	for questionID, questionResult := range examResult {
 		var questionType int
@@ -1192,9 +1194,11 @@ func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, teamID int, exa
 
 		// 使用 Redis 事务确保原子性
 		_, err = rdb.TxPipelined(ctx, func(pipe redis.Pipeliner) error {
-			// 获取并更新学生的 score 和 num，如果没有则初始化为 0
+			isEmptyUser := false
+			// 获取并更新学生的 score 和 num，如果没有则初始化为 0，并从mysql中查询username
 			userScore, err := rdb.HGet(ctx, userKey, "score").Int()
 			if err == redis.Nil {
+				isEmptyUser = true
 				userScore = 0
 			} else if err != nil {
 				return err
@@ -1202,27 +1206,46 @@ func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, teamID int, exa
 
 			userNum, err := rdb.HGet(ctx, userKey, "num").Int()
 			if err == redis.Nil {
+				isEmptyUser = true
 				userNum = 0
 			} else if err != nil {
 				return err
+			}
+			//如果没有查到username，则从mysql中查询
+			if isEmptyUser {
+				err = db.QueryRow("SELECT username FROM user_info WHERE user_id = ?", userID).Scan(&username)
+				if err != nil {
+					log.Printf("Failed to query username for userID %d: %v", userID, err)
+					return err
+				}
 			}
 
 			// 更新学生的 score 和 num
 			userScore += questionResult.UserScore
 			userNum += 1
 
-			// 设置学生的新的 score 和 num
-			err = pipe.HSet(ctx, userKey, map[string]interface{}{
-				"score": userScore,
-				"num":   userNum,
-			}).Err()
+			// 设置学生的新的username score 和 num
+			if isEmptyUser {
+				err = pipe.HSet(ctx, userKey, map[string]interface{}{
+					"username": username,
+					"score":    userScore,
+					"num":      userNum,
+				}).Err()
+			} else {
+				err = pipe.HSet(ctx, userKey, map[string]interface{}{
+					"score": userScore,
+					"num":   userNum,
+				}).Err()
+			}
 			if err != nil {
 				return err
 			}
+			isEmptyTeam := false
 
 			// 获取并更新团队的 score 和 num
 			teamScore, err := rdb.HGet(ctx, teamKey, "score").Int()
 			if err == redis.Nil {
+				isEmptyTeam = true
 				teamScore = 0
 			} else if err != nil {
 				return err
@@ -1230,9 +1253,18 @@ func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, teamID int, exa
 
 			teamNum, err := rdb.HGet(ctx, teamKey, "num").Int()
 			if err == redis.Nil {
+				isEmptyTeam = true
 				teamNum = 0
 			} else if err != nil {
 				return err
+			}
+			//如果没有查到teamName，则从mysql中查询
+			if isEmptyTeam {
+				err = db.QueryRow("SELECT team_name FROM team_info WHERE team_id = ?", teamID).Scan(&teamName)
+				if err != nil {
+					log.Printf("Failed to query teamName for teamID %d: %v", teamID, err)
+					return err
+				}
 			}
 
 			// 更新团队的 score 和 num
@@ -1240,10 +1272,18 @@ func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, teamID int, exa
 			teamNum += 1
 
 			// 设置团队的新的 score 和 num
-			err = pipe.HSet(ctx, teamKey, map[string]interface{}{
-				"score": teamScore,
-				"num":   teamNum,
-			}).Err()
+			if isEmptyTeam {
+				err = pipe.HSet(ctx, teamKey, map[string]interface{}{
+					"team_name": teamName,
+					"score":     teamScore,
+					"num":       teamNum,
+				}).Err()
+			} else {
+				err = pipe.HSet(ctx, teamKey, map[string]interface{}{
+					"score": teamScore,
+					"num":   teamNum,
+				}).Err()
+			}
 			if err != nil {
 				return err
 			}

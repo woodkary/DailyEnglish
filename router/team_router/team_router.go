@@ -697,21 +697,32 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			StudentRankScores    []controlsql.RankScore    `json:"student_rank_scores"`    // 学生各题型排名变化
 		}
 		var response Response
-		teamMemberMap, _, err := controlsql.SearchTeamMemberByTeamID(db, TeamManagerClaims.Team)
+		teamMemberMap, studentIds, err := controlsql.SearchTeamMemberByTeamID(db, TeamManagerClaims.Team)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			return
 		}
 		response.TeamAndStudents = teamMemberMap
-		response.Code = 200
-		response.Msg = "成功"
-		//todo 先返回空数据
-		response.StudentAverageScores = []controlsql.AverageScore{}
-		response.TeamAverageScores = []controlsql.AverageScore{}
+		//查询学生和团队的各题型平均分
+		response.StudentAverageScores, err = controlsql.SearchStudentAverageScoresByStudentIDs(rdb, studentIds)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		fmt.Println(response.StudentAverageScores)
+		response.TeamAverageScores, err = controlsql.SearchTeamAverageScoresByTeamMap(rdb, TeamManagerClaims.Team)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		fmt.Println(response.TeamAverageScores)
+		//查最近的五次考试名称 todo 先返回空数据
 		response.ExamNames = []string{}
 		response.StudentRankScores = []controlsql.RankScore{}
 		fmt.Println(response)
 		fmt.Println(response.TeamAndStudents)
+		response.Code = 200
+		response.Msg = "成功"
 		c.JSON(200, response)
 	})
 }
