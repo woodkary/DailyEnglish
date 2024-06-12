@@ -704,7 +704,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		}
 		response.TeamAndStudents = teamMemberMap
 		//查询学生和团队的各题型平均分
-		response.StudentAverageScores, err = controlsql.SearchStudentAverageScoresByStudentIDs(rdb, studentIds)
+		response.StudentAverageScores, err = controlsql.SearchStudentAverageScoresByStudentIDs(db, rdb, studentIds)
 		if err != nil {
 			c.JSON(500, "服务器错误")
 			return

@@ -666,14 +666,14 @@ func SearchTeamMemberByTeamID(db *sql.DB, idAndNameMap map[int]string) (*CustomM
 }
 
 // SearchStudentAverageScoresByStudentIDs 根据学生id数组，查询其中所有学生的名字，和各题型平均分数组
-func SearchStudentAverageScoresByStudentIDs(rdb *redis.Client, studentIDs []int) ([]AverageScore, error) {
+func SearchStudentAverageScoresByStudentIDs(db *sql.DB, rdb *redis.Client, studentIDs []int) ([]AverageScore, error) {
 	var averageScores []AverageScore
 
 	for _, studentID := range studentIDs {
 		// 构造学生在 Redis 中的键前缀
 		studentKeyPrefix := fmt.Sprintf("%d:", studentID)
 		// 获取学生名字
-		studentName, err := getStudentName(rdb, studentKeyPrefix)
+		studentName, err := getStudentName(db, rdb, studentID, studentKeyPrefix)
 		if err != nil {
 			log.Printf("Failed to get student name for studentID %d: %v", studentID, err)
 			continue
@@ -718,13 +718,17 @@ func SearchTeamAverageScoresByTeamMap(rdb *redis.Client, teamMap map[int]string)
 }
 
 // getStudentName 根据学生ID从Redis中获取学生名字
-func getStudentName(rdb *redis.Client, studentKeyPrefix string) (string, error) {
+func getStudentName(db *sql.DB, rdb *redis.Client, studentID int, studentKeyPrefix string) (string, error) {
 	ctx := context.Background()
 	username, err := rdb.HGet(ctx, studentKeyPrefix, "username").Result()
 	if err != nil {
 		if err == redis.Nil {
 			//TODO 没名字的话，根据studentID查询user_info表，返回用户名，并插入一条score=0,num=0的记录到redis
-			return "", errors.New("username not found")
+			err = db.QueryRow("SELECT username FROM user_info WHERE user_id = ?", studentID).Scan(&username)
+			if err != nil {
+				return "", errors.New("username not found")
+			}
+			//插入一条score=0,num=0的记录到redis
 		}
 		return "", err
 	}
