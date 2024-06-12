@@ -222,7 +222,7 @@ type Word_Detail struct {
 
 func GetWordDetailByWordId(db *sql.DB, word_id int) (*Word_Detail, error) {
 	var word_detail Word_Detail
-	err := db.QueryRow("SELECT word_id,word,pronunciation,meanings,morpheme1,morpheme2,word_meaning1,sentence_meaning1,word_meaning2,sentence2,sentence_meaning2,phrase1,phrase_meaning1,phrase2,phrase_meaning2,difficulty FROM word WHERE word_id =?", word_id).Scan(&word_detail.WordID, &word_detail.Word, &word_detail.Pronounciation, &word_detail.Meanings, &word_detail.Morpheme1, &word_detail.Morpheme2, &word_detail.Word_Meaning1, &word_detail.Sentence1, &word_detail.Sentence_Meaning1, &word_detail.Word_Meaning2, &word_detail.Sentence2, &word_detail.Sentence_Meaning2, &word_detail.Phrase1, &word_detail.Phrase_Meaning1, &word_detail.Phrase2, &word_detail.Phrase_Meaning2, &word_detail.Difficulty)
+	err := db.QueryRow("SELECT word_id,word,pronunciation,meanings,morpheme1,morpheme2,word_meaning1,sentence1,sentence_meaning1,word_meaning2,sentence2,sentence_meaning2,phrase1,phrase_meaning1,phrase2,phrase_meaning2,difficulty FROM word WHERE word_id =?", word_id).Scan(&word_detail.WordID, &word_detail.Word, &word_detail.Pronounciation, &word_detail.Meanings, &word_detail.Morpheme1, &word_detail.Morpheme2, &word_detail.Word_Meaning1, &word_detail.Sentence1, &word_detail.Sentence_Meaning1, &word_detail.Word_Meaning2, &word_detail.Sentence2, &word_detail.Sentence_Meaning2, &word_detail.Phrase1, &word_detail.Phrase_Meaning1, &word_detail.Phrase2, &word_detail.Phrase_Meaning2, &word_detail.Difficulty)
 	if err != nil {
 		log.Panic(err)
 		return nil, err
