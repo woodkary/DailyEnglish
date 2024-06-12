@@ -44,7 +44,8 @@
 			return {
 				currentQuestionIndex: 0,
 				selectedOptions: Array(10).fill(null), // 保存每道题选中选项的数组，初始化为null
-				questions: [{
+				questions: [
+            /*{
 						word_id: 1,
 						word: "题目1",
 						phonetic_us: "音标",
@@ -56,38 +57,126 @@
 						phonetic_us: "音标",
 						options: ["选项1", "选项2", "选项3", "选项4"],
 					},
-					// 继续添加其他题目，总共10题
+					// 继续添加其他题目，总共10题*/
 				],
+        //所有题目正确情况
+        isCorrects: {
+          1: false,
+          2: false,
+          3: false,
+        },
+        realAnswer: [],
+        operation: 0, //0打卡，1复习
 			};
 		},
+    onLoad(event){
+      let operation = parseInt(event["operation"]);
+      this.operation = operation;
+      this.isCorrects = {};
+      uni.request({
+        //判断操作类型并发送请求
+        url: !operation ? 'http://localhost:8080/api/main/take_punch' :
+            'http://localhost:8080/api/main/take_review',
+        method: 'GET',
+        header: {
+          'Authorization': `Bearer ${uni.getStorageSync('token')}`
+        },
+        success: (res) => {
+          console.log(res);
+          if (res.data.code == 200) {
+            let word_list = res.data.word_list;
+            //以下是单词结构
+            /*"word_list":[
+            {
+              "word_id":12341,
+              "word":"abandon",
+              "phonetic_us ":"[ə\'bændən]",
+              "word_question":"A:放弃,B:成功,C:失败,D:错误",//这个是对象map，需要用Object.values()转成数组
+              "answer":"A",
+            }
+            ]*/
+            word_list.forEach((word, index) => {
+              let question = {
+                word_id: word.word_id,
+                word: word.word,
+                phonetic: word.phonetic_us,
+                options: Object.values(word.word_question),
+              }
+              //让所有题目都不正确
+              this.isCorrects[word.word_id] = false;
+              let realAnswer = word.word_question[word.answer];
+              this.questions.push(question);
+              this.realAnswer.push(realAnswer);
+            });
+          }
+        },
+        fail: (err) => {
+          console.log(err);
+        }
+      });
+    },
 		methods: {
 			handleBack() {
 				this.$router.back();
 			},
-			// handleJump(questions[currentQuestionIndex]) {
-			// 	uni.request({
-			// 		url: 'http://localhost:8080/api/words/add_new_word',
-			// 		method: 'post',
-			// 		header: {
-			// 			'Authorization': `Bearer ${uni.getStorageSync('token')}`
-			// 		},
-			// 		data: {
-			// 			word_id: questions[currentQuestionIndex].word_id,
-			// 		},
-			// 		success: (res) => {
-			// 			uni.showToast({
-			// 				title: '加入生词本成功',
-			// 				icon: 'none',
-			// 				duration: 2000,
-			// 			});
-			// 			uni.setStorageSync(word, true);
-			// 		},
-			// 	})
-			// },
+      handleJump(question) {
+
+        uni.request({
+          url: 'http://localhost:8080/api/words/add_new_word',
+          method: 'post',
+          header: {
+            'Authorization': `Bearer ${uni.getStorageSync('token')}`
+          },
+          data: {
+            word_id: question.word_id
+          },
+          success: (res) => {
+            //success
+            uni.showToast({
+              title: '加入生词本成功',
+              icon: 'none',
+              duration: 2000,
+            });
+            uni.setStorageSync(word, true);
+          },
+        })
+      },
 			selectOption(index) {
 				this.$set(this.selectedOptions, this.currentQuestionIndex, index);
 			},
 			nextQuestion() {
+        if(this.currentQuestionIndex === this.questions.length){
+          uni.request({
+            //判断操作类型并发送请求
+            url: !this.operation ? 'http://localhost:8080/api/main/punched' :
+                'http://localhost:8080/api/main/reviewed',
+            method: 'POST',
+            header: {
+              'Authorization': `Bearer ${uni.getStorageSync('token')}`
+            },
+            data: {
+              punch_result: this.isCorrects,
+            },
+            success: (res) => {
+              console.log(res);
+              if (res.data.code == 200) {
+                uni.showToast({
+                  title: this.operation ? '复习结束' : '打卡结束',
+                  icon: 'none',
+                  duration: 2000,
+                  success: () => {
+                    uni.navigateTo({
+                      url: `../finishClockin/finishClockin?questionNum=${this.questions.length}&operation=${this.operation}}`
+                    })
+                  }
+                });
+              }
+            },
+            fail: (err) => {
+              console.log(err);
+            }
+          });
+        }
 				if (this.selectedOptions[this.currentQuestionIndex] !== null && this.currentQuestionIndex < this.questions
 					.length - 1) {
 					this.currentQuestionIndex++;
