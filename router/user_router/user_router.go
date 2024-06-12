@@ -1337,11 +1337,19 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		item1.dtm["example_sentence"] = wordDetail.Sentence1
 		item1.dtm["sentence_meaning"] = wordDetail.Sentence_Meaning1
 		response.Detailed_Meanings = append(response.Detailed_Meanings, item1)
+
+		fmt.Println("dtm1:", item1.dtm)
+
 		item2.dtm = make(map[string]string)
 		item2.dtm["chinese_meaning"] = wordDetail.Word_Meaning2
 		item2.dtm["example_sentence"] = wordDetail.Sentence2
 		item2.dtm["sentence_meaning"] = wordDetail.Sentence_Meaning2
 		response.Detailed_Meanings = append(response.Detailed_Meanings, item2)
+
+		fmt.Println("dtm2:", item2.dtm)
+
+		fmt.Println("Detailed_Meanings : ")
+		fmt.Println(response.Detailed_Meanings)
 
 		response.Phrases = make([]phra_mea, 0)
 		var item3, item4 phra_mea
