@@ -145,7 +145,8 @@ export default {
   onLoad(event) {
     //获取请求参数中的word和word_id，从Vocab页面中传来
     let word=event["word"];
-    let word_id=event["word_id"];
+    let word_id=parseInt(event["word_id"]);
+
     this.word.name=word;
     this.wordDetail.word=word;
     this.wordAndPhrase.word=word;
