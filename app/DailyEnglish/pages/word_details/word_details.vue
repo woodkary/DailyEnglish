@@ -229,14 +229,14 @@ export default {
     },
     transformDetailedMeaningsToDetails(detailedMeanings) {
       const details = [];
-      for (const meaning in detailedMeanings) {
+      detailedMeanings.forEach(meaning =>  {
         let detail={
           chineseMeaning: meaning.chinese_meaning,
           exampleSentence: meaning.example_sentence,
           sentenceMeaning: meaning.sentence_meaning,
         }
         details.push(detail);
-      }
+      });
       return details;
     },
   toggleCollapse1() {
