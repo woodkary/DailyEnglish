@@ -2,7 +2,6 @@ module DailyEnglish
 
 go 1.21
 
-toolchain go1.22.0
 
 require (
 	github.com/bwmarrin/snowflake v0.3.0
