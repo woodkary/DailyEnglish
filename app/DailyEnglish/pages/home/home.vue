@@ -597,12 +597,12 @@
 			handleDaka() {
 				//operation 0：打卡，1：复习
 				uni.navigateTo({
-					url: "/pages/Examination/Examination?operation=" + 0
+					url: "/pages/websocket/timu?operation=" + 0
 				});
 			},
 			handleReview() {
 				uni.navigateTo({
-					url: "/pages/Examination/Examination?operation=" + 1
+					url: "/pages/websocket/timu?operation=" + 1
 				});
 			},
 			fetchData() {
