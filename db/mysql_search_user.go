@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/elastic/go-elasticsearch/esapi"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/go-redis/redis/v8"
 )
@@ -196,6 +197,37 @@ func GetWordByWordId(db *sql.DB, word_id int) (*WordData, error) {
 		Meanings: parseMeanings(meanings),
 	}
 	return wordData, nil
+}
+
+// 定义 Word_Detail 结构体 (对应6-11日 MySQL 数据库中的 Word 表内所有字段, 但不包括word_question)
+type Word_Detail struct {
+	WordID            int
+	Word              string
+	Pronounciation    string
+	Meanings          string
+	Morpheme1         string
+	Morpheme2         string
+	Word_Meaning1     string
+	Sentence1         string
+	Sentence_Meaning1 string
+	Word_Meaning2     string
+	Sentence2         string
+	Sentence_Meaning2 string
+	Phrase1           string
+	Phrase_Meaning1   string
+	Phrase2           string
+	Phrase_Meaning2   string
+	Difficulty        int
+}
+
+func GetWordDetailByWordId(db *sql.DB, word_id int) (*Word_Detail, error) {
+	var word_detail Word_Detail
+	err := db.QueryRow("SELECT word_id,word,pronunciation,meanings,morpheme1,morpheme2,word_meaning1,sentence_meaning1,word_meaning2,sentence2,sentence_meaning2,phrase1,phrase_meaning1,phrase2,phrase_meaning2,difficulty FROM word WHERE word_id =?", word_id).Scan(&word_detail.WordID, &word_detail.Word, &word_detail.Pronounciation, &word_detail.Meanings, &word_detail.Morpheme1, &word_detail.Morpheme2, &word_detail.Word_Meaning1, &word_detail.Sentence1, &word_detail.Sentence_Meaning1, &word_detail.Word_Meaning2, &word_detail.Sentence2, &word_detail.Sentence_Meaning2, &word_detail.Phrase1, &word_detail.Phrase_Meaning1, &word_detail.Phrase2, &word_detail.Phrase_Meaning2, &word_detail.Difficulty)
+	if err != nil {
+		log.Panic(err)
+		return nil, err
+	}
+	return &word_detail, nil
 }
 
 // 插入用户 数据库字段有username string, email string
@@ -390,6 +422,7 @@ func GetUserStudy(db *sql.DB, user_id int) (UserStudy, error) {
 	if err != nil {
 		return userStudy, err
 	}
+	fmt.Println("打卡总次数punchNum:", userStudy.PunchNum)
 	// 查找WordNumLearned_该用户已学词数
 	err = db.QueryRow("SELECT book_id,learn_index FROM user_study WHERE user_id =?", user_id).Scan(&book_id, &userStudy.WordNumLearned)
 	if err != nil {
@@ -479,6 +512,109 @@ type QuestionInfo struct {
 	QuestionAnswer     string
 	QuestionGrade      int
 	Options            map[string]string
+}
+
+// 从Elasticsearch批量查询题目信息
+func GetQuestionsInfoFromES(es *elasticsearch.Client, question_ids []int) ([]QuestionInfo, error) {
+	var questionsInfo []QuestionInfo
+
+	/*
+		POST /questions/_mget
+			{
+				"docs": [
+					{ "_id": "1" },
+					{ "_id": "2" }
+				]
+			}
+
+	*/
+	//由上述指令批量查询question_ids对应的题目信息
+	var buf bytes.Buffer
+	buf.WriteString(`{"docs":[`)
+	for i, id := range question_ids {
+		if i > 0 {
+			buf.WriteString(",")
+		}
+		buf.WriteString(fmt.Sprintf(`{"_id":"%d"}`, id))
+	}
+	buf.WriteString(`]}`)
+	//使用mget指令批量查询
+	res, err := es.Mget(bytes.NewReader(buf.Bytes()), es.Mget.WithContext(context.Background()), es.Mget.WithIndex("questions"))
+	if err != nil {
+		return nil, fmt.Errorf("error getting response: %s", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return nil, fmt.Errorf("error: %s", res.String())
+	}
+	//解析返回值
+	var bulkResponse struct {
+		Docs []struct {
+			Found  bool         `json:"found"`
+			Source QuestionInfo `json:"_source"`
+		} `json:"docs"`
+	}
+
+	if err := json.NewDecoder(res.Body).Decode(&bulkResponse); err != nil {
+		return nil, fmt.Errorf("error parsing the response body: %s", err)
+	}
+	//读取返回值中的_source字段，并存入questionsInfo
+	for _, doc := range bulkResponse.Docs {
+		if doc.Found {
+			questionsInfo = append(questionsInfo, doc.Source)
+		}
+	}
+
+	return questionsInfo, nil
+}
+
+// 将题目信息批量存入Elasticsearch
+func StoreQuestionsInfoToES(es *elasticsearch.Client, questionsInfo []QuestionInfo) error {
+	var buf bytes.Buffer
+	for _, questionInfo := range questionsInfo {
+		meta := []byte(fmt.Sprintf(`{ "index" : { "_id" : "%d" } }%s`, questionInfo.Question_id, "\n"))
+		data, err := json.Marshal(questionInfo)
+		if err != nil {
+			return fmt.Errorf("error marshaling question info: %s", err)
+		}
+		buf.Grow(len(meta) + len(data))
+		buf.Write(meta)
+		buf.Write(data)
+		buf.WriteByte('\n')
+	}
+	// 使用bulk指令批量插入
+	req := esapi.BulkRequest{
+		Index: "questions",
+		Body:  &buf,
+	}
+
+	res, err := req.Do(context.Background(), es)
+	if err != nil {
+		return fmt.Errorf("error getting response: %s", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return fmt.Errorf("error: %s", res.String())
+	}
+
+	return nil
+}
+
+// 从MySQL查询题目信息并返回
+func GetQuestionsInfoFromDB(db *sql.DB, question_ids []int) ([]QuestionInfo, error) {
+	var questionsInfo []QuestionInfo
+
+	for _, id := range question_ids {
+		questionInfo, err := GetQuestionInfo(db, id)
+		if err != nil {
+			return nil, fmt.Errorf("error getting question info from DB: %s", err)
+		}
+		questionsInfo = append(questionsInfo, questionInfo)
+	}
+
+	return questionsInfo, nil
 }
 
 // 根据question_id查询questiondetail
@@ -1070,6 +1206,8 @@ func UpdatetUserMemory(db *sql.DB, userID int, wordID int, isCorret bool) error 
 func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, teamID int, examResult map[int]Exam_score) (map[int]float64, error) {
 	averageScores := make(map[int]float64)
 	ctx := context.Background()
+	username := ""
+	teamName := ""
 
 	for questionID, questionResult := range examResult {
 		var questionType int
@@ -1087,9 +1225,11 @@ func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, teamID int, exa
 
 		// 使用 Redis 事务确保原子性
 		_, err = rdb.TxPipelined(ctx, func(pipe redis.Pipeliner) error {
-			// 获取并更新学生的 score 和 num，如果没有则初始化为 0
+			isEmptyUser := false
+			// 获取并更新学生的 score 和 num，如果没有则初始化为 0，并从mysql中查询username
 			userScore, err := rdb.HGet(ctx, userKey, "score").Int()
 			if err == redis.Nil {
+				isEmptyUser = true
 				userScore = 0
 			} else if err != nil {
 				return err
@@ -1097,27 +1237,46 @@ func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, teamID int, exa
 
 			userNum, err := rdb.HGet(ctx, userKey, "num").Int()
 			if err == redis.Nil {
+				isEmptyUser = true
 				userNum = 0
 			} else if err != nil {
 				return err
+			}
+			//如果没有查到username，则从mysql中查询
+			if isEmptyUser {
+				err = db.QueryRow("SELECT username FROM user_info WHERE user_id = ?", userID).Scan(&username)
+				if err != nil {
+					log.Printf("Failed to query username for userID %d: %v", userID, err)
+					return err
+				}
 			}
 
 			// 更新学生的 score 和 num
 			userScore += questionResult.UserScore
 			userNum += 1
 
-			// 设置学生的新的 score 和 num
-			err = pipe.HSet(ctx, userKey, map[string]interface{}{
-				"score": userScore,
-				"num":   userNum,
-			}).Err()
+			// 设置学生的新的username score 和 num
+			if isEmptyUser {
+				err = pipe.HSet(ctx, userKey, map[string]interface{}{
+					"username": username,
+					"score":    userScore,
+					"num":      userNum,
+				}).Err()
+			} else {
+				err = pipe.HSet(ctx, userKey, map[string]interface{}{
+					"score": userScore,
+					"num":   userNum,
+				}).Err()
+			}
 			if err != nil {
 				return err
 			}
+			isEmptyTeam := false
 
 			// 获取并更新团队的 score 和 num
 			teamScore, err := rdb.HGet(ctx, teamKey, "score").Int()
 			if err == redis.Nil {
+				isEmptyTeam = true
 				teamScore = 0
 			} else if err != nil {
 				return err
@@ -1125,9 +1284,18 @@ func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, teamID int, exa
 
 			teamNum, err := rdb.HGet(ctx, teamKey, "num").Int()
 			if err == redis.Nil {
+				isEmptyTeam = true
 				teamNum = 0
 			} else if err != nil {
 				return err
+			}
+			//如果没有查到teamName，则从mysql中查询
+			if isEmptyTeam {
+				err = db.QueryRow("SELECT team_name FROM team_info WHERE team_id = ?", teamID).Scan(&teamName)
+				if err != nil {
+					log.Printf("Failed to query teamName for teamID %d: %v", teamID, err)
+					return err
+				}
 			}
 
 			// 更新团队的 score 和 num
@@ -1135,10 +1303,18 @@ func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, teamID int, exa
 			teamNum += 1
 
 			// 设置团队的新的 score 和 num
-			err = pipe.HSet(ctx, teamKey, map[string]interface{}{
-				"score": teamScore,
-				"num":   teamNum,
-			}).Err()
+			if isEmptyTeam {
+				err = pipe.HSet(ctx, teamKey, map[string]interface{}{
+					"team_name": teamName,
+					"score":     teamScore,
+					"num":       teamNum,
+				}).Err()
+			} else {
+				err = pipe.HSet(ctx, teamKey, map[string]interface{}{
+					"score": teamScore,
+					"num":   teamNum,
+				}).Err()
+			}
 			if err != nil {
 				return err
 			}

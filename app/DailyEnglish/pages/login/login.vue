@@ -95,7 +95,7 @@
 					return;
 				}
 				let remember = this.remember;
-				uni.clearStorage()
+				uni.clearStorageSync()
 				uni.request({
 					url: 'http://localhost:8080/api/user/login',
 					data: {
