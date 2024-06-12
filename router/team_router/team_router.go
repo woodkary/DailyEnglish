@@ -7,9 +7,11 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 )
@@ -18,7 +20,7 @@ func tokenAuthMiddleware() gin.HandlerFunc {
 	return middlewares.TokenAuthMiddleware("TeamManager")
 }
 
-func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
+func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsearch.Client) {
 	//考试情况数据
 	r.POST("/api/team_manage/exam_situation/calendar", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
@@ -405,14 +407,14 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 		c.JSON(200, response)
 	})
 
-	//获取考试题目
+	// 获取考试题目
 	r.POST("/api/team_manage/new_exam/all_questions", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
 			Index int `json:"index"` // 要获取的题目的索引
 		}
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
-			c.JSON(400, "请求参数错误")
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "请求参数错误"})
 			return
 		}
 		type Question struct {
@@ -459,13 +461,59 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			2: "中等",
 			3: "困难",
 		}
+
+		// 获取需要查询的题目ID
+		questionIDs := make([]int, 0, 50)
 		for i := request.Index; i < request.Index+50; i++ {
-			question, err := controlsql.GetQuestionInfo(db, i)
+			questionIDs = append(questionIDs, i)
+		}
+
+		// 批量从Elasticsearch获取题目信息
+		questionsInfo, err := controlsql.GetQuestionsInfoFromES(es, questionIDs)
+		if err != nil {
+			log.Printf("Error getting questions info from ES: %s", err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": 500,
+				"msg":  "服务器错误",
+			})
+			return
+		}
+
+		// 如果Elasticsearch中没有找到所有需要的题目，则从MySQL中查询并插入到Elasticsearch
+		if len(questionsInfo) < len(questionIDs) {
+			// 找到缺失的题目ID
+			foundIDs := make(map[int]bool)
+			for _, q := range questionsInfo {
+				foundIDs[q.Question_id] = true
+			}
+			missingIDs := make([]int, 0)
+			for _, id := range questionIDs {
+				if !foundIDs[id] {
+					missingIDs = append(missingIDs, id)
+				}
+			}
+
+			// 从MySQL中查询缺失的题目
+			missingQuestionsInfo, err := controlsql.GetQuestionsInfoFromDB(db, missingIDs)
 			if err != nil {
-				log.Panic(err)
-				c.JSON(500, "服务器错误")
+				log.Printf("Error getting questions info from DB: %s", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"msg": "服务器错误"})
 				return
 			}
+
+			// 将缺失的题目插入到Elasticsearch
+			if err := controlsql.StoreQuestionsInfoToES(es, missingQuestionsInfo); err != nil {
+				log.Printf("Error storing questions info to ES: %s", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"msg": "服务器错误"})
+				return
+			}
+
+			// 合并结果
+			questionsInfo = append(questionsInfo, missingQuestionsInfo...)
+		}
+
+		// 构建响应数据
+		for _, question := range questionsInfo {
 			var q Question
 			q.QuestionID = question.Question_id
 			q.QuestionType = QuestionTypeDict[question.Questiontype]
@@ -477,9 +525,10 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			q.FullScore = 5
 			Response.Questions = append(Response.Questions, q)
 		}
+
 		Response.Code = 200
 		Response.Msg = "成功"
-		c.JSON(200, Response)
+		c.JSON(http.StatusOK, Response)
 	})
 	//发布考试
 	r.POST("/api/team_manage/new_exam", tokenAuthMiddleware(), func(c *gin.Context) {

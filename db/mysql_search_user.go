@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/elastic/go-elasticsearch/esapi"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/go-redis/redis/v8"
 )
@@ -390,6 +391,7 @@ func GetUserStudy(db *sql.DB, user_id int) (UserStudy, error) {
 	if err != nil {
 		return userStudy, err
 	}
+	fmt.Println("打卡总次数punchNum:", userStudy.PunchNum)
 	// 查找WordNumLearned_该用户已学词数
 	err = db.QueryRow("SELECT book_id,learn_index FROM user_study WHERE user_id =?", user_id).Scan(&book_id, &userStudy.WordNumLearned)
 	if err != nil {
@@ -479,6 +481,109 @@ type QuestionInfo struct {
 	QuestionAnswer     string
 	QuestionGrade      int
 	Options            map[string]string
+}
+
+// 从Elasticsearch批量查询题目信息
+func GetQuestionsInfoFromES(es *elasticsearch.Client, question_ids []int) ([]QuestionInfo, error) {
+	var questionsInfo []QuestionInfo
+
+	/*
+		POST /questions/_mget
+			{
+				"docs": [
+					{ "_id": "1" },
+					{ "_id": "2" }
+				]
+			}
+
+	*/
+	//由上述指令批量查询question_ids对应的题目信息
+	var buf bytes.Buffer
+	buf.WriteString(`{"docs":[`)
+	for i, id := range question_ids {
+		if i > 0 {
+			buf.WriteString(",")
+		}
+		buf.WriteString(fmt.Sprintf(`{"_id":"%d"}`, id))
+	}
+	buf.WriteString(`]}`)
+	//使用mget指令批量查询
+	res, err := es.Mget(bytes.NewReader(buf.Bytes()), es.Mget.WithContext(context.Background()), es.Mget.WithIndex("questions"))
+	if err != nil {
+		return nil, fmt.Errorf("error getting response: %s", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return nil, fmt.Errorf("error: %s", res.String())
+	}
+	//解析返回值
+	var bulkResponse struct {
+		Docs []struct {
+			Found  bool         `json:"found"`
+			Source QuestionInfo `json:"_source"`
+		} `json:"docs"`
+	}
+
+	if err := json.NewDecoder(res.Body).Decode(&bulkResponse); err != nil {
+		return nil, fmt.Errorf("error parsing the response body: %s", err)
+	}
+	//读取返回值中的_source字段，并存入questionsInfo
+	for _, doc := range bulkResponse.Docs {
+		if doc.Found {
+			questionsInfo = append(questionsInfo, doc.Source)
+		}
+	}
+
+	return questionsInfo, nil
+}
+
+// 将题目信息批量存入Elasticsearch
+func StoreQuestionsInfoToES(es *elasticsearch.Client, questionsInfo []QuestionInfo) error {
+	var buf bytes.Buffer
+	for _, questionInfo := range questionsInfo {
+		meta := []byte(fmt.Sprintf(`{ "index" : { "_id" : "%d" } }%s`, questionInfo.Question_id, "\n"))
+		data, err := json.Marshal(questionInfo)
+		if err != nil {
+			return fmt.Errorf("error marshaling question info: %s", err)
+		}
+		buf.Grow(len(meta) + len(data))
+		buf.Write(meta)
+		buf.Write(data)
+		buf.WriteByte('\n')
+	}
+	// 使用bulk指令批量插入
+	req := esapi.BulkRequest{
+		Index: "questions",
+		Body:  &buf,
+	}
+
+	res, err := req.Do(context.Background(), es)
+	if err != nil {
+		return fmt.Errorf("error getting response: %s", err)
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return fmt.Errorf("error: %s", res.String())
+	}
+
+	return nil
+}
+
+// 从MySQL查询题目信息并返回
+func GetQuestionsInfoFromDB(db *sql.DB, question_ids []int) ([]QuestionInfo, error) {
+	var questionsInfo []QuestionInfo
+
+	for _, id := range question_ids {
+		questionInfo, err := GetQuestionInfo(db, id)
+		if err != nil {
+			return nil, fmt.Errorf("error getting question info from DB: %s", err)
+		}
+		questionsInfo = append(questionsInfo, questionInfo)
+	}
+
+	return questionsInfo, nil
 }
 
 // 根据question_id查询questiondetail
