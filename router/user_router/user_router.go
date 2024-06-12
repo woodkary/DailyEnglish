@@ -1289,25 +1289,15 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			return
 		}
 
-		// 定义 mean_sen_meansen 结构体
-		type mean_sen_meansen struct {
-			dtm map[string]string
-		}
-
-		// 定义 phra_mea 结构体
-		type phra_mea struct {
-			pam map[string]string
-		}
-
 		// 构造返回数据结构
 		type Response struct {
-			Code              int                `json:"code"`
-			Msg               string             `json:"msg"`
-			Word_Spelling     string             `json:"word_spelling"`
-			Word_Phonetic     string             `json:"word_phonetic"`
-			Word_Distortion   map[string]string  `json:"word_distortion"`
-			Detailed_Meanings []mean_sen_meansen `json:"detailed_meanings"`
-			Phrases           []phra_mea         `json:"phrases"`
+			Code              int                 `json:"code"`
+			Msg               string              `json:"msg"`
+			Word_Spelling     string              `json:"word_spelling"`
+			Word_Phonetic     string              `json:"word_phonetic"`
+			Word_Distortion   map[string]string   `json:"word_distortion"`
+			Detailed_Meanings []map[string]string `json:"detailed_meanings"`
+			Phrases           []map[string]string `json:"phrases"`
 		}
 
 		// 从MySQL根据wordID获取单词信息
@@ -1330,28 +1320,30 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			"第三人称单数": wordDetail.Morpheme2,
 		}
 
-		response.Detailed_Meanings = make([]mean_sen_meansen, 0)
-		var item1, item2 mean_sen_meansen
-		item1.dtm = make(map[string]string)
-		item1.dtm["chinese_meaning"] = wordDetail.Word_Meaning1
-		item1.dtm["example_sentence"] = wordDetail.Sentence1
-		item1.dtm["sentence_meaning"] = wordDetail.Sentence_Meaning1
+		response.Detailed_Meanings = make([]map[string]string, 0)
+		var item1, item2 map[string]string
+		item1 = make(map[string]string)
+		item1["chinese_meaning"] = wordDetail.Word_Meaning1
+		item1["example_sentence"] = wordDetail.Sentence1
+		item1["sentence_meaning"] = wordDetail.Sentence_Meaning1
 		response.Detailed_Meanings = append(response.Detailed_Meanings, item1)
-		item2.dtm = make(map[string]string)
-		item2.dtm["chinese_meaning"] = wordDetail.Word_Meaning2
-		item2.dtm["example_sentence"] = wordDetail.Sentence2
-		item2.dtm["sentence_meaning"] = wordDetail.Sentence_Meaning2
+		item2 = make(map[string]string)
+		item2["chinese_meaning"] = wordDetail.Word_Meaning2
+		item2["example_sentence"] = wordDetail.Sentence2
+		item2["sentence_meaning"] = wordDetail.Sentence_Meaning2
 		response.Detailed_Meanings = append(response.Detailed_Meanings, item2)
 
-		response.Phrases = make([]phra_mea, 0)
-		var item3, item4 phra_mea
-		item3.pam = make(map[string]string)
-		item3.pam["phrase"] = wordDetail.Phrase1
-		item3.pam["meaning"] = wordDetail.Phrase_Meaning1
+		fmt.Println(response.Detailed_Meanings)
+
+		response.Phrases = make([]map[string]string, 0)
+		var item3, item4 map[string]string
+		item3 = make(map[string]string)
+		item3["phrase"] = wordDetail.Phrase1
+		item3["meaning"] = wordDetail.Phrase_Meaning1
 		response.Phrases = append(response.Phrases, item3)
-		item4.pam = make(map[string]string)
-		item4.pam["phrase"] = wordDetail.Phrase2
-		item4.pam["meaning"] = wordDetail.Phrase_Meaning2
+		item4 = make(map[string]string)
+		item4["phrase"] = wordDetail.Phrase2
+		item4["meaning"] = wordDetail.Phrase_Meaning2
 		response.Phrases = append(response.Phrases, item4)
 
 		c.JSON(http.StatusOK, response)
