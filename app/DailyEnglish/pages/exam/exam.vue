@@ -86,7 +86,7 @@
 				selectedIndex: -1, // 当前题目的选中按钮序号
 				questionButtonIndex: 0, // 当前题目的按钮序号
 				isShow: false, //是否显示全部题目
-				currentFillAnswer: null, //当前填空题输入的答案
+				currentFillAnswer: '', //当前填空题输入的答案
 				questions: [
 					// 题目和选项
 					{
@@ -220,13 +220,15 @@
 
 		},
 		methods: {
+      input() {
+
+      },
 			//输入填空题的逻辑
 			inputFillAnswer(currentQuestionIndex) {
 				//判断当前输入的答案是否正确
 				let correct = this.currentFillAnswer === this.realAnswer[currentQuestionIndex];
 				// 记录用户的答案
-				this.selectedChoiceAndScore[this.questions[currentQuestionIndex].question_id].selectedChoice = this
-					.currentFillAnswer;
+				this.selectedChoiceAndScore[this.questions[currentQuestionIndex].question_id].selectedChoice = this.currentFillAnswer;
 				if (correct) {
 					this.selectedChoiceAndScore[this.questions[currentQuestionIndex].question_id].score = this.questions[
 						currentQuestionIndex].fullScore;
