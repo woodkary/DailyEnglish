@@ -727,16 +727,18 @@ func SearchStudentAverageScoresByStudentIDs(db *sql.DB, rdb *redis.Client, stude
 	return averageScores, nil
 }
 
+// getStudentNamesBatch 批量获取学生名字，并存入Redis
 func getStudentNamesBatch(db *sql.DB, rdb *redis.Client, studentIDs []int) (map[int]string, error) {
 	ctx := context.Background()
 	studentNames := make(map[int]string)
 
-	// 尝试从Redis批量获取学生名字
+	// 尝试从Redis批量获取学生名字，假设从题型1的键中获取
+	const questionType = 1
 	pipe := rdb.Pipeline()
 	cmds := make(map[int]*redis.StringCmd)
 	for _, studentID := range studentIDs {
-		studentKeyPrefix := fmt.Sprintf("%d:", studentID)
-		cmds[studentID] = pipe.HGet(ctx, studentKeyPrefix, "username")
+		studentKey := fmt.Sprintf("studentAverage:%d:%d", studentID, questionType)
+		cmds[studentID] = pipe.HGet(ctx, studentKey, "username")
 	}
 	_, err := pipe.Exec(ctx)
 	if err != nil && err != redis.Nil {
@@ -761,12 +763,14 @@ func getStudentNamesBatch(db *sql.DB, rdb *redis.Client, studentIDs []int) (map[
 		if err != nil {
 			return nil, err
 		}
+		// query = db.Rebind(query) // 使用db.Rebind(query)确保SQL语法适应具体的SQL驱动程序
 		rows, err := db.Query(query, args...)
 		if err != nil {
 			return nil, err
 		}
 		defer rows.Close()
 
+		pipe = rdb.Pipeline() // 开始一个新的管道
 		for rows.Next() {
 			var userID int
 			var username string
@@ -776,12 +780,23 @@ func getStudentNamesBatch(db *sql.DB, rdb *redis.Client, studentIDs []int) (map[
 			}
 			studentNames[userID] = username
 
-			// 将名字存入Redis
-			studentKeyPrefix := fmt.Sprintf("%d:", userID)
-			err = rdb.HSet(ctx, studentKeyPrefix, "username", username).Err()
-			if err != nil {
-				log.Printf("Failed to set username in Redis for studentID %d: %v", userID, err)
+			// 将名字及各题型分数存入Redis
+			studentKeyPrefix := fmt.Sprintf("studentAverage:%d:", userID)
+			for questionType := 1; questionType <= 5; questionType++ {
+				key := fmt.Sprintf("%s%d", studentKeyPrefix, questionType)
+				err = pipe.HSet(ctx, key, map[string]interface{}{
+					"score":    0.0,
+					"num":      0,
+					"username": username,
+				}).Err()
+				if err != nil {
+					return nil, err
+				}
 			}
+		}
+		_, err = pipe.Exec(ctx)
+		if err != nil && err != redis.Nil {
+			return nil, err
 		}
 	}
 
