@@ -166,7 +166,7 @@ function loadStudents(selectedTeam){
             //监听学生选择下拉框的change事件，以改变学生的成绩雷达图
             studentSelect.addEventListener("change", function() {
                 let selectedStudent = studentSelect.value;
-                loadRadarChart(selectedStudent);
+                loadRadarChart(selectedStudent,selectedTeam);
             });
         }
     });

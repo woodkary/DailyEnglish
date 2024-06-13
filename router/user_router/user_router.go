@@ -714,7 +714,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			return
 		}
 		type Exam struct {
-			ExamID      int    `json:"exam_id"`
+			ExamID      string `json:"exam_id"`
 			ExamName    string `json:"exam_name"`
 			ExamDate    string `json:"exam_date"`
 			ExamScore   int    `json:"exam_score"`
@@ -826,6 +826,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			return
 		}
 		examId, _ := strconv.Atoi(request.ExamID)
+		fmt.Println("考试id为:", examId)
 		//查询考试信息
 		Item, err := controlsql.GetExamDetail(db, UserClaims.UserID, examId)
 		if err != nil {

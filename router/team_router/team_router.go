@@ -584,7 +584,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		//发布考试后在考试的当天设置定时任务，检查是否需要更新数据库，需要则更新并停止任务，不需要则继续等待
 		//定时任务的时间为考试时间的当天
 		//定时任务的内容为检查是否需要更新数据库
-		ticker := time.NewTicker(1 * time.Hour)
+		ticker := time.NewTicker(1 * time.Minute)
 		go func() {
 			for {
 				select {
@@ -598,6 +598,10 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 					if isNeed {
 						//更新数据库
 						err = controlsql.FreshRank(db, exam_id)
+						if err != nil {
+							log.Panic(err)
+							return
+						}
 						ticker.Stop()
 						return
 					}
