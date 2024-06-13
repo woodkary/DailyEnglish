@@ -16,6 +16,7 @@ import (
 	"github.com/elastic/go-elasticsearch/esapi"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/go-redis/redis/v8"
+	"github.com/jmoiron/sqlx"
 )
 
 // 定义词性的常量
@@ -452,7 +453,7 @@ func GetUserStudy(db *sql.DB, user_id int) (UserStudy, error) {
 
 // Exam_info
 type Exam struct {
-	ExamID      int
+	ExamID      string
 	ExamName    string
 	Exam_clock  string
 	ExamDate    string
@@ -470,6 +471,7 @@ func GetExamInfoByExamID(db *sql.DB, exam_id int) (Exam, error) {
 	if err != nil {
 		return exam, err
 	}
+	exam.ExamID = fmt.Sprintf("%d", exam_id)
 	return exam, nil
 }
 
@@ -657,69 +659,57 @@ func GetQuestionInfo(db *sql.DB, question_id int) (QuestionInfo, error) {
 
 }
 
-// 根据user_id和exam_id查询单场考试详情
 func GetExamDetail(db *sql.DB, user_id int, exam_id int) ([]QuestionDetail, error) {
 	var questionDetails []QuestionDetail
 	var questions string
+
+	// 获取问题列表
 	err := db.QueryRow("SELECT question_id FROM exam_info WHERE exam_id =?", exam_id).Scan(&questions)
-	fmt.Println(exam_id)
 	if err != nil {
 		return nil, err
 	}
 	questions_list := strings.Split(questions, "-")
-	userAnwser := make(map[int]string)
+
+	// 获取用户答案
 	var ans string
-	err = db.QueryRow("SELECT user_answer from `user-exam_score` WHERE user_id =? AND exam_id =?", user_id, exam_id).Scan(&ans)
-	if err != nil && err.Error() != "sql: no rows in result set" {
+	err = db.QueryRow("SELECT user_answer FROM `user-exam_score` WHERE user_id =? AND exam_id =?", user_id, exam_id).Scan(&ans)
+	userAnswer := make(map[int]string)
+	if err != nil && err != sql.ErrNoRows {
 		return nil, err
 	}
-	if err != sql.ErrNoRows {
+	if err == nil {
 		ans_list := strings.Split(ans, "-")
-		for _, item := range ans_list {
-			a := strings.Split(item, ":")
-			question_id, _ := strconv.Atoi(a[0])
-			answer := a[1]
-			userAnwser[question_id] = answer
+		for i, question := range questions_list {
+			question_id, _ := strconv.Atoi(question)
+			if i < len(ans_list) {
+				userAnswer[question_id] = ans_list[i]
+			}
 		}
-		for _, question := range questions_list {
-			var questionDetail QuestionDetail
-			questionid, _ := strconv.Atoi(question)
-			questionDetail.Question_id = questionid
-			var content string
-			var questionType int //1选择题 2填空题
-			err := db.QueryRow("SELECT question_type,question_content,quetion_answer FROM question_info WHERE question_id =?", questionid).Scan(&questionType, &content, &questionDetail.Answer)
-			if err != nil {
-				return nil, err
-			}
-			if questionType == 1 {
-				content_list := strings.Split(content, "：")
-				questionDetail.Question = content_list[0]
-				questionDetail.Options = strings.Split(content_list[1], " ")
-			} else if questionType == 2 {
-				questionDetail.Question = content
-				questionDetail.Options = []string{""}
-			}
-			questionDetail.UserAnswer = userAnwser[questionid]
-			//每个question_id查score
-			if userAnwser[questionid] == questionDetail.Answer {
-				questionDetail.Score = 5
-			} else {
-				questionDetail.Score = 0
-			}
-			questionDetails = append(questionDetails, questionDetail)
-		}
-		return questionDetails, nil
 	}
-	for _, question := range questions_list {
+
+	// 批量查询问题详细信息
+	query := "SELECT question_id, question_type, question_content, question_answer FROM question_info WHERE question_id IN (?)"
+	query, args, err := sqlx.In(query, questions_list)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := db.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// 解析查询结果
+	for rows.Next() {
 		var questionDetail QuestionDetail
-		questionid, _ := strconv.Atoi(question)
-		questionDetail.Question_id = questionid
 		var content string
-		var questionType int //1选择题 2填空题
-		err := db.QueryRow("SELECT question_type,question_content,question_answer FROM question_info WHERE question_id =?", questionid).Scan(&questionType, &content, &questionDetail.Answer)
+		var questionType int
+
+		err := rows.Scan(&questionDetail.Question_id, &questionType, &content, &questionDetail.Answer)
 		if err != nil {
 			return nil, err
 		}
+
 		if questionType == 1 {
 			content_list := strings.Split(content, "：")
 			questionDetail.Question = content_list[0]
@@ -728,11 +718,20 @@ func GetExamDetail(db *sql.DB, user_id int, exam_id int) ([]QuestionDetail, erro
 			questionDetail.Question = content
 			questionDetail.Options = []string{""}
 		}
-		questionDetail.UserAnswer = "未作答"
-		//每个question_id查score
-		questionDetail.Score = 0
+
+		questionDetail.UserAnswer = userAnswer[questionDetail.Question_id]
+		if questionDetail.UserAnswer == questionDetail.Answer {
+			questionDetail.Score = 5
+		} else {
+			questionDetail.Score = 0
+		}
 		questionDetails = append(questionDetails, questionDetail)
 	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return questionDetails, nil
 }
 func InsertUserScore(db *sql.DB, user_id int, exam_id int, user_answer string, score int) error {

@@ -238,6 +238,7 @@
 				}
 			},
 			nextQuestionForFills(currentQuestionIndex) {
+        this.inputFillAnswer(currentQuestionIndex);
 				if (!this.isFinished[this.questions[currentQuestionIndex].question_id]) {
 					// 保存是否完成到 map 中
 					this.isFinished[this.questions[currentQuestionIndex].question_id] = true;

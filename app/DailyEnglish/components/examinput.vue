@@ -1,32 +1,40 @@
 <template>
-	<input :placeholder="placeholderText" type="text" class="inner-input" :class="{ 'has-focus': focused }"
-		@focus="handleFocus" @blur="handleBlur" required />
+  <input :placeholder="placeholderText" type="text" class="inner-input" :class="{ 'has-focus': focused }"
+         @focus="handleFocus" @blur="handleBlur" @input="updateValue($event.target.value)" :value="value" required />
 </template>
 
 <script>
-	export default {
-		name: 'InputContainer',
-		props: {
-			placeholderText: {
-				type: String,
-				default: 'Username'
-			}
-		},
-		data() {
-			return {
-				focused: false
-			};
-		},
-		methods: {
-			handleFocus() {
-				this.focused = true;
-			},
-			handleBlur() {
-				this.focused = false;
-			}
-		}
-	};
+export default {
+  name: 'InputContainer',
+  props: {
+    value: {
+      type: String,
+      default: ''
+    },
+    placeholderText: {
+      type: String,
+      default: 'Username'
+    }
+  },
+  data() {
+    return {
+      focused: false
+    };
+  },
+  methods: {
+    handleFocus() {
+      this.focused = true;
+    },
+    handleBlur() {
+      this.focused = false;
+    },
+    updateValue(value) {
+      this.$emit('input', value);
+    }
+  }
+};
 </script>
+
 
 <style scoped>
 	.inner-input {
