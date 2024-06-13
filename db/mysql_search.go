@@ -701,7 +701,7 @@ func SearchStudentAverageScoresByStudentIDs(db *sql.DB, rdb *redis.Client, stude
 		wg.Add(1)
 		go func(studentID int) {
 			defer wg.Done()
-			studentKeyPrefix := fmt.Sprintf("%d:", studentID)
+			studentKeyPrefix := fmt.Sprintf("studentAverage:%d:", studentID)
 			studentName := studentNames[studentID]
 
 			studentAverageScores, err := getStudentAverageScores(rdb, studentKeyPrefix)

@@ -1219,7 +1219,7 @@ func UpdateStudentRDB(db *sql.DB, rdb *redis.Client, userID int, teamID int, exa
 		}
 
 		// 构造学生的 Redis 键
-		userKey := fmt.Sprintf("%d:%d", userID, questionType)
+		userKey := fmt.Sprintf("studentAverage:%d:%d", userID, questionType)
 		// 构造团队的 Redis 键
 		teamKey := fmt.Sprintf("teamAverage:%d:%d", teamID, questionType)
 
