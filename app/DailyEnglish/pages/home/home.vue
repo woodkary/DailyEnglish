@@ -543,10 +543,12 @@
         searchHistory: {}, //历史搜索记录
         //历史搜索记录
 				items: [/*{
+					wordId: 1,
 					word: 'apple',
 					phonetic: '/ˈæpl/',
 					meaning: '苹果'
 				}, {
+					wordId: 2,
 					word: 'banana',
 					phonetic: '/bəˈnɑː.nə/',
 					meaning: '香蕉'
@@ -578,6 +580,7 @@
       transformWordObject(original) {
         // 创建一个新的对象，用于存储转换后的结构
         let transformed = {
+          wordId: original.word_id,
           word: original.spelling,
           phonetic: original.pronunciation
         };
@@ -666,10 +669,12 @@
         }else{
           uni.setStorageSync('searchHistory', [this.searchHistory[this.searchInput+"_words"]]);
         }
+        //从items中找到searchInput对应的对象的word_id
+        let word_id = this.items.find(item => item.word === this.searchInput).wordId;
 			// 跳转到搜索结果页
 			uni.navigateTo({
 				// url: `/pages/word_details/word_details?word=${this.searchInput}`
-				url: `/pages/word_details/word_details`
+				url: `/pages/word_details/word_details?word_id=${word_id}&word=${this.searchInput}`
 			});
 			uni.showToast({
 				title: '搜索成功',

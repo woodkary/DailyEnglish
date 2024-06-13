@@ -5,14 +5,15 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/jmoiron/sqlx"
 )
 
 // 重写map的序列化函数
@@ -612,51 +613,69 @@ func SearchUserpunch(db *sql.DB, userid int) (int, string, error) {
 	return ispunch, lastdate, err
 }
 
-// 根据团队id和名称的map查询各团队的各学生，返回map[string][]string，也返回所有学生的id数组
 func SearchTeamMemberByTeamID(db *sql.DB, idAndNameMap map[int]string) (*CustomMap, []int, error) {
 	teamMemberMap := make(map[string][]string)
-	var studentIds []int //这里计算了所有的团队的所有学生的总和
-	for teamID, teamName := range idAndNameMap {
-		fmt.Println("teamID和teamName:", teamID, teamName)
-		//首先查询该团队的所有学生id
-		allStudentsId, err := db.Query("SELECT user_id FROM `user-team` WHERE team_id = ?", teamID)
-		if err != nil {
-			//如果查询不到学生id，说明该团队没有学生，则向map中添加空数组，跳过该团队
-			if err == sql.ErrNoRows {
-				fmt.Println("该团队没有学生", teamName)
-				teamMemberMap[teamName] = []string{}
-				continue
-			} else {
-				//其他错误则返回错误信息
-				log.Panic(err)
-				return nil, nil, err
-			}
-		}
-		defer allStudentsId.Close()
-		var studentNames []string
-		fmt.Println("开始查询所有学生姓名")
-		for allStudentsId.Next() {
-			var studentId int
-			//获取每一个studentId
-			if err := allStudentsId.Scan(&studentId); err != nil {
-				log.Panic(err)
-				return nil, nil, err
-			}
-			studentIds = append(studentIds, studentId)
-			//根据学生id查询学生姓名
-			var studentName string
-			err = db.QueryRow("SELECT username FROM user_info WHERE user_id = ?", studentId).Scan(&studentName)
-			if err != nil {
-				log.Panic(err)
-				return nil, nil, err
-			}
-			//将学生姓名加入到学生姓名数组中
-			studentNames = append(studentNames, studentName)
-		}
-		//将学生姓名数组加入到teamMemberMap中
-		teamMemberMap[teamName] = studentNames
-		fmt.Println(teamMemberMap)
+	var studentIds []int
+
+	// 构建查询字符串
+	query := `
+		SELECT ut.team_id, ui.user_id, ui.username 
+		FROM user_info ui
+		JOIN ` + "`user-team`" + ` ut ON ui.user_id = ut.user_id
+		WHERE ut.team_id IN (`
+
+	// 构建team_id的参数部分
+	var teamIDs []interface{}
+	for teamID := range idAndNameMap {
+		teamIDs = append(teamIDs, teamID)
+		query += "?,"
 	}
+
+	// 移除最后的逗号，并添加右括号
+	query = query[:len(query)-1] + ")"
+
+	rows, err := db.Query(query, teamIDs...)
+	if err != nil {
+		log.Panicln(err)
+		return nil, nil, err
+	}
+	defer rows.Close()
+
+	// 临时存储查询结果
+	type TeamMember struct {
+		TeamID   int
+		UserID   int
+		Username string
+	}
+	var teamMembers []TeamMember
+
+	for rows.Next() {
+		var tm TeamMember
+		if err := rows.Scan(&tm.TeamID, &tm.UserID, &tm.Username); err != nil {
+			log.Panicln(err)
+			return nil, nil, err
+		}
+		teamMembers = append(teamMembers, tm)
+		studentIds = append(studentIds, tm.UserID)
+	}
+
+	// 处理查询结果
+	for _, tm := range teamMembers {
+		teamName, exists := idAndNameMap[tm.TeamID]
+		if !exists {
+			continue
+		}
+		teamMemberMap[teamName] = append(teamMemberMap[teamName], tm.Username)
+	}
+
+	// 确保每个团队ID在结果中有一个条目，即使没有学生
+	for _, teamName := range idAndNameMap {
+		if _, exists := teamMemberMap[teamName]; !exists {
+			teamMemberMap[teamName] = []string{}
+		}
+	}
+	fmt.Println("这是团队成员信息:", teamMemberMap)
+
 	// 创建CustomMap实例并填充数据
 	customMap := &CustomMap{
 		Data: teamMemberMap,
@@ -665,131 +684,219 @@ func SearchTeamMemberByTeamID(db *sql.DB, idAndNameMap map[int]string) (*CustomM
 	return customMap, studentIds, nil
 }
 
-// SearchStudentAverageScoresByStudentIDs 根据学生id数组，查询其中所有学生的名字，和各题型平均分数组
 func SearchStudentAverageScoresByStudentIDs(db *sql.DB, rdb *redis.Client, studentIDs []int) ([]AverageScore, error) {
 	var averageScores []AverageScore
 
-	for _, studentID := range studentIDs {
-		// 构造学生在 Redis 中的键前缀
-		studentKeyPrefix := fmt.Sprintf("%d:", studentID)
-		// 获取学生名字
-		studentName, err := getStudentName(db, rdb, studentID, studentKeyPrefix)
-		if err != nil {
-			log.Printf("Failed to get student name for studentID %d: %v", studentID, err)
-			continue
-		}
-
-		// 获取学生各题型的平均分
-		studentAverageScores, err := getStudentAverageScores(rdb, studentKeyPrefix)
-		if err != nil {
-			log.Printf("Failed to get average scores for studentID %d: %v", studentID, err)
-			continue
-		}
-
-		averageScores = append(averageScores, AverageScore{
-			Name:  studentName,
-			Value: studentAverageScores,
-		})
-	}
-
-	return averageScores, nil
-}
-
-// teamMap为teamID和teamName的map，查询所有团队所有题型的平均分
-func SearchTeamAverageScoresByTeamMap(rdb *redis.Client, teamMap map[int]string) ([]AverageScore, error) {
-	var averageScores []AverageScore
-
-	for teamID, teamName := range teamMap {
-		// 构造团队在 Redis 中的键前缀
-		teamKeyPrefix := fmt.Sprintf("teamAverage:%d:", teamID)
-		// 获取团队平均分
-		teamAverageScores, err := getTeamAverageScores(rdb, teamKeyPrefix)
-		if err != nil {
-			log.Printf("Failed to get average scores for teamID %d: %v", teamID, err)
-			continue
-		}
-
-		averageScores = append(averageScores, AverageScore{
-			Name:  teamName,
-			Value: teamAverageScores,
-		})
-	}
-	return averageScores, nil
-}
-
-// getStudentName 根据学生ID从Redis中获取学生名字
-func getStudentName(db *sql.DB, rdb *redis.Client, studentID int, studentKeyPrefix string) (string, error) {
-	ctx := context.Background()
-	username, err := rdb.HGet(ctx, studentKeyPrefix, "username").Result()
+	// 批量获取学生名字
+	studentNames, err := getStudentNamesBatch(db, rdb, studentIDs)
 	if err != nil {
-		if err == redis.Nil {
-			//TODO 没名字的话，根据studentID查询user_info表，返回用户名，并插入一条score=0,num=0的记录到redis
-			err = db.QueryRow("SELECT username FROM user_info WHERE user_id = ?", studentID).Scan(&username)
-			if err != nil {
-				return "", errors.New("username not found")
-			}
-			//插入一条score=0,num=0的记录到redis
-		}
-		return "", err
+		return nil, err
 	}
-	return username, nil
+
+	// 并发处理每个学生的平均分
+	ch := make(chan AverageScore, len(studentIDs))
+	var wg sync.WaitGroup
+
+	for _, studentID := range studentIDs {
+		wg.Add(1)
+		go func(studentID int) {
+			defer wg.Done()
+			studentKeyPrefix := fmt.Sprintf("%d:", studentID)
+			studentName := studentNames[studentID]
+
+			studentAverageScores, err := getStudentAverageScores(rdb, studentKeyPrefix)
+			if err != nil {
+				log.Printf("Failed to get average scores for studentID %d: %v", studentID, err)
+				return
+			}
+
+			ch <- AverageScore{
+				Name:  studentName,
+				Value: studentAverageScores,
+			}
+		}(studentID)
+	}
+
+	wg.Wait()
+	close(ch)
+
+	for avgScore := range ch {
+		averageScores = append(averageScores, avgScore)
+	}
+
+	return averageScores, nil
 }
 
-// getStudentAverageScores 获取学生各题型的平均分
+func getStudentNamesBatch(db *sql.DB, rdb *redis.Client, studentIDs []int) (map[int]string, error) {
+	ctx := context.Background()
+	studentNames := make(map[int]string)
+
+	// 尝试从Redis批量获取学生名字
+	pipe := rdb.Pipeline()
+	cmds := make(map[int]*redis.StringCmd)
+	for _, studentID := range studentIDs {
+		studentKeyPrefix := fmt.Sprintf("%d:", studentID)
+		cmds[studentID] = pipe.HGet(ctx, studentKeyPrefix, "username")
+	}
+	_, err := pipe.Exec(ctx)
+	if err != nil && err != redis.Nil {
+		return nil, err
+	}
+
+	var missingIDs []int
+	for studentID, cmd := range cmds {
+		username, err := cmd.Result()
+		if err == redis.Nil {
+			missingIDs = append(missingIDs, studentID)
+		} else if err != nil {
+			return nil, err
+		} else {
+			studentNames[studentID] = username
+		}
+	}
+
+	// 批量查询缺失的学生名字
+	if len(missingIDs) > 0 {
+		query, args, err := sqlx.In("SELECT user_id, username FROM user_info WHERE user_id IN (?)", missingIDs)
+		if err != nil {
+			return nil, err
+		}
+		rows, err := db.Query(query, args...)
+		if err != nil {
+			return nil, err
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var userID int
+			var username string
+			err = rows.Scan(&userID, &username)
+			if err != nil {
+				return nil, err
+			}
+			studentNames[userID] = username
+
+			// 将名字存入Redis
+			studentKeyPrefix := fmt.Sprintf("%d:", userID)
+			err = rdb.HSet(ctx, studentKeyPrefix, "username", username).Err()
+			if err != nil {
+				log.Printf("Failed to set username in Redis for studentID %d: %v", userID, err)
+			}
+		}
+	}
+
+	return studentNames, nil
+}
+
 func getStudentAverageScores(rdb *redis.Client, studentKeyPrefix string) ([]float64, error) {
 	var studentAverageScores []float64
 	ctx := context.Background()
 
-	// 遍历题型，查询平均分
+	// 使用管道批量获取Redis数据
+	pipe := rdb.Pipeline()
+	scoreCmds := make(map[int]*redis.StringCmd)
+	numCmds := make(map[int]*redis.StringCmd)
+
 	for questionType := 1; questionType <= 5; questionType++ {
 		userKey := fmt.Sprintf("%s%d", studentKeyPrefix, questionType)
-		userScore, err := rdb.HGet(ctx, userKey, "score").Float64()
+		scoreCmds[questionType] = pipe.HGet(ctx, userKey, "score")
+		numCmds[questionType] = pipe.HGet(ctx, userKey, "num")
+	}
+	_, err := pipe.Exec(ctx)
+	if err != nil && err != redis.Nil {
+		return nil, err
+	}
+
+	for questionType := 1; questionType <= 5; questionType++ {
+		userScore, err := scoreCmds[questionType].Float64()
 		if err != nil && err != redis.Nil {
 			log.Panicln(err)
 			return nil, err
 		}
-		userNum, err := rdb.HGet(ctx, userKey, "num").Int()
+		userNum, err := numCmds[questionType].Int()
 		if err != nil && err != redis.Nil {
 			log.Panicln(err)
 			return nil, err
 		}
 
-		// 计算平均分，避免除以零
 		var averageScore float64
 		if userNum != 0 {
 			averageScore = userScore / float64(userNum)
 		}
-
 		studentAverageScores = append(studentAverageScores, averageScore)
 	}
 
 	return studentAverageScores, nil
 }
 
-// 获取团队各题型的平均分
+func SearchTeamAverageScoresByTeamMap(rdb *redis.Client, teamMap map[int]string) ([]AverageScore, error) {
+	var averageScores []AverageScore
+
+	ch := make(chan AverageScore, len(teamMap))
+	var wg sync.WaitGroup
+
+	for teamID, teamName := range teamMap {
+		wg.Add(1)
+		go func(teamID int, teamName string) {
+			defer wg.Done()
+			teamKeyPrefix := fmt.Sprintf("teamAverage:%d:", teamID)
+			teamAverageScores, err := getTeamAverageScores(rdb, teamKeyPrefix)
+			if err != nil {
+				log.Printf("Failed to get average scores for teamID %d: %v", teamID, err)
+				return
+			}
+
+			ch <- AverageScore{
+				Name:  teamName,
+				Value: teamAverageScores,
+			}
+		}(teamID, teamName)
+	}
+
+	wg.Wait()
+	close(ch)
+
+	for avgScore := range ch {
+		averageScores = append(averageScores, avgScore)
+	}
+
+	return averageScores, nil
+}
+
 func getTeamAverageScores(rdb *redis.Client, teamKeyPrefix string) ([]float64, error) {
 	var teamAverageScores []float64
 	ctx := context.Background()
 
-	// 遍历题型，查询平均分
+	pipe := rdb.Pipeline()
+	scoreCmds := make(map[int]*redis.StringCmd)
+	numCmds := make(map[int]*redis.StringCmd)
+
 	for questionType := 1; questionType <= 5; questionType++ {
 		teamKey := fmt.Sprintf("%s%d", teamKeyPrefix, questionType)
-		teamScore, err := rdb.HGet(ctx, teamKey, "score").Float64()
+		scoreCmds[questionType] = pipe.HGet(ctx, teamKey, "score")
+		numCmds[questionType] = pipe.HGet(ctx, teamKey, "num")
+	}
+	_, err := pipe.Exec(ctx)
+	if err != nil && err != redis.Nil {
+		return nil, err
+	}
+
+	for questionType := 1; questionType <= 5; questionType++ {
+		teamScore, err := scoreCmds[questionType].Float64()
 		if err != nil && err != redis.Nil {
 			return nil, err
 		}
-		teamNum, err := rdb.HGet(ctx, teamKey, "num").Int()
+		teamNum, err := numCmds[questionType].Int()
 		if err != nil && err != redis.Nil {
 			return nil, err
 		}
 
-		// 计算平均分，避免除以零
 		var averageScore float64
 		if teamNum != 0 {
 			averageScore = teamScore / float64(teamNum)
 		}
-
 		teamAverageScores = append(teamAverageScores, averageScore)
 	}
+
 	return teamAverageScores, nil
 }
