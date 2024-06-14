@@ -56,29 +56,29 @@ func CreateRequestParams() map[string][]string {
 }
 
 type RequestParams struct {
-	Q                 string `json:"q"`
-	Grade             string `json:"grade"`
-	Title             string `json:"title"`
-	ModelContent      string `json:"modelContent"`
-	IsNeedSynonyms    string `json:"isNeedSynonyms"`
-	CorrectVersion    string `json:"correctVersion"`
-	IsNeedEssayReport string `json:"isNeedEssayReport"`
+	Q                 []string `json:"q"`
+	Grade             []string `json:"grade"`
+	Title             []string `json:"title"`
+	ModelContent      []string `json:"modelContent"`
+	IsNeedSynonyms    []string `json:"isNeedSynonyms"`
+	CorrectVersion    []string `json:"correctVersion"`
+	IsNeedEssayReport []string `json:"isNeedEssayReport"`
 }
 
 func GetRequestMap(req *RequestParams) map[string][]string {
 	return map[string][]string{
-		"q":                 {req.Q},
-		"grade":             {req.Grade},
-		"title":             {req.Title},
-		"modelContent":      {req.ModelContent},
-		"isNeedSynonyms":    {req.IsNeedSynonyms},
-		"correctVersion":    {req.CorrectVersion},
-		"isNeedEssayReport": {req.IsNeedEssayReport},
+		"q":                 req.Q,
+		"grade":             req.Grade,
+		"title":             req.Title,
+		"modelContent":      req.ModelContent,
+		"isNeedSynonyms":    req.IsNeedSynonyms,
+		"correctVersion":    req.CorrectVersion,
+		"isNeedEssayReport": req.IsNeedEssayReport,
 	}
 }
 
 // 从文件中读取文章，并返回参数结构体
-// 文件格式：fileName___grade
+// 文件格式：fileName_grade
 // 例如：test___graduate_a1.txt，即考研英语一小作文
 func ReadArticle(fileName string) *RequestParams {
 	//通过文件名的三个下划线___之后点号.之前的内容，判断等级
@@ -97,12 +97,12 @@ func ReadArticle(fileName string) *RequestParams {
 	}
 	//文件内容即为Q，其他参数全部默认值
 	return &RequestParams{
-		Q:                 string(content),
-		Grade:             grade,
-		Title:             "",
-		ModelContent:      "",
-		IsNeedSynonyms:    "false",
-		CorrectVersion:    "basic",
-		IsNeedEssayReport: "false",
+		Q:                 []string{string(content)},
+		Grade:             []string{grade},
+		Title:             []string{""},
+		ModelContent:      []string{""},
+		IsNeedSynonyms:    []string{"false"},
+		CorrectVersion:    []string{"basic"},
+		IsNeedEssayReport: []string{"false"},
 	}
 }
