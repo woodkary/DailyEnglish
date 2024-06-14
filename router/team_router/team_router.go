@@ -729,6 +729,55 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		response.Msg = "成功"
 		c.JSON(200, response)
 	})
+	//设定一篇作文题目，由学生来写作文
+	r.POST("/api/team_manage/composition", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			TeamId      int    `json:"team_id"`      // 发布作文的团队ID，如果是0，则代表选择的是题库自带的作文
+			Title       string `json:"title"`        // 作文题目
+			MinWordNum  int    `json:"min_word_num"` // 最少字数要求
+			MaxWordNum  int    `json:"max_word_num"` // 最多字数要求
+			Requirement string `json:"requirement"`  // 作文要求
+			Grade       string `json:"grade"`        // 作文等级
+		}
+		//临时结构体，用于表示作文的等级整数形式和名称
+		type GradePair struct {
+			GradeNum  int
+			GradeName string
+		}
+		//中文名称与整数，以及有道翻译api中grade参数的映射
+		var gradeMap = map[string]GradePair{
+			"小学":  {1, "elementary"},
+			"初中":  {2, "junior"},
+			"高中":  {3, "high"},
+			"四级":  {4, "cet4"},
+			"六级":  {5, "cet6"},
+			"考研":  {6, "graduate"},
+			"托福":  {7, "toefl"},
+			"雅思":  {8, "ielts"},
+			"GRE": {9, "gre"},
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(400, "请求参数错误")
+			return
+		}
+		user, _ := c.Get("user")
+		TeamManagerClaims, ok := user.(*utils.TeamManagerClaims) // 将 user 转换为 *TeamManagerClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		//插入数据库
+		err := controlsql.InsertComposition(db, request.TeamId, TeamManagerClaims.ManagerID, request.Title, request.MinWordNum, request.MaxWordNum, request.Requirement, gradeMap[request.Grade].GradeNum)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		c.JSON(200, gin.H{
+			"code": 200,
+			"msg":  "发布成功",
+		})
+	})
 }
 
 //创建团队 加入团队 删除成员 搜索成员

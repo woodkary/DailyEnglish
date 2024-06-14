@@ -915,3 +915,19 @@ func getTeamAverageScores(rdb *redis.Client, teamKeyPrefix string) ([]float64, e
 
 	return teamAverageScores, nil
 }
+func InsertComposition(db *sql.DB, teamId int, managerId int, title string, minWordNum int, maxWordNum int, requirement string, grade int) error {
+	wordNumString := fmt.Sprintf("%d~%d", minWordNum, maxWordNum) //将minWordNum和maxWordNum转换为字符串
+	fmt.Println(wordNumString)
+	stmt, err := db.Prepare("INSERT INTO composition(team_id,manager_id,composition_title,word_num,composition_require,grade) VALUES(?,?,?,?,?,?)")
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(teamId, managerId, title, wordNumString, requirement, grade)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
+}

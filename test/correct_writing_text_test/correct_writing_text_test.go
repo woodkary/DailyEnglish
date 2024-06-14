@@ -84,6 +84,9 @@ func ReadArticle(fileName string) *RequestParams {
 	//通过文件名的三个下划线___之后点号.之前的内容，判断等级
 	grade := fileName[strings.LastIndex(fileName, "___")+3 : strings.LastIndex(fileName, ".")]
 	fmt.Println("grade:", grade)
+	if grade == "" {
+		grade = "default"
+	}
 	//读取文件内容
 	file, err := os.Open(fileName)
 	if err != nil {
