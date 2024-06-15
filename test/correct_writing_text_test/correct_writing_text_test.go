@@ -1,12 +1,10 @@
 package test
 
 import (
+	params "DailyEnglish/CorrectWritingRequestParams"
 	"DailyEnglish/utils"
 	"DailyEnglish/utils/authv4"
 	"fmt"
-	"io/ioutil"
-	"os"
-	"strings"
 	"testing"
 )
 
@@ -18,7 +16,7 @@ var appSecret = "IukrwPmugpMwRUH4Nc7AcV2LU2xxdOF1"
 
 func TestCorrectWritingText(t *testing.T) {
 	// 添加请求参数
-	paramsMap := GetRequestMap(ReadArticle("C:\\Users\\karywoodOyo\\Desktop\\essays\\2022小作文___graduate_a1.txt"))
+	paramsMap := params.GetRequestMap(params.ReadArticle("C:\\Users\\karywoodOyo\\Desktop\\essays\\2022小作文___graduate_a1.txt"))
 	header := map[string][]string{
 		"Content-Type": {"application/x-www-form-urlencoded"},
 	}
@@ -52,60 +50,5 @@ func CreateRequestParams() map[string][]string {
 		"isNeedSynonyms":    {isNeedSynonyms},
 		"correctVersion":    {correctVersion},
 		"isNeedEssayReport": {isNeedEssayReport},
-	}
-}
-
-type RequestParams struct {
-	Q                 []string `json:"q"`
-	Grade             []string `json:"grade"`
-	Title             []string `json:"title"`
-	ModelContent      []string `json:"modelContent"`
-	IsNeedSynonyms    []string `json:"isNeedSynonyms"`
-	CorrectVersion    []string `json:"correctVersion"`
-	IsNeedEssayReport []string `json:"isNeedEssayReport"`
-}
-
-func GetRequestMap(req *RequestParams) map[string][]string {
-	return map[string][]string{
-		"q":                 req.Q,
-		"grade":             req.Grade,
-		"title":             req.Title,
-		"modelContent":      req.ModelContent,
-		"isNeedSynonyms":    req.IsNeedSynonyms,
-		"correctVersion":    req.CorrectVersion,
-		"isNeedEssayReport": req.IsNeedEssayReport,
-	}
-}
-
-// 从文件中读取文章，并返回参数结构体
-// 文件格式：fileName_grade
-// 例如：test___graduate_a1.txt，即考研英语一小作文
-func ReadArticle(fileName string) *RequestParams {
-	//通过文件名的三个下划线___之后点号.之前的内容，判断等级
-	grade := fileName[strings.LastIndex(fileName, "___")+3 : strings.LastIndex(fileName, ".")]
-	fmt.Println("grade:", grade)
-	if grade == "" {
-		grade = "default"
-	}
-	//读取文件内容
-	file, err := os.Open(fileName)
-	if err != nil {
-		fmt.Println("open file error:", err)
-		return nil
-	}
-	content, err := ioutil.ReadAll(file)
-	if err != nil {
-		fmt.Println("read file error:", err)
-		return nil
-	}
-	//文件内容即为Q，其他参数全部默认值
-	return &RequestParams{
-		Q:                 []string{string(content)},
-		Grade:             []string{grade},
-		Title:             []string{""},
-		ModelContent:      []string{""},
-		IsNeedSynonyms:    []string{"false"},
-		CorrectVersion:    []string{"basic"},
-		IsNeedEssayReport: []string{"false"},
 	}
 }
