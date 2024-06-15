@@ -1599,6 +1599,114 @@ func GetThirdPunchResultForDay(rdb *redis.Client, ctx context.Context, userID in
 	return resultMap, nil
 }
 
+type EssayTask struct {
+	TitleId     int64  `json:"title_id"`
+	Title       string `json:"title"`
+	ManagerName string `json:"manager_name"`
+	WordNum     string `json:"word_num"` //200~500格式
+	Requirement string `json:"requirement"`
+	PublishDate string `json:"publish_date"`
+	Grade       string `json:"grade"`
+}
+
+// 根据teamId，查看所有写作任务
+func GetTeamEssayTasks(db *sql.DB, teamId int) ([]EssayTask, error) {
+	var tasks []EssayTask
+
+	// 查询所有相关的作文任务
+	rows, err := db.Query("SELECT * FROM composition WHERE team_id = ?", teamId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return tasks, nil
+		}
+		return nil, err
+	}
+	defer rows.Close()
+
+	// 用于存储 manager_id 的 map
+	managerIds := make(map[int64]struct{})
+	type dtoType struct {
+		TitleId            int64  `db:"title_id"`
+		TeamId             int64  `db:"team_id"`
+		ManagerId          int64  `db:"manager_id"`
+		CompositionTitle   string `db:"composition_title"`
+		WordNum            string `db:"word_num"` //200~500格式
+		CompositionRequire string `db:"composition_require"`
+		PublishDate        string `db:"publish_date"`
+		Tag                string `db:"tag"`
+		Grade              int    `db:"grade"`
+	}
+	var dtos []dtoType
+	for rows.Next() {
+		var dto dtoType
+		if err := rows.Scan(&dto.TitleId, &dto.TeamId, &dto.ManagerId, &dto.CompositionTitle, &dto.WordNum, &dto.CompositionRequire, &dto.PublishDate, &dto.Tag, &dto.Grade); err != nil {
+			log.Printf("Failed to scan row: %s", err.Error())
+			return nil, err
+		}
+		dtos = append(dtos, dto)
+		managerIds[dto.ManagerId] = struct{}{}
+	}
+
+	// 查询所有相关的 manager 信息
+	managerMap := make(map[int64]string)
+	if len(managerIds) > 0 {
+		query := "SELECT manager_id, manager_name FROM manager_info WHERE manager_id IN ("
+		params := make([]interface{}, 0, len(managerIds))
+		i := 0
+		for id := range managerIds {
+			if i > 0 {
+				query += ","
+			}
+			query += "?"
+			params = append(params, id)
+			i++
+		}
+		query += ")"
+
+		rows, err := db.Query(query, params...)
+		if err != nil {
+			return nil, err
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var managerId int64
+			var managerName string
+			if err := rows.Scan(&managerId, &managerName); err != nil {
+				return nil, err
+			}
+			managerMap[managerId] = managerName
+		}
+	}
+	var gradeMap = map[int]string{
+		1: "小学",
+		2: "初中",
+		3: "高中",
+		4: "四级",
+		5: "六级",
+		6: "考研",
+		7: "托福",
+		8: "雅思",
+		9: "GRE",
+	}
+	// 组装最终的 tasks 列表
+	for _, dto := range dtos {
+		managerName := managerMap[dto.ManagerId]
+		task := EssayTask{
+			TitleId:     dto.TitleId,
+			Title:       dto.CompositionTitle,
+			ManagerName: managerName,
+			WordNum:     dto.WordNum,
+			Requirement: dto.CompositionRequire,
+			PublishDate: dto.PublishDate,
+			Grade:       gradeMap[dto.Grade],
+		}
+		tasks = append(tasks, task)
+	}
+
+	return tasks, nil
+}
+
 // 说实话，实在懒得再把这些搬进utils包里了，直接写在这里吧。
 func parseMeaningsFromMap(meanings map[string]interface{}) *Meanings {
 	meaningMap := Meanings{

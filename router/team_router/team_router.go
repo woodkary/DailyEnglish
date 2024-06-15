@@ -730,9 +730,9 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		c.JSON(200, response)
 	})
 	//设定一篇作文题目，由学生来写作文
-	r.POST("/api/team_manage/composition", tokenAuthMiddleware(), func(c *gin.Context) {
+	r.POST("/api/team_manage/composition_mission", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
-			TeamId      int    `json:"team_id"`      // 发布作文的团队ID，如果是0，则代表选择的是题库自带的作文
+			TeamId      int    `json:"team_id"`      // 发布作文的团队ID
 			Title       string `json:"title"`        // 作文题目
 			MinWordNum  int    `json:"min_word_num"` // 最少字数要求
 			MaxWordNum  int    `json:"max_word_num"` // 最多字数要求
@@ -778,6 +778,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			"msg":  "发布成功",
 		})
 	})
+
 }
 
 //创建团队 加入团队 删除成员 搜索成员

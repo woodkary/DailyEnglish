@@ -65,7 +65,7 @@ function setGrade(grade){
 function request(){
     console.log(requestParams);
     //发送请求
-    fetch("http://localhost:8081/api/team_manage/composition", {
+    fetch("http://localhost:8081/api/team_manage/composition_mission", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
