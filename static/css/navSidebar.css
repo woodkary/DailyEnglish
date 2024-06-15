@@ -12,10 +12,12 @@
     --primary-color: #f5f5f5;
     --panel-color: #FFF;
     --text-color: #000;
+    --text-color-light: #f4f4f4;
     --black-light-color: #707070;
     --border-color: #e6e5e5;
     --toggle-color: #DDD;
     --box1-color: #4DA3FF;
+    --box1-hover-color: #168aff;
     --box2-color: #FFE6AC;
     --box3-color: #E7D1FC;
     --title-icon-color: #fff;
@@ -36,10 +38,12 @@ body.dark{
     --primary-color: #3A3B3C;
     --panel-color: #242526;
     --text-color: #CCC;
+    --text-color-light: #707070;
     --black-light-color: #CCC;
     --border-color: #4D4C4C;
     --toggle-color: #FFF;
     --box1-color: #3A3B3C;
+    --box1-hover-color: #1c1c1c;
     --box2-color: #3A3B3C;
     --box3-color: #3A3B3C;
     --title-icon-color: #CCC;

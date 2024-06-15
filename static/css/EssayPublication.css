@@ -1,0 +1,181 @@
+.custom-essay-container {
+    margin-left: 5%;
+    margin-top: 9%;
+    width: 93%;
+    height: 500px;
+    background-color: white;
+    padding-top: 20px;
+    border-radius: 15px;
+}
+.essay-content{
+    position: relative;
+    width: 100%;
+    margin-left: 60px;
+    margin-top: 25px;
+    display: grid;
+    grid-template-rows: auto auto;
+    row-gap: 10px; /* 行间距 */
+}
+.title-input-box{
+    display: flex; /* 使用Flexbox布局 */
+    align-items: center; /* 垂直居中对齐 */
+    margin: 0 80px 0 37px;
+    height: 45px;
+    max-width: 600px;
+    width: 100%;
+}
+.title-input-box h3 {
+    margin-right: 10px; /* 在h3和input之间添加一些间距 */
+}
+
+.title-input-box input {
+    border: 1px solid var(--border-color);
+    background-color: var(--panel-color);
+    padding: 0 25px;
+    border-radius: 5px;
+    height: 80%;
+    width: 90%;
+    color: var(--text-color);
+    font-size: 15px;
+    font-weight: 400;
+    outline: none;
+}
+.wordNum-input-box{
+    display: flex; /* 使用Flexbox布局 */
+    align-items: center; /* 垂直居中对齐 */
+    margin: 0 80px 0 0;
+    height: 45px;
+    max-width: 600px;
+    width: 100%;
+}
+
+.wordNum-input-box h3 {
+    margin-right: 10px; /* 在h3和input之间添加一些间距 */
+}
+
+.wordNum-input-box input {
+    border: 1px solid var(--border-color);
+    background-color: var(--panel-color);
+    padding: 0 25px;
+    border-radius: 5px;
+    height: 80%;
+    width: 30%;
+    color: var(--text-color);
+    font-size: 15px;
+    font-weight: 400;
+    outline: none;
+}
+.select-box{
+    display: flex; /* 使用Flexbox布局 */
+    align-items: center; /* 垂直居中对齐 */
+    margin: 0 80px 0 37px;
+    height: 45px;
+    max-width: 600px;
+    width: 100%;
+}
+
+.select-box h3 {
+    margin-right: 10px; /* 在h3和input之间添加一些间距 */
+}
+
+.select-box select {
+    border: 1px solid var(--border-color);
+    background-color: var(--panel-color);
+    padding: 0 15px;
+    border-radius: 5px;
+    height: 80%;
+    width: 30%;
+    color: var(--text-color);
+    font-size: 15px;
+    font-weight: 330;
+    outline: none;
+}
+.require-input-box {
+    display: flex;
+    align-items: flex-start; /* 顶部对齐 */
+    margin: 0 80px 0 0;
+    height: 130px; /* 根据需要调整容器高度 */
+    max-width: 600px;
+    width: 100%;
+}
+
+.require-input-box h3 {
+    margin-right: 10px;
+    margin-top: 0;
+}
+
+.require-input-box textarea {
+    border: 1px solid var(--border-color);
+    background-color: var(--panel-color);
+    padding: 0 15px; /* 调整padding确保文本不会太靠近边界 */
+    border-radius: 5px;
+    height: 100%; /* 输入框的高度设为100%，以充满容器 */
+    width: 70%; /* 增加输入框的宽度 */
+    color: var(--text-color);
+    font-size: 15px;
+    line-height: 20px; /* 调整line-height确保文本顶部对齐 */
+    font-weight: 400;
+    outline: none;
+    text-align: start; /* 从左上角开始对齐文本 */
+    overflow: auto; /* 如果输入内容过多，将显示滚动条 */
+    white-space: pre-wrap; /* 允许适当换行 */
+    word-wrap: break-word; /* 在单词太长时进行换行 */
+}
+.submit-box {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 0 80px 0 0;
+    height: 45px;
+    max-width: 600px;
+    width: 100%;
+}
+
+.submit-box input[type="checkbox"] {
+    margin-right: 10px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+}
+
+.submit-box label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+
+.submit-box label p {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 12px;
+    color: var(--text-color);
+}
+
+.submit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 80px;
+    height: 45px;
+    max-width: 600px;
+    width: 100%;
+}
+
+.submit-btn button {
+    border: none;
+    background-color: var(--box1-color);
+    padding: 0 25px;
+    border-radius: 5px;
+    height: 100%;
+    width: 40%;
+    color: var(--text-color-light);
+    font-size: 15px;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.submit-btn button:hover {
+    background-color: var(--box1-hover-color);
+}
+
