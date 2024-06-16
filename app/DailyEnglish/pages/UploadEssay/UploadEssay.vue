@@ -1,6 +1,6 @@
 <template>
 	<view>
-    <uni-file-picker fileMediatype="image" mode="grid" @select="onFileSelected(event)"></uni-file-picker>
+    <uni-file-picker fileMediatype="image" mode="grid" @select="onFileSelected"></uni-file-picker>
 		<button type="primary" @click="uploadImage">上传图片</button>
 	</view>
 </template>
