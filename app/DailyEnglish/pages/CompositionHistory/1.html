@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fraction Score Style</title>
+  <style>
+    .fraction-score {
+      display: inline-block;
+      position: relative;
+      font-size: 2rem;
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    .fraction-score .score {
+      position: relative;
+      display: inline-block;
+    }
+
+    .fraction-score .score::before,
+    .fraction-score .score::after {
+      content: "";
+      position: absolute;
+      bottom: -6px;
+      width: 50%;
+      height: 2px;
+      background: black;
+      transform-origin: center center;
+      transform: rotate(-45deg);
+    }
+
+    .fraction-score .score::after {
+      left: 0;
+      transform-origin: center center;
+      transform: rotate(45deg);
+    }
+  </style>
+</head>
+<body>
+  <div class="fraction-score">
+    <div class="score">85</div>
+  </div>
+</body>
+</html>
