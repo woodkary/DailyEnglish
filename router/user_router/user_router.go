@@ -5,6 +5,7 @@ import (
 	middlewares "DailyEnglish/middlewares"
 	utils "DailyEnglish/utils"
 	"database/sql"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -1561,5 +1562,55 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		response.Msg = "成功"
 		response.Tasks = essayTasks
 		ctx.JSON(http.StatusOK, response)
+	})
+	//获取系统写作训练
+	r.GET("/api/users/composition_training", tokenAuthMiddleware(), func(c *gin.Context) {
+		//查询系统写作训练
+		essayTraining, err := controlsql.GetSystemEssayTraining(db)
+		if err != nil {
+			log.Panic(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误"})
+			return
+		}
+		type Response struct {
+			Code      int                    `json:"code"`
+			Msg       string                 `json:"msg"`
+			Trainings []controlsql.EssayTask `json:"trainings"`
+		}
+		var response Response
+		response.Code = 200
+		response.Msg = "成功"
+		response.Trainings = essayTraining
+		c.JSON(http.StatusOK, response)
+	})
+	//获取用户发来的base64图片
+	r.POST("/api/users/upload", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			Image string `json:"image"`
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+		// 解码Base64字符串
+		data, err := base64.StdEncoding.DecodeString(request.Image)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": "400",
+				"msg":  "图片解码失败",
+			})
+			return
+		}
+		//调用api给图片评分
+
+		//保存图片
+		//返回图片路径
+
 	})
 }

@@ -9,7 +9,7 @@ import (
 )
 
 func TestOSSConnection(t *testing.T) {
-	client, err := oss.New("oss-cn-shenzhen.aliyuncs.com", "LTAI5tLK4sabvdPKd3tkvhLw", "sOMarRA50S8Dw6UCs4dC73XkC3CNNd")
+	//client, err := oss.New("example.com", "example", "example")
 	if err != nil {
 		t.Errorf("Error creating OSS client: %v", err)
 		return

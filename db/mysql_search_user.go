@@ -42,6 +42,17 @@ var posMap = map[string]string{
 	"conj.":   Conjunction,
 	"interj.": Interjection,
 }
+var gradeMap = map[int]string{
+	1: "小学",
+	2: "初中",
+	3: "高中",
+	4: "四级",
+	5: "六级",
+	6: "考研",
+	7: "托福",
+	8: "雅思",
+	9: "GRE",
+}
 
 // 定义meanings结构体
 type Meanings struct {
@@ -1678,17 +1689,6 @@ func GetTeamEssayTasks(db *sql.DB, teamId int) ([]EssayTask, error) {
 			managerMap[managerId] = managerName
 		}
 	}
-	var gradeMap = map[int]string{
-		1: "小学",
-		2: "初中",
-		3: "高中",
-		4: "四级",
-		5: "六级",
-		6: "考研",
-		7: "托福",
-		8: "雅思",
-		9: "GRE",
-	}
 	// 组装最终的 tasks 列表
 	for _, dto := range dtos {
 		managerName := managerMap[dto.ManagerId]
@@ -1735,4 +1735,50 @@ func toStringSlice(value interface{}) []string {
 		return result
 	}
 	return []string{}
+}
+
+// 查询team_id = 0的所有作文任务
+func GetSystemEssayTraining(db *sql.DB) ([]EssayTask, error) {
+	var tasks []EssayTask
+	rows, err := db.Query("SELECT * FROM composition WHERE team_id = 0")
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return tasks, nil
+		}
+		log.Panic(err)
+	}
+	defer rows.Close()
+	type dtoType struct {
+		TitleId            int64  `db:"title_id"`
+		TeamId             int64  `db:"team_id"`
+		ManagerId          int64  `db:"manager_id"`
+		CompositionTitle   string `db:"composition_title"`
+		WordNum            string `db:"word_num"` //200~500格式
+		CompositionRequire string `db:"composition_require"`
+		PublishDate        string `db:"publish_date"`
+		Tag                string `db:"tag"`
+		Grade              int    `db:"grade"`
+	}
+	var dtos []dtoType
+	for rows.Next() {
+		var dto dtoType
+		if err := rows.Scan(&dto.TitleId, &dto.TeamId, &dto.ManagerId, &dto.CompositionTitle, &dto.WordNum, &dto.CompositionRequire, &dto.PublishDate, &dto.Tag, &dto.Grade); err != nil {
+			log.Printf("Failed to scan row: %s", err.Error())
+			return nil, err
+		}
+		dtos = append(dtos, dto)
+	}
+	for _, dto := range dtos {
+		task := EssayTask{
+			TitleId:     dto.TitleId,
+			Title:       dto.CompositionTitle,
+			ManagerName: "系统",
+			WordNum:     dto.WordNum,
+			Requirement: dto.CompositionRequire,
+			PublishDate: dto.PublishDate,
+			Grade:       gradeMap[dto.Grade],
+		}
+		tasks = append(tasks, task)
+	}
+	return tasks, nil
 }

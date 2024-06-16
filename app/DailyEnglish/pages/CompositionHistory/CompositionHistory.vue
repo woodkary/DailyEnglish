@@ -65,7 +65,7 @@
 						</view>
 					</template>
 					<template v-slot:tab2-content>
-						<view class="task-items-2" v-for="(task, index) in writingTasks" :key="index" >
+						<view class="task-items-2" v-for="(task, index) in writingTraining" :key="index" >
 							<view class="task-item-2">
 								<view style="padding-bottom: 0.2rem; border-bottom: 2px solid #69c0ff">
 									<view class="task-item-title"><span
@@ -131,11 +131,23 @@
 					//   grade: "小学",
 					// },
 				],
+				writingTraining:[
+					{
+						title_id: 6,
+						title: "作文训练1",
+						manager_name: "qwerty",
+						word_num: "50~100",
+						requirement: "请不要用真实姓名，使用“李明”asdfafaswetregrtiyujnhdasfwerwedgsft54ewawds代替",
+						publish_date: "2024-06-15",
+						grade: "小学",
+					},
+				]
 			};
 		},
 		onLoad() {
 			//获取写作任务列表
 			this.getWritingTasks();
+			this.getWritingTraining();
 		},
 		methods: {
 			getWritingTasks() {
@@ -157,6 +169,25 @@
 					},
 				});
 			},
+			getWritingTraining(){
+				uni.request({
+					url: "http://localhost:8080/api/users/composition_training",
+					method: "GET",
+					header: {
+						Authorization: `Bearer ${uni.getStorageSync("token")}`,
+					},
+					success: (res) => {
+						console.log(res.data);
+						if (res.statusCode === 200) {
+							this.writingTraining = res.data.trainings;
+							console.log(this.writingTraining);
+						}
+					},
+					fail: (err) => {
+						console.log(err);
+					},
+				});
+			}
 		},
 		computed: {
 			offset() {
