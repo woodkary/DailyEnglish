@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<!-- Coding By CodingNepal - codingnepalweb.com -->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!----======== CSS ======== -->
+    <link rel="stylesheet" href="./css/navSidebar.css">
+
+    <!----===== Iconscout CSS ===== -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <link rel="stylesheet" href="./css/EssayPublication.css">
+
+
+    <title>Admin Dashboard Panel</title>
+</head>
+
+<body>
+<nav>
+    <div class="logo-name">
+        <!--        <div class="logo-image">
+              <img src="./image/little-edellweiss.regular.webp" alt="">
+          </div>-->
+
+        <span class="logo_name">DailyEnglish</span>
+    </div>
+
+    <div class="menu-items">
+        <ul class="nav-links">
+            <li><a href="index.html">
+                <i class="uil uil-estate"></i>
+                <span class="link-name">主页</span>
+            </a></li>
+            <!--            <li><a href="issuePunch.html">-->
+            <!--                <i class="uil uil-calendar-alt"></i>-->
+            <!--                <span class="link-name">打卡发布</span>-->
+            <!--            </a></li>-->
+            <li><a href="history.html">
+                <i class="uil uil-calender"></i>
+                <span class="link-name">考试相关</span>
+            </a></li>
+            <!--            <li><a href="test-statistics.html">-->
+            <!--                <i class="uil uil-chart"></i>-->
+            <!--                <span class="link-name">考试情况</span>-->
+            <!--            </a></li>-->
+            <li><a href="manage.html">
+                <i class="uil uil-meh-alt"></i>
+                <span class="link-name">成员管理</span>
+            </a></li>
+            <li><a href="user.html">
+                <i class="uil uil-user"></i>
+                <span class="link-name">个人中心</span>
+            </a></li>
+        </ul>
+
+        <ul class="logout-mode">
+            <li><a href="login&register.html" onclick="logout()">
+                <i class="uil uil-signout"></i>
+                <span class="link-name">Logout</span>
+            </a></li>
+
+            <li class="mode">
+                <a href="#">
+                    <i class="uil uil-moon"></i>
+                    <span class="link-name">Dark Mode</span>
+                </a>
+
+                <div class="mode-toggle">
+                    <span class="switch"></span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<section class="dashboard">
+    <div class="top">
+        <i class="uil uil-bars sidebar-toggle"></i>
+
+        <div class="search-box">
+            <i class="uil uil-search"></i>
+            <input type="text" placeholder="Search here...">
+        </div>
+
+        <img src="image/pikachu.jpg" alt="">
+    </div>
+
+    <div class="dash-content">
+<!--        todo 只写了自拟题目，还剩下系统题库以及选择框-->
+        <div class="custom-essay-container">
+            <div class="essay-content">
+                <div class="title-input-box">
+                    <h3>题目</h3>
+                    <input type="text" placeholder="请输入文章标题..." oninput="setTitle(this.value)">
+                </div>
+                <div class="wordNum-input-box">
+                    <h3>字数限制</h3>
+                    <input type="text" placeholder="最小字数限制..." oninput="setMinWordNum(this.value)">
+                    <h3 style="margin-left: 10px;">~</h3>
+                    <input type="text" placeholder="最大字数限制..." oninput="setMaxWordNum(this.value)">
+                </div>
+                <div class="select-box">
+                    <h3>团队</h3>
+                    <select name="category" class="category" id="teamSelect">
+
+                        <option value="1">英语每日练</option>
+                        <option value="2">游戏大佬</option>
+                        <option value="3">六级挂科</option>
+                    </select>
+                </div>
+                <div class="select-box">
+                    <h3>等级</h3>
+                    <select name="category" class="category" id="gradeSelect" onchange="setGrade(this.value)">
+                        <option value="小学">小学</option>
+                        <option value="初中">初中</option>
+                        <option value="高中">高中</option>
+                        <option value="四级">四级</option>
+                        <option value="六级">六级</option>
+                        <option value="考研">考研</option>
+                        <option value="托福">托福</option>
+                        <option value="GRE">GRE</option>
+                        <option value="雅思">雅思</option>
+                    </select>
+                </div>
+                <div class="require-input-box">
+                    <h3>作文要求</h3>
+                    <textarea type="text" placeholder="请输入..." onkeyup="pressEnter(event,this.value)" onblur="setRequirement(this.value)"></textarea>
+                </div>
+                <div class="submit-box">
+                    <input type="checkbox" id="checkbox1">
+                    <label for="checkbox1">
+                        <p>是否存入系统题库</p>
+                    </label>
+                    <div class="submit-btn">
+                        <button type="submit" onclick="request()">发布文章</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+<script src="./js/EssayPublication.js"></script>
+<style>
+
+</style>
+
+</html>

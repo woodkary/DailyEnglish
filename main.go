@@ -78,6 +78,7 @@ func init() {
 func main() {
 	defer rdb.Close()
 	defer db.Close()
+	defer es.Indices.Close([]string{"dailyenglish", "questions"})
 
 	// 启动生产者
 	go middlewares.RunProducer()

@@ -11,6 +11,7 @@ import (
 
 	teamrouter "DailyEnglish/router/team_router" // 替换为你的项目路径
 
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 )
@@ -38,7 +39,7 @@ func TestExamSituationCalendar(t *testing.T) {
 	r := gin.Default()
 
 	// 初始化你的路由
-	teamrouter.InitTeamRouter(r, &sql.DB{}, &redis.Client{})
+	teamrouter.InitTeamRouter(r, &sql.DB{}, &redis.Client{}, &elasticsearch.Client{})
 
 	// 创建一个模拟的 HTTP 服务器
 	server := httptest.NewServer(r)
