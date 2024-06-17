@@ -1786,7 +1786,7 @@ func GetSystemEssayTraining(db *sql.DB) ([]EssayTask, error) {
 // 向数据库存入一段机器评分作文的数据
 func InsertEssayScore(db *sql.DB, userID int, titleID int, url string, result utils.Response) error {
 	//先插入一条记录到composition_score表
-	insertQuery, err := db.Prepare("INSERT INTO composition_score(user_id,title_id,composition_url,respond_date,machine_evaluate,machine_mark,rawessay) VALUES(?,?,?,?,?,?,?)")
+	insertQuery, err := db.Prepare("INSERT INTO composition_evaluate(user_id,title_id,composition_url,respond_date,machine_evaluate,machine_mark,rawessay) VALUES(?,?,?,?,?,?,?)")
 	if err != nil {
 		log.Panic(err)
 		return err
@@ -1799,7 +1799,7 @@ func InsertEssayScore(db *sql.DB, userID int, titleID int, url string, result ut
 	}
 	//查询刚插入的记录的id
 	var scoreID int
-	err = db.QueryRow("SELECT score_id FROM composition_score WHERE user_id = ? AND title_id = ? AND composition_url = ?", userID, titleID, url).Scan(&scoreID)
+	err = db.QueryRow("SELECT evaluate_id FROM composition_evaluate WHERE user_id = ? AND title_id = ? AND composition_url = ?", userID, titleID, url).Scan(&scoreID)
 	if err != nil {
 		log.Panic(err)
 		return err
@@ -1824,7 +1824,11 @@ func InsertEssayScore(db *sql.DB, userID int, titleID int, url string, result ut
 		} else {
 			is_validlangsent = 0
 		}
-		_, err = insertQuery.Exec(scoreID, sentence.ParaId, sentence.SentId, sentence.RawSent, sentence.ErrorPosInfos[0].KnowledgeExp, sentence.SentFeedback, sentence.CorrectedSent, is_containgrammarerror, is_validlangsent)
+		KnowledgeExp := ""
+		if len(sentence.ErrorPosInfos) > 0 {
+			KnowledgeExp = sentence.ErrorPosInfos[0].KnowledgeExp
+		}
+		_, err = insertQuery.Exec(scoreID, sentence.ParaId, sentence.SentId, sentence.RawSent, KnowledgeExp, sentence.SentFeedback, sentence.CorrectedSent, is_containgrammarerror, is_validlangsent)
 		if err != nil {
 			log.Panic(err)
 			return err
@@ -1835,6 +1839,7 @@ func InsertEssayScore(db *sql.DB, userID int, titleID int, url string, result ut
 func GetEssayTitle(db *sql.DB, titleId int) (string, int, error) {
 	var title string
 	var grade int
+	fmt.Print("titleId:", titleId)
 	err := db.QueryRow("SELECT composition_title,grade FROM composition WHERE title_id = ?", titleId).Scan(&title, &grade)
 	if err != nil {
 		return "", 0, err

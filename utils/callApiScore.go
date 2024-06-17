@@ -44,7 +44,6 @@ type SentFeedback struct {
 	IsValidLangSent       bool            `json:"isValidLangSent"`
 }
 type ErrorPosInfos struct {
-	Reason       string `json:"reason"`
 	KnowledgeExp string `json:"knowledgeExp"`
 }
 type CorrectWritingRequestParams struct {

@@ -1,0 +1,3 @@
+# DailyEnglish/db
+db\mysql_search_user.go:1827:3: KnowledgeExp declared and not used
+note: module requires Go 1.21

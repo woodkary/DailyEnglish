@@ -1597,9 +1597,8 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		}
 		type Request struct {
 			Image   string `json:"image"`
-			TitleId int    `json:"title_id"`
+			TitleId string `json:"title_id"`
 		}
-
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -1608,8 +1607,9 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			})
 			return
 		}
+		titleID, _ := strconv.Atoi(request.TitleId)
 		//去数据库查作文题目和等级
-		essayTitle, grade, err := controlsql.GetEssayTitle(db, request.TitleId)
+		essayTitle, grade, err := controlsql.GetEssayTitle(db, titleID)
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -1619,7 +1619,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		}
 		//调用api给图片评分
 		result := utils.CallApiScore(request.Image, grade, essayTitle)
-		fmt.Println(result)
 		//保存图片并返回URL
 		url, err := utils.UploadImageToOSS(request.Image)
 		if err != nil {
@@ -1630,7 +1629,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			return
 		}
 		//将分数传到数据库
-		err = controlsql.InsertEssayScore(db, UserClaims.UserID, request.TitleId, url, result)
+		err = controlsql.InsertEssayScore(db, UserClaims.UserID, titleID, url, result)
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{

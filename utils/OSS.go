@@ -11,14 +11,14 @@ import (
 
 func UploadImageToOSS(base64Image string) (string, error) {
 	// 创建 OSS 客户端
-	client, err := oss.New("your-oss-endpoint", "your-access-key-id", "your-access-key-secret")
+	client, err := oss.New("***************", "*************", "*************")
 	if err != nil {
 		return "", err
 	}
 
 	// 获取当前时间戳
 	now := time.Now()
-	filename := fmt.Sprintf("%d/%02d/%02d/%d%s.img", now.Year(), now.Month(), now.Day(), now.Unix(), ".jpg") // 假设图片是 JPG 格式
+	filename := fmt.Sprintf("%d/%02d/%02d/%d.jpg", now.Year(), now.Month(), now.Day(), now.Unix()) // 假设图片是 JPG 格式
 
 	// 解码 base64 编码的图像
 	imgBytes, err := DecodeBase64(base64Image)
@@ -27,7 +27,7 @@ func UploadImageToOSS(base64Image string) (string, error) {
 	}
 
 	// 创建一个新的 OSS 桶客户端
-	bucket, err := client.Bucket("your-bucket-name")
+	bucket, err := client.Bucket("dailyenglish")
 	if err != nil {
 		return "", err
 	}
