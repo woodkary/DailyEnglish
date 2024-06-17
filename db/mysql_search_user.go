@@ -1693,7 +1693,7 @@ func GetTeamEssayTasks(db *sql.DB, teamId int) ([]EssayTask, error) {
 	for _, dto := range dtos {
 		managerName := managerMap[dto.ManagerId]
 		task := EssayTask{
-			TitleId:     string(dto.TitleId),
+			TitleId:     fmt.Sprint(dto.TitleId),
 			Title:       dto.CompositionTitle,
 			ManagerName: managerName,
 			WordNum:     dto.WordNum,
@@ -1770,7 +1770,7 @@ func GetSystemEssayTraining(db *sql.DB) ([]EssayTask, error) {
 	}
 	for _, dto := range dtos {
 		task := EssayTask{
-			TitleId:     string(dto.TitleId),
+			TitleId:     fmt.Sprint(dto.TitleId),
 			Title:       dto.CompositionTitle,
 			ManagerName: "系统",
 			WordNum:     dto.WordNum,

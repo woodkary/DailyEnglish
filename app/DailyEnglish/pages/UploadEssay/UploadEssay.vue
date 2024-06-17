@@ -96,7 +96,7 @@ export default {
     uploadBase64ToServer(base64) {
       console.log('Uploading base64 to server');
       const data = {
-        titleId: this.titleId,
+        title_id: this.titleId,
         image: base64
       };
       uni.request({
@@ -108,6 +108,9 @@ export default {
         data,
         success: res => {
           console.log('上传成功', res);
+          uni.navigateTo({
+            url: '/pages/EssayResult/EssayResult?titleId=' + this.titleId
+          });
         },
         fail: err => {
           console.error('上传失败', err);

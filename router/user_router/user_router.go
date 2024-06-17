@@ -1640,15 +1640,16 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": 500,
-				"msg":  "服务器内部错误",
+				"msg":  "服务器内部错误:评分",
 			})
 			return
 		}
 		titleId, err := strconv.ParseInt(request.TitleId, 10, 64)
 		if err != nil {
+			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": 500,
-				"msg":  "服务器内部错误",
+				"msg":  "服务器内部错误:整数",
 			})
 			return
 		}
@@ -1658,7 +1659,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": 500,
-				"msg":  "服务器内部错误",
+				"msg":  "服务器内部错误:解析评价",
 			})
 		}
 		//返回值到数据库
@@ -1666,7 +1667,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": 500,
-				"msg":  "服务器内部错误",
+				"msg":  "服务器内部错误:保存评价",
 			})
 			return
 		}
