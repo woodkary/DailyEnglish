@@ -12,8 +12,12 @@ export default {
   components: { UniFilePicker },
   data() {
     return {
+      titleId: 1, // 文章ID
       base64Data: '' // 存储base64数据
     };
+  },
+  onLoad(event){
+    this.titleId = event.titleId; // 获取文章ID
   },
   methods: {
     onFileSelected(e) {
@@ -33,7 +37,6 @@ export default {
         const base64 = await this.convertToBase64(tempFilePath);
         console.log('Base64:', base64);
         this.base64Data = base64; // 存储base64数据
-        this.uploadBase64ToServer(base64); // 上传base64数据
       } catch (error) {
         console.error('Error getting base64:', error);
       }
@@ -93,15 +96,16 @@ export default {
     uploadBase64ToServer(base64) {
       console.log('Uploading base64 to server');
       const data = {
+        titleId: this.titleId,
         image: base64
       };
       uni.request({
         url: 'http://localhost:8080/api/users/upload',
         method: 'POST',
-        data,
-        header: {
-          'content-type': 'application/json'
+        header:{
+          'Authorization': `Bearer ${uni.getStorageSync('token')}`
         },
+        data,
         success: res => {
           console.log('上传成功', res);
         },
@@ -111,16 +115,7 @@ export default {
       });
     },
     uploadImage() {
-      uni.chooseImage({
-        count: 9,
-        sizeType: ['original', 'compressed'],
-        sourceType: ['album', 'camera'],
-        success: res => {
-          console.log(JSON.stringify(res.tempFilePaths));
-          const tempFilePath = res.tempFilePaths[0];
-          this.getBase64(tempFilePath);
-        }
-      });
+      this.uploadBase64ToServer(this.base64Data); // 上传base64数据
     }
   }
 }

@@ -131,3 +131,28 @@ func ParseResultFromJSON(jsonData []byte) (*CorrectWritingResult, error) {
 	}
 	return &result, nil
 }
+
+// 将评价中的essayAdvice，majorScore.grammarAdvice，majorScore.wordAdvice，majorScore.structureAdvice单独抽出来并转化为json格式
+func ParseAdviceFromResult(result *CorrectWritingResult) ([]byte, error) {
+	grammarAdvice, err := json.Marshal(result.Result.MajorScore.GrammarAdvice)
+	if err != nil {
+		return nil, err
+	}
+	wordAdvice, err := json.Marshal(result.Result.MajorScore.WordAdvice)
+	if err != nil {
+		return nil, err
+	}
+	structureAdvice, err := json.Marshal(result.Result.MajorScore.StructureAdvice)
+	if err != nil {
+		return nil, err
+	}
+	advice, err := json.Marshal(map[string]interface{}{
+		"grammarAdvice":   string(grammarAdvice),
+		"wordAdvice":      string(wordAdvice),
+		"structureAdvice": string(structureAdvice),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return advice, nil
+}

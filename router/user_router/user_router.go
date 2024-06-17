@@ -1,6 +1,7 @@
 package userrouter
 
 import (
+	correctWriting "DailyEnglish/CorrectWritingRequestParams"
 	params "DailyEnglish/CorrectWritingRequestParams"
 
 	controlsql "DailyEnglish/db"
@@ -78,7 +79,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		var data response
 		if err := c.ShouldBindJSON(&data); err != nil {
 			c.JSON(400, gin.H{
-				"code": "400",
+				"code": 400,
 				"msg":  "请求参数错误",
 			})
 			return
@@ -86,7 +87,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		// 验证邮箱是否已注册
 		if controlsql.EmailIsRegistered_User(db, data.Email) {
 			c.JSON(http.StatusConflict, gin.H{
-				"code": "409",
+				"code": 409,
 				"msg":  "邮箱已注册",
 			})
 			return
@@ -106,7 +107,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		err := utils.SendVerificationCode(data.Email, Vcode, config)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "验证码发送失败",
 			})
 			return
@@ -117,7 +118,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		err = rdb.Set(ctx, key, Vcode, time.Minute*5).Err() // 验证码有效期5分钟,更新时替换
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "验证码存储失败",
 			})
 			return
@@ -125,7 +126,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 
 		// 返回成功响应
 		c.JSON(http.StatusOK, gin.H{
-			"code": "200",
+			"code": 200,
 			"msg":  "验证码发送成功",
 			"data": Vcode,
 		})
@@ -143,7 +144,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		var data regdata
 		if err := c.ShouldBind(&data); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
+				"code": 400,
 				"msg":  "请求参数错误",
 			})
 			return
@@ -154,14 +155,14 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		code, rerr := rdb.Get(ctx, key).Result()
 		if rerr != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"code": "401",
+				"code": 401,
 				"msg":  "验证码已过期",
 			})
 			return
 		}
 		if code != data.Code {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"code": "401",
+				"code": 401,
 				"msg":  "验证码错误",
 			})
 			return
@@ -175,7 +176,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		//验证用户是否已注册
 		if controlsql.UserExists_User(db, data.Email) {
 			c.JSON(http.StatusConflict, gin.H{
-				"code": "409",
+				"code": 409,
 				"msg":  "用户已注册",
 			})
 			return
@@ -186,13 +187,13 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		err := controlsql.RegisterUser_User(db, data.Username, cryptoPwd, data.Email)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误",
 			})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{
-			"code": "200",
+			"code": 200,
 			"msg":  "注册成功",
 		})
 	})
@@ -205,7 +206,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		var data logindata
 		if err := c.ShouldBind(&data); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
+				"code": 400,
 				"msg":  "请求参数错误",
 			})
 			return
@@ -213,7 +214,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		//验证用户是否存在
 		if !controlsql.UserExists_User(db, data.Username) {
 			c.JSON(403, gin.H{
-				"code": "403",
+				"code": 403,
 				"msg":  "用户不存在",
 			})
 			return
@@ -222,7 +223,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		isMatch := controlsql.CheckUser_User(db, data.Username, data.Pwd)
 		if !isMatch {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"code": "401",
+				"code": 401,
 				"msg":  "密码错误",
 			})
 			return
@@ -232,7 +233,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误",
 			})
 			return
@@ -242,14 +243,14 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err != nil && err.Error() != "sql: no rows in result set" {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误"})
 			return
 		}
 		isChoosed := controlsql.CheckUserBook(db, userid)
 		token, _ := utils.GenerateToken_User(userid, team_id, team_name)
 		c.JSON(http.StatusOK, gin.H{
-			"code":      "200",
+			"code":      200,
 			"msg":       "登录成功",
 			"token":     token,
 			"isChoosed": isChoosed,
@@ -263,7 +264,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误"})
 			return
 		}
@@ -326,7 +327,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
+				"code": 400,
 				"msg":  "请求参数错误",
 			})
 			return
@@ -337,14 +338,14 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			// 检查错误是否为"已完成"
 			if err.Error() == "已完成" {
 				c.JSON(200, gin.H{
-					"code": "200",
+					"code": 200,
 					"msg":  "您已设置词书",
 				})
 			} else {
 				// 其他错误
 				log.Println(err)
 				c.JSON(http.StatusInternalServerError, gin.H{
-					"code": "500",
+					"code": 500,
 					"msg":  "服务器内部错误",
 				})
 			}
@@ -356,7 +357,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误",
 			})
 			return
@@ -371,7 +372,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		}
 		]*/
 		c.JSON(200, gin.H{
-			"code": "200",
+			"code": 200,
 			"msg":  "设置词书成功",
 		})
 
@@ -390,7 +391,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
+				"code": 400,
 				"msg":  "请求参数错误",
 			})
 			return
@@ -402,7 +403,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			// 其他错误
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误",
 			})
 			return
@@ -418,7 +419,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		}
 		]*/
 		c.JSON(200, gin.H{
-			"code": "200",
+			"code": 200,
 			"msg":  "修改词书成功",
 		})
 	})
@@ -437,7 +438,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
+				"code": 400,
 				"msg":  "请求参数错误",
 			})
 			return
@@ -448,7 +449,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		Item2, err := controlsql.GetReviewWordID(db, UserClaims.UserID)
 		if err != nil && err != sql.ErrNoRows {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误"})
 			return
 		}
@@ -544,7 +545,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
+				"code": 400,
 				"msg":  "请求参数错误",
 			})
 			return
@@ -667,7 +668,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
+				"code": 400,
 				"msg":  "请求参数错误",
 			})
 			return
@@ -712,7 +713,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误"})
 			return
 		}
@@ -756,7 +757,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
+				"code": 400,
 				"msg":  "请求参数错误",
 			})
 			return
@@ -772,7 +773,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		Item, err := controlsql.SearchExaminfoByTeamIDAndDate222(db, UserClaims.TeamID, UserClaims.UserID, request.Date)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误"})
 			return
 		}
@@ -816,7 +817,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err := c.ShouldBind(&request); err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
+				"code": 400,
 				"msg":  "请求参数错误",
 			})
 			return
@@ -835,7 +836,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误"})
 			return
 		}
@@ -843,7 +844,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误"})
 			return
 		}
@@ -902,7 +903,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
+				"code": 400,
 				"msg":  "请求参数错误",
 			})
 			return
@@ -930,7 +931,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误"})
 			return
 		}
@@ -943,7 +944,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			if err != nil {
 				log.Panic(err)
 				c.JSON(http.StatusInternalServerError, gin.H{
-					"code": "500",
+					"code": 500,
 					"msg":  "服务器内部错误"})
 				return
 			}
@@ -951,7 +952,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			if err != nil {
 				log.Panic(err)
 				c.JSON(http.StatusInternalServerError, gin.H{
-					"code": "500",
+					"code": 500,
 					"msg":  "服务器内部错误"})
 				return
 			}
@@ -980,7 +981,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
+				"code": 400,
 				"msg":  "请求参数错误",
 			})
 			return
@@ -1006,7 +1007,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误"})
 			return
 		}
@@ -1018,12 +1019,12 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误"})
 		}
 		fmt.Println("各题型平均分为：", averageScores)
 		c.JSON(200, gin.H{
-			"code": "200",
+			"code": 200,
 			"msg":  "提交成功",
 		})
 	})
@@ -1041,7 +1042,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误"})
 			return
 		}
@@ -1093,7 +1094,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
+				"code": 400,
 				"msg":  "请求参数错误",
 			})
 			return
@@ -1123,7 +1124,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		} else if full {
 			// 该团队是否已满
 			c.JSON(http.StatusForbidden, gin.H{
-				"code": "403",
+				"code": 403,
 				"msg":  "该团队已满",
 			})
 			return
@@ -1133,18 +1134,18 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误"})
 			return
 		}
 		if !insertOK {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误"})
 			return
 		}
 		c.JSON(200, gin.H{
-			"code": "200",
+			"code": 200,
 			"msg":  "成功加入团队",
 		})
 	})
@@ -1157,7 +1158,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器错误",
 			})
 			return
@@ -1176,7 +1177,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			result, cursor, err = rdb.Scan(ctx, cursor, pattern, 0).Result()
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{
-					"code": "500",
+					"code": 500,
 					"msg":  "服务器内部错误",
 				})
 				return
@@ -1265,7 +1266,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		}
 		if err := <-errChan; err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误",
 			})
 			return
@@ -1287,7 +1288,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
+				"code": 400,
 				"msg":  "请求参数错误",
 			})
 			return
@@ -1308,7 +1309,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		wordDetail, err := controlsql.GetWordDetailByWordId(db, request.WordID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误",
 			})
 			return
@@ -1363,7 +1364,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		var req request
 		if err := c.ShouldBind(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
+				"code": 400,
 				"msg":  "请求参数错误",
 			})
 			return
@@ -1372,7 +1373,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器错误",
 			})
 			return
@@ -1382,7 +1383,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		wordData, err := controlsql.GetWordByWordId(db, req.WordId)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误",
 			})
 			return
@@ -1419,14 +1420,14 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		err = rdb.HMSet(ctx, key, orderedMap).Err()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误",
 			})
 			return
 		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"code": "200",
+			"code": 200,
 			"msg":  "生词添加成功",
 		})
 	})
@@ -1436,7 +1437,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器错误",
 			})
 			return
@@ -1446,7 +1447,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误"})
 			return
 		}
@@ -1475,7 +1476,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
+				"code": 400,
 				"msg":  "请求参数错误",
 			})
 			return
@@ -1485,7 +1486,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误"})
 			return
 		}
@@ -1509,7 +1510,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		var req Request
 		if err := ctx.ShouldBind(&req); err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
+				"code": 400,
 				"msg":  "请求参数错误",
 			})
 			return
@@ -1519,7 +1520,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误"})
 			return
 		}
@@ -1540,7 +1541,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器错误",
 			})
 			return
@@ -1550,7 +1551,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err != nil {
 			log.Panic(err)
 			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误"})
 			return
 		}
@@ -1572,7 +1573,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误"})
 			return
 		}
@@ -1590,13 +1591,24 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 	//获取用户发来的base64图片
 	r.POST("/api/users/upload", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
-			Image string `json:"image"`
-			Grade string `json:"grade"`
+			TitleId string `json:"title_id"`
+			Image   string `json:"image"`
+			Grade   string `json:"grade"`
 		}
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": 500,
+				"msg":  "服务器错误",
+			})
+			return
+		}
+
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
+				"code": 400,
 				"msg":  "请求参数错误",
 			})
 			return
@@ -1624,15 +1636,40 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		authv4.AddAuthParams(params.AppKey, params.AppSecret, paramsMap)
 		// 请求api服务
 		result := utils.DoPost("https://openapi.youdao.com/v2/correct_writing_image", header, paramsMap, "application/json")
-		_, err := params.ParseResultFromJSON(result) //todo _符号要换成正确的结构体
+		correctWritingResult, err := params.ParseResultFromJSON(result) //todo _符号要换成正确的结构体
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"code": "500",
+				"code": 500,
 				"msg":  "服务器内部错误",
 			})
 			return
 		}
+		titleId, err := strconv.ParseInt(request.TitleId, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": 500,
+				"msg":  "服务器内部错误",
+			})
+			return
+		}
+		//用json存储的机器评价
+		machineEvaluate, err := correctWriting.ParseAdviceFromResult(correctWritingResult)
+		totalScore := correctWritingResult.Result.TotalScore
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": 500,
+				"msg":  "服务器内部错误",
+			})
+		}
 		//返回值到数据库
+		err = controlsql.MachineMark(db, titleId, UserClaims.UserID, string(machineEvaluate), totalScore)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": 500,
+				"msg":  "服务器内部错误",
+			})
+			return
+		}
 		//保存图片
 		//返回结果
 		c.JSON(http.StatusOK, gin.H{

@@ -1611,7 +1611,7 @@ func GetThirdPunchResultForDay(rdb *redis.Client, ctx context.Context, userID in
 }
 
 type EssayTask struct {
-	TitleId     int64  `json:"title_id"`
+	TitleId     string `json:"title_id"`
 	Title       string `json:"title"`
 	ManagerName string `json:"manager_name"`
 	WordNum     string `json:"word_num"` //200~500格式
@@ -1693,7 +1693,7 @@ func GetTeamEssayTasks(db *sql.DB, teamId int) ([]EssayTask, error) {
 	for _, dto := range dtos {
 		managerName := managerMap[dto.ManagerId]
 		task := EssayTask{
-			TitleId:     dto.TitleId,
+			TitleId:     string(dto.TitleId),
 			Title:       dto.CompositionTitle,
 			ManagerName: managerName,
 			WordNum:     dto.WordNum,
@@ -1770,7 +1770,7 @@ func GetSystemEssayTraining(db *sql.DB) ([]EssayTask, error) {
 	}
 	for _, dto := range dtos {
 		task := EssayTask{
-			TitleId:     dto.TitleId,
+			TitleId:     string(dto.TitleId),
 			Title:       dto.CompositionTitle,
 			ManagerName: "系统",
 			WordNum:     dto.WordNum,
@@ -1781,4 +1781,18 @@ func GetSystemEssayTraining(db *sql.DB) ([]EssayTask, error) {
 		tasks = append(tasks, task)
 	}
 	return tasks, nil
+}
+
+// 向数据库存入一段机器评分作文的数据
+func MachineMark(db *sql.DB, titleId int64, userId int, machineEvaluate string, machineMark float64) error {
+	insertQuery, err := db.Prepare("INSERT INTO composition_evaluate(title_id,user_id,machine_evaluate,machine_mark) VALUES(?,?,?,?)")
+	if err != nil {
+		return err
+	}
+	defer insertQuery.Close()
+	_, err = insertQuery.Exec(titleId, userId, machineEvaluate, machineMark)
+	if err != nil {
+		return err
+	}
+	return nil
 }
