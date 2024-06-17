@@ -14,26 +14,26 @@ type CorrectWritingResult struct {
 
 type EssayResult struct {
 	RawEssay         string          `json:"rawEssay"`
-	PiGaiReqTextType int             `json:"piGaiReqTextType"`
+	PiGaiReqTextType int             `json:"piGaiReqTextType,omitempty"`
 	SentNum          int             `json:"sentNum"`
 	StLevelCode      int             `json:"stLevelCode"`
 	UniqueKey        string          `json:"uniqueKey"`
 	EssayAdvice      string          `json:"essayAdvice"`
-	Title            string          `json:""`
+	Title            string          `json:"title"`
 	TotalScore       float64         `json:"totalScore"`
 	WriteType        int             `json:"writeType"`
 	EssayLangName    string          `json:"essayLangName"`
 	MajorScore       MajorScore      `json:"majorScore"`
-	AllFeatureScore  AllFeatureScore `json:"allFeatureScore"`
+	AllFeatureScore  AllFeatureScore `json:"allFeatureScore,omitempty"`
 	ParaNum          int             `json:"paraNum"`
 	EssayFeedback    EssayFeedback   `json:"essayFeedback"`
 	WordNum          int             `json:"wordNum"`
 	FullScore        float64         `json:"fullScore"`
-	ArticleFormCode  int             `json:"articleFormCode"`
-	ShowStat         []ShowStat      `json:"showStat"`
+	ArticleFormCode  int             `json:"articleFormCode,omitempty"`
+	ShowStat         []ShowStat      `json:"showStat,omitempty"`
 	TotalEvaluation  string          `json:"totalEvaluation"`
 	StLevel          string          `json:"stLevel"`
-	ConjWordNum      int             `json:"conjWordNum"`
+	ConjWordNum      int             `json:"conjWordNum,omitempty"`
 	WriteModel       int             `json:"writeModel"`
 }
 
@@ -42,24 +42,24 @@ type MajorScore struct {
 	WordScore       float64 `json:"wordScore"`
 	GrammarScore    float64 `json:"grammarScore"`
 	TopicScore      float64 `json:"topicScore"`
-	Emphasis        int     `json:"emphasis"`
+	Emphasis        int     `json:"emphasis,omitempty"`
 	WordAdvice      string  `json:"wordAdvice"`
 	StructureScore  float64 `json:"structureScore"`
 	StructureAdvice string  `json:"structureAdvice"`
 }
 
 type AllFeatureScore struct {
-	NeuralScore   float64 `json:"neuralScore"`
-	Conjunction   float64 `json:"conjunction"`
-	Grammar       float64 `json:"grammar"`
-	Spelling      float64 `json:"spelling"`
-	AdvanceVocab  float64 `json:"advanceVocab"`
-	WordNum       float64 `json:"wordNum"`
-	Topic         float64 `json:"topic"`
-	LexicalSubs   float64 `json:"lexicalSubs"`
-	WordDiversity float64 `json:"wordDiversity"`
-	SentComplex   float64 `json:"sentComplex"`
-	Structure     float64 `json:"structure"`
+	NeuralScore   float64 `json:"neuralScore,omitempty"`
+	Conjunction   float64 `json:"conjunction,omitempty"`
+	Grammar       float64 `json:"grammar,omitempty"`
+	Spelling      float64 `json:"spelling,omitempty"`
+	AdvanceVocab  float64 `json:"advanceVocab,omitempty"`
+	WordNum       float64 `json:"wordNum,omitempty"`
+	Topic         float64 `json:"topic,omitempty"`
+	LexicalSubs   float64 `json:"lexicalSubs,omitempty"`
+	WordDiversity float64 `json:"wordDiversity,omitempty"`
+	SentComplex   float64 `json:"sentComplex,omitempty"`
+	Structure     float64 `json:"structure,omitempty"`
 }
 
 type EssayFeedback struct {
@@ -67,18 +67,67 @@ type EssayFeedback struct {
 }
 
 type SentenceFeedback struct {
-	RawSent               string        `json:"rawSent"`
-	ParaId                int           `json:"paraId"`
-	SentId                int           `json:"sentId"`
-	ErrorPosInfos         []interface{} `json:"errorPosInfos"`
-	SentFeedback          string        `json:"sentFeedback"`
-	SentStartPos          int           `json:"sentStartPos"`
-	CorrectedSent         string        `json:"correctedSent"`
-	RawSegSent            string        `json:"rawSegSent"`
-	IsContainGrammarError bool          `json:"isContainGrammarError"`
-	IsContainTypoError    bool          `json:"isContainTypoError"`
-	SentScore             float64       `json:"sentScore"`
-	IsValidLangSent       bool          `json:"isValidLangSent"`
+	RawSent               string         `json:"rawSent"`
+	ParaId                int            `json:"paraId"`
+	SentId                int            `json:"sentId"`
+	ErrorPosInfos         []ErrorPosInfo `json:"errorPosInfos,omitempty"`
+	SynInfo               []SynInfo      `json:"synInfo,omitempty"`
+	SentFeedback          string         `json:"sentFeedback"`
+	SentStartPos          int            `json:"sentStartPos"`
+	CorrectedSent         string         `json:"correctedSent"`
+	RawSegSent            string         `json:"rawSegSent,omitempty"`
+	IsContainGrammarError bool           `json:"isContainGrammarError"`
+	IsContainTypoError    bool           `json:"isContainTypoError"`
+	SentScore             float64        `json:"sentScore,omitempty"`
+	IsValidLangSent       bool           `json:"isValidLangSent"`
+}
+
+type ErrorPosInfo struct {
+	Id               int           `json:"id"`
+	IsValidLangChunk bool          `json:"isValidLangChunk"`
+	OrgChunk         string        `json:"orgChunk"`
+	ErrorTypeTitle   string        `json:"errorTypeTitle"`
+	StartPos         int           `json:"startPos"`
+	CorrectChunk     string        `json:"correctChunk"`
+	EndPos           int           `json:"endPos"`
+	CardSubtitle     string        `json:"cardSubtitle"`
+	ErrBaseInfo      string        `json:"errBaseInfo"`
+	ErrToBBasicType  string        `json:"errToBBasicType"`
+	DetailReason     string        `json:"detailReason"`
+	KnowledgeExp     string        `json:"knowledgeExp"`
+	ExampleCases     []ExampleCase `json:"exampleCases"`
+}
+
+type ExampleCase struct {
+	Right          string `json:"right"`
+	RightTranslate string `json:"rightTranslate"`
+	Error          string `json:"error"`
+}
+
+type SynInfo struct {
+	Id         int            `json:"id"`
+	SourcePos  string         `json:"sourcePos"`
+	SynType    string         `json:"synType"`
+	SourceTran string         `json:"sourceTran"`
+	TagList    []string       `json:"tagList"`
+	SynId      int            `json:"synId"`
+	Source     []SourceWord   `json:"source"`
+	Target     [][]TargetWord `json:"target"`
+}
+
+type SourceWord struct {
+	StartPos int    `json:"startPos"`
+	EndPos   int    `json:"endPos"`
+	Word     string `json:"word"`
+	StuLevel []int  `json:"stuLevel"`
+}
+
+type TargetWord struct {
+	StartPos int    `json:"startPos"`
+	EndPos   int    `json:"endPos"`
+	Word     string `json:"word"`
+	Tran     string `json:"tran"`
+	StuLevel []int  `json:"stuLevel"`
 }
 
 type ShowStat struct {
@@ -101,18 +150,20 @@ func FormatResult(result *CorrectWritingResult) {
 	fmt.Printf("\tWord Advice: %s\n", result.Result.MajorScore.WordAdvice)
 	fmt.Printf("\tStructure Score: %.2f\n", result.Result.MajorScore.StructureScore)
 	fmt.Printf("\tStructure Advice: %s\n", result.Result.MajorScore.StructureAdvice)
-	fmt.Printf("All Feature Score:\n")
-	fmt.Printf("\tNeural Score: %.2f\n", result.Result.AllFeatureScore.NeuralScore)
-	fmt.Printf("\tConjunction: %.2f\n", result.Result.AllFeatureScore.Conjunction)
-	fmt.Printf("\tGrammar: %.2f\n", result.Result.AllFeatureScore.Grammar)
-	fmt.Printf("\tSpelling: %.2f\n", result.Result.AllFeatureScore.Spelling)
-	fmt.Printf("\tAdvance Vocab: %.2f\n", result.Result.AllFeatureScore.AdvanceVocab)
-	fmt.Printf("\tWord Num: %.2f\n", result.Result.AllFeatureScore.WordNum)
-	fmt.Printf("\tTopic: %.2f\n", result.Result.AllFeatureScore.Topic)
-	fmt.Printf("\tLexical Subs: %.2f\n", result.Result.AllFeatureScore.LexicalSubs)
-	fmt.Printf("\tWord Diversity: %.2f\n", result.Result.AllFeatureScore.WordDiversity)
-	fmt.Printf("\tSent Complex: %.2f\n", result.Result.AllFeatureScore.SentComplex)
-	fmt.Printf("\tStructure: %.2f\n", result.Result.AllFeatureScore.Structure)
+	if result.Result.AllFeatureScore != (AllFeatureScore{}) {
+		fmt.Printf("All Feature Score:\n")
+		fmt.Printf("\tNeural Score: %.2f\n", result.Result.AllFeatureScore.NeuralScore)
+		fmt.Printf("\tConjunction: %.2f\n", result.Result.AllFeatureScore.Conjunction)
+		fmt.Printf("\tGrammar: %.2f\n", result.Result.AllFeatureScore.Grammar)
+		fmt.Printf("\tSpelling: %.2f\n", result.Result.AllFeatureScore.Spelling)
+		fmt.Printf("\tAdvance Vocab: %.2f\n", result.Result.AllFeatureScore.AdvanceVocab)
+		fmt.Printf("\tWord Num: %.2f\n", result.Result.AllFeatureScore.WordNum)
+		fmt.Printf("\tTopic: %.2f\n", result.Result.AllFeatureScore.Topic)
+		fmt.Printf("\tLexical Subs: %.2f\n", result.Result.AllFeatureScore.LexicalSubs)
+		fmt.Printf("\tWord Diversity: %.2f\n", result.Result.AllFeatureScore.WordDiversity)
+		fmt.Printf("\tSent Complex: %.2f\n", result.Result.AllFeatureScore.SentComplex)
+		fmt.Printf("\tStructure: %.2f\n", result.Result.AllFeatureScore.Structure)
+	}
 	fmt.Printf("Essay Feedback:\n")
 	for _, feedback := range result.Result.EssayFeedback.SentsFeedback {
 		fmt.Println()
@@ -146,13 +197,11 @@ func ParseAdviceFromResult(result *CorrectWritingResult) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	advice, err := json.Marshal(map[string]interface{}{
+	adviceMap := map[string]string{
+		"essayAdvice":     result.Result.EssayAdvice,
 		"grammarAdvice":   string(grammarAdvice),
 		"wordAdvice":      string(wordAdvice),
 		"structureAdvice": string(structureAdvice),
-	})
-	if err != nil {
-		return nil, err
 	}
-	return advice, nil
+	return json.Marshal(adviceMap)
 }
