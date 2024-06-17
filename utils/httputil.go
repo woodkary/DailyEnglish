@@ -46,7 +46,7 @@ func DoGet(url string, header map[string][]string, paramsMap map[string][]string
 
 func DoPost(url string, header map[string][]string, bodyMap map[string][]string, expectContentType string) []byte {
 	client := &http.Client{
-		Timeout: time.Second * 3,
+		Timeout: time.Second * 30,
 	}
 	params := neturl.Values{}
 	for k, v := range bodyMap {

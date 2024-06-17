@@ -1588,7 +1588,8 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 	//获取用户发来的base64图片
 	r.POST("/api/users/upload", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
-			Image string `json:"image"`
+			Image   string `json:"image"`
+			TitleId int    `json:"title_id"`
 		}
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
@@ -1598,6 +1599,9 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			})
 			return
 		}
+		//调用api给图片评分
+		result := utils.CallApiScore(request.Image, 4, "人工智能")
+		fmt.Println(result)
 		// 解码Base64字符串
 		data, err := base64.StdEncoding.DecodeString(request.Image)
 		if err != nil {
@@ -1607,7 +1611,6 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			})
 			return
 		}
-		//调用api给图片评分
 
 		//保存图片
 		//返回图片路径
