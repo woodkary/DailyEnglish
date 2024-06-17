@@ -1,11 +1,13 @@
 package userrouter
 
 import (
+	params "DailyEnglish/CorrectWritingRequestParams"
+
 	controlsql "DailyEnglish/db"
 	middlewares "DailyEnglish/middlewares"
 	utils "DailyEnglish/utils"
+	"DailyEnglish/utils/authv4"
 	"database/sql"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -1589,6 +1591,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 	r.POST("/api/users/upload", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
 			Image string `json:"image"`
+			Grade string `json:"grade"`
 		}
 		var request Request
 		if err := c.ShouldBind(&request); err != nil {
@@ -1598,19 +1601,43 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			})
 			return
 		}
-		// 解码Base64字符串
-		data, err := base64.StdEncoding.DecodeString(request.Image)
+		// 设置默认值为default
+		if request.Grade == "" {
+			request.Grade = "default" // 默认值
+		}
+		//调用api给图片评分
+		//构建所有请求参数
+		requestParams := &params.CorrectWritingRequestParams{
+			Q:                 []string{string(request.Image)},
+			Grade:             []string{request.Grade},
+			Title:             []string{""},
+			ModelContent:      []string{""},
+			IsNeedSynonyms:    []string{"false"},
+			CorrectVersion:    []string{"basic"},
+			IsNeedEssayReport: []string{"false"},
+		}
+		paramsMap := params.GetRequestMap(requestParams)
+		header := map[string][]string{
+			"Content-Type": {"application/x-www-form-urlencoded"},
+		}
+		// 添加鉴权相关参数
+		authv4.AddAuthParams(params.AppKey, params.AppSecret, paramsMap)
+		// 请求api服务
+		result := utils.DoPost("https://openapi.youdao.com/v2/correct_writing_image", header, paramsMap, "application/json")
+		_, err := params.ParseResultFromJSON(result) //todo _符号要换成正确的结构体
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "400",
-				"msg":  "图片解码失败",
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": "500",
+				"msg":  "服务器内部错误",
 			})
 			return
 		}
-		//调用api给图片评分
-
+		//返回值到数据库
 		//保存图片
-		//返回图片路径
-
+		//返回结果
+		c.JSON(http.StatusOK, gin.H{
+			"code": 200,
+			"msg":  "上传成功",
+		})
 	})
 }
