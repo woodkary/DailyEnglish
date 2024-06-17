@@ -77,7 +77,11 @@
 			}
 		},
 		methods: {
-
+        handleBack() {
+          uni.switchTab({
+            url: '../user/user'
+          });
+        }
 		},
 		computed: {
 			offset() {

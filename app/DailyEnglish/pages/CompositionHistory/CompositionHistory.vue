@@ -155,6 +155,10 @@
 			this.getWirtingData();
 		},
 		methods: {
+      handleBack() {
+        //返回上一页
+        uni.navigateBack();
+      },
       offset(index) {
         let progress = this.writingCompleted[index].score / 100;
         return this.circumference * (1 - progress);

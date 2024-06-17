@@ -40,11 +40,11 @@
         <image class="right" src="../../static/back.svg"></image>
       </view>
 
-      <view class="container3">
+      <view class="container3" @click="goToWritings">
         <view class="wordbook-wrapper">
           <image class="wordbook" src="../../static/biji2.svg"></image>
         </view>
-        <span class="word3">我的单词本</span>
+        <span class="word3">我的写作</span>
         <image class="right" src="../../static/back.svg"></image>
       </view>
       <view class="container3" @click="goToTeam">
@@ -141,6 +141,11 @@ export default {
   },
 
   methods: {
+    goToWritings() {
+      uni.navigateTo({
+        url: '../CompositionHistory/CompositionHistory'
+      });
+    },
     logout() {
       uni.removeStorageSync('token');
       uni.showToast({

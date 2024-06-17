@@ -39,6 +39,9 @@
 			this.titleId = event.titleId; // 获取文章ID
 		},
 		methods: {
+      handleBack() {
+        uni.navigateBack();
+      },
 			onFileSelected(e) {
 				console.log('File selected:', e);
 				const file = e.tempFiles[0];
