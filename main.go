@@ -5,6 +5,7 @@ import (
 	adminrouter "DailyEnglish/router/admin_router"
 	teamrouter "DailyEnglish/router/team_router"
 	userrouter "DailyEnglish/router/user_router"
+	"DailyEnglish/utils"
 	"database/sql"
 	"fmt"
 	"log"
@@ -73,6 +74,7 @@ func init() {
 	if err != nil {
 		log.Fatalf("Error pinging Elasticsearch: %s", err)
 	}
+	utils.GetOSSSecret(db)
 }
 
 func main() {
