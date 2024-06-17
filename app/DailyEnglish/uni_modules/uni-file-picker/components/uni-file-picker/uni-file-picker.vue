@@ -630,9 +630,9 @@
 <style>
 	.uni-file-picker {
 		/* #ifndef APP-NVUE */
-		box-sizing: border-box;
-		overflow: hidden;
-		width: 100%;
+		
+		margin-left:135%;
+		width: 200%;
 		/* #endif */
 		flex: 1;
 	}
