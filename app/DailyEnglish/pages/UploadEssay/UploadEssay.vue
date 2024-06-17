@@ -9,30 +9,40 @@
 import UniFilePicker from "../../uni_modules/uni-file-picker/components/uni-file-picker/uni-file-picker.vue";
 
 export default {
-  components: {UniFilePicker},
+  components: { UniFilePicker },
   data() {
     return {
-
-    }
+      base64Data: '' // 存储base64数据
+    };
   },
-  onLoad() {
-
-  },
-
   methods: {
     onFileSelected(e) {
-      // 获取文件对象
+      console.log('File selected:', e);
       const file = e.tempFiles[0];
-      // 获取文件的临时路径
-      const tempFilePath = file.path;
-      // 转换为 Base64
-      this.getBase64(tempFilePath);
+      if (file) {
+        const tempFilePath = file.path;
+        console.log('Temp file path:', tempFilePath);
+        this.getBase64(tempFilePath);
+      } else {
+        console.error('No file selected');
+      }
     },
     async getBase64(tempFilePath) {
-      // 读取文件内容并转换为 Base64 编码
-      const base64 = await new Promise((resolve, reject) => {
+      console.log('Getting base64 for:', tempFilePath);
+      try {
+        const base64 = await this.convertToBase64(tempFilePath);
+        console.log('Base64:', base64);
+        this.base64Data = base64; // 存储base64数据
+        this.uploadBase64ToServer(base64); // 上传base64数据
+      } catch (error) {
+        console.error('Error getting base64:', error);
+      }
+    },
+    convertToBase64(filePath) {
+      return new Promise((resolve, reject) => {
+        // #ifdef MP-WEIXIN
         uni.getFileSystemManager().readFile({
-          filePath: tempFilePath,
+          filePath: filePath,
           encoding: 'base64',
           success: res => {
             resolve(res.data);
@@ -41,17 +51,50 @@ export default {
             reject(err);
           }
         });
+        // #endif
+
+        // #ifdef H5
+        const reader = new FileReader();
+        fetch(filePath)
+          .then(response => response.blob())
+          .then(blob => {
+            reader.readAsDataURL(blob);
+            reader.onload = () => {
+              resolve(reader.result.split(',')[1]);
+            };
+            reader.onerror = error => {
+              reject(error);
+            };
+          })
+          .catch(err => {
+            reject(err);
+          });
+        // #endif
+
+        // #ifdef APP-PLUS
+        plus.io.resolveLocalFileSystemURL(filePath, function(entry) {
+          entry.file(function(file) {
+            const reader = new plus.io.FileReader();
+            reader.onloadend = function(e) {
+              const base64 = e.target.result.split(',')[1];
+              resolve(base64);
+            };
+            reader.onerror = function(e) {
+              reject(e);
+            };
+            reader.readAsDataURL(file);
+          });
+        }, function(err) {
+          reject(err);
+        });
+        // #endif
       });
-      // 发送到后端
-      this.uploadBase64ToServer(base64);
     },
     uploadBase64ToServer(base64) {
-      // 构建请求体
+      console.log('Uploading base64 to server');
       const data = {
-        // 根据后端要求，这里可能是 'image'，'file'，或者其他字段
         image: base64
       };
-      // 发送请求
       uni.request({
         url: 'http://localhost:8080/api/users/upload',
         method: 'POST',
@@ -69,11 +112,13 @@ export default {
     },
     uploadImage() {
       uni.chooseImage({
-        count: 9, //默认9
-        sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
-        sourceType: ['album','camera'], //从相册选择，或拍照
-        success: function (res) {
+        count: 9,
+        sizeType: ['original', 'compressed'],
+        sourceType: ['album', 'camera'],
+        success: res => {
           console.log(JSON.stringify(res.tempFilePaths));
+          const tempFilePath = res.tempFilePaths[0];
+          this.getBase64(tempFilePath);
         }
       });
     }
@@ -82,5 +127,4 @@ export default {
 </script>
 
 <style>
-
 </style>

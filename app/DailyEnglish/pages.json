@@ -162,13 +162,13 @@
                 "navigationBarTitleText": ""
             }
         },
-        {
-            "path": "pages/sql/sql",
-            "style": {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-        },
+        // {
+        //     "path": "pages/sql/sql",
+        //     "style": {
+        //         "navigationBarTitleText": "",
+        //         "enablePullDownRefresh": false
+        //     }
+        // },
         {
         	"path" : "pages/websocket/websocket",
         	"style" : 
