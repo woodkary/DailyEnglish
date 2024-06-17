@@ -65,7 +65,7 @@ var gradeMap = map[int]string{
 	6: "graduate",
 	7: "toefl",
 	8: "ielts",
-	9: "academic",
+	9: "gre",
 }
 
 func GetRequestMap(req *CorrectWritingRequestParams) map[string][]string {

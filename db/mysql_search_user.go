@@ -54,6 +54,17 @@ var gradeMap = map[int]string{
 	8: "雅思",
 	9: "GRE",
 }
+var gradeScoreMap = map[int]float64{
+	1: 100,
+	2: 100,
+	3: 25,
+	4: 106.5,
+	5: 106.5,
+	6: 20,
+	7: 30,
+	8: 9,
+	9: 6,
+}
 
 // 定义meanings结构体
 type Meanings struct {
@@ -1621,6 +1632,7 @@ type WritingTask struct {
 	Submit_date  string `json:"submit_date"`
 	Grade        string `json:"grade"`
 	Tag          string `json:"tag"`
+	Machine_mark int    `json:"score"`
 }
 
 // 查询用户的写作任务，写作训练和已完成的写作训练和写作任务
@@ -1672,8 +1684,11 @@ func GetUserWritingTask(db *sql.DB, user_id int) ([]WritingTask, []WritingTask, 
 		if count == 0 {
 			Tasks = append(Tasks, WritingTask)
 		} else {
-			//再根据title_id和user_id查询composition_evaluate表中的submit_date
-			err = db.QueryRow("SELECT respond_date FROM composition_evaluate WHERE user_id = ? AND title_id = ?", user_id, title_id).Scan(&WritingTask.Submit_date)
+			//再根据title_id和user_id查询composition_evaluate表中的submit_date和machine_mark
+			var machine_mark float64
+			err = db.QueryRow("SELECT respond_date,machine_mark FROM composition_evaluate WHERE user_id = ? AND title_id = ?", user_id, title_id).Scan(&WritingTask.Submit_date, &machine_mark)
+			//根据gradeScoreMap得到满分分数将machine_mark转换为百分制
+			WritingTask.Machine_mark = int(machine_mark / gradeScoreMap[grade] * 100)
 			if err != nil {
 				return nil, nil, nil, err
 			}
@@ -1716,8 +1731,11 @@ func GetUserWritingTask(db *sql.DB, user_id int) ([]WritingTask, []WritingTask, 
 		if count == 0 {
 			TrainingTasks = append(TrainingTasks, WritingTask)
 		} else {
-			//再根据title_id和user_id查询composition_evaluate表中的submit_date
-			err = db.QueryRow("SELECT respond_date FROM composition_evaluate WHERE user_id = ? AND title_id = ?", user_id, title_id).Scan(&WritingTask.Submit_date)
+			//再根据title_id和user_id查询composition_evaluate表中的submit_date和machine_mark
+			var machine_mark float64
+			err = db.QueryRow("SELECT respond_date,machine_mark FROM composition_evaluate WHERE user_id = ? AND title_id = ?", user_id, title_id).Scan(&WritingTask.Submit_date, &machine_mark)
+			//根据gradeScoreMap得到满分分数将machine_mark转换为百分制
+			WritingTask.Machine_mark = int(machine_mark / gradeScoreMap[grade] * 100)
 			if err != nil {
 				return nil, nil, nil, err
 			}

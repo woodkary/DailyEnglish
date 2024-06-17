@@ -134,7 +134,7 @@
 						requirement: "请不要用真实姓名，使用“李明”asdfafaswetregrtiyujnhdasfwerwedgsft54ewawds代替",
 						submit_date: "2024-06-15",
 						grade: "小学",
-            score: 50,
+            			score: 50,
 					},
           {
             tag: "训练",
