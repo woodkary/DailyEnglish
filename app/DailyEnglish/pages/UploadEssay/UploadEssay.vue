@@ -115,7 +115,7 @@
 			uploadBase64ToServer(base64) {
 				console.log('Uploading base64 to server');
 				const data = {
-					title_id: parseInt(this.titleId),
+					title_id: this.titleId,
 					image: base64
 				};
 				uni.request({
