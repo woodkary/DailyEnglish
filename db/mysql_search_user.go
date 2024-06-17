@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -1610,101 +1611,128 @@ func GetThirdPunchResultForDay(rdb *redis.Client, ctx context.Context, userID in
 	return resultMap, nil
 }
 
-type EssayTask struct {
-	TitleId     string `json:"title_id"`
-	Title       string `json:"title"`
-	ManagerName string `json:"manager_name"`
-	WordNum     string `json:"word_num"` //200~500格式
-	Requirement string `json:"requirement"`
-	PublishDate string `json:"publish_date"`
-	Grade       string `json:"grade"`
+type WritingTask struct {
+	TitleID      int    `json:"title_id"`
+	Title        string `json:"title"`
+	Manager_name string `json:"manager_name"`
+	Word_num     string `json:"word_num"`
+	Requirement  string `json:"requirement"`
+	Publish_date string `json:"publish_date"`
+	Submit_date  string `json:"submit_date"`
+	Grade        string `json:"grade"`
+	Tag          string `json:"tag"`
 }
 
-// 根据teamId，查看所有写作任务
-func GetTeamEssayTasks(db *sql.DB, teamId int) ([]EssayTask, error) {
-	var tasks []EssayTask
-
-	// 查询所有相关的作文任务
-	rows, err := db.Query("SELECT * FROM composition WHERE team_id = ?", teamId)
+// 查询用户的写作任务，写作训练和已完成的写作训练和写作任务
+func GetUserWritingTask(db *sql.DB, user_id int) ([]WritingTask, []WritingTask, []WritingTask, error) {
+	//先根据user_id查询用户的team_id，再根据team_id查询所属团队发布的title_ids
+	var team_id int
+	Tasks := []WritingTask{}
+	TrainingTasks := []WritingTask{}
+	FinishedTasks := []WritingTask{}
+	err := db.QueryRow("SELECT team_id FROM `user-team` WHERE user_id = ?", user_id).Scan(&team_id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return tasks, nil
-		}
-		return nil, err
+		return nil, nil, nil, err
 	}
-	defer rows.Close()
-
-	// 用于存储 manager_id 的 map
-	managerIds := make(map[int64]struct{})
-	type dtoType struct {
-		TitleId            int64  `db:"title_id"`
-		TeamId             int64  `db:"team_id"`
-		ManagerId          int64  `db:"manager_id"`
-		CompositionTitle   string `db:"composition_title"`
-		WordNum            string `db:"word_num"` //200~500格式
-		CompositionRequire string `db:"composition_require"`
-		PublishDate        string `db:"publish_date"`
-		Tag                string `db:"tag"`
-		Grade              int    `db:"grade"`
+	var title_ids []int
+	rows, err := db.Query("SELECT title_id FROM composition WHERE team_id = ?", team_id)
+	if err != nil {
+		return nil, nil, nil, err
 	}
-	var dtos []dtoType
 	for rows.Next() {
-		var dto dtoType
-		if err := rows.Scan(&dto.TitleId, &dto.TeamId, &dto.ManagerId, &dto.CompositionTitle, &dto.WordNum, &dto.CompositionRequire, &dto.PublishDate, &dto.Tag, &dto.Grade); err != nil {
-			log.Printf("Failed to scan row: %s", err.Error())
-			return nil, err
-		}
-		dtos = append(dtos, dto)
-		managerIds[dto.ManagerId] = struct{}{}
-	}
-
-	// 查询所有相关的 manager 信息
-	managerMap := make(map[int64]string)
-	if len(managerIds) > 0 {
-		query := "SELECT manager_id, manager_name FROM manager_info WHERE manager_id IN ("
-		params := make([]interface{}, 0, len(managerIds))
-		i := 0
-		for id := range managerIds {
-			if i > 0 {
-				query += ","
-			}
-			query += "?"
-			params = append(params, id)
-			i++
-		}
-		query += ")"
-
-		rows, err := db.Query(query, params...)
+		var title_id int
+		err := rows.Scan(&title_id)
 		if err != nil {
-			return nil, err
+			return nil, nil, nil, err
 		}
-		defer rows.Close()
-
-		for rows.Next() {
-			var managerId int64
-			var managerName string
-			if err := rows.Scan(&managerId, &managerName); err != nil {
-				return nil, err
+		title_ids = append(title_ids, title_id)
+	}
+	//再根据title_ids查询composition_evaluate表看用户是否已经完成了这些写作任务
+	for _, title_id := range title_ids {
+		var WritingTask WritingTask
+		var manager_id, grade int
+		err := db.QueryRow("SELECT composition_title,manager_id,word_num,composition_require,publish_date,grade FROM composition WHERE title_id = ?", title_id).Scan(&WritingTask.Title, &manager_id, &WritingTask.Word_num, &WritingTask.Requirement, &WritingTask.Publish_date, &grade)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+		WritingTask.TitleID = title_id
+		WritingTask.Grade = gradeMap[grade]
+		WritingTask.Tag = "任务"
+		//再根据manager_id查询manager_name
+		err = db.QueryRow("SELECT manager_name FROM manager_info WHERE manager_id = ?", manager_id).Scan(&WritingTask.Manager_name)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+		//再根据title_id查询composition_evaluate表看用户是否已经完成了这些写作任务
+		var count int
+		err = db.QueryRow("SELECT COUNT(*) FROM composition_evaluate WHERE user_id = ? AND title_id = ?", user_id, title_id).Scan(&count)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+		if count == 0 {
+			Tasks = append(Tasks, WritingTask)
+		} else {
+			//再根据title_id和user_id查询composition_evaluate表中的submit_date
+			err = db.QueryRow("SELECT respond_date FROM composition_evaluate WHERE user_id = ? AND title_id = ?", user_id, title_id).Scan(&WritingTask.Submit_date)
+			if err != nil {
+				return nil, nil, nil, err
 			}
-			managerMap[managerId] = managerName
+			FinishedTasks = append(FinishedTasks, WritingTask)
 		}
 	}
-	// 组装最终的 tasks 列表
-	for _, dto := range dtos {
-		managerName := managerMap[dto.ManagerId]
-		task := EssayTask{
-			TitleId:     fmt.Sprint(dto.TitleId),
-			Title:       dto.CompositionTitle,
-			ManagerName: managerName,
-			WordNum:     dto.WordNum,
-			Requirement: dto.CompositionRequire,
-			PublishDate: dto.PublishDate,
-			Grade:       gradeMap[dto.Grade],
-		}
-		tasks = append(tasks, task)
+	//再根据team_id = 0查询写作训练
+	var finish_ids []int
+	rows, err = db.Query("SELECT title_id FROM composition WHERE team_id = ?", 0)
+	if err != nil {
+		return nil, nil, nil, err
 	}
-
-	return tasks, nil
+	for rows.Next() {
+		var title_id int
+		err := rows.Scan(&title_id)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+		finish_ids = append(finish_ids, title_id)
+	}
+	//再根据title_ids查询composition_evaluate表看用户是否已经完成了这些写作训练
+	for _, title_id := range finish_ids {
+		var WritingTask WritingTask
+		var manager_id, grade int
+		err = db.QueryRow("SELECT composition_title,manager_id,word_num,composition_require,publish_date,grade FROM composition WHERE title_id = ?", title_id).Scan(&WritingTask.Title, &manager_id, &WritingTask.Word_num, &WritingTask.Requirement, &WritingTask.Publish_date, &grade)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+		WritingTask.TitleID = title_id
+		WritingTask.Grade = gradeMap[grade]
+		WritingTask.Tag = "训练"
+		WritingTask.Manager_name = "系统"
+		//再根据title_id查询composition_evaluate表看用户是否已经完成了这些写作训练
+		fmt.Println("title_id:", title_id, "user_id:", user_id)
+		var count int
+		err = db.QueryRow("SELECT COUNT(*) FROM composition_evaluate WHERE user_id = ? AND title_id = ?", user_id, title_id).Scan(&count)
+		if err != nil {
+			return nil, nil, nil, err
+		}
+		if count == 0 {
+			TrainingTasks = append(TrainingTasks, WritingTask)
+		} else {
+			//再根据title_id和user_id查询composition_evaluate表中的submit_date
+			err = db.QueryRow("SELECT respond_date FROM composition_evaluate WHERE user_id = ? AND title_id = ?", user_id, title_id).Scan(&WritingTask.Submit_date)
+			if err != nil {
+				return nil, nil, nil, err
+			}
+			FinishedTasks = append(FinishedTasks, WritingTask)
+		}
+	}
+	//把FinishedTasks按照submit_date排序（submit_date越早越靠后,submit的格式是string"2006-01-02"）
+	sort.Slice(FinishedTasks, func(i, j int) bool {
+		//先把string转为time
+		iTime, _ := time.Parse("2006-01-02", FinishedTasks[i].Submit_date)
+		jTime, _ := time.Parse("2006-01-02", FinishedTasks[j].Submit_date)
+		//再比较
+		return iTime.After(jTime)
+	})
+	return Tasks, TrainingTasks, FinishedTasks, nil
 }
 
 // 说实话，实在懒得再把这些搬进utils包里了，直接写在这里吧。
@@ -1735,52 +1763,6 @@ func toStringSlice(value interface{}) []string {
 		return result
 	}
 	return []string{}
-}
-
-// 查询team_id = 0的所有作文任务
-func GetSystemEssayTraining(db *sql.DB) ([]EssayTask, error) {
-	var tasks []EssayTask
-	rows, err := db.Query("SELECT * FROM composition WHERE team_id = 0")
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return tasks, nil
-		}
-		log.Panic(err)
-	}
-	defer rows.Close()
-	type dtoType struct {
-		TitleId            int64  `db:"title_id"`
-		TeamId             int64  `db:"team_id"`
-		ManagerId          int64  `db:"manager_id"`
-		CompositionTitle   string `db:"composition_title"`
-		WordNum            string `db:"word_num"` //200~500格式
-		CompositionRequire string `db:"composition_require"`
-		PublishDate        string `db:"publish_date"`
-		Tag                string `db:"tag"`
-		Grade              int    `db:"grade"`
-	}
-	var dtos []dtoType
-	for rows.Next() {
-		var dto dtoType
-		if err := rows.Scan(&dto.TitleId, &dto.TeamId, &dto.ManagerId, &dto.CompositionTitle, &dto.WordNum, &dto.CompositionRequire, &dto.PublishDate, &dto.Tag, &dto.Grade); err != nil {
-			log.Printf("Failed to scan row: %s", err.Error())
-			return nil, err
-		}
-		dtos = append(dtos, dto)
-	}
-	for _, dto := range dtos {
-		task := EssayTask{
-			TitleId:     fmt.Sprint(dto.TitleId),
-			Title:       dto.CompositionTitle,
-			ManagerName: "系统",
-			WordNum:     dto.WordNum,
-			Requirement: dto.CompositionRequire,
-			PublishDate: dto.PublishDate,
-			Grade:       gradeMap[dto.Grade],
-		}
-		tasks = append(tasks, task)
-	}
-	return tasks, nil
 }
 
 // 向数据库存入一段机器评分作文的数据

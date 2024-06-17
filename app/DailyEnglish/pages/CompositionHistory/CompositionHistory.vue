@@ -30,8 +30,8 @@
 			<view class="composition-tabs">
 				<Tabs>
 					<template v-slot:tab1-content>
-						<view class="history-items" v-for="(task, index) in writingTasks" :key="index">
-							<view class="history-item" v-if="writingTasks.length > 0">
+						<view class="history-items" v-for="(task, index) in writingCompleted" :key="index">
+							<view class="history-item" v-if="writingCompleted.length > 0">
 								<view style="
                     padding-bottom: 0.2rem;
                     border-bottom: 2px solid #69c0ff;
@@ -46,8 +46,8 @@
 								<view class="requirement">要求：{{ task.requirement }}</view>
 								<view class="line">
 									<view class="manager-name">{{ task.manager_name }}</view>
-									<view class="publish-date">提交日期：{{ task.publish_date }}</view>
-									<span class="tag">{{ tag }}</span>
+									<view class="publish-date">提交日期：{{ task.submit_date }}</view>
+									<span class="tag">{{ task.tag }}</span>
 								</view>
 								<div class="progress-ring">
 									<svg class="progress-ring__svg" viewBox="0 0 120 120">
@@ -98,7 +98,6 @@
 		},
 		data() {
 			return {
-				tag: "作业",
 				score: 50,
 				radius: 50, //半径
 				circumference: 2 * Math.PI * 50, //周长
@@ -112,25 +111,8 @@
 						publish_date: "2024-06-15",
 						grade: "小学",
 					},
-					// {
-					//   title_id: 7,
-					//   title: "小作文2",
-					//   manager_name: "asdfgh",
-					//   word_num: "50~100",
-					//   requirement: "无",
-					//   publish_date: "2024-06-15",
-					//   grade: "小学",
-					// },
-					// {
-					//   title_id: 8,
-					//   title: "小作文3",
-					//   manager_name: "zxcvbn",
-					//   word_num: "50~100",
-					//   requirement: "无",
-					//   publish_date: "2024-06-15",
-					//   grade: "小学",
-					// },
 				],
+				//写作训练列表
 				writingTraining:[
 					{
 						title_id: 6,
@@ -141,13 +123,25 @@
 						publish_date: "2024-06-15",
 						grade: "小学",
 					},
-				]
+				],
+				//作文广场
+				//已提交的写作任务
+				writingCompleted: [{
+						tag: "训练",
+						title_id: 6,
+						title: "小作文1",
+						manager_name: "qwerty",
+						word_num: "50~100",
+						requirement: "请不要用真实姓名，使用“李明”asdfafaswetregrtiyujnhdasfwerwedgsft54ewawds代替",
+						submit_date: "2024-06-15",
+						grade: "小学",
+					},
+				],
 			};
 		},
 		onLoad() {
-			//获取写作任务列表
-			this.getWritingTasks();
-			this.getWritingTraining();
+			//获取写作数据
+			this.getWirtingData();
 		},
 		methods: {
       handleSubmit(titleId){
@@ -156,7 +150,7 @@
           url: `../UploadEssay/UploadEssay?titleId=${titleId}`,
         });
       },
-			getWritingTasks() {
+			getWirtingData() {
 				uni.request({
 					url: "http://localhost:8080/api/users/composition_mission",
 					method: "GET",
@@ -167,7 +161,8 @@
 						console.log(res.data);
 						if (res.statusCode === 200) {
 							this.writingTasks = res.data.tasks;
-							console.log(this.writingTasks);
+							this.writingCompleted = res.data.finished_writings;
+							this.writingTraining = res.data.trainings;
 						}
 					},
 					fail: (err) => {
@@ -175,25 +170,6 @@
 					},
 				});
 			},
-			getWritingTraining(){
-				uni.request({
-					url: "http://localhost:8080/api/users/composition_training",
-					method: "GET",
-					header: {
-						Authorization: `Bearer ${uni.getStorageSync("token")}`,
-					},
-					success: (res) => {
-						console.log(res.data);
-						if (res.statusCode === 200) {
-							this.writingTraining = res.data.trainings;
-							console.log(this.writingTraining);
-						}
-					},
-					fail: (err) => {
-						console.log(err);
-					},
-				});
-			}
 		},
 		computed: {
 			offset() {

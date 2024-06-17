@@ -1531,41 +1531,20 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		response.Words = words
 		ctx.JSON(http.StatusOK, response)
 	})
-	//获取所有写作任务
-	r.GET("/api/users/composition_mission", tokenAuthMiddleware(), func(ctx *gin.Context) {
-		user, _ := ctx.Get("user")
+	//获取所有写作数据
+	r.GET("/api/users/composition_mission", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
 		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
 		if !ok {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
+			c.JSON(http.StatusInternalServerError, gin.H{
 				"code": 500,
 				"msg":  "服务器错误",
 			})
 			return
 		}
+		fmt.Println("UserID:", UserClaims.UserID, "TeamID:", UserClaims.TeamID)
 		//查询用户所属团队的写作任务
-		essayTasks, err := controlsql.GetTeamEssayTasks(db, UserClaims.TeamID)
-		if err != nil {
-			log.Panic(err)
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"code": 500,
-				"msg":  "服务器内部错误"})
-			return
-		}
-		type Response struct {
-			Code  int                    `json:"code"`
-			Msg   string                 `json:"msg"`
-			Tasks []controlsql.EssayTask `json:"tasks"`
-		}
-		var response Response
-		response.Code = 200
-		response.Msg = "成功"
-		response.Tasks = essayTasks
-		ctx.JSON(http.StatusOK, response)
-	})
-	//获取系统写作训练
-	r.GET("/api/users/composition_training", tokenAuthMiddleware(), func(c *gin.Context) {
-		//查询系统写作训练
-		essayTraining, err := controlsql.GetSystemEssayTraining(db)
+		tasks, trainings, finished_writings, err := controlsql.GetUserWritingTask(db, UserClaims.UserID)
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -1574,14 +1553,18 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			return
 		}
 		type Response struct {
-			Code      int                    `json:"code"`
-			Msg       string                 `json:"msg"`
-			Trainings []controlsql.EssayTask `json:"trainings"`
+			Code             int                      `json:"code"`
+			Msg              string                   `json:"msg"`
+			Tasks            []controlsql.WritingTask `json:"tasks"`
+			Trainings        []controlsql.WritingTask `json:"trainings"`
+			FinishedWritings []controlsql.WritingTask `json:"finished_writings"`
 		}
 		var response Response
 		response.Code = 200
 		response.Msg = "成功"
-		response.Trainings = essayTraining
+		response.Tasks = tasks
+		response.Trainings = trainings
+		response.FinishedWritings = finished_writings
 		c.JSON(http.StatusOK, response)
 	})
 	//获取用户发来的base64图片
