@@ -56,10 +56,10 @@
 										<circle class="progress-ring__circle-fg" stroke="#44a0fb" stroke-width="13"
 											fill="transparent" r="50" cx="60" cy="60" :style="{
                         strokeDasharray: circumference,
-                        strokeDashoffset: offset,
+                        strokeDashoffset: offset(index),
                       }" />
 									</svg>
-									<span class="score">{{ score }}</span>
+									<span class="score">{{ task.score }}</span>
 								</div>
 							</view>
 						</view>
@@ -98,7 +98,6 @@
 		},
 		data() {
 			return {
-				score: 50,
 				radius: 50, //半径
 				circumference: 2 * Math.PI * 50, //周长
 				//写作任务列表
@@ -135,7 +134,19 @@
 						requirement: "请不要用真实姓名，使用“李明”asdfafaswetregrtiyujnhdasfwerwedgsft54ewawds代替",
 						submit_date: "2024-06-15",
 						grade: "小学",
+            score: 50,
 					},
+          {
+            tag: "训练",
+            title_id: 6,
+            title: "小作文1",
+            manager_name: "qwerty",
+            word_num: "50~100",
+            requirement: "请不要用真实姓名，使用“李明”asdfafaswetregrtiyujnhdasfwerwedgsft54ewawds代替",
+            submit_date: "2024-06-15",
+            grade: "小学",
+            score: 70,
+          },
 				],
 			};
 		},
@@ -144,6 +155,10 @@
 			this.getWirtingData();
 		},
 		methods: {
+      offset(index) {
+        let progress = this.writingCompleted[index].score / 100;
+        return this.circumference * (1 - progress);
+      },
       handleSubmit(titleId){
         //跳转到提交页面
         uni.navigateTo({
@@ -172,10 +187,7 @@
 			},
 		},
 		computed: {
-			offset() {
-				let progress = this.score / 100;
-				return this.circumference * (1 - progress);
-			},
+
 		},
 	};
 </script>
