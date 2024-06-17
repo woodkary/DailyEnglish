@@ -12,10 +12,10 @@
 		</view>
 		<view class="container">
 		<uni-file-picker v-show="showOnload" fileMediatype="image" mode="grid" @select="onFileSelected" style="margin-top:40px;"></uni-file-picker>
-		<button  @click="uploadImage" class="upload">上传图片</button>
-		<button v-show="showOnload" type="primary" class="submit" @click="setShow">直接写作</button>
+		<button v-show="showInput" @click="setShow(false)" class="upload">上传图片</button>
+		<button v-show="showOnload" type="primary" class="submit" @click="setShow(true)">直接写作</button>
 		<textarea v-show="showInput" auto-height maxlength="-1" placeholder="请输入" class="edit"/>
-		<button v-show="showInput" type="primary" class="submit" @click="submit">提交</button>
+		<button type="primary" class="submit" @click="submit">提交</button>
 	</view>
 	</view>
 </template>
@@ -115,7 +115,7 @@
 			uploadBase64ToServer(base64) {
 				console.log('Uploading base64 to server');
 				const data = {
-					title_id: this.titleId,
+					title_id: parseInt(this.titleId),
 					image: base64
 				};
 				uni.request({
@@ -137,19 +137,27 @@
 				});
 			},
 			uploadImage() {
-				this.uploadBase64ToServer(this.base64Data); // 上传base64数据
+
 			},
-			setShow(){
-				this.showInput = true;
-				this.showOnload = false;
+			setShow(option){
+				this.showInput = option;
+				this.showOnload = !option;
 			},
 			submit() {
+        if(this.base64Data==''){
+          uni.showToast({
+            title: '请先上传图片',
+            icon: 'none'
+          })
+          return;
+        }
 				uni.showModal({
 					title: '提示',
-					content: '这是一个模态弹窗',
-					success: function (res) {
+					content: '确定要提交作文吗？',
+					success: (res)=> {
 						if (res.confirm) {
 							console.log('用户点击确定');
+              this.uploadBase64ToServer(this.base64Data); // 上传base64数据
 						} else if (res.cancel) {
 							console.log('用户点击取消');
 						}
