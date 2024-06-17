@@ -8,6 +8,10 @@ import (
 	"strings"
 )
 
+var AppKey = "5a89afd315889255"
+
+var AppSecret = "IukrwPmugpMwRUH4Nc7AcV2LU2xxdOF1"
+
 type CorrectWritingRequestParams struct {
 	Q                 []string `json:"q"`
 	Grade             []string `json:"grade"`

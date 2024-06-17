@@ -1,3 +1,0 @@
-# DailyEnglish/utils
-utils\callApiScore.go:13:2: syntax error: non-declaration statement outside function body
-note: module requires Go 1.21

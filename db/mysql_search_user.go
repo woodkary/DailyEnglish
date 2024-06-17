@@ -1611,7 +1611,7 @@ func GetThirdPunchResultForDay(rdb *redis.Client, ctx context.Context, userID in
 }
 
 type EssayTask struct {
-	TitleId     int64  `json:"title_id"`
+	TitleId     string `json:"title_id"`
 	Title       string `json:"title"`
 	ManagerName string `json:"manager_name"`
 	WordNum     string `json:"word_num"` //200~500格式
@@ -1693,7 +1693,7 @@ func GetTeamEssayTasks(db *sql.DB, teamId int) ([]EssayTask, error) {
 	for _, dto := range dtos {
 		managerName := managerMap[dto.ManagerId]
 		task := EssayTask{
-			TitleId:     dto.TitleId,
+			TitleId:     fmt.Sprint(dto.TitleId),
 			Title:       dto.CompositionTitle,
 			ManagerName: managerName,
 			WordNum:     dto.WordNum,
@@ -1770,7 +1770,7 @@ func GetSystemEssayTraining(db *sql.DB) ([]EssayTask, error) {
 	}
 	for _, dto := range dtos {
 		task := EssayTask{
-			TitleId:     dto.TitleId,
+			TitleId:     fmt.Sprint(dto.TitleId),
 			Title:       dto.CompositionTitle,
 			ManagerName: "系统",
 			WordNum:     dto.WordNum,
@@ -1781,4 +1781,63 @@ func GetSystemEssayTraining(db *sql.DB) ([]EssayTask, error) {
 		tasks = append(tasks, task)
 	}
 	return tasks, nil
+}
+
+// 向数据库存入一段机器评分作文的数据
+func InsertEssayScore(db *sql.DB, userID int, titleID int, url string, result utils.Response) error {
+	//先插入一条记录到composition_score表
+	insertQuery, err := db.Prepare("INSERT INTO composition_score(user_id,title_id,composition_url,respond_date,machine_evaluate,machine_mark,rawessay) VALUES(?,?,?,?,?,?,?)")
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	defer insertQuery.Close()
+	_, err = insertQuery.Exec(userID, titleID, url, time.Now().Format("2006-01-02"), result.Result.EssayAdvice, result.Result.TotalScore, result.Result.RawEssay)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	//查询刚插入的记录的id
+	var scoreID int
+	err = db.QueryRow("SELECT score_id FROM composition_score WHERE user_id = ? AND title_id = ? AND composition_url = ?", userID, titleID, url).Scan(&scoreID)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	//再更新evaluate_everysentence表
+	for _, sentence := range result.Result.EssayFeedback.SentsFeedback {
+		insertQuery, err := db.Prepare("INSERT INTO evaluate_everysentence(evaluate_id,paraid,sentid,rawsent,errorposinfo,sentfeedback,correctedsent,is_containgrammarerror,is_validlangsent) VALUES(?,?,?,?,?,?,?,?,?)")
+		if err != nil {
+			log.Panic(err)
+			return err
+		}
+		defer insertQuery.Close()
+		var is_containgrammarerror int
+		var is_validlangsent int
+		if sentence.IsContainGrammarError {
+			is_containgrammarerror = 1
+		} else {
+			is_containgrammarerror = 0
+		}
+		if sentence.IsValidLangSent {
+			is_validlangsent = 1
+		} else {
+			is_validlangsent = 0
+		}
+		_, err = insertQuery.Exec(scoreID, sentence.ParaId, sentence.SentId, sentence.RawSent, sentence.ErrorPosInfos[0].KnowledgeExp, sentence.SentFeedback, sentence.CorrectedSent, is_containgrammarerror, is_validlangsent)
+		if err != nil {
+			log.Panic(err)
+			return err
+		}
+	}
+	return nil
+}
+func GetEssayTitle(db *sql.DB, titleId int) (string, int, error) {
+	var title string
+	var grade int
+	err := db.QueryRow("SELECT composition_title,grade FROM composition WHERE title_id = ?", titleId).Scan(&title, &grade)
+	if err != nil {
+		return "", 0, err
+	}
+	return title, grade, nil
 }

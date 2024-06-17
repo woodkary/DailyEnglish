@@ -150,6 +150,12 @@
 			this.getWritingTraining();
 		},
 		methods: {
+      handleSubmit(titleId){
+        //跳转到提交页面
+        uni.navigateTo({
+          url: `../UploadEssay/UploadEssay?titleId=${titleId}`,
+        });
+      },
 			getWritingTasks() {
 				uni.request({
 					url: "http://localhost:8080/api/users/composition_mission",

@@ -12,29 +12,40 @@ var appKey = "5a89afd315889255"
 // 您的应用密钥
 var appSecret = "IukrwPmugpMwRUH4Nc7AcV2LU2xxdOF1"
 
-type MajorScore struct {
-	GrammarAdvice   string  `json:"grammarAdvice"`
-	WordScore       float64 `json:"wordScore"`
-	GrammarScore    float64 `json:"grammarScore"`
-	TopicScore      float64 `json:"topicScore"`
-	Emphasis        int     `json:"emphasis"`
-	WordAdvice      string  `json:"wordAdvice"`
-	StructureScore  float64 `json:"structureScore"`
-	StructureAdvice string  `json:"structureAdvice"`
-}
-type Result struct {
-	RawEssay    string     `json:"rawEssay"`
-	SentNum     int        `json:"sentNum"`
-	StLevelCode int        `json:"stLevelCode"`
-	EssayAdvice string     `json:"essayAdvice"`
-	Title       string     `json:"title"`
-	TotalScore  float64    `json:"totalScore"`
-	MajorScore  MajorScore `json:"majorScore"`
-}
 type Response struct {
 	RequestId string `json:"RequestId"`
 	ErrorCode string `json:"errorCode"`
 	Result    Result `json:"result"`
+}
+type Result struct {
+	RawEssay      string        `json:"rawEssay"`
+	EssayAdvice   string        `json:"essayAdvice"`
+	Title         string        `json:"title"`
+	TotalScore    float64       `json:"totalScore"`
+	EssayFeedback EssayFeedback `json:"essayFeedback"`
+}
+
+type EssayFeedback struct {
+	SentsFeedback []SentFeedback `json:"sentsFeedback"`
+}
+
+type SentFeedback struct {
+	RawSent               string          `json:"rawSent"`
+	ParaId                int             `json:"paraId"`
+	SentId                int             `json:"sentId"`
+	ErrorPosInfos         []ErrorPosInfos `json:"errorPosInfos"` // assuming this is an empty array
+	SentFeedback          string          `json:"sentFeedback"`
+	SentStartPos          int             `json:"sentStartPos"`
+	CorrectedSent         string          `json:"correctedSent"`
+	RawSegSent            string          `json:"rawSegSent"`
+	IsContainGrammarError bool            `json:"isContainGrammarError"`
+	IsContainTypoError    bool            `json:"isContainTypoError"`
+	SentScore             float64         `json:"sentScore"`
+	IsValidLangSent       bool            `json:"isValidLangSent"`
+}
+type ErrorPosInfos struct {
+	Reason       string `json:"reason"`
+	KnowledgeExp string `json:"knowledgeExp"`
 }
 type CorrectWritingRequestParams struct {
 	Q                 []string `json:"q"`
