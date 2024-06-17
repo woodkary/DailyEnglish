@@ -10,9 +10,9 @@ import (
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 )
 
-var OssEndpoint = "************"
-var OssAccessKeyId = "************"
-var OssAccessKeySecret = "************"
+var OssEndpoint = "*"
+var OssAccessKeyId = "*"
+var OssAccessKeySecret = "*"
 var ossBucketName = "dailyenglish"
 
 func GetOSSSecret(db *sql.DB) {
