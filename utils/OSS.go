@@ -42,7 +42,6 @@ func GetOSSSecret(db *sql.DB) {
 	OssEndpoint = AesDecrypt(OssEndpoint, "DailyEnglish_end")
 	OssAccessKeyId = AesDecrypt(OssAccessKeyId, "DailyEnglish_key")
 	OssAccessKeySecret = AesDecrypt(OssAccessKeySecret, "DailyEnglish_sec")
-	fmt.Println("OSS secret:", OssEndpoint, OssAccessKeyId, OssAccessKeySecret)
 }
 
 func UploadImageToOSS(base64Image string) (string, error) {
