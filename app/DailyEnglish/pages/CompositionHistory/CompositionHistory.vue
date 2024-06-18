@@ -30,7 +30,7 @@
 			<view class="composition-tabs">
 				<Tabs>
 					<template v-slot:tab1-content>
-						<view class="history-items" v-for="(task, index) in writingCompleted" :key="index">
+						<view class="history-items" v-for="(task, index) in writingCompleted" @click="handleJump(task.title_id)" :key="index">
 							<view class="history-item" v-if="writingCompleted.length > 0">
 								<view style="
                     padding-bottom: 0.2rem;
@@ -102,7 +102,7 @@
 				circumference: 2 * Math.PI * 50, //周长
 				//写作任务列表
 				writingTasks: [{
-						title_id: 6,
+						title_id: "4",
 						title: "小作文1",
 						manager_name: "qwerty",
 						word_num: "50~100",
@@ -114,7 +114,7 @@
 				//写作训练列表
 				writingTraining:[
 					{
-						title_id: 6,
+						title_id: "7",
 						title: "作文训练1",
 						manager_name: "qwerty",
 						word_num: "50~100",
@@ -127,7 +127,7 @@
 				//已提交的写作任务
 				writingCompleted: [{
 						tag: "训练",
-						title_id: 6,
+						title_id: "5",
 						title: "小作文1",
 						manager_name: "qwerty",
 						word_num: "50~100",
@@ -138,7 +138,7 @@
 					},
           {
             tag: "训练",
-            title_id: 6,
+            title_id: "6",
             title: "小作文1",
             manager_name: "qwerty",
             word_num: "50~100",
@@ -155,6 +155,12 @@
 			this.getWirtingData();
 		},
 		methods: {
+      handleJump(titleId) {
+        //跳转到作文结果页面
+        uni.navigateTo({
+          url: `../EssayResult/EssayResult?titleId=${titleId}`,
+        });
+      },
       handleBack() {
         //返回上一页
         uni.navigateBack();

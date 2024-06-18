@@ -1649,6 +1649,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			return
 		}
 		titleID, _ := strconv.Atoi(request.TitleId)
+		fmt.Println("titleID:", titleID)
 		//查询作文结果
 		essayResult, err := controlsql.GetEssayResult(db, titleID, UserClaims.UserID)
 		if err != nil {

@@ -63,6 +63,7 @@
 		},
 		data() {
 			return {
+        titleId: '2',
 				title: '作文解析',
 				requirment: '要求：本文要求字数在100-300之间',
 				word_cnt: "100~300",
@@ -92,10 +93,19 @@
 				raw_essay: "I am happy to join with you today in what will go down in history as the greatest demonstration for freedom in the history of our nation.\nFive score years ago, a great American, in whose symbolic shadow we stand today, signed the Emancipation Proclamation. This momentous decree came as a great beacon light of hope to millions of Negro slaves who had been seared in the flames of withering injustice. It came as a joyous daybreak to end the long night of bad captivity.."
 			}
 		},
-		onLoad(){
+		onLoad(event){
+      this.titleId = event["titleId"]
 			this.GetEssayResult();
 		},
 		methods: {
+      //将json格式的machine_evaluate所有值提取出来，并拼接字符串，换行符分隔
+      parseMachineEvaluate(machine_evaluate){
+        let result = "";
+        for(let key in machine_evaluate){
+          result += `${machine_evaluate[key]}\n`;
+        }
+        return result;
+      },
 			handleBack() {
 			  uni.switchTab({
 				url: '../user/user'
@@ -109,7 +119,7 @@
 						Authorization: `Bearer ${uni.getStorageSync("token")}`,
 					},
 					data:{
-						title_id:'2'
+						title_id:this.titleId,
 					},
 					success: (res) => {
 						console.log(res.data);

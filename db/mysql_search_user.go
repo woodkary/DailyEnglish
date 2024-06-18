@@ -1623,7 +1623,7 @@ func GetThirdPunchResultForDay(rdb *redis.Client, ctx context.Context, userID in
 }
 
 type WritingTask struct {
-	TitleID      int    `json:"title_id"`
+	TitleID      string `json:"title_id"`
 	Title        string `json:"title"`
 	Manager_name string `json:"manager_name"`
 	Word_num     string `json:"word_num"`
@@ -1635,116 +1635,134 @@ type WritingTask struct {
 	Machine_mark int    `json:"score"`
 }
 
-// 查询用户的写作任务，写作训练和已完成的写作训练和写作任务
 func GetUserWritingTask(db *sql.DB, user_id int) ([]WritingTask, []WritingTask, []WritingTask, error) {
-	//先根据user_id查询用户的team_id，再根据team_id查询所属团队发布的title_ids
-	var team_id int
+	// 定义结果集
 	Tasks := []WritingTask{}
 	TrainingTasks := []WritingTask{}
 	FinishedTasks := []WritingTask{}
+
+	// 查询用户的team_id
+	var team_id int
 	err := db.QueryRow("SELECT team_id FROM `user-team` WHERE user_id = ?", user_id).Scan(&team_id)
 	if err != nil {
 		return nil, nil, nil, err
 	}
+
+	// 查询团队和系统发布的所有title_ids
 	var title_ids []int
-	rows, err := db.Query("SELECT title_id FROM composition WHERE team_id = ?", team_id)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-	for rows.Next() {
-		var title_id int
-		err := rows.Scan(&title_id)
-		if err != nil {
-			return nil, nil, nil, err
-		}
-		title_ids = append(title_ids, title_id)
-	}
-	//再根据title_ids查询composition_evaluate表看用户是否已经完成了这些写作任务
-	for _, title_id := range title_ids {
-		var WritingTask WritingTask
-		var manager_id, grade int
-		err := db.QueryRow("SELECT composition_title,manager_id,word_num,composition_require,publish_date,grade FROM composition WHERE title_id = ?", title_id).Scan(&WritingTask.Title, &manager_id, &WritingTask.Word_num, &WritingTask.Requirement, &WritingTask.Publish_date, &grade)
-		if err != nil {
-			return nil, nil, nil, err
-		}
-		WritingTask.TitleID = title_id
-		WritingTask.Grade = gradeMap[grade]
-		WritingTask.Tag = "任务"
-		//再根据manager_id查询manager_name
-		err = db.QueryRow("SELECT manager_name FROM manager_info WHERE manager_id = ?", manager_id).Scan(&WritingTask.Manager_name)
-		if err != nil {
-			return nil, nil, nil, err
-		}
-		//再根据title_id查询composition_evaluate表看用户是否已经完成了这些写作任务
-		var count int
-		err = db.QueryRow("SELECT COUNT(*) FROM composition_evaluate WHERE user_id = ? AND title_id = ?", user_id, title_id).Scan(&count)
-		if err != nil {
-			return nil, nil, nil, err
-		}
-		if count == 0 {
-			Tasks = append(Tasks, WritingTask)
-		} else {
-			//再根据title_id和user_id查询composition_evaluate表中的submit_date和machine_mark
-			err = db.QueryRow("SELECT respond_date,machine_mark FROM composition_evaluate WHERE user_id = ? AND title_id = ?", user_id, title_id).Scan(&WritingTask.Submit_date, &WritingTask.Machine_mark)
-			if err != nil {
-				return nil, nil, nil, err
-			}
-			FinishedTasks = append(FinishedTasks, WritingTask)
-		}
-	}
-	//再根据team_id = 0查询写作训练
 	var finish_ids []int
-	rows, err = db.Query("SELECT title_id FROM composition WHERE team_id = ?", 0)
+
+	// 执行合并查询
+	rows, err := db.Query(`
+        SELECT title_id, team_id 
+        FROM composition 
+        WHERE team_id = ? OR team_id = 0`, team_id)
 	if err != nil {
 		return nil, nil, nil, err
 	}
+	defer rows.Close()
 	for rows.Next() {
-		var title_id int
-		err := rows.Scan(&title_id)
+		var title_id, t_id int
+		err := rows.Scan(&title_id, &t_id)
 		if err != nil {
 			return nil, nil, nil, err
 		}
-		finish_ids = append(finish_ids, title_id)
-	}
-	//再根据title_ids查询composition_evaluate表看用户是否已经完成了这些写作训练
-	for _, title_id := range finish_ids {
-		var WritingTask WritingTask
-		var manager_id, grade int
-		err = db.QueryRow("SELECT composition_title,manager_id,word_num,composition_require,publish_date,grade FROM composition WHERE title_id = ?", title_id).Scan(&WritingTask.Title, &manager_id, &WritingTask.Word_num, &WritingTask.Requirement, &WritingTask.Publish_date, &grade)
-		if err != nil {
-			return nil, nil, nil, err
-		}
-		WritingTask.TitleID = title_id
-		WritingTask.Grade = gradeMap[grade]
-		WritingTask.Tag = "训练"
-		WritingTask.Manager_name = "系统"
-		//再根据title_id查询composition_evaluate表看用户是否已经完成了这些写作训练
-		fmt.Println("title_id:", title_id, "user_id:", user_id)
-		var count int
-		err = db.QueryRow("SELECT COUNT(*) FROM composition_evaluate WHERE user_id = ? AND title_id = ?", user_id, title_id).Scan(&count)
-		if err != nil {
-			return nil, nil, nil, err
-		}
-		if count == 0 {
-			TrainingTasks = append(TrainingTasks, WritingTask)
+		if t_id == team_id {
+			title_ids = append(title_ids, title_id)
 		} else {
-			//再根据title_id和user_id查询composition_evaluate表中的submit_date和machine_mark
-			err = db.QueryRow("SELECT respond_date,machine_mark FROM composition_evaluate WHERE user_id = ? AND title_id = ?", user_id, title_id).Scan(&WritingTask.Submit_date, &WritingTask.Machine_mark)
-			//根据gradeScoreMap得到满分分数将machine_mark转换为百分制
-			if err != nil {
-				return nil, nil, nil, err
-			}
-			FinishedTasks = append(FinishedTasks, WritingTask)
+			finish_ids = append(finish_ids, title_id)
 		}
 	}
-	//把FinishedTasks按照submit_date排序（submit_date越早越靠后,submit的格式是string"2006-01-02"）
+
+	// 定义一个函数来处理任务
+	processTasks := func(ids []int, tag string) ([]WritingTask, []WritingTask, error) {
+		var tasks []WritingTask
+		var finishedTasks []WritingTask
+
+		if len(ids) == 0 {
+			return tasks, finishedTasks, nil
+		}
+
+		// 构建查询字符串
+		query := `
+            SELECT c.title_id, c.composition_title, c.manager_id, c.word_num, c.composition_require, 
+                   c.publish_date, c.grade, e.respond_date, e.machine_mark
+            FROM composition c
+            LEFT JOIN composition_evaluate e ON c.title_id = e.title_id AND e.user_id = ?
+            WHERE c.title_id IN (` + strings.Join(strings.Split(strings.Repeat("?", len(ids)), ""), ",") + `)`
+
+		args := make([]interface{}, len(ids)+1)
+		args[0] = user_id
+		for i, id := range ids {
+			args[i+1] = id
+		}
+
+		// 执行批量查询
+		rows, err := db.Query(query, args...)
+		if err != nil {
+			return nil, nil, err
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var task WritingTask
+			var manager_id, grade int
+			var respond_date sql.NullString
+			var machine_mark sql.NullInt32
+
+			err := rows.Scan(&task.TitleID, &task.Title, &manager_id, &task.Word_num, &task.Requirement,
+				&task.Publish_date, &grade, &respond_date, &machine_mark)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			task.Grade = gradeMap[grade]
+			task.Tag = tag
+
+			if tag == "任务" {
+				err = db.QueryRow("SELECT manager_name FROM manager_info WHERE manager_id = ?", manager_id).Scan(&task.Manager_name)
+				if err != nil {
+					return nil, nil, err
+				}
+			} else {
+				task.Manager_name = "系统"
+			}
+
+			if respond_date.Valid {
+				task.Submit_date = respond_date.String
+				task.Machine_mark = int(machine_mark.Int32)
+				finishedTasks = append(finishedTasks, task)
+			} else {
+				tasks = append(tasks, task)
+			}
+		}
+
+		return tasks, finishedTasks, nil
+	}
+
+	// 处理团队任务
+	teamTasks, finishedTeamTasks, err := processTasks(title_ids, "任务")
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	Tasks = append(Tasks, teamTasks...)
+	FinishedTasks = append(FinishedTasks, finishedTeamTasks...)
+
+	// 处理训练任务
+	trainingTasks, finishedTrainingTasks, err := processTasks(finish_ids, "训练")
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	TrainingTasks = append(TrainingTasks, trainingTasks...)
+	FinishedTasks = append(FinishedTasks, finishedTrainingTasks...)
+
+	// 按照提交日期对已完成任务进行排序
 	sort.Slice(FinishedTasks, func(i, j int) bool {
-		//先把string转为time
 		iTime, _ := time.Parse("2006-01-02", FinishedTasks[i].Submit_date)
 		jTime, _ := time.Parse("2006-01-02", FinishedTasks[j].Submit_date)
-		//再比较
 		return iTime.After(jTime)
 	})
+
 	return Tasks, TrainingTasks, FinishedTasks, nil
 }
 
@@ -1777,56 +1795,62 @@ type SentsFeedback struct {
 
 func GetEssayResult(db *sql.DB, title_ID int, user_id int) (EssayResult, error) {
 	essayResult := EssayResult{}
-	//根据title_id查询composition表中的title
-	var title string
-	err := db.QueryRow("SELECT composition_title,word_num,composition_require FROM composition WHERE title_id = ?", title_ID).Scan(&title, &essayResult.Word_cnt, &essayResult.Requirment)
+
+	// 合并查询获取composition和composition_evaluate的数据
+	query := `
+        SELECT c.composition_title, c.word_num, c.composition_require, e.evaluate_id, e.machine_mark, e.machine_evaluate, 
+               e.teacher_mark, e.teacher_evaluate, e.major_score, e.rawessay
+        FROM composition c
+        LEFT JOIN composition_evaluate e ON c.title_id = e.title_id
+        WHERE c.title_id = ? AND e.user_id = ?`
+
+	var major_score string
+	var evaluate_id int
+
+	err := db.QueryRow(query, title_ID, user_id).Scan(&essayResult.Title, &essayResult.Word_cnt, &essayResult.Requirment,
+		&evaluate_id, &essayResult.Machine_mark, &essayResult.Machine_evaluate,
+		&essayResult.Teacher_mark, &essayResult.Teacher_evaluate, &major_score, &essayResult.RawEssay)
 	if err != nil {
 		return EssayResult{}, err
 	}
-	essayResult.Title = title
-	//根据title_id和user_id查询composition_evaluate表中的machine_mark和machine_evaluate
-	var machine_mark int
-	var machine_evaluate string
-	var teacher_mark int
-	var teacher_evaluate string
-	var major_score string
-	var evaluate_id int
-	err = db.QueryRow("SELECT evaluate_id,machine_mark,machine_evaluate,teacher_mark,teacher_evaluate,major_score,rawessay FROM composition_evaluate WHERE user_id = ? AND title_id = ?", user_id, title_ID).Scan(&evaluate_id, &machine_mark, &machine_evaluate, &teacher_mark, &teacher_evaluate, &major_score, &essayResult.RawEssay)
-	if err != nil {
-		return essayResult, err
-	}
-	essayResult.Machine_evaluate = machine_evaluate
-	essayResult.Machine_mark = machine_mark
-	essayResult.Teacher_evaluate = teacher_evaluate
-	essayResult.Teacher_mark = teacher_mark
 
-	//将major_score json格式转为MajorScore结构
+	// 将major_score JSON字符串转为MajorScore结构
 	err = json.Unmarshal([]byte(major_score), &essayResult.MajorScore)
 	if err != nil {
 		return essayResult, err
 	}
-	//根据title_id和user_id查询evaluate_everysentence表中的所有数据
-	rows, err := db.Query("SELECT paraid,sentid,rawsent,errorposinfo,sentfeedback,correctedsent,is_containgrammarerror,is_validlangsent FROM evaluate_everysentence WHERE evaluate_id = ?", evaluate_id)
+
+	// 查询evaluate_everysentence表中的所有数据
+	rows, err := db.Query(`
+        SELECT paraid, sentid, rawsent, errorposinfo, sentfeedback, correctedsent, is_containgrammarerror, is_validlangsent 
+        FROM evaluate_everysentence 
+        WHERE evaluate_id = ?`, evaluate_id)
 	if err != nil {
 		return essayResult, err
 	}
 	defer rows.Close()
+
 	var sentsFeedback []SentsFeedback
 	for rows.Next() {
 		var sentFeedback SentsFeedback
 		var errorPosInfo string
-		err := rows.Scan(&sentFeedback.ParaId, &sentFeedback.SentId, &sentFeedback.RawSent, &errorPosInfo, &sentFeedback.SentFeedback, &sentFeedback.CorrectedSent, &sentFeedback.IsContainGrammarError, &sentFeedback.IsValidLangSent)
+
+		err := rows.Scan(&sentFeedback.ParaId, &sentFeedback.SentId, &sentFeedback.RawSent, &errorPosInfo, &sentFeedback.SentFeedback,
+			&sentFeedback.CorrectedSent, &sentFeedback.IsContainGrammarError, &sentFeedback.IsValidLangSent)
 		if err != nil {
 			return essayResult, err
 		}
-		//将errorPosInfo json格式转为ErrorPosInfos结构
+
+		// 将errorPosInfo JSON字符串转为ErrorPosInfos结构
 		err = json.Unmarshal([]byte(errorPosInfo), &sentFeedback.ErrorPosInfos)
 		if err != nil {
 			return essayResult, err
 		}
+
 		sentsFeedback = append(sentsFeedback, sentFeedback)
 	}
 	essayResult.SentsFeedback = sentsFeedback
+
 	return essayResult, nil
 }
 
