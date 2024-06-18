@@ -112,31 +112,29 @@
             wordScore: 89,// 词汇得分
             wordAdvice: "单词拼写基本正确，单词拼写基础扎实；词汇量较为丰富，能使用一定数量的高级词汇",// 词汇评价
         },
-        essayFeedback:[//文章批改结果
-            {
-                sentsFeedback: [// 句子内容及得分
-                    {
-                        paraId: 0,// 段落id，从0有序编号
-                        sentId: 7,// 句子id，从0有序编号
-                        // 原句
-                        rawSent: "And taking too much sleeping pills is bad for their health.",
-                        errorPosInfos: [// 错误信息
-                            {
-                                // 错误内容
-                                errorTypeTitle: "不同类代词混淆",
-                                // 错误基本信息
-                                errBaseInfo: "代词类型混淆会使指代对象有误，建议将【much】修改为【many】",
-                                startPos: 15,// 错误开始位置
-                                endPos: 19,// 错误结束位置
-                                //从原句下标[startPos, endPos)中提取出的错误内容并标红显示
-                            }
-                        ],
-                        //正确句子
-                        correctedSent: "And taking too many sleeping pills is bad for their health.",
-                    }
-                ],
-            }
-        ]
+        essayFeedback:{//文章批改结果
+            sentsFeedback: [// 句子内容及得分
+                {
+                    paraId: 0,// 段落id，从0有序编号
+                    sentId: 7,// 句子id，从0有序编号
+                    // 原句
+                    rawSent: "And taking too much sleeping pills is bad for their health.",
+                    errorPosInfos: [// 错误信息
+                        {
+                            // 错误内容
+                            errorTypeTitle: "不同类代词混淆",
+                            // 错误基本信息
+                            errBaseInfo: "代词类型混淆会使指代对象有误，建议将【much】修改为【many】",
+                            startPos: 15,// 错误开始位置
+                            endPos: 19,// 错误结束位置
+                            //从原句下标[startPos, endPos)中提取出的错误内容并标红显示
+                        }
+                    ],
+                    //正确句子
+                    correctedSent: "And taking too many sleeping pills is bad for their health.",
+                }
+            ]
+        }
     }
     //教师评分的请求参数
     let teacherScoreParams = {
