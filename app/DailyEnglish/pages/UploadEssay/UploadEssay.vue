@@ -57,7 +57,7 @@
 				console.log('Getting base64 for:', tempFilePath);
 				try {
 					const base64 = await this.convertToBase64(tempFilePath);
-					console.log('Base64:', base64);
+					//console.log('Base64:', base64);
 					this.base64Data = base64; // 存储base64数据
 				} catch (error) {
 					console.error('Error getting base64:', error);

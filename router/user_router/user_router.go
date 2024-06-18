@@ -1626,4 +1626,48 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			"msg":  "上传成功",
 		})
 	})
+	//作文结果
+	r.POST("/api/users/composition_result", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
+		UserClaims, ok := user.(*utils.UserClaims) // 将 user 转换为 *UserClaims 类型
+		if !ok {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": 500,
+				"msg":  "服务器错误",
+			})
+			return
+		}
+		type Request struct {
+			TitleId string `json:"title_id"`
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"code": 400,
+				"msg":  "请求参数错误",
+			})
+			return
+		}
+		titleID, _ := strconv.Atoi(request.TitleId)
+		//查询作文结果
+		essayResult, err := controlsql.GetEssayResult(db, titleID, UserClaims.UserID)
+		if err != nil {
+			log.Panic(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": 500,
+				"msg":  "服务器内部错误"})
+			return
+		}
+		fmt.Println(essayResult)
+		type Response struct {
+			Code        int                    `json:"code"`
+			Msg         string                 `json:"msg"`
+			EssayResult controlsql.EssayResult `json:"essay_result"`
+		}
+		var response Response
+		response.Code = 200
+		response.Msg = "成功"
+		response.EssayResult = essayResult
+		c.JSON(http.StatusOK, response)
+	})
 }

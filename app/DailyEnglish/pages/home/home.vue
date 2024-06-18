@@ -615,9 +615,9 @@
 						'Authorization': `Bearer ${uni.getStorageSync('token')}`
 					},
 					method: 'POST',
-          data:{
-            times: this.isDaka+this.isReview
-          },
+					data:{
+						times: this.isDaka+this.isReview
+					},
 					success: (res) => {
             //token失效
             if(res.statusCode === 401){

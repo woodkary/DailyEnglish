@@ -1685,10 +1685,7 @@ func GetUserWritingTask(db *sql.DB, user_id int) ([]WritingTask, []WritingTask, 
 			Tasks = append(Tasks, WritingTask)
 		} else {
 			//再根据title_id和user_id查询composition_evaluate表中的submit_date和machine_mark
-			var machine_mark float64
-			err = db.QueryRow("SELECT respond_date,machine_mark FROM composition_evaluate WHERE user_id = ? AND title_id = ?", user_id, title_id).Scan(&WritingTask.Submit_date, &machine_mark)
-			//根据gradeScoreMap得到满分分数将machine_mark转换为百分制
-			WritingTask.Machine_mark = int(machine_mark / gradeScoreMap[grade] * 100)
+			err = db.QueryRow("SELECT respond_date,machine_mark FROM composition_evaluate WHERE user_id = ? AND title_id = ?", user_id, title_id).Scan(&WritingTask.Submit_date, &WritingTask.Machine_mark)
 			if err != nil {
 				return nil, nil, nil, err
 			}
@@ -1732,10 +1729,8 @@ func GetUserWritingTask(db *sql.DB, user_id int) ([]WritingTask, []WritingTask, 
 			TrainingTasks = append(TrainingTasks, WritingTask)
 		} else {
 			//再根据title_id和user_id查询composition_evaluate表中的submit_date和machine_mark
-			var machine_mark float64
-			err = db.QueryRow("SELECT respond_date,machine_mark FROM composition_evaluate WHERE user_id = ? AND title_id = ?", user_id, title_id).Scan(&WritingTask.Submit_date, &machine_mark)
+			err = db.QueryRow("SELECT respond_date,machine_mark FROM composition_evaluate WHERE user_id = ? AND title_id = ?", user_id, title_id).Scan(&WritingTask.Submit_date, &WritingTask.Machine_mark)
 			//根据gradeScoreMap得到满分分数将machine_mark转换为百分制
-			WritingTask.Machine_mark = int(machine_mark / gradeScoreMap[grade] * 100)
 			if err != nil {
 				return nil, nil, nil, err
 			}
@@ -1751,6 +1746,88 @@ func GetUserWritingTask(db *sql.DB, user_id int) ([]WritingTask, []WritingTask, 
 		return iTime.After(jTime)
 	})
 	return Tasks, TrainingTasks, FinishedTasks, nil
+}
+
+type EssayResult struct {
+	TitleID    int    `json:"title_id"`
+	Title      string `json:"title"`
+	RawEssay   string `json:"raw_essay"`
+	Word_cnt   string `json:"word_cnt"`
+	Requirment string `json:"requirment"`
+	//机器评分与评价
+	Machine_mark     int    `json:"machine_mark"`
+	Machine_evaluate string `json:"machine_evaluate"`
+	//教师评分与评价
+	Teacher_mark     int              `json:"teacher_mark"`
+	Teacher_evaluate string           `json:"teacher_evaluate"`
+	MajorScore       utils.MajorScore `json:"majorScore"`
+	//逐句点评
+	SentsFeedback []SentsFeedback `json:"sents_feedback"`
+}
+type SentsFeedback struct {
+	ParaId                int                   `json:"para_id"`
+	SentId                int                   `json:"sent_id"`
+	RawSent               string                `json:"raw_sent"`
+	ErrorPosInfos         []utils.ErrorPosInfos `json:"errorPosInfos"`
+	SentFeedback          string                `json:"sent_feedback"`
+	CorrectedSent         string                `json:"corrected_sent"`
+	IsContainGrammarError bool                  `json:"is_contain_grammar_error"`
+	IsValidLangSent       bool                  `json:"is_valid_lang_sent"`
+}
+
+func GetEssayResult(db *sql.DB, title_ID int, user_id int) (EssayResult, error) {
+	essayResult := EssayResult{}
+	//根据title_id查询composition表中的title
+	var title string
+	err := db.QueryRow("SELECT composition_title,word_num,composition_require FROM composition WHERE title_id = ?", title_ID).Scan(&title, &essayResult.Word_cnt, &essayResult.Requirment)
+	if err != nil {
+		return EssayResult{}, err
+	}
+	essayResult.Title = title
+	//根据title_id和user_id查询composition_evaluate表中的machine_mark和machine_evaluate
+	var machine_mark int
+	var machine_evaluate string
+	var teacher_mark int
+	var teacher_evaluate string
+	var major_score string
+	var evaluate_id int
+	err = db.QueryRow("SELECT evaluate_id,machine_mark,machine_evaluate,teacher_mark,teacher_evaluate,major_score,rawessay FROM composition_evaluate WHERE user_id = ? AND title_id = ?", user_id, title_ID).Scan(&evaluate_id, &machine_mark, &machine_evaluate, &teacher_mark, &teacher_evaluate, &major_score, &essayResult.RawEssay)
+	if err != nil {
+		return essayResult, err
+	}
+	essayResult.Machine_evaluate = machine_evaluate
+	essayResult.Machine_mark = machine_mark
+	essayResult.Teacher_evaluate = teacher_evaluate
+	essayResult.Teacher_mark = teacher_mark
+
+	//将major_score json格式转为MajorScore结构
+	err = json.Unmarshal([]byte(major_score), &essayResult.MajorScore)
+	if err != nil {
+		return essayResult, err
+	}
+	//根据title_id和user_id查询evaluate_everysentence表中的所有数据
+	rows, err := db.Query("SELECT paraid,sentid,rawsent,errorposinfo,sentfeedback,correctedsent,is_containgrammarerror,is_validlangsent FROM evaluate_everysentence WHERE evaluate_id = ?", evaluate_id)
+	if err != nil {
+		return essayResult, err
+	}
+	defer rows.Close()
+	var sentsFeedback []SentsFeedback
+	for rows.Next() {
+		var sentFeedback SentsFeedback
+		var errorPosInfo string
+		err := rows.Scan(&sentFeedback.ParaId, &sentFeedback.SentId, &sentFeedback.RawSent, &errorPosInfo, &sentFeedback.SentFeedback, &sentFeedback.CorrectedSent, &sentFeedback.IsContainGrammarError, &sentFeedback.IsValidLangSent)
+		if err != nil {
+			return essayResult, err
+		}
+		//将errorPosInfo json格式转为ErrorPosInfos结构
+		err = json.Unmarshal([]byte(errorPosInfo), &sentFeedback.ErrorPosInfos)
+		if err != nil {
+			return essayResult, err
+		}
+		sentsFeedback = append(sentsFeedback, sentFeedback)
+	}
+	essayResult.SentsFeedback = sentsFeedback
+	return essayResult, nil
 }
 
 // 说实话，实在懒得再把这些搬进utils包里了，直接写在这里吧。
@@ -1786,13 +1863,27 @@ func toStringSlice(value interface{}) []string {
 // 向数据库存入一段机器评分作文的数据
 func InsertEssayScore(db *sql.DB, userID int, titleID int, url string, result utils.Response) error {
 	//先插入一条记录到composition_score表
-	insertQuery, err := db.Prepare("INSERT INTO composition_evaluate(user_id,title_id,composition_url,respond_date,machine_evaluate,machine_mark,rawessay) VALUES(?,?,?,?,?,?,?)")
+	insertQuery, err := db.Prepare("INSERT INTO composition_evaluate(user_id,title_id,composition_url,respond_date,machine_evaluate,machine_mark,rawessay,major_score) VALUES(?,?,?,?,?,?,?,?)")
 	if err != nil {
 		log.Panic(err)
 		return err
 	}
 	defer insertQuery.Close()
-	_, err = insertQuery.Exec(userID, titleID, url, time.Now().Format("2006-01-02"), result.Result.EssayAdvice, result.Result.TotalScore, result.Result.RawEssay)
+	var grade int
+	err = db.QueryRow("SELECT grade FROM composition WHERE title_id = ?", titleID).Scan(&grade)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	//将分数转换为百分制
+	TotalScore := int(result.Result.TotalScore / gradeScoreMap[grade] * 100)
+	//将result.Result.EssayFeedback.MajorScore json格式转为字符串
+	majorScore, err := json.Marshal(result.Result.MajorScore)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	_, err = insertQuery.Exec(userID, titleID, url, time.Now().Format("2006-01-02"), result.Result.EssayAdvice, TotalScore, result.Result.RawEssay, string(majorScore))
 	if err != nil {
 		log.Panic(err)
 		return err
@@ -1806,33 +1897,37 @@ func InsertEssayScore(db *sql.DB, userID int, titleID int, url string, result ut
 	}
 	//再更新evaluate_everysentence表
 	for _, sentence := range result.Result.EssayFeedback.SentsFeedback {
-		insertQuery, err := db.Prepare("INSERT INTO evaluate_everysentence(evaluate_id,paraid,sentid,rawsent,errorposinfo,sentfeedback,correctedsent,is_containgrammarerror,is_validlangsent) VALUES(?,?,?,?,?,?,?,?,?)")
-		if err != nil {
-			log.Panic(err)
-			return err
-		}
-		defer insertQuery.Close()
-		var is_containgrammarerror int
-		var is_validlangsent int
-		if sentence.IsContainGrammarError {
-			is_containgrammarerror = 1
-		} else {
-			is_containgrammarerror = 0
-		}
-		if sentence.IsValidLangSent {
-			is_validlangsent = 1
-		} else {
-			is_validlangsent = 0
-		}
-		KnowledgeExp := ""
 		if len(sentence.ErrorPosInfos) > 0 {
-			KnowledgeExp = sentence.ErrorPosInfos[0].KnowledgeExp
+			insertQuery, err := db.Prepare("INSERT INTO evaluate_everysentence(evaluate_id,paraid,sentid,rawsent,errorposinfo,sentfeedback,correctedsent,is_containgrammarerror,is_validlangsent) VALUES(?,?,?,?,?,?,?,?,?)")
+			if err != nil {
+				log.Panic(err)
+				return err
+			}
+			defer insertQuery.Close()
+			var is_containgrammarerror int
+			var is_validlangsent int
+			if sentence.IsContainGrammarError {
+				is_containgrammarerror = 1
+			} else {
+				is_containgrammarerror = 0
+			}
+			if sentence.IsValidLangSent {
+				is_validlangsent = 1
+			} else {
+				is_validlangsent = 0
+			}
+			errorPosInfo, err := json.Marshal(sentence.ErrorPosInfos)
+			if err != nil {
+				log.Panic(err)
+				return err
+			}
+			_, err = insertQuery.Exec(scoreID, sentence.ParaId, sentence.SentId, sentence.RawSent, string(errorPosInfo), sentence.SentFeedback, sentence.CorrectedSent, is_containgrammarerror, is_validlangsent)
+			if err != nil {
+				log.Panic(err)
+				return err
+			}
 		}
-		_, err = insertQuery.Exec(scoreID, sentence.ParaId, sentence.SentId, sentence.RawSent, KnowledgeExp, sentence.SentFeedback, sentence.CorrectedSent, is_containgrammarerror, is_validlangsent)
-		if err != nil {
-			log.Panic(err)
-			return err
-		}
+
 	}
 	return nil
 }

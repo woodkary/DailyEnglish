@@ -23,12 +23,32 @@ type Result struct {
 	Title         string        `json:"title"`
 	TotalScore    float64       `json:"totalScore"`
 	EssayFeedback EssayFeedback `json:"essayFeedback"`
+	MajorScore    MajorScore    `json:"majorScore"`
 }
 
 type EssayFeedback struct {
 	SentsFeedback []SentFeedback `json:"sentsFeedback"`
 }
 
+/*
+{"grammarAdvice": "熟练使用各种语法结构写作，偶尔有语法错误，超厉害！",
+"wordScore": 84.4,
+"grammarScore": 90.6,
+"topicScore": 73.0,
+"emphasis": 2,
+"wordAdvice": "单词拼写极少出现错误，或无错误；词汇很丰富，用词很准确，超厉害！",
+"structureScore": 83.8,
+"structureAdvice": "能够灵活使用多种衔接手段，超厉害！"}
+*/
+type MajorScore struct {
+	GrammarAdvice   string  `json:"grammarAdvice"`
+	WordScore       float32 `json:"wordScore"`
+	GrammarScore    float32 `json:"grammarScore"`
+	TopicScore      float32 `json:"topicScore"`
+	WordAdvice      string  `json:"wordAdvice"`
+	StructureScore  float32 `json:"structureScore"`
+	StructureAdvice string  `json:"structureAdvice"`
+}
 type SentFeedback struct {
 	RawSent               string          `json:"rawSent"`
 	ParaId                int             `json:"paraId"`
@@ -44,7 +64,11 @@ type SentFeedback struct {
 	IsValidLangSent       bool            `json:"isValidLangSent"`
 }
 type ErrorPosInfos struct {
-	KnowledgeExp string `json:"knowledgeExp"`
+	StartPos       int    `json:"startPos"`
+	EndPos         int    `json:"endPos"`
+	ErrorTypeTitle string `json:"errorTypeTitle"`
+	ErrBaseInfo    string `json:"errBaseInfo"`
+	KnowledgeExp   string `json:"knowledgeExp"`
 }
 type CorrectWritingRequestParams struct {
 	Q                 []string `json:"q"`
