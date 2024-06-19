@@ -18,82 +18,219 @@
 </head>
 
 <body>
-<nav>
-    <div class="logo-name">
-        <!--        <div class="logo-image">
+    <nav>
+        <div class="logo-name">
+            <!--        <div class="logo-image">
               <img src="./image/little-edellweiss.regular.webp" alt="">
           </div>-->
 
-        <span class="logo_name">DailyEnglish</span>
-    </div>
-
-    <div class="menu-items">
-        <ul class="nav-links">
-            <li><a href="index.html">
-                <i class="uil uil-estate"></i>
-                <span class="link-name">主页</span>
-            </a></li>
-            <!--            <li><a href="issuePunch.html">-->
-            <!--                <i class="uil uil-calendar-alt"></i>-->
-            <!--                <span class="link-name">打卡发布</span>-->
-            <!--            </a></li>-->
-            <li><a href="history.html">
-                <i class="uil uil-calender"></i>
-                <span class="link-name">考试相关</span>
-            </a></li>
-            <!--            <li><a href="test-statistics.html">-->
-            <!--                <i class="uil uil-chart"></i>-->
-            <!--                <span class="link-name">考试情况</span>-->
-            <!--            </a></li>-->
-            <li><a href="manage.html">
-                <i class="uil uil-meh-alt"></i>
-                <span class="link-name">成员管理</span>
-            </a></li>
-            <li><a href="user.html">
-                <i class="uil uil-user"></i>
-                <span class="link-name">个人中心</span>
-            </a></li>
-        </ul>
-
-        <ul class="logout-mode">
-            <li><a href="login&register.html" onclick="logout()">
-                <i class="uil uil-signout"></i>
-                <span class="link-name">Logout</span>
-            </a></li>
-
-            <li class="mode">
-                <a href="#">
-                    <i class="uil uil-moon"></i>
-                    <span class="link-name">Dark Mode</span>
-                </a>
-
-                <div class="mode-toggle">
-                    <span class="switch"></span>
-                </div>
-            </li>
-        </ul>
-    </div>
-</nav>
-
-<section class="dashboard">
-    <div class="top">
-        <i class="uil uil-bars sidebar-toggle"></i>
-
-        <div class="search-box">
-            <i class="uil uil-search"></i>
-            <input type="text" placeholder="Search here...">
+            <span class="logo_name">DailyEnglish</span>
         </div>
 
-        <img src="image/pikachu.jpg" alt="">
-    </div>
+        <div class="menu-items">
+            <ul class="nav-links">
+                <li><a href="index.html">
+                        <i class="uil uil-estate"></i>
+                        <span class="link-name">主页</span>
+                    </a></li>
+                <!--            <li><a href="issuePunch.html">-->
+                <!--                <i class="uil uil-calendar-alt"></i>-->
+                <!--                <span class="link-name">打卡发布</span>-->
+                <!--            </a></li>-->
+                <li><a href="history.html">
+                        <i class="uil uil-calender"></i>
+                        <span class="link-name">考试相关</span>
+                    </a></li>
+                <!--            <li><a href="test-statistics.html">-->
+                <!--                <i class="uil uil-chart"></i>-->
+                <!--                <span class="link-name">考试情况</span>-->
+                <!--            </a></li>-->
+                <li><a href="manage.html">
+                        <i class="uil uil-meh-alt"></i>
+                        <span class="link-name">成员管理</span>
+                    </a></li>
+                <li><a href="user.html">
+                        <i class="uil uil-user"></i>
+                        <span class="link-name">个人中心</span>
+                    </a></li>
+            </ul>
 
-    <div class="dash-content">
+            <ul class="logout-mode">
+                <li><a href="login&register.html" onclick="logout()">
+                        <i class="uil uil-signout"></i>
+                        <span class="link-name">Logout</span>
+                    </a></li>
 
-    </div>
-</section>
+                <li class="mode">
+                    <a href="#">
+                        <i class="uil uil-moon"></i>
+                        <span class="link-name">Dark Mode</span>
+                    </a>
+
+                    <div class="mode-toggle">
+                        <span class="switch"></span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="dashboard">
+        <div class="top">
+            <i class="uil uil-bars sidebar-toggle"></i>
+
+            <div class="search-box">
+                <i class="uil uil-search"></i>
+                <input type="text" placeholder="Search here...">
+            </div>
+
+            <img src="image/pikachu.jpg" alt="">
+        </div>
+
+        <div class="dash-content">
+            <div class="tabs">
+                <button class="tab-button active" onclick="openTab(event, 'tab1')">系统评分</button>
+                <button class="tab-button" onclick="openTab(event, 'tab2')">教师评分</button>
+            </div>
+            <div id="tab1" class="tab-content" style="display: block;">
+                <div class="row1">
+                    <span class="score">90</span>
+                    <span>总分</span>
+                </div>
+                <div class="row2">
+                    <div class="star-box">
+                        <input type="radio" name="star" id="star5" hidden />
+                        <label for="star5"></label>
+                
+                        <input type="radio" name="star" id="star4" hidden />
+                        <label for="star4"></label>
+                
+                        <input type="radio" name="star" id="star3" hidden />
+                        <label for="star3"></label>
+                
+                        <input type="radio" name="star" id="star2" hidden />
+                        <label for="star2"></label>
+                
+                        <input type="radio" name="star" id="star1" hidden />
+                        <label for="star1"></label>
+                    </div>
+                </div>
+                <div class="row3">
+
+                </div>
+
+            </div>
+            <div id="tab2" class="tab-content">
+                <div class="teacher-score">
+                    <div class="score">
+                        <span>教师评分：</span>
+                        <span id="teacherMark"></span>
+                    </div>
+                    <div class="evaluate">
+                        <span>教师评价：</span>
+                        <span id="teacherEvaluate"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </body>
 <style>
+    .tabs {
+        display: flex;
+        margin-left: 2%;
+        margin-top: 3%;
+        width: fit-content;
+        border-radius: 7%;
+    }
 
+    .tabs {
+        border-bottom: 2px solid #f5f5f5;
+    }
+
+    .tab-button {
+        background-color: white;
+        border: none;
+        padding: 2px 20px;
+        height: 30px;
+        cursor: pointer;
+        font-size: large;
+        border-radius: 7%;
+        transition: background-color 0.3s;
+    }
+
+    .tab-button:hover {
+        background-color: #f1f1f1;
+        color: black;
+    }
+
+    .tab-button.active {
+        background-color: #456de7;
+        color: white;
+    }
+
+    .tab-content {
+        display: none;
+        border-top: none;
+        width: 900px;
+        height: auto;
+        background-color: white;
+        margin-left: 20px;
+        padding: 20px;
+        height: 180px;
+        border-radius: 5px;
+    }
+
+    .row1 {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width:15%;
+        border-right: 1px solid #f5f5f5;
+        height:100%;
+    }
+
+    .row2{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width:35%;
+        border-right: 1px solid #f5f5f5;
+        height:100%;
+    }
+
+    .row3{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width:50%;
+        height:100%;
+    }
+    .star-box {
+            display: table;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+        }
+
+        .star-box label {
+            float: right;
+            color: #999;
+       }
+
+        .star-box label::after {
+            content: '★';
+            font-size: 28px;
+            padding: 5px;
+            display: inline-block;
+            line-height: 1;
+        }
+
+        .star-box input:checked~label,
+        .star-box label:hover~label,
+        .star-box label:hover {
+            color: red;
+        }
 </style>
 <script>
     //机器评分的结果
@@ -103,7 +240,7 @@
         sentNum: 11,// 文章句子数
         essayAdvice: "作文整体水平较高",// 文章最终评价
         totalScore: 95,//总分，所有分数满分都是100
-        majorScore:{//各模块得分
+        majorScore: {//各模块得分
             grammarScore: 89.8,//语言得分
             grammarAdvice: "存在少量语法错误，建议认真检查",
             topicScore: 66.2,//内容得分
@@ -112,7 +249,7 @@
             wordScore: 89,// 词汇得分
             wordAdvice: "单词拼写基本正确，单词拼写基础扎实；词汇量较为丰富，能使用一定数量的高级词汇",// 词汇评价
         },
-        essayFeedback:{//文章批改结果
+        essayFeedback: {//文章批改结果
             sentsFeedback: [// 句子内容及得分
                 {
                     paraId: 0,// 段落id，从0有序编号
@@ -140,6 +277,24 @@
     let teacherScoreParams = {
         teacherMark: 75.7,// 教师评分
         teacherEvaluate: "作文整体水平较高，语言表达清晰，内容丰富，结构合理，词汇量较为丰富，句子通顺，错误率较低。",// 教师评价
+    }
+
+    function openTab(event, tabId) {
+        // Hide all tab contents
+        var tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(function (content) {
+            content.style.display = 'none';
+        });
+
+        // Remove 'active' class from all tab buttons
+        var tabButtons = document.querySelectorAll('.tab-button');
+        tabButtons.forEach(function (button) {
+            button.classList.remove('active');
+        });
+
+        // Show the selected tab content and add 'active' class to the clicked tab button
+        document.getElementById(tabId).style.display = 'block';
+        event.currentTarget.classList.add('active');
     }
 </script>
 
