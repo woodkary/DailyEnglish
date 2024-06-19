@@ -1953,6 +1953,12 @@ func InsertEssayScore(db *sql.DB, userID int, titleID int, url string, result ut
 		}
 
 	}
+	//composition表的提交人数submit_count+1
+	_, err = db.Exec("UPDATE composition SET submit_count = submit_count + 1 WHERE title_id = ?", titleID)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
 	return nil
 }
 func GetEssayTitle(db *sql.DB, titleId int) (string, int, error) {
