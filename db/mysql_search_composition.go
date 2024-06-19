@@ -498,3 +498,12 @@ func GetRecordsByTitleID(db *sql.DB, title_id int) ([]Composition_evaluate_recor
 	}
 	return composition_evaluates, nil
 }
+func GetImgURL(db *sql.DB, titleID int, UserID int) (string, error) {
+	var url string
+	err := db.QueryRow("SELECT composition_url FROM composition_evaluate WHERE title_id = ? AND user_id = ?", titleID, UserID).Scan(&url)
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+	return url, nil
+}

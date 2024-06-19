@@ -821,7 +821,8 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		response.Msg = "成功"
 		response.Compositions = compositions
 		c.JSON(200, response)
-	}) // // 获取某作文所有学生提交记录
+	})
+	// // 获取某作文所有学生提交记录
 	r.POST("/api/team_manage/composition_mission/submission_records", tokenAuthMiddleware(), func(c *gin.Context) {
 		type Request struct {
 			TitleID string `json:"title_id"` // 作文题目ID
@@ -855,5 +856,54 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		response.Records = Records
 		c.JSON(200, response)
 	})
+	//获取某作文某学生的评价记录
+	r.POST("/api/team_manage/composition_mission/evaluation_records", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			TitleID string `json:"title_id"` // 作文题目ID
+			UserID  string `json:"user_id"`  // 用户名
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(400, "请求参数错误")
+			return
+		}
+		userID, err := strconv.Atoi(request.UserID)
+		if err != nil {
+			c.JSON(400, "请求参数错误")
+			return
+		}
+		titleID, err := strconv.Atoi(request.TitleID)
+		if err != nil {
+			c.JSON(400, "请求参数错误")
+			return
+		}
 
+		results, err := controlsql.GetEssayResult(db, titleID, userID)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		IMGUrl, err := controlsql.GetImgURL(db, titleID, userID)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		base64IMG, err := utils.GetImageFromOSS(IMGUrl)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		type Response struct {
+			Code      int                    `json:"code"`      // 状态码
+			Msg       string                 `json:"msg"`       // 消息
+			Result    controlsql.EssayResult `json:"result"`    // 作文评价记录
+			Base64IMG string                 `json:"base64img"` // 作文图片
+		}
+		var response Response
+		response.Code = 200
+		response.Msg = "成功"
+		response.Result = results
+		response.Base64IMG = base64IMG
+		c.JSON(200, response)
+	})
 }
