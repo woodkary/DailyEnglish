@@ -19,17 +19,6 @@
 </head>
 
 <body>
-<!--模态框-->
-<div class="modal" id="myModal">
-    <article class="modal-container">
-        <select name="category" class="category" id="teamSelect0" style="height: 40px; margin-left: 30px;">
-            <!--                            <option value="" disabled selected >选择班级</option> &lt;!&ndash; 默认占位文本 &ndash;&gt;-->
-            <option value="category1">Category 1</option>
-            <option value="category2">Category 2</option>
-            <option value="category3">Category 3</option>
-        </select>
-    </article>
-</div>
     <nav>
         <div class="logo-name">
             <span class="logo_name">DailyEnglish</span>
@@ -83,7 +72,12 @@
                 <i class="uil uil-search"></i>
                 <input type="text" placeholder="Search here...">
             </div>
-
+            <select name="category" class="category" id="modalTeamSelect" style="height: 40px; margin-left: 30px;">
+                <!--                            <option value="" disabled selected >选择班级</option> &lt;!&ndash; 默认占位文本 &ndash;&gt;-->
+                <option value="category1">Category 1</option>
+                <option value="category2">Category 2</option>
+                <option value="category3">Category 3</option>
+            </select>
             <img src="image/pikachu.jpg" alt="">
         </div>
 
@@ -268,6 +262,7 @@
         right: 0;
         bottom: 0;
         display: none;
+        z-index: 1000;
         align-items: center;
         justify-content: center;
         background-color: rgba(0, 0, 0, 0.25);
@@ -280,6 +275,17 @@
         display: flex;
         flex-direction: column;
         box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.25);
+    }
+    .modal-btn {
+        padding: 8px 16px;
+        font-size: 16px;
+        outline: none;
+        border: none;
+
+        color: #fff;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: 0.3s;
     }
 </style>
 

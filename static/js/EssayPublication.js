@@ -20,6 +20,30 @@ document.addEventListener("DOMContentLoaded", function() {
     init();
 
 });
+function modalTeamSelect(){
+    let teamSelect=document.getElementById("modalTeamSelect");
+    teamSelect.innerHTML="";
+    let flag=false;
+    if(teamAndStudents==null||teamAndStudents.length===0){
+        //如果没有团队数据，则提示用户
+        return;
+    }
+    for (let team in teamAndStudents) {
+        //在团队选择下拉框中添加团队选项
+        let newOption=document.createElement("option");
+        newOption.value=team;
+        newOption.text=team;
+        teamSelect.add(newOption);
+        if(!flag){
+            //默认选择第一个团队
+            teamSelect.value=team;
+            flag=true;
+            teamSelect.addEventListener("change", function() {
+                requestParams.team_id=parseInt(teamSelect.value);
+            });
+        }
+    }
+}
 function init(){
     //从本地缓存中获取teamId和name的映射关系
     let teamInfo=JSON.parse(localStorage.getItem("team_info"));
@@ -41,6 +65,7 @@ function init(){
     select.addEventListener("change", function() {
         requestParams.team_id=parseInt(select.value);
     });
+    modalTeamSelect();
 }
 function setTitle(title){
     requestParams.title=title;
@@ -185,11 +210,13 @@ renderSystemEssays(systemEssays,"考研");
 renderSystemEssays(systemEssays,"托福");
 renderSystemEssays(systemEssays,"雅思");
 renderSystemEssays(systemEssays,"GRE");
-function renderSystemEssays(essays,grade) {
+function renderSystemEssays(essays, grade) {
     let container = document.getElementById(grade);
-    //从essats中筛选出符合条件的作文，如果是空，则渲染全部作文
-    essays.forEach(essay => {
-        if(grade==essay.grade||grade=="全部"){
+    container.innerHTML = ''; // Clear existing content
+
+    // Filter essays based on grade
+    essays.forEach((essay, index) => {
+        if (grade == essay.grade || grade == "全部") {
             let card = document.createElement('div');
             card.className = 'card';
 
@@ -203,13 +230,19 @@ function renderSystemEssays(essays,grade) {
 
             let line3 = document.createElement('div');
             line3.className = 'line3';
-            line3.innerHTML = `<span class="time">上传时间：<span>${essay.publishDate}</span></span><div class="submit-btn2"><button type="submit">发布</button></div>`;
+            line3.innerHTML = `<span class="time">上传时间：<span>${essay.publishDate}</span></span><div class="submit-btn2"><button type="submit" id="button-${grade}-${index}">发布</button></div>`;
 
             card.appendChild(line1);
             card.appendChild(line2);
             card.appendChild(line3);
 
             container.appendChild(card);
+
+            // Add event listener to the button
+            let button = document.getElementById(`button-${grade}-${index}`);
+            button.addEventListener('click', () => {
+                request();
+            });
         }
     });
 }
