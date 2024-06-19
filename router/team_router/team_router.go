@@ -792,6 +792,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			c.JSON(500, "服务器错误")
 			return
 		}
+		fmt.Println(compositions)
 		type Response struct {
 			Code         int                                 `json:"code"`         // 状态码
 			Msg          string                              `json:"msg"`          // 消息

@@ -72,7 +72,12 @@
                 <i class="uil uil-search"></i>
                 <input type="text" placeholder="Search here...">
             </div>
-
+            <select name="category" class="category" id="modalTeamSelect" style="height: 40px; margin-left: 30px;">
+                <!--                            <option value="" disabled selected >选择班级</option> &lt;!&ndash; 默认占位文本 &ndash;&gt;-->
+                <option value="category1">Category 1</option>
+                <option value="category2">Category 2</option>
+                <option value="category3">Category 3</option>
+            </select>
             <img src="image/pikachu.jpg" alt="">
         </div>
 
@@ -183,15 +188,15 @@
                         </div>
                     </div>
                 </div>
-                    <div id="小学" class="subtab-content"></div>
-                    <div id="初中" class="subtab-content"></div>
-                    <div id="高中" class="subtab-content"></div>
-                    <div id="四级" class="subtab-content"></div>
-                    <div id="六级" class="subtab-content"></div>
-                    <div id="考研" class="subtab-content"></div>
-                    <div id="托福" class="subtab-content"></div>
-                    <div id="GRE" class="subtab-content"></div>
-                    <div id="雅思" class="subtab-content"></div>
+                    <div id="小学" class="subtab-content" style="display: none;"></div>
+                    <div id="初中" class="subtab-content" style="display: none;"></div>
+                    <div id="高中" class="subtab-content" style="display: none;"></div>
+                    <div id="四级" class="subtab-content" style="display: none;"></div>
+                    <div id="六级" class="subtab-content" style="display: none;"></div>
+                    <div id="考研" class="subtab-content" style="display: none;"></div>
+                    <div id="托福" class="subtab-content" style="display: none;"></div>
+                    <div id="GRE" class="subtab-content" style="display: none;"></div>
+                    <div id="雅思" class="subtab-content" style="display: none;"></div>
                 </div>
             </div>
         </div>
@@ -215,6 +220,40 @@
 <style>
     body {
         overflow-x: hidden;
+    }
+    .category {
+        height: 40px;
+        width: 150px;
+        margin-left: 20px;
+        font-size: 13px;
+        font-weight: 400;
+        padding: 8px;
+        border: 1px solid #d7dae3;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #7e7e7e;
+        outline: none;
+        /* 去除默认的聚焦边框 */
+    }
+
+    .category:hover,
+    .category:focus {
+        border-color: #9dbdff;
+        /* 鼠标悬停和聚焦时改变边框颜色 */
+    }
+
+    /* 鼠标悬停在选项上时的样式 */
+    .category option:hover {
+        background-color: #f0f0f0;
+        /* 悬停时的背景颜色 */
+    }
+
+    /* 选中的选项样式 */
+    .category option:checked {
+        background-color: #6e93f7;
+        /* 选中时的背景颜色 */
+        color: #fff;
+        /* 选中时的文字颜色 */
     }
 </style>
 
