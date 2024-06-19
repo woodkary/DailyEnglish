@@ -133,7 +133,7 @@
 
                 </div>
             </div>
-            <div class="history-container">
+            <div class="history-container" id="history-container">
                 <span class="history-title">发布历史</span>
                 <div class="history-item">
                     <div class="row1">
@@ -142,11 +142,11 @@
                             <span>A Happy Day</span>
                         </div>
                         <div class="line2">
-                            <div class="wordcnt">字数：123</div>
-                            <div class="req">要求1234221</div>
+                            <div class="wordcnt">字数：<span>123</span></div>
+                            <div class="req">要求:<span>123</span></div>
                         </div>
                         <div class="line3">
-                            <span class="time">发布时间：12:20:20</span>
+                            <span class="time">发布时间：<span>12:20:20</span></span>
                         </div>
                     </div>
                     <div class="row2">
@@ -158,6 +158,31 @@
                             <div class="progress-text" id="progress-text">0%</div>
                         </div>
                             <button class="submit-btn2">成绩详情</button>
+                    </div>
+                </div>
+                <div class="history-item">
+                    <div class="row1">
+                        <div class="line1">
+                            <span style="color:#456de7;margin-right: 12px; ">[题目]</span>
+                            <span>A Happy Day</span>
+                        </div>
+                        <div class="line2">
+                            <div class="wordcnt">字数：<span>123</span></div>
+                            <div class="req">要求:<span>123</span></div>
+                        </div>
+                        <div class="line3">
+                            <span class="time">发布时间：<span>12:20:20</span></span>
+                        </div>
+                    </div>
+                    <div class="row2">
+                        <div class="progress-container">
+                            <svg class="progress-circle" width="200" height="200" viewBox="0 0 200 200">
+                                <circle class="progress-bg" cx="100" cy="100" r="90"></circle>
+                                <circle class="progress-bar" cx="100" cy="100" r="90"></circle>
+                            </svg>
+                            <div class="progress-text" id="progress-text">0%</div>
+                        </div>
+                        <button class="submit-btn2">成绩详情</button>
                     </div>
                 </div>
             </div>
@@ -409,48 +434,7 @@
         background-color: var(--box1-hover-color);
     }
 </style>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // 获取点击的图标元素
-        var toggleFilter = document.querySelector('.toggle-filter');
-
-        // 获取 i 元素
-        var filterIcon = toggleFilter.querySelector('i');
-
-        // 获取需要隐藏和显示的 filter 容器
-        var filterContainer = document.querySelector('.filter');
-
-        // 添加点击事件
-        toggleFilter.addEventListener('click', function () {
-            // 切换 filter 容器的显示和隐藏
-            if (filterContainer.style.display === 'none') {
-                filterContainer.style.display = 'flex';
-                filterContainer.style.maxHeight = '1000px'; // 使用足够大的值来确保内容可以完全展开
-                filterIcon.classList.remove('uil-angle-down');
-                filterIcon.classList.add('uil-angle-up');
-            } else {
-                filterContainer.style.display = 'none';
-                filterContainer.style.maxHeight = '0'; // 隐藏内容
-                filterIcon.classList.remove('uil-angle-up');
-                filterIcon.classList.add('uil-angle-down');
-            }
-        });
-    });
-    function setProgress(progress) {
-        const progressBar = document.querySelector('.progress-bar');
-        const progressText = document.getElementById('progress-text');
-
-        const radius = 90;
-        const circumference = 2 * Math.PI * radius;
-        const offset = circumference - (progress / 100 * circumference);
-
-        progressBar.style.strokeDashoffset = offset;
-        progressText.innerHTML = `提交人数<br>${progress}`;
-    }
-
-    // Example usage: Update progress to 75%
-    setProgress(75);
-
+<script src="./js/UploadHistory.js">
 
 </script>
 

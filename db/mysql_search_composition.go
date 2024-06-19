@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -396,43 +397,59 @@ func GetEssayTitle(db *sql.DB, titleId int) (string, int, error) {
 
 // 根据Team map[int]string查询管理员发布的所有作文
 func GetAllComposition(db *sql.DB, Team map[int]string) ([]Composition_completion, error) {
-	var composition_completions []Composition_completion
-	for team_id, team_name := range Team {
-		var composition_completion Composition_completion
-		composition_completion.TeamID = strconv.Itoa(team_id)
-		composition_completion.Team_Name = team_name
-		rows, err := db.Query("SELECT title_id,composition_title,word_num,composition_require,publish_date,grade FROM composition WHERE team_id = ?", team_id)
-		if err != nil {
-			return nil, err
-		}
-		defer rows.Close()
-		for rows.Next() {
-			var grade, title_ID int
-			err := rows.Scan(&title_ID, &composition_completion.Title, &composition_completion.Word_num, &composition_completion.Requirement, &composition_completion.Publish_date, &grade)
-			if err != nil {
-				return nil, err
-			}
-			composition_completion.TitleID = strconv.Itoa(title_ID)
-			composition_completion.Grade = gradeMap[grade]
-			//查询提交人数
-			var submit_num int
-			err = db.QueryRow("SELECT COUNT(*) FROM composition_evaluate WHERE title_id = ?", composition_completion.TitleID).Scan(&submit_num)
-			if err != nil {
-				return nil, err
-			}
-			//查询团队人数
-			var member_num int
-			err = db.QueryRow("SELECT COUNT(*) FROM `user-team` WHERE team_id = ?", team_id).Scan(&member_num)
-			if err != nil {
-				return nil, err
-			}
-			composition_completion.Submit_num = submit_num
-			composition_completion.Member_num = member_num
-			composition_completions = append(composition_completions, composition_completion)
-		}
+	var compositionCompletions []Composition_completion
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	var err error
 
+	for teamID, teamName := range Team {
+		wg.Add(1)
+		go func(teamID int, teamName string) {
+			defer wg.Done()
+			rows, err := db.Query(`
+				SELECT 
+					c.title_id, c.composition_title, c.word_num, c.composition_require, c.publish_date, c.grade, 
+					(SELECT COUNT(*) FROM composition_evaluate WHERE title_id = c.title_id) AS submit_num,
+					(SELECT COUNT(*) FROM `+"`user-team`"+`WHERE team_id = ?) AS member_num
+				FROM composition c
+				WHERE c.team_id = ?
+			`, teamID, teamID)
+			if err != nil {
+				mu.Lock()
+				defer mu.Unlock()
+				fmt.Println("Query error:", err)
+				return
+			}
+			defer rows.Close()
+
+			for rows.Next() {
+				var compositionCompletion Composition_completion
+				var grade, titleID, submitNum, memberNum int
+
+				err = rows.Scan(&titleID, &compositionCompletion.Title, &compositionCompletion.Word_num, &compositionCompletion.Requirement, &compositionCompletion.Publish_date, &grade, &submitNum, &memberNum)
+				if err != nil {
+					mu.Lock()
+					defer mu.Unlock()
+					fmt.Println("Row scan error:", err)
+					return
+				}
+
+				compositionCompletion.TeamID = strconv.Itoa(teamID)
+				compositionCompletion.Team_Name = teamName
+				compositionCompletion.TitleID = strconv.Itoa(titleID)
+				compositionCompletion.Grade = gradeMap[grade]
+				compositionCompletion.Submit_num = submitNum
+				compositionCompletion.Member_num = memberNum
+
+				mu.Lock()
+				compositionCompletions = append(compositionCompletions, compositionCompletion)
+				mu.Unlock()
+			}
+		}(teamID, teamName)
 	}
-	return composition_completions, nil
+
+	wg.Wait()
+	return compositionCompletions, err
 }
 
 type Composition_evaluate_record struct {
@@ -440,7 +457,8 @@ type Composition_evaluate_record struct {
 	Student_id   string `json:"student_id"`
 	Student_name string `json:"student_name"`
 	Respond_date string `json:"respond_date"`
-	Score        int    `json:"score"`
+	MachineScore int    `json:"machine_score"`
+	TeacherScore int    `json:"teacher_score"`
 }
 
 // 获取某作文所有学生提交记录
@@ -448,7 +466,7 @@ func GetRecordsByTitleID(db *sql.DB, title_id int) ([]Composition_evaluate_recor
 	var composition_evaluates []Composition_evaluate_record
 	// 查询该Title_id 作文的所有提交
 
-	rows, err := db.Query("SELECT evaluate_id,user_id,respond_date,machine_mark FROM composition_evaluate WHERE title_id = ?", title_id)
+	rows, err := db.Query("SELECT evaluate_id,user_id,respond_date,machine_mark,teacher_mark FROM composition_evaluate WHERE title_id = ?", title_id)
 	if err != nil {
 		return nil, err
 	}
@@ -456,7 +474,8 @@ func GetRecordsByTitleID(db *sql.DB, title_id int) ([]Composition_evaluate_recor
 	for rows.Next() {
 		var evaluate_id, user_id, respond_date string
 		var machine_mark int
-		err := rows.Scan(&evaluate_id, &user_id, &respond_date, &machine_mark)
+		var teacher_mark int
+		err := rows.Scan(&evaluate_id, &user_id, &respond_date, &machine_mark, &teacher_mark)
 		if err != nil {
 			return nil, err
 		}
@@ -472,7 +491,8 @@ func GetRecordsByTitleID(db *sql.DB, title_id int) ([]Composition_evaluate_recor
 			Student_id:   user_id,
 			Student_name: student_name,
 			Respond_date: respond_date,
-			Score:        machine_mark,
+			MachineScore: machine_mark,
+			TeacherScore: teacher_mark,
 		}
 		composition_evaluates = append(composition_evaluates, item)
 	}

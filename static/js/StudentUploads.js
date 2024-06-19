@@ -1,10 +1,20 @@
 let titleId="6";
+let title="学生上传作文";
+let wordNum=100;
+let requirement="sdcfsdvsdvsdvsd";
 //从url参数获取titleId字符串
 let urlParams = new URLSearchParams(window.location.search);
-if (urlParams.has('titleId')) {
-    titleId = urlParams.get('titleId');
+if (urlParams.has('title_id')&&urlParams.has('title')&&urlParams&&urlParams.has('word_num')&&urlParams.has('requirement')) {
+    titleId = urlParams.get('title_id');
+    title = urlParams.get('title');
+    wordNum = urlParams.get('word_num');
+    requirement = urlParams.get('requirement');
+    document.getElementById('title').textContent = title;
+    document.getElementById('wordNum').textContent = wordNum;
+    document.getElementById('requirement').textContent = requirement;
 }
 console.log(titleId);
+requestStudentUploads(titleId);
 //这是根据titleId获取学生上传的作文数据，请从composition_evaluate中查找对应数据
 let studentUploads=[
     {
@@ -12,30 +22,71 @@ let studentUploads=[
         studentId: 1,
         studentName: '张三',
         respondDate: '2021-05-10',
-        score: 80
+        machineScore: 80,
+        teacherScore: 90,
     },
     {
         evaluateId: 2,
         studentId: 3,
         studentName: '李四',
         respondDate: '2021-05-10',
-        score: 80
+        machineScore: 80,
+        teacherScore: 90,
     }
 ]
+function requestStudentUploads(titleId) {
+    //打印titleId的类型
+    console.log(typeof titleId);
+    fetch(`http://localhost:8081/api/team_manage/composition_mission/submission_records`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+            title_id: titleId
+        })
+    }).then(res => {
+        if(res.status === 401){
+            alert('请先登录！');
+            window.location.href = 'login&register.html';
+            return;
+        }
+        if (res.ok) {
+            return res.json();
+        } else {
+            throw new Error('Network response was not ok');
+        }
+    }).then(data => {
+        console.log(data);
+        studentUploads = [];
+        data.records.forEach(item => {
+            studentUploads.push({
+                evaluateId: item.evaluate_id,
+                studentId: item.student_id,
+                studentName: item.student_name,
+                respondDate: item.respond_date,
+                machineScore: item.machine_score,
+                teacherScore: item.teacher_score,
+            });
+        });
+        createTable(getChartObject(studentUploads));
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+}
 function getChartObject(studentUploads){
     let res=[];
     studentUploads.forEach(item=> {
         res.push({
             提交日期: item.respondDate,
             姓名: item.studentName,
-            词数: item.wordCount,
             机器评分: item.machineScore,
             教师评分: item.teacherScore
         });
     });
     return res;
 }
-createTable(getChartObject(studentUploads));
 function createTable(data) {
     // 清空表格内容
     document.getElementById('tableBody').innerHTML = '';
