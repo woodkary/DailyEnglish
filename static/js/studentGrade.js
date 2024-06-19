@@ -63,7 +63,7 @@ function teamAndStudentsInit(){
             'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
     }).then(res => {
-        if(res.status===401){
+        if(res.status==401||res.status=="401"){
             //如果token失效，则跳转到登录页面
             alert("登录信息已过期，请重新登录");
             localStorage.removeItem('token');

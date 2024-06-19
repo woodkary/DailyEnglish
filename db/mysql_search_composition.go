@@ -56,12 +56,12 @@ type EssayResult struct {
 	SentsFeedback []SentsFeedback `json:"sents_feedback"`
 }
 type SentsFeedback struct {
-	ParaId                int                   `json:"para_id"`
-	SentId                int                   `json:"sent_id"`
-	RawSent               string                `json:"raw_sent"`
+	ParaId                int                   `json:"paraId"`
+	SentId                int                   `json:"sentId"`
+	RawSent               string                `json:"rawSent"`
 	ErrorPosInfos         []utils.ErrorPosInfos `json:"errorPosInfos"`
 	SentFeedback          string                `json:"sent_feedback"`
-	CorrectedSent         string                `json:"corrected_sent"`
+	CorrectedSent         string                `json:"correctedSent"`
 	IsContainGrammarError bool                  `json:"is_contain_grammar_error"`
 	IsValidLangSent       bool                  `json:"is_valid_lang_sent"`
 }
@@ -240,12 +240,14 @@ func GetEssayResult(db *sql.DB, title_ID int, user_id int) (EssayResult, error) 
 		&evaluate_id, &essayResult.Machine_mark, &essayResult.Machine_evaluate,
 		&essayResult.Teacher_mark, &essayResult.Teacher_evaluate, &major_score, &essayResult.RawEssay)
 	if err != nil {
+		log.Panic("GetEssayResult: ", err)
 		return EssayResult{}, err
 	}
 
 	// 将major_score JSON字符串转为MajorScore结构
 	err = json.Unmarshal([]byte(major_score), &essayResult.MajorScore)
 	if err != nil {
+		log.Panic("json.Unmarshal: ", err)
 		return essayResult, err
 	}
 
@@ -255,6 +257,7 @@ func GetEssayResult(db *sql.DB, title_ID int, user_id int) (EssayResult, error) 
         FROM evaluate_everysentence 
         WHERE evaluate_id = ?`, evaluate_id)
 	if err != nil {
+		log.Panic("Get evaluate_everysentence: ", err)
 		return essayResult, err
 	}
 	defer rows.Close()
@@ -267,15 +270,20 @@ func GetEssayResult(db *sql.DB, title_ID int, user_id int) (EssayResult, error) 
 		err := rows.Scan(&sentFeedback.ParaId, &sentFeedback.SentId, &sentFeedback.RawSent, &errorPosInfo, &sentFeedback.SentFeedback,
 			&sentFeedback.CorrectedSent, &sentFeedback.IsContainGrammarError, &sentFeedback.IsValidLangSent)
 		if err != nil {
+			log.Panic("Get evaluate_everysentence2: ", err)
 			return essayResult, err
 		}
 
 		// 将errorPosInfo JSON字符串转为ErrorPosInfos结构
-		err = json.Unmarshal([]byte(errorPosInfo), &sentFeedback.ErrorPosInfos)
-		if err != nil {
-			return essayResult, err
+		if errorPosInfo != "" {
+			err = json.Unmarshal([]byte(errorPosInfo), &sentFeedback.ErrorPosInfos)
+			if err != nil {
+				log.Panic("errorPosInfo JSON.Unmarshal: ", err)
+				return essayResult, err
+			}
+		} else {
+			sentFeedback.ErrorPosInfos = []utils.ErrorPosInfos{}
 		}
-
 		sentsFeedback = append(sentsFeedback, sentFeedback)
 	}
 	// 按照段落和句子id排序
@@ -357,37 +365,40 @@ func InsertEssayScore(db *sql.DB, userID int, titleID int, url string, result ut
 	}
 	//再更新evaluate_everysentence表
 	for _, sentence := range result.Result.EssayFeedback.SentsFeedback {
+		insertQuery, err := db.Prepare("INSERT INTO evaluate_everysentence(evaluate_id,paraid,sentid,rawsent,errorposinfo,sentfeedback,correctedsent,is_containgrammarerror,is_validlangsent) VALUES(?,?,?,?,?,?,?,?,?)")
+		if err != nil {
+			log.Panic(err)
+			return err
+		}
+		defer insertQuery.Close()
+		var is_containgrammarerror int
+		var is_validlangsent int
+		if sentence.IsContainGrammarError {
+			is_containgrammarerror = 1
+		} else {
+			is_containgrammarerror = 0
+		}
+		if sentence.IsValidLangSent {
+			is_validlangsent = 1
+		} else {
+			is_validlangsent = 0
+		}
+		var errorPosInfo []byte
 		if len(sentence.ErrorPosInfos) > 0 {
-			insertQuery, err := db.Prepare("INSERT INTO evaluate_everysentence(evaluate_id,paraid,sentid,rawsent,errorposinfo,sentfeedback,correctedsent,is_containgrammarerror,is_validlangsent) VALUES(?,?,?,?,?,?,?,?,?)")
+			errorPosInfo, err = json.Marshal(sentence.ErrorPosInfos)
 			if err != nil {
 				log.Panic(err)
 				return err
 			}
-			defer insertQuery.Close()
-			var is_containgrammarerror int
-			var is_validlangsent int
-			if sentence.IsContainGrammarError {
-				is_containgrammarerror = 1
-			} else {
-				is_containgrammarerror = 0
-			}
-			if sentence.IsValidLangSent {
-				is_validlangsent = 1
-			} else {
-				is_validlangsent = 0
-			}
-			errorPosInfo, err := json.Marshal(sentence.ErrorPosInfos)
-			if err != nil {
-				log.Panic(err)
-				return err
-			}
-			_, err = insertQuery.Exec(scoreID, sentence.ParaId, sentence.SentId, sentence.RawSent, string(errorPosInfo), sentence.SentFeedback, sentence.CorrectedSent, is_containgrammarerror, is_validlangsent)
-			if err != nil {
-				log.Panic(err)
-				return err
-			}
+		} else {
+			errorPosInfo = []byte("[]")
 		}
 
+		_, err = insertQuery.Exec(scoreID, sentence.ParaId, sentence.SentId, sentence.RawSent, string(errorPosInfo), sentence.SentFeedback, sentence.CorrectedSent, is_containgrammarerror, is_validlangsent)
+		if err != nil {
+			log.Panic(err)
+			return err
+		}
 	}
 	return nil
 }

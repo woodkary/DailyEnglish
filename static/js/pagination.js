@@ -127,7 +127,7 @@ function getQuestion(page) {
             'Authorization': 'Bearer '+localStorage.getItem('token')
         }
     }).then(res => {
-        if(res.status===401){
+        if(res.status==401||res.status=="401"){
             alert("登录信息已过期，请重新登录。")
             localStorage.removeItem('token');
             window.location.href = "./login&register.html";

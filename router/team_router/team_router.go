@@ -880,17 +880,17 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 
 		results, err := controlsql.GetEssayResult(db, titleID, userID)
 		if err != nil {
-			c.JSON(500, "服务器错误")
+			c.JSON(500, "服务器错误：数据库")
 			return
 		}
 		IMGUrl, err := controlsql.GetImgURL(db, titleID, userID)
 		if err != nil {
-			c.JSON(500, "服务器错误")
+			c.JSON(500, "服务器错误：图片url")
 			return
 		}
 		base64IMG, err := utils.GetImageFromOSS(IMGUrl)
 		if err != nil {
-			c.JSON(500, "服务器错误")
+			c.JSON(500, "服务器错误：图片base64")
 			return
 		}
 		type Response struct {

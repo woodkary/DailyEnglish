@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"time"
 
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
@@ -94,18 +95,21 @@ func GetImageFromOSS(filename string) (string, error) {
 	// 创建 OSS 客户端
 	client, err := oss.New(OssEndpoint, OssAccessKeyId, OssAccessKeySecret)
 	if err != nil {
+		log.Println("Failed to create OSS client:", err)
 		return "", err
 	}
 
 	// 创建一个新的 OSS 桶客户端
 	bucket, err := client.Bucket(ossBucketName)
 	if err != nil {
+		log.Println("Failed to create OSS bucket client:", err)
 		return "", err
 	}
 
 	// 下载图片
 	body, err := bucket.GetObject(filename)
 	if err != nil {
+		log.Println("Failed to get object from OSS:", err)
 		return "", err
 	}
 	defer body.Close()
@@ -113,6 +117,7 @@ func GetImageFromOSS(filename string) (string, error) {
 	// 将图片转为 base64 编码
 	encodedString, err := EncodeBase64(data)
 	if err != nil {
+		log.Println("Failed to encode image to base64:", err)
 		return "", err
 	}
 	return encodedString, nil

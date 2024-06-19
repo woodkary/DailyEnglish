@@ -104,7 +104,7 @@ function createTable(data) {
     tableHead.appendChild(th);
 
     // 创建表格行
-    data.forEach(item => {
+    data.forEach((item,index) => {
         const row = document.createElement('tr');
         headers.forEach(header => {
             const td = document.createElement('td');
@@ -118,7 +118,7 @@ function createTable(data) {
         button.textContent = '详情';
         button.addEventListener('click', () => {
             // 跳转到TeacherEssayMark页面
-            window.location.href = `TeacherEssayMark.html?studentId=${item.studentId}`;
+            window.location.href = `TeacherEssayMark.html?titleId=${titleId}&studentId=${studentUploads[index].studentId}`;
         });
         td.appendChild(button);
         row.appendChild(td);

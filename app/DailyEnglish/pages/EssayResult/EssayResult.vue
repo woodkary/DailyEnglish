@@ -42,8 +42,8 @@
 			<view class="eva-content">
 				<view class="eva-item" v-for="(item, index) in evaluation" :key="index">
 					<view class="eva-item-title">
-						<span class="order">{{ `全文第${item.para_id}段，第${item.sent_id}句` }}</span>
-						<span>{{ item.raw_sent }}</span>
+						<span class="order">{{ `全文第${item.paraId}段，第${item.sentId}句` }}</span>
+						<span>{{ item.rawSent }}</span>
 					</view>
 					<view class="eva-item-content">
 						<span class = "sent_feedback">{{item.sent_feedback}}</span>
@@ -71,9 +71,9 @@
 				circumference: 2 * Math.PI * 50, //周长
 				machine_mark: 80,
 				evaluation: [{
-					para_id:1,
-					sent_id:1,
-					raw_sent:"Sincerely, Chenjinping",
+					paraId:1,
+					sentId:1,
+					rawSent:"Sincerely, Chenjinping",
 					errorPosInfos:[{
 						startPos:0,
 						endPos:9,
@@ -82,7 +82,7 @@
 						knowledgeExp:'应根据语义使用正确的词汇或短语，并在阅读和使用英语中，注意不能把其中的一些“形式上相近”的词组混淆在一起.'
 					}],
 					sent_feedback:'词汇使用错误，建议将〖Sincerely〗修改为【Yours faithfully】',
-					corrected_sent:'Yours faithfully, Chenjinping',
+					correctedSent:'Yours faithfully, Chenjinping',
 					is_contain_grammar_error:true,
 					is_valid_lang_sent:true,
 					order:'全文第一句，第三段',

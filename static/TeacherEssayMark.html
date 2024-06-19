@@ -41,6 +41,14 @@
                         <i class="uil uil-calender"></i>
                         <span class="link-name">考试相关</span>
                     </a></li>
+                <li><a href="UploadHistory.html">
+                    <i class="uil uil-calender"></i>
+                    <span class="link-name">作文上传历史</span>
+                </a></li>
+                <li><a href="EssayPublication.html">
+                    <i class="uil uil-calender"></i>
+                    <span class="link-name">发布作文</span>
+                </a></li>
                 <!--            <li><a href="test-statistics.html">-->
                 <!--                <i class="uil uil-chart"></i>-->
                 <!--                <span class="link-name">考试情况</span>-->
@@ -53,24 +61,6 @@
                         <i class="uil uil-user"></i>
                         <span class="link-name">个人中心</span>
                     </a></li>
-            </ul>
-
-            <ul class="logout-mode">
-                <li><a href="login&register.html" onclick="logout()">
-                        <i class="uil uil-signout"></i>
-                        <span class="link-name">Logout</span>
-                    </a></li>
-
-                <li class="mode">
-                    <a href="#">
-                        <i class="uil uil-moon"></i>
-                        <span class="link-name">Dark Mode</span>
-                    </a>
-
-                    <div class="mode-toggle">
-                        <span class="switch"></span>
-                    </div>
-                </li>
             </ul>
         </div>
     </nav>
@@ -185,7 +175,7 @@
                     <span>批改结果</span>
                 </div>
                 <div class="comment-content">
-                    <div class="paragraph-container">
+                    <div class="paragraph-container" id="feedback">
                         <div class="paragraph">
                             <span style="font-weight: bold;">第一段</span>
                             <div class="sentences">
@@ -550,6 +540,34 @@
                     ],
                     //正确句子
                     correctedSent: "And taking too many sleeping pills is bad for their health.",
+                },
+                {
+                    paraId: 1,// 段落id，从0有序编号
+                    sentId: 7,// 句子id，从0有序编号
+                    // 原句
+                    rawSent: "And taking too much sleeping pills is bad for their health.",
+                    errorPosInfos: [// 错误信息
+                        {
+                            // 错误内容
+                            errorTypeTitle: "不同类代词混淆",
+                            // 错误基本信息
+                            errBaseInfo: "代词类型混淆会使指代对象有误，建议将【much】修改为【many】",
+                            startPos: 15,// 错误开始位置
+                            endPos: 19,// 错误结束位置
+                            //从原句下标[startPos, endPos)中提取出的错误内容并标红显示
+                        },
+                        {
+                            // 错误内容
+                            errorTypeTitle: "不同类代词混淆",
+                            // 错误基本信息
+                            errBaseInfo: "代词类型混淆会使指代对象有误，建议将【much】修改为【many】",
+                            startPos: 20,// 错误开始位置
+                            endPos: 28,// 错误结束位置
+                            //从原句下标[startPos, endPos)中提取出的错误内容并标红显示
+                        }
+                    ],
+                    //正确句子
+                    correctedSent: "And taking too many sleeping pills is bad for their health.",
                 }
             ]
         }
@@ -577,7 +595,7 @@
         document.getElementById(tabId).style.display = 'block';
         event.currentTarget.classList.add('active');
     }
-    document.addEventListener('DOMContentLoaded', function () {
+    function init() {
         document.getElementById('totalScore').innerHTML = EssayMachineMark.totalScore;
         initStarRating("essayAdvice", EssayMachineMark.essayAdvice);
         initStarRating("grammarAdvice", EssayMachineMark.majorScore.grammarScore);
@@ -585,6 +603,44 @@
         initStarRating("wordAdvice", EssayMachineMark.majorScore.wordScore);
         getEvaluate();
         initRawEssay();
+        renderFeedback(EssayMachineMark.essayFeedback);
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        EssayMachineMark={};
+        //从页面参数中获取
+        let titleId=new URLSearchParams(window.location.search).get('titleId');
+        let studentId=new URLSearchParams(window.location.search).get('studentId');
+        fetch("http://localhost:8081/api/team_manage/composition_mission/evaluation_records",{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization':`Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({
+                title_id:titleId,
+                user_id:studentId
+            })
+        }).then(res=>{
+            if(res.status==401||res.status=="401"){
+                alert("请先登录！");
+                window.location.href="/login&register.html";
+            }else{
+                return res.json();
+            }
+        }).then(data=>{
+            console.log(data);
+            if(data.code==200||data.code=="200"){
+                EssayMachineMark.imageBase64=data.base64img;
+                EssayMachineMark.rawEssay=data.result.raw_essay;
+                EssayMachineMark.sentNum=data.result.sents_feedback.length;
+                EssayMachineMark.totalScore=data.result.machine_mark;
+                EssayMachineMark.majorScore=data.result.majorScore;
+                EssayMachineMark.essayAdvice=data.result.machine_evaluate;
+                EssayMachineMark.essayFeedback= {};
+                EssayMachineMark.essayFeedback.sentsFeedback=data.result.sents_feedback;
+                init();
+            }
+        })
     });
     function getEvaluate(){
         //将所有的evaluate字段拼接字符串，以\n分隔
@@ -632,6 +688,57 @@
         } else {
             this.style.height = this.scrollHeight + 'px';
         }
+    }
+    function renderFeedback(feedback) {
+        const container = document.getElementById('feedback');
+        container.innerHTML = '';
+        let currentParaId = -1;
+        let paragraphDiv = null;
+        let sentencesDiv = null;
+
+        feedback.sentsFeedback.forEach((item, index) => {
+            if (item.paraId !== currentParaId) {
+                currentParaId = item.paraId;
+                paragraphDiv = document.createElement('div');
+                paragraphDiv.className = 'paragraph';
+                paragraphDiv.innerHTML = `<span style="font-weight: bold;">第${currentParaId + 1}段</span>`;
+                sentencesDiv = document.createElement('div');
+                sentencesDiv.className = 'sentences';
+                paragraphDiv.appendChild(sentencesDiv);
+                container.appendChild(paragraphDiv);
+            }
+
+            const sentenceContainer = document.createElement('div');
+            sentenceContainer.className = 'sentence-container';
+
+            let errorText = item.rawSent;
+            item.errorPosInfos.slice().reverse().forEach((error, errorIndex) => {
+                errorText = errorText.substring(0, error.startPos) +
+                    '<span style="color:red;">' +
+                    errorText.substring(error.startPos, error.endPos) +
+                    '</span>' +
+                    errorText.substring(error.endPos);
+            });
+
+            const sentenceDiv = document.createElement('div');
+            sentenceDiv.className = 'sentence';
+            sentenceDiv.innerHTML = `<span class="sentence_no">${currentParaId + 1}.${index + 1}</span> <span class="sentence_detail">${errorText}</span>`;
+            sentenceContainer.appendChild(sentenceDiv);
+
+            const contentsDiv = document.createElement('div');
+            contentsDiv.className = 'contents';
+            item.errorPosInfos.forEach(error => {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'content';
+                errorDiv.innerHTML = `
+                        <span class="error_type">${error.errorTypeTitle}：</span>
+                        <span class="error_detail">${error.errBaseInfo}</span>
+                    `;
+                contentsDiv.appendChild(errorDiv);
+            });
+            sentenceContainer.appendChild(contentsDiv);
+            sentencesDiv.appendChild(sentenceContainer);
+        });
     }
 </script>
 
