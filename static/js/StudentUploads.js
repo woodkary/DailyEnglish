@@ -1,3 +1,11 @@
+let titleId="6";
+//从url参数获取titleId字符串
+let urlParams = new URLSearchParams(window.location.search);
+if (urlParams.has('titleId')) {
+    titleId = urlParams.get('titleId');
+}
+console.log(titleId);
+
 let studentUploads=[
     {
         evaluateId: 1,
