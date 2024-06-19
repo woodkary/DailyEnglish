@@ -803,7 +803,24 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		response.Compositions = compositions
 		c.JSON(200, response)
 	})
-
+	//获取系统提供的作文
+	r.GET("/api/team_manage/composition_mission/system_compositions", tokenAuthMiddleware(), func(c *gin.Context) {
+		compositions, err := controlsql.GetSystemComposition(db)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		type Response struct {
+			Code         int                      `json:"code"`         // 状态码
+			Msg          string                   `json:"msg"`          // 消息
+			Compositions []controlsql.WritingTask `json:"compositions"` // 作文题目
+		}
+		var response Response
+		response.Code = 200
+		response.Msg = "成功"
+		response.Compositions = compositions
+		c.JSON(200, response)
+	})
 }
 
 //创建团队 加入团队 删除成员 搜索成员
