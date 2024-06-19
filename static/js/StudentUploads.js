@@ -12,7 +12,7 @@ let studentUploads=[
         studentId: 1,
         studentName: '张三',
         respondDate: '2021-05-10',
-        wordCount: 100,
+        sentCount: 100,
         machineScore: 80,
         teacherScore: 90
     },
@@ -21,7 +21,7 @@ let studentUploads=[
         studentId: 3,
         studentName: '李四',
         respondDate: '2021-05-10',
-        wordCount: 100,
+        sentCount: 100,
         machineScore: 80,
         teacherScore: 90
     }
@@ -32,7 +32,7 @@ function getChartObject(studentUploads){
         res.push({
             提交日期: item.respondDate,
             姓名: item.studentName,
-            词数: item.wordCount,
+            句子数: item.sentCount,
             机器评分: item.machineScore,
             教师评分: item.teacherScore
         });

@@ -106,6 +106,22 @@ let systemEssays=[
         publishDate: "2022-01-01"
     }
 ]
+const essayDivMap= {
+    "全部":document.getElementById("全部"),
+    "小学":document.getElementById("小学"),
+    "初中":document.getElementById("初中"),
+    "高中":document.getElementById("高中"),
+    "四级":document.getElementById("四级"),
+    "六级":document.getElementById("六级"),
+    "考研":document.getElementById("考研"),
+    "托福":document.getElementById("托福"),
+    "雅思":document.getElementById("雅思"),
+    "GRE":document.getElementById("GRE")
+}
+//清空essayDivMap中所有元素的内联样式
+for(let key in essayDivMap){
+    essayDivMap[key].innerHTML="";
+}
 function openTab(event, tabId) {
     // Hide all tab contents
     var tabContents = document.querySelectorAll('.tab-content');
@@ -138,7 +154,14 @@ function openSubTab(event, subtabId) {
     // Show the selected tab content and add 'active' class to the clicked tab button
     document.getElementById(subtabId).style.display = 'block';
     event.currentTarget.classList.add('active');
-    renderSystemEssays(systemEssays,subtabId);
+    //把essayDivMap中不是当前tab的作文隐藏掉
+    for(let key in essayDivMap) {
+        if (key != subtabId) {
+            essayDivMap[key].style.display = "none";
+        } else {
+            essayDivMap[key].style.display = "block";
+        }
+    }
 }
 /*    var gradeMap = map[int]string{
         1: "小学",
@@ -164,10 +187,9 @@ renderSystemEssays(systemEssays,"雅思");
 renderSystemEssays(systemEssays,"GRE");
 function renderSystemEssays(essays,grade) {
     let container = document.getElementById(grade);
-    container.innerHTML = '';  // Clear existing content
     //从essats中筛选出符合条件的作文，如果是空，则渲染全部作文
     essays.forEach(essay => {
-        if(grade=="全部" || grade==essay.grade){
+        if(grade==essay.grade||grade=="全部"){
             let card = document.createElement('div');
             card.className = 'card';
 
