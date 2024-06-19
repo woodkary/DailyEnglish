@@ -278,6 +278,13 @@ func GetEssayResult(db *sql.DB, title_ID int, user_id int) (EssayResult, error) 
 
 		sentsFeedback = append(sentsFeedback, sentFeedback)
 	}
+	// 按照段落和句子id排序
+	sort.Slice(sentsFeedback, func(i, j int) bool {
+		if sentsFeedback[i].ParaId == sentsFeedback[j].ParaId {
+			return sentsFeedback[i].SentId < sentsFeedback[j].SentId
+		}
+		return sentsFeedback[i].ParaId < sentsFeedback[j].ParaId
+	})
 	essayResult.SentsFeedback = sentsFeedback
 
 	return essayResult, nil
