@@ -1,11 +1,70 @@
+.tabs,.subtabs {
+    display: flex;
+    margin-left:6%;
+    margin-top: 3%;
+    width:fit-content;
+    border-radius: 7%;
+}
+.tabs{
+    border-bottom: 2px solid #f5f5f5;
+}
+.subtabs{
+    border-bottom: 2px solid #f1f1f1;
+}
+
+.tab-button {
+    background-color: white;
+    border: none;
+    padding: 2px 20px;
+    height: 30px;
+    cursor: pointer;
+    font-size: large;
+    border-radius:7%;
+    transition: background-color 0.3s;
+
+}
+
+.subtab-button {
+    background-color: white;
+    border: none;
+    padding: 2px 20px;
+    height: 30px;
+    cursor: pointer;
+    font-size: large;
+    border-radius:7%;
+    transition: background-color 0.3s;
+}
+
+.tab-button:hover {
+    background-color:#f1f1f1;
+    color: black;
+}
+
+.subtab-button:hover {
+    background-color:#f1f1f1;
+    color: black;
+}
+.tab-button.active {
+    background-color: #456de7;
+    color: white;
+}
+.subtab-button.active {
+    background-color: #456de7;
+    color: white;
+}
+
+.tab-content {
+    display: none;
+    border-top: none;
+    width:900px;
+}
 .custom-essay-container {
-    margin-left: 5%;
-    margin-top: 9%;
-    width: 93%;
+    width: 100%;
     height: 500px;
     background-color: white;
-    padding-top: 20px;
+    padding-top: 10px;
     border-radius: 15px;
+    margin-left: 3%;
 }
 .essay-content{
     position: relative;
@@ -70,6 +129,12 @@
     align-items: center; /* 垂直居中对齐 */
     margin: 0 80px 0 37px;
     height: 45px;
+    width: 600px;
+}
+.select-box2{
+    display: flex; /* 使用Flexbox布局 */
+    align-items: center; /* 垂直居中对齐 */
+    height: 45px;
     max-width: 600px;
     width: 100%;
 }
@@ -77,14 +142,28 @@
 .select-box h3 {
     margin-right: 10px; /* 在h3和input之间添加一些间距 */
 }
-
-.select-box select {
+.select-box2 h3{
+    margin-right: 10px;
+}
+.select-box2  select {
     border: 1px solid var(--border-color);
     background-color: var(--panel-color);
     padding: 0 15px;
     border-radius: 5px;
     height: 80%;
     width: 30%;
+    color: var(--text-color);
+    font-size: 15px;
+    font-weight: 330;
+    outline: none;
+}
+.select-box  select {
+    border: 1px solid var(--border-color);
+    background-color: var(--panel-color);
+    padding: 0 15px;
+    border-radius: 5px;
+    height: 80%;
+    width: 70%;
     color: var(--text-color);
     font-size: 15px;
     font-weight: 330;
@@ -133,8 +212,8 @@
 
 .submit-box input[type="checkbox"] {
     margin-right: 10px;
-    width: 32px;
-    height: 32px;
+    width: 22px;
+    height: 22px;
     cursor: pointer;
 }
 
@@ -150,13 +229,15 @@
     margin-bottom: 0;
     font-size: 12px;
     color: var(--text-color);
+    width: 100px;
 }
 
 .submit-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 80px;
+    margin-left: 0px;
+    margin-top: 40px;
     height: 45px;
     max-width: 600px;
     width: 100%;
@@ -179,3 +260,96 @@
     background-color: var(--box1-hover-color);
 }
 
+.search-container {
+    margin-top: 20px;
+    width:90%;
+    margin-left: 5%;
+    display: flex;
+    align-items: center;
+    background-color:#f5f5f5;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding-left: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.search-input {
+    border: none;
+    outline: none;
+    padding: 10px;
+    font-size: 18px;
+    border-radius: 25px;
+    background-color: #f5f5f5;
+    flex: 1;
+}
+
+.search-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-button svg {
+    fill: #888;
+    width: 24px;
+    height: 24px;
+}
+
+.search-button:hover svg {
+    fill: #333;
+}
+.card{
+    border:1px solid #bebebe;
+    width:90%;
+    margin-left: 6%;
+    margin-top:20px;
+    height:150px;
+    border-radius: 5px;
+    background-color: white;
+    padding: 12px 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.line1{
+    font-size: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #c4e2ff;
+}
+.line2{
+    font-size:14px;
+    padding-bottom: 8px;
+    padding-top: 8px;
+    border-bottom: 2px solid #c4e2ff;
+}
+.line3{
+    font-size: 14px;
+    padding-top: 8px;
+    display: flex;
+}
+.time{
+    width:60%;
+}
+.submit-btn2 {
+    margin-left: 400px;
+    height:30px;
+    width: 100px;
+}
+.submit-btn2 button {
+    height:100%;
+    width: 100%;
+    border: none;
+    background-color: var(--box1-color);
+    border-radius: 5px;
+    color: var(--text-color-light);
+    font-size: 15px;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.submit-btn2 button:hover {
+    background-color: var(--box1-hover-color);
+}
