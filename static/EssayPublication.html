@@ -146,29 +146,52 @@
                         </button>
                     </div>
                     <div class="subtabs">
-                        <button class="subtab-button active" onclick="openSubTab(event, 'subtab1')">全部</button>
-                        <button class="subtab-button" onclick="openSubTab(event, 'subtab2')">小学</button>
+                        <button class="subtab-button active" onclick="openSubTab(event, '全部')">全部</button>
+                        <button class="subtab-button" onclick="openSubTab(event, '小学')">小学</button>
                     </div>
-                    <div id="subtab1" class="subtab-content" style="display: block;">
+                    <div id="全部" class="subtab-content" style="display: block;">
                         <div class="card">
                             <div class="line1">
                                 <span style="color:#456de7;margin-right: 12px; ">[题目]</span>
                                 <span>A Happy Day</span>
                             </div>
                             <div class="line2">
-                                <div class="wordcnt">字数：123</div>
-                                <div class="req">要求1234221</div>
+                                <div class="wordcnt">字数：<span>123~234</span></div>
+                                <div class="req">要求:<span>1234221</span></div>
                             </div>
                             <div class="line3">
-                                <span class="time">上传时间：12:20:20</span>
+                                <span class="time">上传时间：<span>2022-01-01</span></span>
                                 <div class="submit-btn2">
                                     <button type="submit">发布</button>
                                 </div>
                             </div>
                         </div>
-
+                    <div class="card">
+                        <div class="line1">
+                            <span style="color:#456de7;margin-right: 12px; ">[题目]</span>
+                            <span>A Happy Day</span>
+                        </div>
+                        <div class="line2">
+                            <div class="wordcnt">字数：<span>123~234</span></div>
+                            <div class="req">要求:<span>1234221</span></div>
+                        </div>
+                        <div class="line3">
+                            <span class="time">上传时间：<span>2021-01-01</span></span>
+                            <div class="submit-btn2">
+                                <button type="submit">发布</button>
+                            </div>
+                        </div>
                     </div>
-                    <div id="subtab2" class="subtab-content"></div>
+                </div>
+                    <div id="小学" class="subtab-content"></div>
+                    <div id="初中" class="subtab-content"></div>
+                    <div id="高中" class="subtab-content"></div>
+                    <div id="四级" class="subtab-content"></div>
+                    <div id="六级" class="subtab-content"></div>
+                    <div id="考研" class="subtab-content"></div>
+                    <div id="托福" class="subtab-content"></div>
+                    <div id="GRE" class="subtab-content"></div>
+                    <div id="雅思" class="subtab-content"></div>
                 </div>
             </div>
         </div>
@@ -176,39 +199,18 @@
 </body>
 <script src="./js/EssayPublication.js"></script>
 <script>
-    function openTab(event, tabId) {
-        // Hide all tab contents
-        var tabContents = document.querySelectorAll('.tab-content');
-        tabContents.forEach(function (content) {
-            content.style.display = 'none';
-        });
+/*    var gradeMap = map[int]string{
+        1: "小学",
+            2: "初中",
+            3: "高中",
+            4: "四级",
+            5: "六级",
+            6: "考研",
+            7: "托福",
+            8: "雅思",
+            9: "GRE",
+    }*/
 
-        // Remove 'active' class from all tab buttons
-        var tabButtons = document.querySelectorAll('.tab-button');
-        tabButtons.forEach(function (button) {
-            button.classList.remove('active');
-        });
-
-        // Show the selected tab content and add 'active' class to the clicked tab button
-        document.getElementById(tabId).style.display = 'block';
-        event.currentTarget.classList.add('active');
-    }
-    function openSubTab(event, subtabId) {
-        var subtabContents = document.querySelectorAll('.subtab-content');
-        subtabContents.forEach(function (content) {
-            content.style.display = 'none';
-        });
-
-        // Remove 'active' class from all tab buttons
-        var subtabButtons = document.querySelectorAll('.subtab-button');
-        subtabButtons.forEach(function (button) {
-            button.classList.remove('active');
-        });
-
-        // Show the selected tab content and add 'active' class to the clicked tab button
-        document.getElementById(subtabId).style.display = 'block';
-        event.currentTarget.classList.add('active');
-    }
 </script>
 <style>
     body {

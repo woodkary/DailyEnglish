@@ -86,3 +86,108 @@ function request(){
         alert("发布失败");
     });
 }
+//这是后端传来的所有系统作文，
+//todo publishDate不知道是什么
+let systemEssays=[
+    {
+        titleId: "1",
+        title: "小学生作文",
+        grade: "小学",
+        wordNum:"100~200",
+        requirement: "哈哈哈",
+        publishDate: "2021-01-01"
+    },
+    {
+        titleId: "2",
+        title: "小学生作文2",
+        grade: "小学",
+        wordNum:"150~250",
+        requirement: "fuck you",
+        publishDate: "2022-01-01"
+    }
+]
+function openTab(event, tabId) {
+    // Hide all tab contents
+    var tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(function (content) {
+        content.style.display = 'none';
+    });
+
+    // Remove 'active' class from all tab buttons
+    var tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(function (button) {
+        button.classList.remove('active');
+    });
+
+    // Show the selected tab content and add 'active' class to the clicked tab button
+    document.getElementById(tabId).style.display = 'block';
+    event.currentTarget.classList.add('active');
+}
+function openSubTab(event, subtabId) {
+    var subtabContents = document.querySelectorAll('.subtab-content');
+    subtabContents.forEach(function (content) {
+        content.style.display = 'none';
+    });
+
+    // Remove 'active' class from all tab buttons
+    var subtabButtons = document.querySelectorAll('.subtab-button');
+    subtabButtons.forEach(function (button) {
+        button.classList.remove('active');
+    });
+
+    // Show the selected tab content and add 'active' class to the clicked tab button
+    document.getElementById(subtabId).style.display = 'block';
+    event.currentTarget.classList.add('active');
+    renderSystemEssays(systemEssays,subtabId);
+}
+/*    var gradeMap = map[int]string{
+        1: "小学",
+            2: "初中",
+            3: "高中",
+            4: "四级",
+            5: "六级",
+            6: "考研",
+            7: "托福",
+            8: "雅思",
+            9: "GRE",
+    }*/
+
+renderSystemEssays(systemEssays,"全部");
+renderSystemEssays(systemEssays,"小学");
+renderSystemEssays(systemEssays,"初中");
+renderSystemEssays(systemEssays,"高中");
+renderSystemEssays(systemEssays,"四级");
+renderSystemEssays(systemEssays,"六级");
+renderSystemEssays(systemEssays,"考研");
+renderSystemEssays(systemEssays,"托福");
+renderSystemEssays(systemEssays,"雅思");
+renderSystemEssays(systemEssays,"GRE");
+function renderSystemEssays(essays,grade) {
+    let container = document.getElementById(grade);
+    container.innerHTML = '';  // Clear existing content
+    //从essats中筛选出符合条件的作文，如果是空，则渲染全部作文
+    essays.forEach(essay => {
+        if(grade=="全部" || grade==essay.grade){
+            let card = document.createElement('div');
+            card.className = 'card';
+
+            let line1 = document.createElement('div');
+            line1.className = 'line1';
+            line1.innerHTML = `<span style="color:#456de7;margin-right: 12px;">[题目]</span><span>${essay.title}</span>`;
+
+            let line2 = document.createElement('div');
+            line2.className = 'line2';
+            line2.innerHTML = `<div class="wordcnt">字数：<span>${essay.wordNum}</span></div><div class="req">要求:<span>${essay.requirement}</span></div>`;
+
+            let line3 = document.createElement('div');
+            line3.className = 'line3';
+            line3.innerHTML = `<span class="time">上传时间：<span>${essay.publishDate}</span></span><div class="submit-btn2"><button type="submit">发布</button></div>`;
+
+            card.appendChild(line1);
+            card.appendChild(line2);
+            card.appendChild(line3);
+
+            container.appendChild(card);
+        }
+    });
+}
