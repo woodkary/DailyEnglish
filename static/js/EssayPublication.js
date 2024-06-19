@@ -86,3 +86,8 @@ function request(){
         alert("发布失败");
     });
 }
+let systemEssays=[
+    {
+        title: "小学生作文",
+    }
+]
