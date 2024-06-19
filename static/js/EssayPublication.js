@@ -90,6 +90,7 @@ function request(){
 //todo publishDate不知道是什么
 let systemEssays=[
     {
+        titleId: "1",
         title: "小学生作文",
         grade: "小学",
         wordNum:"100~200",
@@ -97,6 +98,7 @@ let systemEssays=[
         publishDate: "2021-01-01"
     },
     {
+        titleId: "2",
         title: "小学生作文2",
         grade: "小学",
         wordNum:"150~250",
