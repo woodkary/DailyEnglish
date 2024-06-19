@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<!-- Coding By CodingNepal - codingnepalweb.com -->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!----======== CSS ======== -->
+    <link rel="stylesheet" href="./css/navSidebar.css">
+
+    <!----===== Iconscout CSS ===== -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+
+
+    <title>Admin Dashboard Panel</title>
+</head>
+
+<body>
+<nav>
+    <div class="logo-name">
+        <!--        <div class="logo-image">
+              <img src="./image/little-edellweiss.regular.webp" alt="">
+          </div>-->
+
+        <span class="logo_name">DailyEnglish</span>
+    </div>
+
+    <div class="menu-items">
+        <ul class="nav-links">
+            <li><a href="index.html">
+                <i class="uil uil-estate"></i>
+                <span class="link-name">主页</span>
+            </a></li>
+            <!--            <li><a href="issuePunch.html">-->
+            <!--                <i class="uil uil-calendar-alt"></i>-->
+            <!--                <span class="link-name">打卡发布</span>-->
+            <!--            </a></li>-->
+            <li><a href="history.html">
+                <i class="uil uil-calender"></i>
+                <span class="link-name">考试相关</span>
+            </a></li>
+            <!--            <li><a href="test-statistics.html">-->
+            <!--                <i class="uil uil-chart"></i>-->
+            <!--                <span class="link-name">考试情况</span>-->
+            <!--            </a></li>-->
+            <li><a href="manage.html">
+                <i class="uil uil-meh-alt"></i>
+                <span class="link-name">成员管理</span>
+            </a></li>
+            <li><a href="user.html">
+                <i class="uil uil-user"></i>
+                <span class="link-name">个人中心</span>
+            </a></li>
+        </ul>
+
+        <ul class="logout-mode">
+            <li><a href="login&register.html" onclick="logout()">
+                <i class="uil uil-signout"></i>
+                <span class="link-name">Logout</span>
+            </a></li>
+
+            <li class="mode">
+                <a href="#">
+                    <i class="uil uil-moon"></i>
+                    <span class="link-name">Dark Mode</span>
+                </a>
+
+                <div class="mode-toggle">
+                    <span class="switch"></span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<section class="dashboard">
+    <div class="top">
+        <i class="uil uil-bars sidebar-toggle"></i>
+
+        <div class="search-box">
+            <i class="uil uil-search"></i>
+            <input type="text" placeholder="Search here...">
+        </div>
+
+        <img src="image/pikachu.jpg" alt="">
+    </div>
+
+    <div class="dash-content">
+
+    </div>
+</section>
+</body>
+<style>
+
+</style>
+<script>
+    //机器评分的结果
+    let EssayMachineMark = {
+        // 请求原文
+        rawEssay: "Nowadays, more and more middle-aged people are suffering from insomnia, as life for the middle-aged is stressful indeed. For one thing, as they are the backbones of their companies, they have plenty of things to do at work. And they usually have to work overtime. For another, they have to take great responsibilities at home, for their aged parents need to be supported and their little children need to be brought up. That's why they don't have enough time to have a good rest.To sleep well, some of them often take sleeping pills. I don't think it's good for them to do so, because the sleeping pills can only get rid of the sign of insomnia, not the cause. And taking too much sleeping pills is bad for their health.Therefore, I suggest those middle-aged people should know how to relax themselves and rest their brains. Taking a simple work after supper will be beneficial for them. Besides, they can have a glass of milk before going to bed, which can be helpful for their sleep.",
+        sentNum: 11,// 文章句子数
+        essayAdvice: "作文整体水平较高",// 文章最终评价
+        totalScore: 95,//总分，所有分数满分都是100
+        majorScore:{//各模块得分
+            grammarScore: 89.8,//语言得分
+            grammarAdvice: "存在少量语法错误，建议认真检查",
+            topicScore: 66.2,//内容得分
+            structureScore: 88.3,//结构得分
+            structureAdvice: "逻辑性不错，上下文关系衔接较为紧密",//结构评价
+            wordScore: 89,// 词汇得分
+            wordAdvice: "单词拼写基本正确，单词拼写基础扎实；词汇量较为丰富，能使用一定数量的高级词汇",// 词汇评价
+        },
+        essayFeedback:{//文章批改结果
+            sentsFeedback: [// 句子内容及得分
+                {
+                    paraId: 0,// 段落id，从0有序编号
+                    sentId: 7,// 句子id，从0有序编号
+                    // 原句
+                    rawSent: "And taking too much sleeping pills is bad for their health.",
+                    errorPosInfos: [// 错误信息
+                        {
+                            // 错误内容
+                            errorTypeTitle: "不同类代词混淆",
+                            // 错误基本信息
+                            errBaseInfo: "代词类型混淆会使指代对象有误，建议将【much】修改为【many】",
+                            startPos: 15,// 错误开始位置
+                            endPos: 19,// 错误结束位置
+                            //从原句下标[startPos, endPos)中提取出的错误内容并标红显示
+                        }
+                    ],
+                    //正确句子
+                    correctedSent: "And taking too many sleeping pills is bad for their health.",
+                }
+            ]
+        }
+    }
+    //教师评分的请求参数
+    let teacherScoreParams = {
+        teacherMark: 75.7,// 教师评分
+        teacherEvaluate: "作文整体水平较高，语言表达清晰，内容丰富，结构合理，词汇量较为丰富，句子通顺，错误率较低。",// 教师评价
+    }
+</script>
+
+</html>

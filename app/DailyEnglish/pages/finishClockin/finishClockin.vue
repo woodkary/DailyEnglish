@@ -73,7 +73,7 @@
       const consecutivePunchDay = uni.getStorageSync("consecutivePunchDay");
       if (consecutivePunchDay) {
         this.consecutivePunchDay = consecutivePunchDay;
-      }else{
+      }else if(this.operation==0){
         //发送请求获取今天的学习天数
         uni.request({
           url: 'http://localhost:8080/api/users/my_punches',

@@ -183,7 +183,7 @@
 				let foundFirst = false; // 标志是否找到了第一个非空词性的意思
 
 				for (let key in meanings) {
-					if (meanings[key] && meanings[key].length > 0) {
+					if (meanings[key] && meanings[key].length > 1) {
 						if (!foundFirst) {
 							// 如果是第一个非空词性，添加词性前缀
 							meaningStr += this.simplifiedSpeech[key];
