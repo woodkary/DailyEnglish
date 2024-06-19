@@ -12,7 +12,6 @@ let studentUploads=[
         studentId: 1,
         studentName: '张三',
         respondDate: '2021-05-10',
-        wordCount: 100,
         score: 80
     },
     {
@@ -20,7 +19,6 @@ let studentUploads=[
         studentId: 3,
         studentName: '李四',
         respondDate: '2021-05-10',
-        wordCount: 100,
         score: 80
     }
 ]
