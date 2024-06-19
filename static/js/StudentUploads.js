@@ -1,3 +1,9 @@
+let studentUploads=[
+    {
+        userId: 1,
+
+    }
+]
 function createTable(data) {
     // 清空表格内容
     document.getElementById('tableBody').innerHTML = '';
