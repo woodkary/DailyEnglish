@@ -19,134 +19,201 @@
 </head>
 
 <body>
-<nav>
-    <div class="logo-name">
-        <!--        <div class="logo-image">
-              <img src="./image/little-edellweiss.regular.webp" alt="">
-          </div>-->
-
-        <span class="logo_name">DailyEnglish</span>
-    </div>
-
-    <div class="menu-items">
-        <ul class="nav-links">
-            <li><a href="index.html">
-                <i class="uil uil-estate"></i>
-                <span class="link-name">主页</span>
-            </a></li>
-            <!--            <li><a href="issuePunch.html">-->
-            <!--                <i class="uil uil-calendar-alt"></i>-->
-            <!--                <span class="link-name">打卡发布</span>-->
-            <!--            </a></li>-->
-            <li><a href="history.html">
-                <i class="uil uil-calender"></i>
-                <span class="link-name">考试相关</span>
-            </a></li>
-            <!--            <li><a href="test-statistics.html">-->
-            <!--                <i class="uil uil-chart"></i>-->
-            <!--                <span class="link-name">考试情况</span>-->
-            <!--            </a></li>-->
-            <li><a href="manage.html">
-                <i class="uil uil-meh-alt"></i>
-                <span class="link-name">成员管理</span>
-            </a></li>
-            <li><a href="user.html">
-                <i class="uil uil-user"></i>
-                <span class="link-name">个人中心</span>
-            </a></li>
-        </ul>
-
-        <ul class="logout-mode">
-            <li><a href="login&register.html" onclick="logout()">
-                <i class="uil uil-signout"></i>
-                <span class="link-name">Logout</span>
-            </a></li>
-
-            <li class="mode">
-                <a href="#">
-                    <i class="uil uil-moon"></i>
-                    <span class="link-name">Dark Mode</span>
-                </a>
-
-                <div class="mode-toggle">
-                    <span class="switch"></span>
-                </div>
-            </li>
-        </ul>
-    </div>
-</nav>
-
-<section class="dashboard">
-    <div class="top">
-        <i class="uil uil-bars sidebar-toggle"></i>
-
-        <div class="search-box">
-            <i class="uil uil-search"></i>
-            <input type="text" placeholder="Search here...">
+    <nav>
+        <div class="logo-name">
+            <span class="logo_name">DailyEnglish</span>
         </div>
 
-        <img src="image/pikachu.jpg" alt="">
-    </div>
+        <div class="menu-items">
+            <ul class="nav-links">
+                <li><a href="index.html">
+                        <i class="uil uil-estate"></i>
+                        <span class="link-name">主页</span>
+                    </a></li>
+                <li><a href="history.html">
+                        <i class="uil uil-calender"></i>
+                        <span class="link-name">考试相关</span>
+                    </a></li>
+                <li><a href="manage.html">
+                        <i class="uil uil-meh-alt"></i>
+                        <span class="link-name">成员管理</span>
+                    </a></li>
+                <li><a href="user.html">
+                        <i class="uil uil-user"></i>
+                        <span class="link-name">个人中心</span>
+                    </a></li>
+            </ul>
 
-    <div class="dash-content">
-<!--        todo 只写了自拟题目，还剩下系统题库以及选择框-->
-        <div class="custom-essay-container">
-            <div class="essay-content">
-                <div class="title-input-box">
-                    <h3>题目</h3>
-                    <input type="text" placeholder="请输入文章标题..." oninput="setTitle(this.value)">
-                </div>
-                <div class="wordNum-input-box">
-                    <h3>字数限制</h3>
-                    <input type="text" placeholder="最小字数限制..." oninput="setMinWordNum(this.value)">
-                    <h3 style="margin-left: 10px;">~</h3>
-                    <input type="text" placeholder="最大字数限制..." oninput="setMaxWordNum(this.value)">
-                </div>
-                <div class="select-box">
-                    <h3>团队</h3>
-                    <select name="category" class="category" id="teamSelect">
+            <ul class="logout-mode">
+                <li><a href="login&register.html" onclick="logout()">
+                        <i class="uil uil-signout"></i>
+                        <span class="link-name">Logout</span>
+                    </a></li>
 
-                        <option value="1">英语每日练</option>
-                        <option value="2">游戏大佬</option>
-                        <option value="3">六级挂科</option>
-                    </select>
-                </div>
-                <div class="select-box">
-                    <h3>等级</h3>
-                    <select name="category" class="category" id="gradeSelect" onchange="setGrade(this.value)">
-                        <option value="小学">小学</option>
-                        <option value="初中">初中</option>
-                        <option value="高中">高中</option>
-                        <option value="四级">四级</option>
-                        <option value="六级">六级</option>
-                        <option value="考研">考研</option>
-                        <option value="托福">托福</option>
-                        <option value="GRE">GRE</option>
-                        <option value="雅思">雅思</option>
-                    </select>
-                </div>
-                <div class="require-input-box">
-                    <h3>作文要求</h3>
-                    <textarea type="text" placeholder="请输入..." onkeyup="pressEnter(event,this.value)" onblur="setRequirement(this.value)"></textarea>
-                </div>
-                <div class="submit-box">
-                    <input type="checkbox" id="checkbox1">
-                    <label for="checkbox1">
-                        <p>是否存入系统题库</p>
-                    </label>
-                    <div class="submit-btn">
-                        <button type="submit" onclick="request()">发布文章</button>
+                <li class="mode">
+                    <a href="#">
+                        <i class="uil uil-moon"></i>
+                        <span class="link-name">Dark Mode</span>
+                    </a>
+
+                    <div class="mode-toggle">
+                        <span class="switch"></span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="dashboard">
+        <div class="top">
+            <i class="uil uil-bars sidebar-toggle"></i>
+
+            <div class="search-box">
+                <i class="uil uil-search"></i>
+                <input type="text" placeholder="Search here...">
+            </div>
+
+            <img src="image/pikachu.jpg" alt="">
+        </div>
+
+        <div class="dash-content">
+            <div class="tabs">
+                <button class="tab-button active" onclick="openTab(event, 'tab1')">Tab 1</button>
+                <button class="tab-button" onclick="openTab(event, 'tab2')">Tab 2</button>
+            </div>
+            <div id="tab1" class="tab-content" style="display: block;">
+                <div class="custom-essay-container">
+                    <div class="essay-content">
+                        <div class="title-input-box">
+                            <h3>题目<span style="color:rgb(195, 25, 25)">*</span></h3>
+                            <input type="text" placeholder="请输入文章标题..." oninput="setTitle(this.value)">
+                        </div>
+                        <div class="wordNum-input-box">
+                            <h3>字数限制<span style="color:rgb(195, 25, 25)">*</span></h3>
+                            <input type="text" placeholder="最小字数限制..." oninput="setMinWordNum(this.value)">
+                            <h3 style="margin-left: 10px;">~</h3>
+                            <input type="text" placeholder="最大字数限制..." oninput="setMaxWordNum(this.value)">
+                        </div>
+                        <div class="lines" style="display: flex;">
+                            <div class="select-box">
+                                <h3>团队<span style="color:rgb(195, 25, 25)">*</span></h3>
+                                <select name="category" class="category" id="teamSelect">
+                                    <option value="1">英语每日练</option>
+                                    <option value="2">游戏大佬</option>
+                                    <option value="3">六级挂科</option>
+                                </select>
+                            </div>
+                            <div class="select-box2">
+                                <h3>等级</h3>
+                                <select name="category" class="category" id="gradeSelect"
+                                    onchange="setGrade(this.value)">
+                                    <option value="小学">小学</option>
+                                    <option value="初中">初中</option>
+                                    <option value="高中">高中</option>
+                                    <option value="四级">四级</option>
+                                    <option value="六级">六级</option>
+                                    <option value="考研">考研</option>
+                                    <option value="托福">托福</option>
+                                    <option value="GRE">GRE</option>
+                                    <option value="雅思">雅思</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="require-input-box">
+                            <h3>作文要求<span style="color:rgb(195, 25, 25)">*</span></h3>
+                            <textarea type="text" placeholder="请输入..." onkeyup="pressEnter(event,this.value)"
+                                onblur="setRequirement(this.value)"></textarea>
+                        </div>
+                        <div class="submit-box">
+                            <input type="checkbox" id="checkbox1">
+                            <label for="checkbox1">
+                                <p>是否存入系统题库</p>
+                            </label>
+                            <div class="submit-btn">
+                                <button type="submit" onclick="request()">发布</button>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
+            </div>
+            <div id="tab2" class="tab-content">
+                <div class="custom-essay-container">
+                    <div class="search-container">
+                        <input type="text" class="search-input" placeholder="Search...">
+                        <button class="search-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 96 960 960" width="24"><path d="M796 976 540 720q-33 28-74.5 44T384 780q-108 0-183-75t-75-183q0-108 75-183t183-75q108 0 183 75t75 183q0 48-16 89.5T720 672l256 256-60 48ZM384 696q75 0 127.5-52.5T564 516q0-75-52.5-127.5T384 336q-75 0-127.5 52.5T204 516q0 75 52.5 127.5T384 696Z"/></svg>
+                        </button>
+                    </div>
+                    <div class="subtabs">
+                        <button class="subtab-button active" onclick="openSubTab(event, 'subtab1')">全部</button>
+                        <button class="subtab-button" onclick="openSubTab(event, 'subtab2')">小学</button>
+                    </div>
+                    <div id="subtab1" class="subtab-content" style="display: block;">
+                        <div class="card">
+                            <div class="line1">
+                                <span style="color:#456de7;margin-right: 12px; ">[题目]</span>
+                                <span>A Happy Day</span>
+                            </div>
+                            <div class="line2">
+                                <div class="wordcnt">字数：123</div>
+                                <div class="req">要求1234221</div>
+                            </div>
+                            <div class="line3">
+                                <span class="time">上传时间：12:20:20</span>
+                                <div class="submit-btn2">
+                                    <button type="submit">发布</button>
+                                </div>
+                            </div>
+                        </div>
 
+                    </div>
+                    <div id="subtab2" class="subtab-content"></div>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 </body>
 <script src="./js/EssayPublication.js"></script>
-<style>
+<script>
+    function openTab(event, tabId) {
+        // Hide all tab contents
+        var tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(function (content) {
+            content.style.display = 'none';
+        });
 
+        // Remove 'active' class from all tab buttons
+        var tabButtons = document.querySelectorAll('.tab-button');
+        tabButtons.forEach(function (button) {
+            button.classList.remove('active');
+        });
+
+        // Show the selected tab content and add 'active' class to the clicked tab button
+        document.getElementById(tabId).style.display = 'block';
+        event.currentTarget.classList.add('active');
+    }
+    function openSubTab(event, subtabId) {
+        var subtabContents = document.querySelectorAll('.subtab-content');
+        subtabContents.forEach(function (content) {
+            content.style.display = 'none';
+        });
+
+        // Remove 'active' class from all tab buttons
+        var subtabButtons = document.querySelectorAll('.subtab-button');
+        subtabButtons.forEach(function (button) {
+            button.classList.remove('active');
+        });
+
+        // Show the selected tab content and add 'active' class to the clicked tab button
+        document.getElementById(subtabId).style.display = 'block';
+        event.currentTarget.classList.add('active');
+    }
+</script>
+<style>
+    body {
+        overflow-x: hidden;
+    }
 </style>
 
 </html>
