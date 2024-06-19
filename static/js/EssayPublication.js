@@ -86,3 +86,47 @@ function request(){
         alert("发布失败");
     });
 }
+//这是后端传来的所有系统作文，
+//todo publishDate不知道是什么
+let systemEssays=[
+    {
+        title: "小学生作文",
+        wordNum:"100~200",
+        requirement: "哈哈哈",
+        publishDate: "2021-01-01"
+    },
+    {
+        title: "小学生作文2",
+        wordNum:"150~250",
+        requirement: "fuck you",
+        publishDate: "2022-01-01"
+    }
+]
+renderSystemEssays(systemEssays);
+function renderSystemEssays(essays) {
+    let container = document.getElementById('subtab1');
+    container.innerHTML = '';  // Clear existing content
+
+    essays.forEach(essay => {
+        let card = document.createElement('div');
+        card.className = 'card';
+
+        let line1 = document.createElement('div');
+        line1.className = 'line1';
+        line1.innerHTML = `<span style="color:#456de7;margin-right: 12px;">[题目]</span><span>${essay.title}</span>`;
+
+        let line2 = document.createElement('div');
+        line2.className = 'line2';
+        line2.innerHTML = `<div class="wordcnt">字数：<span>${essay.wordNum}</span></div><div class="req">要求:<span>${essay.requirement}</span></div>`;
+
+        let line3 = document.createElement('div');
+        line3.className = 'line3';
+        line3.innerHTML = `<span class="time">上传时间：<span>${essay.publishDate}</span></span><div class="submit-btn2"><button type="submit">发布</button></div>`;
+
+        card.appendChild(line1);
+        card.appendChild(line2);
+        card.appendChild(line3);
+
+        container.appendChild(card);
+    });
+}

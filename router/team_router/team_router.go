@@ -778,6 +778,31 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			"msg":  "发布成功",
 		})
 	})
+	//发布历史
+	r.GET("/api/team_manage/composition_mission/history", tokenAuthMiddleware(), func(c *gin.Context) {
+		user, _ := c.Get("user")
+		TeamManagerClaims, ok := user.(*utils.TeamManagerClaims) // 将 user 转换为 *TeamManagerClaims 类型
+		if !ok {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		//根据team map查询发布的作文题目
+		compositions, err := controlsql.GetAllComposition(db, TeamManagerClaims.Team)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		type Response struct {
+			Code         int                                 `json:"code"`         // 状态码
+			Msg          string                              `json:"msg"`          // 消息
+			Compositions []controlsql.Composition_completion `json:"compositions"` // 作文题目
+		}
+		var response Response
+		response.Code = 200
+		response.Msg = "成功"
+		response.Compositions = compositions
+		c.JSON(200, response)
+	})
 
 }
 

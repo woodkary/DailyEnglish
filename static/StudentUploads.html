@@ -126,10 +126,6 @@
         width: 100%;
         border:1px solid #000000;
         border-radius: 0.5rem;
-        .submit-btn{
-            margin-right:2rem;
-
-        }
     }
     .task-item-title {
         font-size: 1.1rem;
@@ -161,10 +157,59 @@
         border-collapse: collapse;
         margin: 25px 0;
         font-size: 0.9em;
-        min-width: 400px;
+        width: 100%;
         border-radius: 5px 5px 0 0;
         overflow: hidden;
         /*box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);/*阴影*/
+    }
+
+    .content-table thead tr {
+        background-color: #3a7afe;
+        color: #ffffff;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .content-table th {
+        background-image: url('../static/image/updown.svg');
+        /* 设置背景图像 */
+        background-size: 16px;
+        /* 背景图像大小 */
+        background-repeat: no-repeat;
+        /* 不重复背景图像 */
+        background-position: right center;
+        /* 定位背景图像到单元格右侧中间 */
+        cursor: pointer;
+        /* 将鼠标光标改为手指形状，表示可以点击 */
+        /*颜色*/
+        color: #ffffff;
+    }
+
+    .content-table th,
+    .content-table td {
+        padding: 12px 15px;
+    }
+
+    .content-table tbody tr {
+        border-bottom: 1px solid #dddddd;
+        color: #3f3ba2;
+        text-align: center;
+    }
+
+    .content-table tbody tr:last-of-type {
+        border-bottom: 2px solid #3a7afe;
+        /*最后一行加粗*/
+    }
+    #tableBody tr td button {
+        height:30px;
+        width: 50%;
+        border: none;
+        background-color: var(--box1-color);
+        border-radius: 5px;
+        color: var(--text-color-light);
+        font-size: 15px;
+        font-weight: 400;
+        cursor: pointer;
     }
 </style>
 
