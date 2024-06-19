@@ -96,7 +96,7 @@
                 <div style="display: flex;">
                     <div class="row1">
                         <div class="circle-container">
-                            <span class="score">90</span>
+                            <span class="score" id="totalScore">90</span>
                             
                         </div>
                         <span>总分</span>
@@ -104,7 +104,7 @@
                     <div class="row2">
                         <div class="line">
                             <span>语言</span>
-                            <span class="star" id="starRating">
+                            <span class="star" id="grammarAdvice">
                                 <label data-value="5">★</label>
                                 <label data-value="4">★</label>
                                 <label data-value="3">★</label>
@@ -114,7 +114,7 @@
                         </div>
                         <div class="line">
                             <span>内容</span>
-                            <span class="star" id="starRating">
+                            <span class="star" id="structureAdvice">
                                 <label data-value="5">★</label>
                                 <label data-value="4">★</label>
                                 <label data-value="3">★</label>
@@ -124,7 +124,7 @@
                         </div>
                         <div class="line">
                             <span>结构</span>
-                            <span class="star" id="starRating">
+                            <span class="star" id="wordAdvice">
                                 <label data-value="5">★</label>
                                 <label data-value="4">★</label>
                                 <label data-value="3">★</label>
@@ -134,7 +134,7 @@
                         </div>
                         <div class="line">
                             <span>规范</span>
-                            <span class="star" id="starRating">
+                            <span class="star" id="essayAdvice">
                                 <label data-value="5">★</label>
                                 <label data-value="4">★</label>
                                 <label data-value="3">★</label>
@@ -145,7 +145,7 @@
                     </div>
                     <div class="row3">
                         <span style="margin-top:-10px;font-weight: bold;">评语：</span>
-                        <textarea class="pinglun">句子较为流畅，少量句子不画回顺。
+                        <textarea class="pinglun" id="machineAdvice">句子较为流畅，少量句子不画回顺。
                             筒单句与各类复杂句交替使用，文章牛动、丰富、有节奏感，表达力较强。
                             词汇积累不足，建议增加词汇积器，提升词汇量。
                             语法使用不够准确，部分表达欠妥，建议根据纠错结果进行修改，加强相关语法规则
@@ -157,7 +157,7 @@
             </div>
             <div id="tab2" class="tab-content">
                 <div class="teacher-score">
-                    <div class="score">
+                    <div class="score1">
                         <span>教师评分：</span>
                         <input id="teacherMark" />
                     </div>
@@ -378,7 +378,6 @@
         background-color: white;
         padding: 20px;
         margin-left: 20px;
-        height: auto;
     }
 
     .composition-title {
@@ -469,11 +468,11 @@
         font-size: 18px;
     }
 
-    .teacher-score .score {
+    .teacher-score .score1 {
         display: flex;
     }
 
-    .teacher-score .score input {
+    .teacher-score .score1 input {
         border-bottom: 1px solid #ccc;
         border-top: none;
         border-left: none;
@@ -579,11 +578,34 @@
         event.currentTarget.classList.add('active');
     }
     document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('totalScore').innerHTML = EssayMachineMark.totalScore;
+        initStarRating("essayAdvice", EssayMachineMark.essayAdvice);
+        initStarRating("grammarAdvice", EssayMachineMark.majorScore.grammarScore);
+        initStarRating("structureAdvice", EssayMachineMark.majorScore.structureScore);
+        initStarRating("wordAdvice", EssayMachineMark.majorScore.wordScore);
+        getEvaluate();
+        initRawEssay();
+    });
+    function getEvaluate(){
+        //将所有的evaluate字段拼接字符串，以\n分隔
+        let evaluateStr=EssayMachineMark.essayAdvice+'\n';
+        evaluateStr+=EssayMachineMark.majorScore.grammarAdvice+'\n';
+        evaluateStr+=EssayMachineMark.majorScore.structureAdvice+'\n';
+        evaluateStr+=EssayMachineMark.majorScore.wordAdvice+'\n';
+        evaluateStr+=teacherScoreParams.teacherEvaluate;
+        //将评价内容写入textarea
+        document.querySelector('#machineAdvice').value=evaluateStr;
+    }
+    function initRawEssay(){
+        //将原文内容写入div
+        document.querySelector('#rawEssay').innerHTML=EssayMachineMark.rawEssay;
+    }
+    function initStarRating(advice, score) {
         // 模拟从后端获取的评分数据
-        const rating = 3.5; // 例如后端返回的评分数据是 4
+        const rating = score/20; // 例如后端返回的评分数据
 
         // 获取星星容器
-        const starRating = document.getElementById('starRating');
+        const starRating = document.getElementById(advice);
         const stars = starRating.querySelectorAll('label');
 
         // 根据评分数据显示星星
@@ -593,7 +615,7 @@
                 star.classList.add('filled');
             }
         });
-    });
+    }
     //!!!!!!!!!!!!!!!!!!!!!!!!!1
     // 获取 textarea 元素
     var textarea = document.querySelector('.evaluate textarea');
