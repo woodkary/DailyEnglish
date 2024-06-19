@@ -820,8 +820,39 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		response.Msg = "成功"
 		response.Compositions = compositions
 		c.JSON(200, response)
-	})
-}
+	}) // // 获取某作文所有学生提交记录
+	r.POST("/api/team_manage/composition_mission/submission_records", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			TitleID string `json:"title_id"` // 作文题目ID
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(400, "请求参数错误")
+			return
+		}
 
-//创建团队 加入团队 删除成员 搜索成员
-// utils- 每日更新打卡内容
+		titleID, err := strconv.Atoi(request.TitleID)
+		if err != nil {
+			c.JSON(400, "请求参数错误")
+			return
+		}
+
+		Records, err := controlsql.GetRecordsByTitleID(db, titleID)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			return
+		}
+
+		type Response struct {
+			Code    int                                      `json:"code"`    // 状态码
+			Msg     string                                   `json:"msg"`     // 消息
+			Records []controlsql.Composition_evaluate_record `json:"records"` // 作文提交记录
+		}
+		var response Response
+		response.Code = 200
+		response.Msg = "成功"
+		response.Records = Records
+		c.JSON(200, response)
+	})
+
+}

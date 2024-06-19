@@ -434,3 +434,47 @@ func GetAllComposition(db *sql.DB, Team map[int]string) ([]Composition_completio
 	}
 	return composition_completions, nil
 }
+
+type Composition_evaluate_record struct {
+	Evaluate_id  string `json:"evaluate_id"`
+	Student_id   string `json:"student_id"`
+	Student_name string `json:"student_name"`
+	Respond_date string `json:"respond_date"`
+	Score        int    `json:"score"`
+}
+
+// 获取某作文所有学生提交记录
+func GetRecordsByTitleID(db *sql.DB, title_id int) ([]Composition_evaluate_record, error) {
+	var composition_evaluates []Composition_evaluate_record
+	// 查询该Title_id 作文的所有提交
+
+	rows, err := db.Query("SELECT evaluate_id,user_id,respond_date,machine_mark FROM composition_evaluate WHERE title_id = ?", title_id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var evaluate_id, user_id, respond_date string
+		var machine_mark int
+		err := rows.Scan(&evaluate_id, &user_id, &respond_date, &machine_mark)
+		if err != nil {
+			return nil, err
+		}
+
+		var student_name string
+		err = db.QueryRow("SELECT username FROM user_info WHERE user_id = ?", user_id).Scan(&student_name)
+		if err != nil {
+			return nil, err
+		}
+
+		item := Composition_evaluate_record{
+			Evaluate_id:  evaluate_id,
+			Student_id:   user_id,
+			Student_name: student_name,
+			Respond_date: respond_date,
+			Score:        machine_mark,
+		}
+		composition_evaluates = append(composition_evaluates, item)
+	}
+	return composition_evaluates, nil
+}
