@@ -13,7 +13,8 @@ let studentUploads=[
         studentName: '张三',
         respondDate: '2021-05-10',
         wordCount: 100,
-        score: 80
+        machineScore: 80,
+        teacherScore: 90
     },
     {
         evaluateId: 2,
@@ -21,7 +22,8 @@ let studentUploads=[
         studentName: '李四',
         respondDate: '2021-05-10',
         wordCount: 100,
-        score: 80
+        machineScore: 80,
+        teacherScore: 90
     }
 ]
 function getChartObject(studentUploads){
@@ -31,7 +33,8 @@ function getChartObject(studentUploads){
             提交日期: item.respondDate,
             姓名: item.studentName,
             词数: item.wordCount,
-            得分: item.score
+            机器评分: item.machineScore,
+            教师评分: item.teacherScore
         });
     });
     return res;
