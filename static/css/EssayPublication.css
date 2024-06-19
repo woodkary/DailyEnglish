@@ -57,10 +57,11 @@
     display: none;
     border-top: none;
     width:900px;
+    height: auto;
 }
 .custom-essay-container {
     width: 100%;
-    height: 500px;
+    height: auto;
     background-color: white;
     padding-top: 10px;
     border-radius: 15px;
