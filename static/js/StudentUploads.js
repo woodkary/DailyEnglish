@@ -5,7 +5,7 @@ if (urlParams.has('titleId')) {
     titleId = urlParams.get('titleId');
 }
 console.log(titleId);
-
+//这是根据titleId获取学生上传的作文数据，请从composition_evaluate中查找对应数据
 let studentUploads=[
     {
         evaluateId: 1,
