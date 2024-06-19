@@ -24,15 +24,17 @@ function modalTeamSelect(){
     let teamSelect=document.getElementById("modalTeamSelect");
     teamSelect.innerHTML="";
     let flag=false;
-    if(teamAndStudents==null||teamAndStudents.length===0){
+    let teams=JSON.parse(localStorage.getItem("team_info"));
+    teamInfo=teams;
+    if(teams==null||teams.length===0){
         //如果没有团队数据，则提示用户
         return;
     }
-    for (let team in teamAndStudents) {
+    for (let team in teams) {
         //在团队选择下拉框中添加团队选项
         let newOption=document.createElement("option");
         newOption.value=team;
-        newOption.text=team;
+        newOption.text=teams[team];
         teamSelect.add(newOption);
         if(!flag){
             //默认选择第一个团队
@@ -65,6 +67,7 @@ function init(){
     select.addEventListener("change", function() {
         requestParams.team_id=parseInt(select.value);
     });
+    requestSystemEssays();
     modalTeamSelect();
 }
 function setTitle(title){
@@ -147,6 +150,47 @@ const essayDivMap= {
 for(let key in essayDivMap){
     essayDivMap[key].innerHTML="";
 }
+function requestSystemEssays(){
+    //发送请求
+    fetch("http://localhost:8081/api/team_manage/composition_mission/system_compositions", {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem("token")}`
+        },
+    }).then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error("Network response was not ok");
+        }
+    }).then(data => {
+        console.log(data);
+        systemEssays=[];
+        data.compositions.forEach(composition => {
+            systemEssays.push({
+                titleId: composition.title_id,
+                title: composition.title,
+                grade: composition.grade,
+                wordNum: composition.word_num,
+                requirement: composition.requirement,
+                publishDate: composition.publish_date
+            });
+        });
+
+        renderSystemEssays(systemEssays,"全部");
+        renderSystemEssays(systemEssays,"小学");
+        renderSystemEssays(systemEssays,"初中");
+        renderSystemEssays(systemEssays,"高中");
+        renderSystemEssays(systemEssays,"四级");
+        renderSystemEssays(systemEssays,"六级");
+        renderSystemEssays(systemEssays,"考研");
+        renderSystemEssays(systemEssays,"托福");
+        renderSystemEssays(systemEssays,"雅思");
+        renderSystemEssays(systemEssays,"GRE");
+    }).catch(error => {
+        console.error("Error:", error);
+    });
+}
 function openTab(event, tabId) {
     // Hide all tab contents
     var tabContents = document.querySelectorAll('.tab-content');
@@ -200,16 +244,6 @@ function openSubTab(event, subtabId) {
             9: "GRE",
     }*/
 
-renderSystemEssays(systemEssays,"全部");
-renderSystemEssays(systemEssays,"小学");
-renderSystemEssays(systemEssays,"初中");
-renderSystemEssays(systemEssays,"高中");
-renderSystemEssays(systemEssays,"四级");
-renderSystemEssays(systemEssays,"六级");
-renderSystemEssays(systemEssays,"考研");
-renderSystemEssays(systemEssays,"托福");
-renderSystemEssays(systemEssays,"雅思");
-renderSystemEssays(systemEssays,"GRE");
 function renderSystemEssays(essays, grade) {
     let container = document.getElementById(grade);
     container.innerHTML = ''; // Clear existing content
@@ -241,6 +275,12 @@ function renderSystemEssays(essays, grade) {
             // Add event listener to the button
             let button = document.getElementById(`button-${grade}-${index}`);
             button.addEventListener('click', () => {
+                requestParams.title=essay.title;
+                let wordNumArr=essay.wordNum.split("~");
+                requestParams.min_word_num=parseInt(wordNumArr[0]);
+                requestParams.max_word_num=parseInt(wordNumArr[1]);
+                requestParams.requirement=essay.requirement;
+                requestParams.grade=essay.grade;
                 request();
             });
         }
