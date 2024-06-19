@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<!-- Coding By CodingNepal - codingnepalweb.com -->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="divport" content="width=device-width, initial-scale=1.0">
+
+    <!----======== CSS ======== -->
+    <link rel="stylesheet" href="./css/navSidebar.css">
+
+    <!----===== Iconscout CSS ===== -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+
+
+    <title>Admin Dashboard Panel</title>
+</head>
+
+<body>
+<nav>
+    <div class="logo-name">
+        <!--        <div class="logo-image">
+              <img src="./image/little-edellweiss.regular.webp" alt="">
+          </div>-->
+
+        <span class="logo_name">DailyEnglish</span>
+    </div>
+
+    <div class="menu-items">
+        <ul class="nav-links">
+            <li><a href="index.html">
+                <i class="uil uil-estate"></i>
+                <span class="link-name">主页</span>
+            </a></li>
+            <!--            <li><a href="issuePunch.html">-->
+            <!--                <i class="uil uil-calendar-alt"></i>-->
+            <!--                <span class="link-name">打卡发布</span>-->
+            <!--            </a></li>-->
+            <li><a href="history.html">
+                <i class="uil uil-calender"></i>
+                <span class="link-name">考试相关</span>
+            </a></li>
+            <!--            <li><a href="test-statistics.html">-->
+            <!--                <i class="uil uil-chart"></i>-->
+            <!--                <span class="link-name">考试情况</span>-->
+            <!--            </a></li>-->
+            <li><a href="manage.html">
+                <i class="uil uil-meh-alt"></i>
+                <span class="link-name">成员管理</span>
+            </a></li>
+            <li><a href="user.html">
+                <i class="uil uil-user"></i>
+                <span class="link-name">个人中心</span>
+            </a></li>
+        </ul>
+
+        <ul class="logout-mode">
+            <li><a href="login&register.html" onclick="logout()">
+                <i class="uil uil-signout"></i>
+                <span class="link-name">Logout</span>
+            </a></li>
+
+            <li class="mode">
+                <a href="#">
+                    <i class="uil uil-moon"></i>
+                    <span class="link-name">Dark Mode</span>
+                </a>
+
+                <div class="mode-toggle">
+                    <span class="switch"></span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<section class="dashboard">
+    <div class="top">
+        <i class="uil uil-bars sidebar-toggle"></i>
+
+        <div class="search-box">
+            <i class="uil uil-search"></i>
+            <input type="text" placeholder="Search here...">
+        </div>
+
+        <img src="image/pikachu.jpg" alt="">
+    </div>
+
+    <div class="dash-content">
+        <div class="essay-box">
+            <div class="task-item-2">
+                <div style="padding-bottom: 0.2rem; border-bottom: 2px solid #69c0ff">
+                    <div class="task-item-title"><span
+                            style="color: rgb(69, 109, 231)">[题目]</span><span
+                            style="margin-left: 1rem">作文训练1</span></div>
+                </div>
+                <div class="word-num">字数：
+                    <span>50~100</span>
+                    词</div>
+                <div class="requirement">
+                    <span class="requirement-label">要求：</span>
+                    <span class="requirement-text">请不要用真实姓名，使用“李明”asdfafaswetregrtiyujnhdasfwerwedgsft54ewawds代替</span>
+                </div>
+
+            </div>
+        </div>
+        <div>
+            <table class="content-table">
+                <thead>
+                <tr>
+
+                </tr>
+                </thead>
+
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+<script src="./js/StudentUploads.js"></script>
+<style>
+    .essay-box {
+        margin-top: 1rem;
+        width: 100%;
+        border:1px solid #000000;
+        border-radius: 0.5rem;
+        .submit-btn{
+            margin-right:2rem;
+
+        }
+    }
+    .task-item-title {
+        font-size: 1.1rem;
+        margin-left: 0.5rem;
+    }
+    .requirement {
+        font-size: 0.9rem;
+        margin-left: 0.5rem;
+        margin-bottom: 0.5rem;
+        max-width: 1000px; /* 增加最大宽度 */
+        max-height: none; /* 移除最大高度限制 */
+        min-height: 40px;
+        line-height: 1.2rem; /* 调整行高，使文本更紧凑 */
+    }
+
+    .word-num {
+        font-size: 0.9rem;
+        margin-left: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    .requirement-label {
+        flex-shrink: 0; /* 防止标签缩小 */
+    }
+    .requirement-text {
+        flex-grow: 1; /* 让文本部分占据剩余空间 */
+        word-break: break-word; /* 强制单词换行，防止溢出 */
+    }
+    .content-table {
+        border-collapse: collapse;
+        margin: 25px 0;
+        font-size: 0.9em;
+        min-width: 400px;
+        border-radius: 5px 5px 0 0;
+        overflow: hidden;
+        /*box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);/*阴影*/
+    }
+</style>
+
+</html>
