@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"fmt"
+	"io/ioutil"
 	"time"
 
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
@@ -75,11 +76,44 @@ func UploadImageToOSS(base64Image string) (string, error) {
 
 	return filename, nil
 }
-
 func DecodeBase64(base64String string) ([]byte, error) {
 	decodedBytes, err := base64.StdEncoding.DecodeString(base64String)
 	if err != nil {
 		return nil, err
 	}
 	return decodedBytes, nil
+}
+func EncodeBase64(data []byte) (string, error) {
+	// 使用标准编码器对数据进行编码
+	encodedString := base64.StdEncoding.EncodeToString(data)
+	return encodedString, nil
+}
+
+// 从OSS获取图片
+func GetImageFromOSS(filename string) (string, error) {
+	// 创建 OSS 客户端
+	client, err := oss.New(OssEndpoint, OssAccessKeyId, OssAccessKeySecret)
+	if err != nil {
+		return "", err
+	}
+
+	// 创建一个新的 OSS 桶客户端
+	bucket, err := client.Bucket(ossBucketName)
+	if err != nil {
+		return "", err
+	}
+
+	// 下载图片
+	body, err := bucket.GetObject(filename)
+	if err != nil {
+		return "", err
+	}
+	defer body.Close()
+	data, err := ioutil.ReadAll(body)
+	// 将图片转为 base64 编码
+	encodedString, err := EncodeBase64(data)
+	if err != nil {
+		return "", err
+	}
+	return encodedString, nil
 }
