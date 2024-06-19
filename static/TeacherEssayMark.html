@@ -93,42 +93,141 @@
                 <button class="tab-button" onclick="openTab(event, 'tab2')">教师评分</button>
             </div>
             <div id="tab1" class="tab-content" style="display: block;">
-                <div class="row1">
-                    <span class="score">90</span>
-                    <span>总分</span>
-                </div>
-                <div class="row2">
-                    <div class="star-box">
-                        <input type="radio" name="star" id="star5" hidden />
-                        <label for="star5"></label>
-                
-                        <input type="radio" name="star" id="star4" hidden />
-                        <label for="star4"></label>
-                
-                        <input type="radio" name="star" id="star3" hidden />
-                        <label for="star3"></label>
-                
-                        <input type="radio" name="star" id="star2" hidden />
-                        <label for="star2"></label>
-                
-                        <input type="radio" name="star" id="star1" hidden />
-                        <label for="star1"></label>
+                <div style="display: flex;">
+                    <div class="row1">
+                        <div class="circle-container">
+                            <span class="score">90</span>
+                            
+                        </div>
+                        <span>总分</span>
+                    </div>
+                    <div class="row2">
+                        <div class="line">
+                            <span>语言</span>
+                            <span class="star" id="starRating">
+                                <label data-value="5">★</label>
+                                <label data-value="4">★</label>
+                                <label data-value="3">★</label>
+                                <label data-value="2">★</label>
+                                <label data-value="1">★</label>
+                            </span>
+                        </div>
+                        <div class="line">
+                            <span>内容</span>
+                            <span class="star" id="starRating">
+                                <label data-value="5">★</label>
+                                <label data-value="4">★</label>
+                                <label data-value="3">★</label>
+                                <label data-value="2">★</label>
+                                <label data-value="1">★</label>
+                            </span>
+                        </div>
+                        <div class="line">
+                            <span>结构</span>
+                            <span class="star" id="starRating">
+                                <label data-value="5">★</label>
+                                <label data-value="4">★</label>
+                                <label data-value="3">★</label>
+                                <label data-value="2">★</label>
+                                <label data-value="1">★</label>
+                            </span>
+                        </div>
+                        <div class="line">
+                            <span>规范</span>
+                            <span class="star" id="starRating">
+                                <label data-value="5">★</label>
+                                <label data-value="4">★</label>
+                                <label data-value="3">★</label>
+                                <label data-value="2">★</label>
+                                <label data-value="1">★</label>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row3">
+                        <span style="margin-top:-10px;font-weight: bold;">评语：</span>
+                        <textarea class="pinglun">句子较为流畅，少量句子不画回顺。
+                            筒单句与各类复杂句交替使用，文章牛动、丰富、有节奏感，表达力较强。
+                            词汇积累不足，建议增加词汇积器，提升词汇量。
+                            语法使用不够准确，部分表达欠妥，建议根据纠错结果进行修改，加强相关语法规则
+                            学习。
+                            存在少量单词拼写错误，但不响整体文意表达。
+                        </textarea>
                     </div>
                 </div>
-                <div class="row3">
-
-                </div>
-
             </div>
             <div id="tab2" class="tab-content">
                 <div class="teacher-score">
                     <div class="score">
                         <span>教师评分：</span>
-                        <span id="teacherMark"></span>
+                        <input id="teacherMark" />
                     </div>
                     <div class="evaluate">
                         <span>教师评价：</span>
-                        <span id="teacherEvaluate"></span>
+                        <textarea id="teacherEvaluate"></textarea>
+                    </div>
+                    <div class="comfirm">
+                        <button>提交</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="composition">
+                <div class="composition-title">
+                    <span>作文原文</span>
+                </div>
+                <div class="composition-content">
+                    <p id="rawEssay">i have a dream</p>
+                </div>
+            </div>
+
+            <div class="comment-container">
+                <div class="composition-title">
+                    <span>批改结果</span>
+                </div>
+                <div class="comment-content">
+                    <div class="paragraph-container">
+                        <div class="paragraph">
+                            <span style="font-weight: bold;">第一段</span>
+                            <div class="sentences">
+                                <div class="sentence-container">
+                                    <div class="sentence">
+                                        <span class="sentence_no">1.1</span>
+                                        <span class="sentence_detail">i have a dream</span>
+                                    </div>
+                                    <div class="contents">
+                                        <div class="content">
+                                            <span class="error_type">错误类型：</span>
+                                            <span class="error_detail">代词类型混淆会使指代对象有误，建议将【much】修改为【many】</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="sentence-container">
+                                    <span class="sentence_no">1.2 </span>
+                                    <span class="sentence_detail">i have a dream</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="paragraph">
+                            <span style="font-weight: bold;">第一段</span>
+                            <div class="sentences">
+                                <div class="sentence-container">
+                                    <div class="sentence">
+                                        <span class="sentence_no">1.1</span>
+                                        <span class="sentence_detail">i have a dream</span>
+                                    </div>
+                                    <div class="contents">
+                                        <div class="content">
+                                            <span class="error_type">错误类型：</span>
+                                            <span class="error_detail">代词类型混淆会使指代对象有误，建议将【much】修改为【many】</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="sentence-container">
+                                    <span class="sentence_no">1.2 </span>
+                                    <span class="sentence_detail">i have a dream</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -176,7 +275,7 @@
         height: auto;
         background-color: white;
         margin-left: 20px;
-        padding: 20px;
+        padding: 20px 20px 10px 10px;
         height: 180px;
         border-radius: 5px;
     }
@@ -185,52 +284,234 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        width:15%;
+        width: 15%;
         border-right: 1px solid #f5f5f5;
-        height:100%;
+        height: 100%;
     }
 
-    .row2{
+    .circle-container {
+        display: flex;
+        padding: 10px;
+        height: 90px;
+        width: 90px;
+        border-radius: 50%;
+        background-color: transparent;
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #4bd2a4;
+        position: relative;
+    }
+    .score{
+        font-size: 39px;
+        color:#4bd2a4
+    }
+
+    .row2 {
         display: flex;
         flex-direction: column;
         align-items: center;
-        width:35%;
+        width: 30%;
         border-right: 1px solid #f5f5f5;
-        height:100%;
+        height: 100%;
     }
 
-    .row3{
+    .line {
+        display: flex;
+        width: 100%;
+        height: 30px;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .row3 {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        width:50%;
-        height:100%;
+        width: 50%;
+        height: 100%;
     }
-    .star-box {
-            display: table;
-            position: absolute;
-            left: 50%;
-            top: 50%;
-        }
 
-        .star-box label {
-            float: right;
-            color: #999;
-       }
+    .pinglun {
+        width: 100%;
+        height: 110px;
+        border: none;
+        border-radius: 5px;
+        padding: 5px;
+        resize: none;
+        overflow: auto;
+        scrollbar-width: none;
+        /* Firefox */
+        -ms-overflow-style: none;
+        /* IE 10+ */
+    }
 
-        .star-box label::after {
-            content: '★';
-            font-size: 28px;
-            padding: 5px;
-            display: inline-block;
-            line-height: 1;
-        }
+    .pinglun::-webkit-scrollbar {
+        display: none;
+        /* Chrome, Safari, Edge */
+    }
 
-        .star-box input:checked~label,
-        .star-box label:hover~label,
-        .star-box label:hover {
-            color: red;
-        }
+    .star {
+        display: flex;
+        font-size: 2em;
+        direction: rtl;
+        margin-left: 20px;
+        /* 设置从右到左排列 */
+    }
+
+    .star label {
+        color: #ccc;
+        cursor: default;
+        transition: color 0.2s;
+        margin-left: 5px;
+        /* 间距 */
+    }
+
+    .star .filled {
+        color: gold;
+    }
+
+    .composition {
+        margin-top: 20px;
+        width: 90%;
+        height: auto;
+        border-radius: 5px;
+        background-color: white;
+        padding: 20px;
+        margin-left: 20px;
+        height: auto;
+    }
+
+    .composition-title {
+        font-size: 20px;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    .composition-content {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    .comment-container {
+        margin-top: 20px;
+        width: 90%;
+        height: auto;
+        border-radius: 5px;
+        background-color: white;
+        padding: 10px 20px 10px 20px;
+        margin-left: 20px;
+        height: auto;
+        border: 1px solid #cdcdcd;
+    }
+
+    .comment-content {
+        font-size: 16px;
+        line-height: 1.5;
+        border-top: 1px solid #ccc;
+    }
+
+    .paragraph-container {
+        margin-top: 10px;
+    }
+
+    .paragraph {
+        margin-bottom: 10px;
+    }
+
+    .sentences {
+        margin-top: 10px;
+    }
+
+    .sentence-container {
+        display: flex;
+        height: auto;
+        padding-bottom: 10px;
+        padding-top: 10px;
+
+        border-bottom: 1px solid #ccc;
+    }
+
+    .sentence {
+        width: 50%;
+    }
+
+    .contents {
+        width: 50%;
+        gap: 5px;
+    }
+
+    .content {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sentence_no {
+        font-weight: bold;
+    }
+
+    .sentence_detail {
+        margin-left: 10px;
+
+    }
+
+    .error_type {
+        font-weight: bold;
+    }
+
+    .error_detail {
+        font-size: 14px;
+        width: 90%;
+    }
+
+    .teacher-score {
+        margin-left: 20px;
+        font-size: 18px;
+    }
+
+    .teacher-score .score {
+        display: flex;
+    }
+
+    .teacher-score .score input {
+        border-bottom: 1px solid #ccc;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        text-align: center;
+        font-size: 17px;
+    }
+
+    .evaluate {
+        display: flex;
+        margin-top: 10px;
+    }
+
+    .evaluate textarea {
+        min-width: 80%;
+        min-height: 40px;
+        height: fit-content;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 5px;
+        resize: none;
+        font-size: 17px;
+    }
+
+    .comfirm button {
+        width: 60px;
+        height: 30px;
+        margin-top: 10px;
+        margin-left: 40%;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .comfirm button:hover {
+        background-color: #f1f1f1;
+
+    }
 </style>
 <script>
     //机器评分的结果
@@ -295,6 +576,39 @@
         // Show the selected tab content and add 'active' class to the clicked tab button
         document.getElementById(tabId).style.display = 'block';
         event.currentTarget.classList.add('active');
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        // 模拟从后端获取的评分数据
+        const rating = 3.5; // 例如后端返回的评分数据是 4
+
+        // 获取星星容器
+        const starRating = document.getElementById('starRating');
+        const stars = starRating.querySelectorAll('label');
+
+        // 根据评分数据显示星星
+        stars.forEach(star => {
+            const starValue = parseFloat(star.getAttribute('data-value'));
+            if (starValue <= rating) {
+                star.classList.add('filled');
+            }
+        });
+    });
+    //!!!!!!!!!!!!!!!!!!!!!!!!!1
+    // 获取 textarea 元素
+    var textarea = document.querySelector('.evaluate textarea');
+
+    // 添加事件监听器
+    textarea.addEventListener('input', autoResize, false);
+
+
+    function autoResize() {
+        this.style.height = 'auto';
+        if (this.scrollHeight > 120) { // 设置最大高度为 200px
+            this.style.height = '120px';
+            this.style.overflowY = 'auto'; // 如果超过最大高度，显示滚动条
+        } else {
+            this.style.height = this.scrollHeight + 'px';
+        }
     }
 </script>
 
