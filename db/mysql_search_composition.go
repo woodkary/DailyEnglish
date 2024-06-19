@@ -65,7 +65,28 @@ type SentsFeedback struct {
 	IsValidLangSent       bool                  `json:"is_valid_lang_sent"`
 }
 
-//根据manager_id查找发布的所有任务以及完成情况
+// 查询系统作文训练
+func GetSystemComposition(db *sql.DB) ([]WritingTask, error) {
+	var systemTasks []WritingTask
+	rows, err := db.Query("SELECT title_id,composition_title,word_num,composition_require,publish_date,grade FROM composition WHERE team_id = 0")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var task WritingTask
+		var grade int
+		err := rows.Scan(&task.TitleID, &task.Title, &task.Word_num, &task.Requirement, &task.Publish_date, &grade)
+		if err != nil {
+			return nil, err
+		}
+		task.Grade = gradeMap[grade]
+		task.Tag = "系统"
+		task.Manager_name = "系统"
+		systemTasks = append(systemTasks, task)
+	}
+	return systemTasks, nil
+}
 
 // 查找用户的写作任务，训练任务和已完成任务
 func GetUserWritingTask(db *sql.DB, user_id int) ([]WritingTask, []WritingTask, []WritingTask, error) {

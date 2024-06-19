@@ -18,82 +18,440 @@
 </head>
 
 <body>
-<nav>
-    <div class="logo-name">
-        <!--        <div class="logo-image">
+    <nav>
+        <div class="logo-name">
+            <!--        <div class="logo-image">
               <img src="./image/little-edellweiss.regular.webp" alt="">
           </div>-->
 
-        <span class="logo_name">DailyEnglish</span>
-    </div>
-
-    <div class="menu-items">
-        <ul class="nav-links">
-            <li><a href="index.html">
-                <i class="uil uil-estate"></i>
-                <span class="link-name">主页</span>
-            </a></li>
-            <!--            <li><a href="issuePunch.html">-->
-            <!--                <i class="uil uil-calendar-alt"></i>-->
-            <!--                <span class="link-name">打卡发布</span>-->
-            <!--            </a></li>-->
-            <li><a href="history.html">
-                <i class="uil uil-calender"></i>
-                <span class="link-name">考试相关</span>
-            </a></li>
-            <!--            <li><a href="test-statistics.html">-->
-            <!--                <i class="uil uil-chart"></i>-->
-            <!--                <span class="link-name">考试情况</span>-->
-            <!--            </a></li>-->
-            <li><a href="manage.html">
-                <i class="uil uil-meh-alt"></i>
-                <span class="link-name">成员管理</span>
-            </a></li>
-            <li><a href="user.html">
-                <i class="uil uil-user"></i>
-                <span class="link-name">个人中心</span>
-            </a></li>
-        </ul>
-
-        <ul class="logout-mode">
-            <li><a href="login&register.html" onclick="logout()">
-                <i class="uil uil-signout"></i>
-                <span class="link-name">Logout</span>
-            </a></li>
-
-            <li class="mode">
-                <a href="#">
-                    <i class="uil uil-moon"></i>
-                    <span class="link-name">Dark Mode</span>
-                </a>
-
-                <div class="mode-toggle">
-                    <span class="switch"></span>
-                </div>
-            </li>
-        </ul>
-    </div>
-</nav>
-
-<section class="dashboard">
-    <div class="top">
-        <i class="uil uil-bars sidebar-toggle"></i>
-
-        <div class="search-box">
-            <i class="uil uil-search"></i>
-            <input type="text" placeholder="Search here...">
+            <span class="logo_name">DailyEnglish</span>
         </div>
 
-        <img src="image/pikachu.jpg" alt="">
-    </div>
+        <div class="menu-items">
+            <ul class="nav-links">
+                <li><a href="index.html">
+                        <i class="uil uil-estate"></i>
+                        <span class="link-name">主页</span>
+                    </a></li>
+                <!--            <li><a href="issuePunch.html">-->
+                <!--                <i class="uil uil-calendar-alt"></i>-->
+                <!--                <span class="link-name">打卡发布</span>-->
+                <!--            </a></li>-->
+                <li><a href="history.html">
+                        <i class="uil uil-calender"></i>
+                        <span class="link-name">考试相关</span>
+                    </a></li>
+                <!--            <li><a href="test-statistics.html">-->
+                <!--                <i class="uil uil-chart"></i>-->
+                <!--                <span class="link-name">考试情况</span>-->
+                <!--            </a></li>-->
+                <li><a href="manage.html">
+                        <i class="uil uil-meh-alt"></i>
+                        <span class="link-name">成员管理</span>
+                    </a></li>
+                <li><a href="user.html">
+                        <i class="uil uil-user"></i>
+                        <span class="link-name">个人中心</span>
+                    </a></li>
+            </ul>
 
-    <div class="dash-content">
+            <ul class="logout-mode">
+                <li><a href="login&register.html" onclick="logout()">
+                        <i class="uil uil-signout"></i>
+                        <span class="link-name">Logout</span>
+                    </a></li>
 
-    </div>
-</section>
+                <li class="mode">
+                    <a href="#">
+                        <i class="uil uil-moon"></i>
+                        <span class="link-name">Dark Mode</span>
+                    </a>
+
+                    <div class="mode-toggle">
+                        <span class="switch"></span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="dashboard">
+        <div class="top">
+            <i class="uil uil-bars sidebar-toggle"></i>
+
+            <div class="search-box">
+                <i class="uil uil-search"></i>
+                <input type="text" placeholder="Search here...">
+            </div>
+
+            <img src="image/pikachu.jpg" alt="">
+        </div>
+
+        <div class="dash-content">
+            <div class="filter-container"
+                style="margin-top: 40px;background: white;max-height: 150px;margin-left: 20px;border-radius: 15px;">
+                <div class="filter-box" style="border-bottom: 1px solid #eeeeee;height: 60px;display:flex;">
+                    <span
+                        style="width:100%;margin-top: 10px; margin-left: 20px; font-size: 23px; color: #3a7afe; display: flex; align-items: center;">
+                        <img src="./image/filter.svg" style="width: 24px;">
+                        <span style="margin-right: auto;">筛选作文</span>
+                        <span class="toggle-filter">
+                            <i class="uil uil-angle-up" style="margin-right: 20px;"></i>
+                            <!--                            <img src="./image/updown.svg"
+                            style="width: 24px; background-color: #3a7afe;margin-right: 20px;">-->
+                        </span>
+                    </span>
+                </div>
+                <div class="filter" style="display: flex; padding: 20px;">
+                    <div class="container" style="display: flex;align-items: center;">
+                        <div class="group">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
+                                <g>
+                                    <path
+                                        d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z">
+                                    </path>
+                                </g>
+                            </svg>
+                            <input class="input" type="search" placeholder="Search" />
+                        </div>
+
+                        <span style="margin-left: 20px;">完成状态:</span>
+                        <select name="category" id="category" style="height: 40px; ">
+                            <option value="category1">正在进行</option>
+                            <option value="category2">未进行</option>
+                            <option value="category3">已过期</option>
+                        </select>
+
+
+
+                        <button class="filter-button">
+                            <img src="./image/search.svg" alt="Button Icon">
+                            <span>筛选</span>
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="history-container">
+                <span class="history-title">发布历史</span>
+                <div class="history-item">
+                    <div class="row1">
+                        <div class="line1">
+                            <span style="color:#456de7;margin-right: 12px; ">[题目]</span>
+                            <span>A Happy Day</span>
+                        </div>
+                        <div class="line2">
+                            <div class="wordcnt">字数：123</div>
+                            <div class="req">要求1234221</div>
+                        </div>
+                        <div class="line3">
+                            <span class="time">发布时间：12:20:20</span>
+                        </div>
+                    </div>
+                    <div class="row2">
+                        <div class="progress-container">
+                            <svg class="progress-circle" width="200" height="200" viewBox="0 0 200 200">
+                                <circle class="progress-bg" cx="100" cy="100" r="90"></circle>
+                                <circle class="progress-bar" cx="100" cy="100" r="90"></circle>
+                            </svg>
+                            <div class="progress-text" id="progress-text">0%</div>
+                        </div>
+                            <button class="submit-btn2">成绩详情</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </body>
 <style>
+    .group {
+        display: flex;
+        line-height: 28px;
+        align-items: center;
+        position: relative;
+        max-width: 190px;
 
+        .input {
+            width: 100%;
+            height: 40px;
+            line-height: 28px;
+            padding: 0 1rem;
+            padding-left: 2.5rem;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            outline: none;
+            color: #89879f;
+            transition: 0.3s ease;
+            border-color: #d7dae3;
+        }
+
+        .input::placeholder {
+            color: #9e9ea7;
+        }
+
+        .input:focus,
+        input:hover {
+            outline: none;
+            border-color: #9dbdff;
+            background-color: #fff;
+        }
+
+        .icon {
+            position: relative;
+            left: 2rem;
+            width: 1rem;
+            height: 1rem;
+
+        }
+
+    }
+
+    #category {
+        height: 40px;
+        width: 150px;
+        margin-left: 20px;
+        font-size: 13px;
+        font-weight: 400;
+        padding: 8px;
+        border: 1px solid #d7dae3;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #7e7e7e;
+        outline: none;
+        /* 去除默认的聚焦边框 */
+    }
+
+    #category:hover,
+    #category:focus {
+        border-color: #9dbdff;
+        /* 鼠标悬停和聚焦时改变边框颜色 */
+    }
+
+    /* 鼠标悬停在选项上时的样式 */
+    #category option:hover {
+        background-color: #f0f0f0;
+        /* 悬停时的背景颜色 */
+    }
+
+    /* 选中的选项样式 */
+    #category option:checked {
+        background-color: #3a7afe;
+        /* 选中时的背景颜色 */
+        color: #fff;
+        /* 选中时的文字颜色 */
+    }
+
+    .filter-button {
+        height: 40px;
+        width: 90px;
+        display: flex;
+        /* 使用Flexbox布局 */
+        align-items: center;
+        /* 垂直居中子元素 */
+        border: none;
+        background-color: #3a7afe;
+        cursor: pointer;
+        padding: 5px;
+        /* 为按钮内部添加一些间距 */
+        overflow: hidden;
+        /* 确保内容不会溢出按钮 */
+        border-radius: 5px;
+        margin-left: 155px;
+    }
+
+    .filter-button img {
+        width: 20px;
+        /* 设置图片宽度 */
+        height: 20px;
+        /* 设置图片高度 */
+        margin-right: 0;
+        /* 图片和文本之间的间距 */
+    }
+
+    .filter-button span {
+        flex-grow: 1;
+        /* 文本占据剩余空间 */
+        text-align: center;
+        /* 水平居中文本 */
+        color: white;
+        /* 文本颜色 */
+        font-size: 16px;
+        /* 文本大小 */
+        margin-right: 5px;
+        /* 图片和文本之间的间距 */
+        margin-left: -10px;
+    }
+
+    .history-container {
+        margin-left: 20px;
+        margin-top: 3%;
+        height: 400px;
+        background-color: white;
+        width: auto;
+        border-radius: 15px;
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-bottom: 30px;
+        padding-top: 10px;
+    }
+
+    .history-title {
+        color: #3a7afe;
+        position: relative;
+        margin-top: 20px;
+        font-size: 23px;
+        font-weight: bold;
+    }
+
+    .history-item {
+        margin-top: 20px;
+        width: 90%;
+        height: 150px;
+        background-color: #ffffff;
+        border-radius: 5px;
+        padding: 10px 20px;
+        display: flex;
+        border: 1px solid #d3d1d1;
+        margin-left: 10px;
+    }
+
+    .row1 {
+        width: 70%;
+    }
+
+    .row2 {
+        width: 30%;
+    }
+
+    .line1 {
+        font-size: 16px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #c4e2ff;
+    }
+
+    .line2 {
+        font-size: 14px;
+        padding-bottom: 8px;
+        padding-top: 8px;
+        border-bottom: 2px solid #c4e2ff;
+    }
+
+    .req {
+        min-height: 40px;
+    }
+
+    .line3 {
+        font-size: 14px;
+        padding-top: 8px;
+        display: flex;
+    }
+
+    .time {
+        width: 60%;
+    }
+
+    .progress-container {
+        width: 90px;
+        margin-top: -10px;
+        margin-left: 40px;
+        position: relative;
+        display: flex;
+        height: 100px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .progress-circle {
+        transform: rotate(-90deg);
+    }
+
+    .progress-bg,
+    .progress-bar {
+        fill: none;
+        stroke-width: 20;
+    }
+
+    .progress-bg {
+        stroke: #ddd;
+    }
+
+    .progress-bar {
+        stroke: #3a7afe;
+        stroke-dasharray: 565.48;
+        stroke-dashoffset: 565.48;
+        transition: stroke-dashoffset 0.5s;
+    }
+
+    .progress-text {
+        position: absolute;
+        font-size: 15px;
+        /*文字居中*/
+        text-align: center;
+        color: #3a7afe;
+    }
+
+    .submit-btn2 {
+        height: 30px;
+        width: 100px;
+        margin-left: 35px;
+        margin-top: 10px;
+        border: none;
+        background-color: var(--box1-color);
+        border-radius: 5px;
+        color: var(--text-color-light);
+        font-size: 15px;
+        font-weight: 400;
+        cursor: pointer;
+    }
+
+    .submit-btn2 :hover {
+        background-color: var(--box1-hover-color);
+    }
 </style>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // 获取点击的图标元素
+        var toggleFilter = document.querySelector('.toggle-filter');
+
+        // 获取 i 元素
+        var filterIcon = toggleFilter.querySelector('i');
+
+        // 获取需要隐藏和显示的 filter 容器
+        var filterContainer = document.querySelector('.filter');
+
+        // 添加点击事件
+        toggleFilter.addEventListener('click', function () {
+            // 切换 filter 容器的显示和隐藏
+            if (filterContainer.style.display === 'none') {
+                filterContainer.style.display = 'flex';
+                filterContainer.style.maxHeight = '1000px'; // 使用足够大的值来确保内容可以完全展开
+                filterIcon.classList.remove('uil-angle-down');
+                filterIcon.classList.add('uil-angle-up');
+            } else {
+                filterContainer.style.display = 'none';
+                filterContainer.style.maxHeight = '0'; // 隐藏内容
+                filterIcon.classList.remove('uil-angle-up');
+                filterIcon.classList.add('uil-angle-down');
+            }
+        });
+    });
+    function setProgress(progress) {
+        const progressBar = document.querySelector('.progress-bar');
+        const progressText = document.getElementById('progress-text');
+
+        const radius = 90;
+        const circumference = 2 * Math.PI * radius;
+        const offset = circumference - (progress / 100 * circumference);
+
+        progressBar.style.strokeDashoffset = offset;
+        progressText.innerHTML = `提交人数<br>${progress}`;
+    }
+
+    // Example usage: Update progress to 75%
+    setProgress(75);
+
+
+</script>
 
 </html>
