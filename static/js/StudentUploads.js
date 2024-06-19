@@ -29,7 +29,8 @@ function getChartObject(studentUploads){
             提交日期: item.respondDate,
             姓名: item.studentName,
             词数: item.wordCount,
-            得分: item.score
+            机器评分: item.machineScore,
+            教师评分: item.teacherScore
         });
     });
     return res;
