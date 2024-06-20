@@ -5,6 +5,7 @@ import (
 	utils "DailyEnglish/utils"
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -70,8 +71,8 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			return
 		}
 		// 将验证码存入 Redis
-		ctx := context.Background()// 创建一个空的 context
-		key := fmt.Sprintf("%s:%s", "web", data.Email)// key前缀为web:邮箱
+		ctx := context.Background()                         // 创建一个空的 context
+		key := fmt.Sprintf("%s:%s", "web", data.Email)      // key前缀为web:邮箱
 		err = rdb.Set(ctx, key, Vcode, time.Minute*5).Err() // 验证码有效期5分钟,更新时替换
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -83,9 +84,9 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 
 		// 返回成功响应
 		c.JSON(http.StatusOK, gin.H{
-			"code": "200",
-			"msg":  "验证码发送成功",
-			"data": Vcode,
+			"code":  "200",
+			"msg":   "验证码发送成功",
+			"data":  Vcode,
 			"email": data.Email,
 		})
 	})
@@ -126,32 +127,33 @@ func InitAdminRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client) {
 			return
 		}
 		// 验证码验证成功后尝试删除验证码，即使删除失败也不会影响流程
-        err = rdb.Del(ctx, key).Err()
-        if err != nil {
-            fmt.Printf("删除验证码失败：%v\n", err)
-        }
-		
+		err = rdb.Del(ctx, key).Err()
+		if err != nil {
+			fmt.Printf("删除验证码失败：%v\n", err)
+		}
+		fmt.Println("data:", data)
 		//验证用户名是否已被注册
 		if !controlsql.AdminManagerExists(db, data.Username) {
-			
+
 			// fmt.Println("Pwd:", data.Pwd)
 			Key := "123456781234567812345678" //密钥
 			cryptoPwd := utils.AesEncrypt(data.Pwd, Key)
 			// fmt.Println("cryptoPwd:", cryptoPwd)
 			//获取系统当前日期
 			//RegisterDate := utils.GetCurrentDate()
-
-			if controlsql.RegisterUser(db, data.Username, data.Email, cryptoPwd, "10086") == nil {
-				c.JSON(http.StatusOK, gin.H{
-					"code": "200",
-					"msg":  "注册成功",
-				})
-			} else {
+			err := controlsql.RegisterUser(db, data.Username, data.Email, cryptoPwd, "10086")
+			if err != nil {
+				log.Fatal(err)
 				c.JSON(http.StatusConflict, gin.H{
 					"code": "500",
 					"msg":  "服务器内部错误",
 				})
+				return
 			}
+			c.JSON(http.StatusOK, gin.H{
+				"code": "200",
+				"msg":  "注册成功",
+			})
 		} else {
 			c.JSON(http.StatusConflict, gin.H{
 				"code": "409",

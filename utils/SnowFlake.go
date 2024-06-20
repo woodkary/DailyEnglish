@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/bwmarrin/snowflake"
@@ -25,5 +26,9 @@ func init() {
 
 func GenerateID() int64 {
 	// 直接使用预先创建的node生成ID
-	return node.Generate().Int64()
+	id := node.Generate().Int64()
+	//取ID的低32位
+	ids := strconv.FormatInt(id, 10)
+	id, _ = strconv.ParseInt(ids[len(ids)-10:], 10, 64)
+	return id
 }

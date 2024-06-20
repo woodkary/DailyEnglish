@@ -22,6 +22,7 @@ func EmailIsRegistered_TeamManager(db *sql.DB, email string) bool {
 
 func AdminManagerExists(db *sql.DB, username string) bool {
 	var count int
+	fmt.Println("username:", username)
 	err := db.QueryRow("SELECT COUNT(*) FROM manager_info WHERE manager_name =?", username).Scan(&count)
 	if err != nil {
 		return false
