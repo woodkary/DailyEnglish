@@ -17,7 +17,7 @@
 					<view class="line">
 						<view class="manager-name">{{ task.manager_name }}</view>
 						<view class="publish-date">发布日期：{{ task.publish_date }}</view>
-						<button class="submit-btn" @click="handleSubmit(task.title_id)">
+						<button class="submit-btn" @click="handleSubmit(task.title_id,task.title,task.word_num,task.requirement)">
 							提交
 						</button>
 					</view>
@@ -30,7 +30,7 @@
 			<view class="composition-tabs">
 				<Tabs firstTab="提交历史" secondTab="作文加练">
 					<template v-slot:tab1-content>
-						<view class="history-items" v-for="(task, index) in writingCompleted" @click="handleJump(task.title_id)" :key="index">
+						<view class="history-items" v-for="(task, index) in writingCompleted" @click="handleJump(task.title_id,task.requirement)" :key="index">
 							<view class="history-item" v-if="writingCompleted.length > 0">
 								<view style="
                     padding-bottom: 0.2rem;
@@ -76,7 +76,7 @@
 								<view class="requirement">要求：{{ task.requirement }}</view>
 								<view class="line">
 									<view class="manager-name">{{ task.manager_name }}</view>
-									<button class="submit-btn" @click="handleSubmit(task.title_id)">
+									<button class="submit-btn" @click="handleSubmit(task.title_id,task.title,task.word_num,task.requirement)">
 										提交
 									</button>
 								</view>
@@ -155,10 +155,10 @@
 			this.getWirtingData();
 		},
 		methods: {
-      handleJump(titleId) {
+      handleJump(titleId,requirement) {
         //跳转到作文结果页面
         uni.navigateTo({
-          url: `../EssayResult/EssayResult?titleId=${titleId}`,
+          url: `../EssayResult/EssayResult?titleId=${titleId}&requirement=${requirement}`,
         });
       },
       handleBack() {
@@ -169,10 +169,10 @@
         let progress = this.writingCompleted[index].score / 100;
         return this.circumference * (1 - progress);
       },
-      handleSubmit(titleId){
+      handleSubmit(titleId,title,word_num,requirement){
         //跳转到提交页面
         uni.navigateTo({
-          url: `../UploadEssay/UploadEssay?titleId=${titleId}`,
+          url: `../UploadEssay/UploadEssay?titleId=${titleId}&title=${title}&word_num=${word_num}&requirement=${requirement}`,
         });
       },
 			getWirtingData() {

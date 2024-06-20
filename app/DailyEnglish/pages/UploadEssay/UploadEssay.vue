@@ -7,7 +7,7 @@
 				<span class="line1">题目：<span style="font-weight: normal;">{{ title }}</span> </span>
 				<span class="line2">字数：<span style="font-weight: normal;">{{ word_cnt }}</span> </span>
 				<span class="line3">要求： <span
-						class="req">请根据题目要求完成作文请根据题目要求完成作文请根据题目要求完成作文请根据题目要求完成作文请根据题目要求完成作文请根据题目要求完成作文请根据题目要求完成作文请根据题目要求完成作文</span></span>
+						class="req">{{ requirement }}</span></span>
 			</view>
 		</view>
 		<view class="container">
@@ -30,6 +30,9 @@
 		data() {
 			return {
 				titleId: 1, // 文章ID
+        title: '', // 文章标题
+        word_cnt: 0, // 文章字数
+        requirement: '', // 文章要求
 				base64Data: '' ,// 存储base64数据
 				showInput: false,
 				showOnload: true,
@@ -37,6 +40,9 @@
 		},
 		onLoad(event) {
 			this.titleId = event.titleId; // 获取文章ID
+      this.requirement = event.requirement; // 获取文章标题
+      this.title = event.title; // 获取文章字数
+      this.word_cnt = event.word_num; // 获取文章要求
 		},
 		methods: {
       handleBack() {
