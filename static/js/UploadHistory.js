@@ -68,7 +68,7 @@ let compositionCompletions = [
 ]
 function requestCompositions() {
     compositionCompletions = [];
-    fetch('http://localhost:8081/api/team_manage/composition_mission/history',{
+    fetch('http://47.107.81.75:8081/api/team_manage/composition_mission/history',{
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

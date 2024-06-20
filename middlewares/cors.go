@@ -24,7 +24,7 @@ func Cors() gin.HandlerFunc {
 			headerStr = "access-control-allow-origin, access-control-allow-headers"
 		}
 		if origin != "" {
-			c.Header("Access-Control-Allow-Origin", "*")                                       // ,"http://localhost:8081", "http://47.113.117.103:5173") // 这是允许访问所有域
+			c.Header("Access-Control-Allow-Origin", "*")                                       // ,"http://47.107.81.75:8081", "http://47.113.117.103:5173") // 这是允许访问所有域
 			c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE,UPDATE") // 服务器支持的所有跨域请求的方法,为了避免浏览次请求的多次'预检'请求
 			//  header的类型
 			c.Header("Access-Control-Allow-Headers", "*")

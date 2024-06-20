@@ -88,8 +88,8 @@
 			this.isCorrects = {};
 			uni.request({
 				//判断操作类型并发送请求
-				url: !operation ? 'http://localhost:8080/api/main/take_punch' :
-					'http://localhost:8080/api/main/take_review',
+				url: !operation ? 'http://47.107.81.75:8080/api/main/take_punch' :
+					'http://47.107.81.75:8080/api/main/take_review',
 				method: 'GET',
 				header: {
 					'Authorization': `Bearer ${uni.getStorageSync('token')}`
@@ -137,7 +137,7 @@
 			handleJump(question) {
 
 				uni.request({
-					url: 'http://localhost:8080/api/words/add_new_word',
+					url: 'http://47.107.81.75:8080/api/words/add_new_word',
 					method: 'post',
 					header: {
 						'Authorization': `Bearer ${uni.getStorageSync('token')}`
@@ -222,8 +222,8 @@
 					if (++this.currentQuestionIndex == this.questions.length) {
 						uni.request({
 							//判断操作类型并发送请求
-							url: !this.operation ? 'http://localhost:8080/api/main/punched' :
-								'http://localhost:8080/api/main/reviewed',
+							url: !this.operation ? 'http://47.107.81.75:8080/api/main/punched' :
+								'http://47.107.81.75:8080/api/main/reviewed',
 							method: 'POST',
 							header: {
 								'Authorization': `Bearer ${uni.getStorageSync('token')}`

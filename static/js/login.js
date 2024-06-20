@@ -85,7 +85,7 @@ function login(event) {
         username: username,
         password: password
     };
-    fetch('http://localhost:8081/api/team_manager/login', {
+    fetch('http://47.107.81.75:8081/api/team_manager/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -159,7 +159,7 @@ function register(event) {
         toggleToast("提示","两次密码输入不一致");
         return;
     }
-    fetch('http://localhost:8081/api/team_manager/register', {
+    fetch('http://47.107.81.75:8081/api/team_manager/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -192,7 +192,7 @@ function sendCode(event) {
     event.preventDefault();
     let button = event.target;
     let email = document.getElementById("email-register").value;
-    fetch("http://localhost:8081/api/team_manager/send_code", {
+    fetch("http://47.107.81.75:8081/api/team_manager/send_code", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

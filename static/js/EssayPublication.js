@@ -93,7 +93,7 @@ function setGrade(grade){
 function request(){
     console.log(requestParams);
     //发送请求
-    fetch("http://localhost:8081/api/team_manage/composition_mission", {
+    fetch("http://47.107.81.75:8081/api/team_manage/composition_mission", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -152,7 +152,7 @@ for(let key in essayDivMap){
 }
 function requestSystemEssays(){
     //发送请求
-    fetch("http://localhost:8081/api/team_manage/composition_mission/system_compositions", {
+    fetch("http://47.107.81.75:8081/api/team_manage/composition_mission/system_compositions", {
         method: "GET",
         headers: {
             'Authorization': `Bearer ${localStorage.getItem("token")}`

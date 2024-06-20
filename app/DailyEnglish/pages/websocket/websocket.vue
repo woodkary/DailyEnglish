@@ -35,7 +35,7 @@
 				}
 
 				this.socket = uni.connectSocket({
-					url: 'ws://localhost:8080/api/punch/main_menu',
+					url: 'ws://47.107.81.75:8080/api/punch/main_menu',
 					success: () => {
 						console.log('WebSocket连接成功');
 					},

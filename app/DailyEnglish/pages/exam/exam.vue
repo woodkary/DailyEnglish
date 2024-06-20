@@ -158,7 +158,7 @@
 			this.exam_name = event.name;
 			this.exam_id = exam_id;
 			uni.request({
-				url: 'http://localhost:8080/api/exams/take_examination',
+				url: 'http://47.107.81.75:8080/api/exams/take_examination',
 				method: 'POST',
 				data: {
 					exam_id: exam_id
@@ -402,7 +402,7 @@
 							uni.setStorageSync('examResult', examResult);
 							//todo 提交考试结果到服务器
 							uni.request({
-								url: `http://localhost:8080/api/exams/submitExamResult`,
+								url: `http://47.107.81.75:8080/api/exams/submitExamResult`,
 								method: 'POST',
 								data: {
 									selectedChoiceAndScore: this.selectedChoiceAndScore,

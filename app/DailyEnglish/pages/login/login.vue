@@ -97,7 +97,7 @@
 				let remember = this.remember;
 				uni.clearStorageSync()
 				uni.request({
-					url: 'http://localhost:8080/api/user/login',
+					url: 'http://47.107.81.75:8080/api/user/login',
 					data: {
 						username: username,
 						password: password,

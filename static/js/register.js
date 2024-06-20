@@ -7,7 +7,7 @@ function sendVerificationCode() {
     var data = {
         email: email
     };
-    fetch('http://localhost:8080/api/register/sendCode', {
+    fetch('http://47.107.81.75:8080/api/register/sendCode', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -62,7 +62,7 @@ function register() {
         username: username,
         password: password
     };
-    fetch('http://localhost:8080/api/users/register', {
+    fetch('http://47.107.81.75:8080/api/users/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

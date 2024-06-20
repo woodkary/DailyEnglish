@@ -61,7 +61,7 @@
         title: '加载中'
       });
       uni.request({
-        url: "http://localhost:8080/api/words/get_starbk",
+        url: "http://47.107.81.75:8080/api/words/get_starbk",
         method: "GET",
         header: {
           'Authorization': 'Bearer ' + uni.getStorageSync('token')

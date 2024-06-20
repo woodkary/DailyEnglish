@@ -128,7 +128,7 @@
 					image: base64
 				};
 				uni.request({
-					url: 'http://localhost:8080/api/users/upload',
+					url: 'http://47.107.81.75:8080/api/users/upload',
 					method: 'POST',
 					header: {
 						'Authorization': `Bearer ${uni.getStorageSync('token')}`

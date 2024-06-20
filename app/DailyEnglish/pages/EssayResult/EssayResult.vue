@@ -125,7 +125,7 @@
 			},
 			GetEssayResult(){
 				uni.request({
-					url: "http://localhost:8080/api/users/composition_result",
+					url: "http://47.107.81.75:8080/api/users/composition_result",
 					method: "POST",
 					header: {
 						Authorization: `Bearer ${uni.getStorageSync("token")}`,

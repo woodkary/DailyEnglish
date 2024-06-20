@@ -64,7 +64,7 @@
         }
         let btn = document.getElementById('sendCodeBtn');
         uni.request({
-          url: 'http://localhost:8080/api/register/sendCode',
+          url: 'http://47.107.81.75:8080/api/register/sendCode',
           data: {
             email: this.email
           },
@@ -184,7 +184,7 @@
         let email=this.email;
         let password=this.password;
         uni.request({
-          url: 'http://localhost:8080/api/user/register',
+          url: 'http://47.107.81.75:8080/api/user/register',
           data: {
             username: username,
             email: email,

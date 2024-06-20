@@ -37,7 +37,7 @@ let studentUploads=[
 function requestStudentUploads(titleId) {
     //打印titleId的类型
     console.log(typeof titleId);
-    fetch(`http://localhost:8081/api/team_manage/composition_mission/submission_records`, {
+    fetch(`http://47.107.81.75:8081/api/team_manage/composition_mission/submission_records`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

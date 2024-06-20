@@ -165,7 +165,7 @@
     function fetchData(){
         let teamSelect=document.getElementById("category");
         teamSelect.innerHTML="";
-        fetch('http://localhost:8081/api/team_manage/member_manage/data',{
+        fetch('http://47.107.81.75:8081/api/team_manage/member_manage/data',{
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -310,7 +310,7 @@
                         // 删除按钮点击事件
                         if (confirm('确认删除该成员吗？')) {
                             // 确认删除后发起删除请求
-                            fetch('http://localhost:8081/api/team_manage/member_manage/delete', {
+                            fetch('http://47.107.81.75:8081/api/team_manage/member_manage/delete', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',

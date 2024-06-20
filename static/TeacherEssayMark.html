@@ -588,7 +588,7 @@
     function submitTeacherMark() {
         console.log(teacherScoreParams);
         // 发送请求
-        fetch("http://localhost:8081/api/team_manage/composition_mission/teacher_mark",{
+        fetch("http://47.107.81.75:8081/api/team_manage/composition_mission/teacher_mark",{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -648,7 +648,7 @@
         //从页面参数中获取
         let titleId=new URLSearchParams(window.location.search).get('titleId');
         let studentId=new URLSearchParams(window.location.search).get('studentId');
-        fetch("http://localhost:8081/api/team_manage/composition_mission/evaluation_records",{
+        fetch("http://47.107.81.75:8081/api/team_manage/composition_mission/evaluation_records",{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

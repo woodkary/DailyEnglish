@@ -117,7 +117,7 @@ function getQuestion(page) {
         createQuestionTable(pageAndQuestionsMap[page]);
         return;
     }
-    fetch('http://localhost:8081/api/team_manage/new_exam/all_questions', {
+    fetch('http://47.107.81.75:8081/api/team_manage/new_exam/all_questions', {
         method: 'POST',
         body: JSON.stringify({
             index: page,
@@ -252,7 +252,7 @@ publishBtn.addEventListener("click",()=>{
     examStartTime=from12To24(examStartTime);
     let examEndTime=document.querySelector('#exam-end-time').textContent;
     examEndTime=from12To24(examEndTime);
-    fetch('http://localhost:8081/api/team_manage/new_exam', {
+    fetch('http://47.107.81.75:8081/api/team_manage/new_exam', {
         method: 'POST',
         body: JSON.stringify({
             team_name: teamName,

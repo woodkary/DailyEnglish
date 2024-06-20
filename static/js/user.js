@@ -49,7 +49,7 @@ modalAccept.addEventListener('click', () => {
     if(isValid){
         //发送请求，创建团队
         console.log(`teamName:${teamName.value},amount:${amount.value}`);
-        fetch('http://localhost:8081/api/team_manage/create_team', {
+        fetch('http://47.107.81.75:8081/api/team_manage/create_team', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ modalAccept.addEventListener('click', () => {
 
 function getPersonalInfo(){
     let token=localStorage.getItem('token');
-    fetch('http://localhost:8081/api/team_manage/personal_center/data',{
+    fetch('http://47.107.81.75:8081/api/team_manage/personal_center/data',{
         method: 'GET',
         headers: {
             'Authorization': 'Bearer '+token
@@ -338,7 +338,7 @@ function initializeInput () {
 /*document.addEventListener('DOMContentLoaded', );*/
 //TODO 改为向后端请求邀请码，而不是自己生成
 async function generateInvitationCode(teamId) {
-    const response = await fetch('http://localhost:8081/api/team_manage/refresh_team_code', {
+    const response = await fetch('http://47.107.81.75:8081/api/team_manage/refresh_team_code', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

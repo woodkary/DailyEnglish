@@ -108,7 +108,7 @@ export default {
     }
     // 页面加载完成后，获取用户信息
     uni.request({
-      url: 'http://localhost:8080/api/users/my_punches',
+      url: 'http://47.107.81.75:8080/api/users/my_punches',
       method: 'GET',
       header: {
         'Authorization': `Bearer ${uni.getStorageSync('token')}` // 这里需要将 token 放到 header 中

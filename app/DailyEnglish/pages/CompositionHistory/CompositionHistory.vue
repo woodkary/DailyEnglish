@@ -177,7 +177,7 @@
       },
 			getWirtingData() {
 				uni.request({
-					url: "http://localhost:8080/api/users/composition_mission",
+					url: "http://47.107.81.75:8080/api/users/composition_mission",
 					method: "GET",
 					header: {
 						Authorization: `Bearer ${uni.getStorageSync("token")}`,

@@ -57,7 +57,7 @@ function transformTeamData(teams) {
 }
 function teamAndStudentsInit(){
     //初始化团队和学生数据
-    fetch('http://localhost:8081/api/team_manage/exam_situation/teams_and_students_grade',{
+    fetch('http://47.107.81.75:8081/api/team_manage/exam_situation/teams_and_students_grade',{
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`

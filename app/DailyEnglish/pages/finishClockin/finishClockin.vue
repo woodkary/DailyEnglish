@@ -76,7 +76,7 @@
       }else if(this.operation==0){
         //发送请求获取今天的学习天数
         uni.request({
-          url: 'http://localhost:8080/api/users/my_punches',
+          url: 'http://47.107.81.75:8080/api/users/my_punches',
           method: 'GET',
           header: {
             'Authorization': `Bearer ${uni.getStorageSync('token')}`
@@ -107,7 +107,7 @@
       }
       // 从服务器获取今天的考试记录
       uni.request({
-        url: 'http://localhost:8080/api/exams/exams_date',
+        url: 'http://47.107.81.75:8080/api/exams/exams_date',
         method: 'POST',
         header: {
           'Authorization': `Bearer ${uni.getStorageSync('token')}`

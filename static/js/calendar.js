@@ -10,7 +10,7 @@ function getExamDates(){
     //如果本地存储中没有考试日期，则从后端获取考试日期
     if(!exam_dates) {
         exam_dates = new Set();
-        fetch('http://localhost:8081/api/team_manage/exam_situation/calendar', {
+        fetch('http://47.107.81.75:8081/api/team_manage/exam_situation/calendar', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -252,7 +252,7 @@ function examFactory(team_id,exam_id,exam_name,team_name){
     };
 }
 function fetchExamData(date){
-    fetch('http://localhost:8081/api/team_manage/exam_situation/exam_date', {
+    fetch('http://47.107.81.75:8081/api/team_manage/exam_situation/exam_date', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

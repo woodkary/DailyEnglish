@@ -151,7 +151,7 @@ export default {
     this.examId=options.exam_id;
     this.examName=options.exam_name;
     uni.request({
-      url: 'http://localhost:8080/api/exams/examination_details',
+      url: 'http://47.107.81.75:8080/api/exams/examination_details',
 	  method:'POST',
       data: {
         exam_id: this.examId

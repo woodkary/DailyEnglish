@@ -174,7 +174,7 @@
 			getTodayExams() {
 				// 从服务器获取今天的考试记录
 				uni.request({
-					url: 'http://localhost:8080/api/exams/exams_date',
+					url: 'http://47.107.81.75:8080/api/exams/exams_date',
 					method: 'POST',
 					header: {
 						'Authorization': `Bearer ${uni.getStorageSync('token')}`
@@ -219,7 +219,7 @@
 			getPreviousExams() {
 				// 从服务器获取之前的考试记录
 				uni.request({
-					url: 'http://localhost:8080/api/exams/previous_examinations',
+					url: 'http://47.107.81.75:8080/api/exams/previous_examinations',
 					method: 'GET',
 					header: {
 						'Authorization': `Bearer ${uni.getStorageSync('token')}`

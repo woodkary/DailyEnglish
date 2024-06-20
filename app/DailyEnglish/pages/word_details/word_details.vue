@@ -182,7 +182,7 @@ export default {
       this.word.meanings=this.transformMeaningsToText(localDetails.meanings);
     }
     uni.request({
-      url: 'http://localhost:8080/api/words/get_word_detail',
+      url: 'http://47.107.81.75:8080/api/words/get_word_detail',
       method: 'POST',
       header: {
         'content-type': 'application/json', // 默认值

@@ -610,7 +610,7 @@
 			},
 			fetchData() {
 				uni.request({
-					url: "http://localhost:8080/api/punch/main_menu",
+					url: "http://47.107.81.75:8080/api/punch/main_menu",
 					header: {
 						'Authorization': `Bearer ${uni.getStorageSync('token')}`
 					},
@@ -696,7 +696,7 @@
         }
         //向后端传递搜索结果searchInput
         uni.request({
-          url: "http://localhost:8080/api/users/search_words",
+          url: "http://47.107.81.75:8080/api/users/search_words",
           data: {
             input: this.searchInput
           },
