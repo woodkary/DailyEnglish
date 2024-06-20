@@ -159,7 +159,7 @@ export default {
     },
     goToTeam() {
       uni.navigateTo({
-        url: '../MyTeam/MyTeam'//Todo: 跳转到团队页面
+        url: '../Join/Join'//Todo: 跳转到团队页面
       });
     },
     goToCalendar() {
