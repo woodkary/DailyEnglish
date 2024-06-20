@@ -906,4 +906,38 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		response.Base64IMG = base64IMG
 		c.JSON(200, response)
 	})
+	//提交教师评分
+	r.POST("/api/team_manage/composition_mission/teacher_mark", tokenAuthMiddleware(), func(c *gin.Context) {
+		type Request struct {
+			TitleID         string  `json:"titleId"`         // 作文题目ID
+			StudentID       string  `json:"studentId"`       // 学生ID
+			TeacherMark     float64 `json:"teacherMark"`     // 教师评分
+			TeacherEvaluate string  `json:"teacherEvaluate"` // 教师评价
+		}
+		var request Request
+		if err := c.ShouldBind(&request); err != nil {
+			c.JSON(400, "请求参数错误")
+			return
+		}
+		titleID, err := strconv.Atoi(request.TitleID)
+		if err != nil {
+			c.JSON(400, "请求参数错误")
+			return
+		}
+		studentID, err := strconv.Atoi(request.StudentID)
+		if err != nil {
+			c.JSON(400, "请求参数错误")
+			return
+		}
+
+		err = controlsql.InsertTeacherMark(db, titleID, studentID, request.TeacherMark, request.TeacherEvaluate)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		c.JSON(200, gin.H{
+			"code": 200,
+			"msg":  "提交成功",
+		})
+	})
 }

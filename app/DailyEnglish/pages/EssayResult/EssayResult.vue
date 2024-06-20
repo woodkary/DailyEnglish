@@ -12,7 +12,7 @@
 		</view>
 
 		<view class="composition-tabs">
-			<Tabs>
+			<Tabs firstTab="机器评分" secondTab="教师评分">
 				<template v-slot:tab1-content>
 					<view style="display: flex;">
 						<div class="progress-ring">
@@ -27,9 +27,26 @@
 							</svg>
 							<span class="score">{{ machine_mark }}</span>
 						</div>
-						<span class="evaluate">评价：{{ machine_evaluate }}</span>
+						<span class="evaluate">{{ machine_evaluate }}</span>
 					</view>
 				</template>
+        <template v-slot:tab2-content>
+          <view style="display: flex;">
+            <div class="progress-ring">
+              <svg class="progress-ring__svg" viewBox="0 0 120 120">
+                <circle class="progress-ring__circle-bg" stroke="#ddd" stroke-width="13"
+                        fill="transparent" r="50" cx="60" cy="60" />
+                <circle class="progress-ring__circle-fg" stroke="#44a0fb" stroke-width="13"
+                        fill="transparent" r="50" cx="60" cy="60" :style="{
+					  strokeDasharray: circumference,
+					  strokeDashoffset: offset,
+					}" />
+              </svg>
+              <span class="score">{{ teacher_mark }}</span>
+            </div>
+            <span class="evaluate">{{ teacher_evaluate }}</span>
+          </view>
+        </template>
 			</Tabs>
 		</view>
 
@@ -42,7 +59,8 @@
 			<view class="eva-content">
 				<view class="eva-item" v-for="(item, index) in evaluation" :key="index">
 					<view class="eva-item-title">
-						<span class="order">{{ `全文第${item.paraId}段，第${item.sentId}句` }}</span>
+						<span class="order">{{ `全文第${item.paraId+1}段，第${item.sentId+1}句` }}</span>
+            <p></p>
 						<span>{{ item.rawSent }}</span>
 					</view>
 					<view class="eva-item-content">
@@ -70,6 +88,9 @@
 				radius: 50, //半径
 				circumference: 2 * Math.PI * 50, //周长
 				machine_mark: 80,
+        machine_evaluate: 'i哦部分的几天里你看加热别人叫我其他的v偶尔输入年份v看国足色加热别人叫我其他的v偶尔输入年份v看国足色弱问人家看望母亲吗',
+        teacher_mark: 80,
+        teacher_evaluate: "优秀！",
 				evaluation: [{
 					paraId:1,
 					sentId:1,
@@ -89,7 +110,6 @@
 					sentence: 'fuck u kary',
 					content: 'This essay is really well-written, with a clear structure and strong arguments. The author',
 				}],
-				machine_evaluate: 'i哦部分的几天里你看加热别人叫我其他的v偶尔输入年份v看国足色加热别人叫我其他的v偶尔输入年份v看国足色弱问人家看望母亲吗',
 				raw_essay: "I am happy to join with you today in what will go down in history as the greatest demonstration for freedom in the history of our nation.\nFive score years ago, a great American, in whose symbolic shadow we stand today, signed the Emancipation Proclamation. This momentous decree came as a great beacon light of hope to millions of Negro slaves who had been seared in the flames of withering injustice. It came as a joyous daybreak to end the long night of bad captivity.."
 			}
 		},
@@ -98,15 +118,7 @@
 			this.GetEssayResult();
 		},
 		methods: {
-      //将json格式的machine_evaluate所有值提取出来，并拼接字符串，换行符分隔
-      parseMachineEvaluate(machine_evaluate){
-        let result = "";
-        for(let key in machine_evaluate){
-          result += `${machine_evaluate[key]}\n`;
-        }
-        return result;
-      },
-			handleBack() {
+      handleBack() {
 			  uni.switchTab({
 				url: '../user/user'
 			  });
@@ -128,6 +140,8 @@
 							this.machine_evaluate = res.data.essay_result.machine_evaluate
 							this.machine_mark = res.data.essay_result.machine_mark
 							this.raw_essay = res.data.essay_result.raw_essay
+              this.teacher_mark = res.data.essay_result.teacher_mark
+              this.teacher_evaluate = res.data.essay_result.teacher_evaluate
 							this.evaluation = res.data.essay_result.sents_feedback
 							this.word_cnt = res.data.essay_result.word_cnt
 							this.requirment = res.data.essay_result.requirment

@@ -5,13 +5,13 @@
         class="tab" 
         :class="{ active: selectedTab === 'tab1' }" 
         @click="selectTab('tab1')">
-        写作历史
+        {{ firstTab }}
       </div>
       <div 
         class="tab" 
         :class="{ active: selectedTab === 'tab2' }" 
         @click="selectTab('tab2')">
-        作文加练
+        {{ secondTab }}
       </div>
       <div class="underline" :style="underlineStyle"></div>
     </div>
@@ -28,6 +28,10 @@
 
 <script>
 export default {
+  props:{
+    firstTab: String,
+    secondTab: String
+  },
   data() {
     return {
       selectedTab: 'tab1'

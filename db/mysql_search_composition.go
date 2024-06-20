@@ -525,3 +525,17 @@ func GetImgURL(db *sql.DB, titleID int, UserID int) (string, error) {
 	}
 	return url, nil
 }
+func InsertTeacherMark(db *sql.DB, titleId int, userID int, teacherMark float64, teacherEvaluate string) error {
+	updateQuery, err := db.Prepare("UPDATE composition_evaluate SET teacher_mark = ?, teacher_evaluate = ? WHERE title_id = ?")
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	defer updateQuery.Close()
+	_, err = updateQuery.Exec(teacherMark, teacherEvaluate, titleId)
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+	return nil
+}

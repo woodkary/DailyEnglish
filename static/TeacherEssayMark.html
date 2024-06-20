@@ -149,14 +149,14 @@
                 <div class="teacher-score">
                     <div class="score1">
                         <span>教师评分：</span>
-                        <input id="teacherMark" />
+                        <input id="teacherMark" oninput="changeTeacherMark(this.value)" type="number" min="0" max="100" step="1" />
                     </div>
                     <div class="evaluate">
                         <span>教师评价：</span>
-                        <textarea id="teacherEvaluate"></textarea>
+                        <textarea id="teacherEvaluate" oninput="changeEvaluate(this.value)"></textarea>
                     </div>
                     <div class="comfirm">
-                        <button>提交</button>
+                        <button onclick="submitTeacherMark()">提交</button>
                     </div>
                 </div>
             </div>
@@ -574,8 +574,46 @@
     }
     //教师评分的请求参数
     let teacherScoreParams = {
+        titleId: new URLSearchParams(window.location.search).get('titleId'),
+        studentId: new URLSearchParams(window.location.search).get('studentId'),
         teacherMark: 75.7,// 教师评分
         teacherEvaluate: "作文整体水平较高，语言表达清晰，内容丰富，结构合理，词汇量较为丰富，句子通顺，错误率较低。",// 教师评价
+    }
+    function changeTeacherMark(score) {
+        teacherScoreParams.teacherMark = parseFloat(score);
+    }
+    function changeEvaluate(evaluate) {
+        teacherScoreParams.teacherEvaluate = evaluate;
+    }
+    function submitTeacherMark() {
+        console.log(teacherScoreParams);
+        // 发送请求
+        fetch("http://localhost:8081/api/team_manage/composition_mission/teacher_mark",{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization':`Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(teacherScoreParams)
+        }).then(res=>{
+            if(res.status==401||res.status=="401"){
+                alert("请先登录！");
+                //重新刷新本页面
+                window.location.href="/TeacherEssayMark.html";
+            }else{
+                return res.json();
+            }
+        }).then(data=>{
+            console.log(data);
+            if(data.code==200||data.code=="200"){
+                alert("评分成功！");
+                window.location.href="./UploadHistory.html";
+            }else{
+                alert("评分失败！");
+            }
+        }).catch(err=> {
+            console.log(err);
+        });
     }
 
     function openTab(event, tabId) {
@@ -648,7 +686,6 @@
         evaluateStr+=EssayMachineMark.majorScore.grammarAdvice+'\n';
         evaluateStr+=EssayMachineMark.majorScore.structureAdvice+'\n';
         evaluateStr+=EssayMachineMark.majorScore.wordAdvice+'\n';
-        evaluateStr+=teacherScoreParams.teacherEvaluate;
         //将评价内容写入textarea
         document.querySelector('#machineAdvice').value=evaluateStr;
     }

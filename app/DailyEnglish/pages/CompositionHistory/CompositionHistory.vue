@@ -28,7 +28,7 @@
 		<view class="composition-container">
 			<view class="composition-head">作文广场</view>
 			<view class="composition-tabs">
-				<Tabs>
+				<Tabs firstTab="提交历史" secondTab="作文加练">
 					<template v-slot:tab1-content>
 						<view class="history-items" v-for="(task, index) in writingCompleted" @click="handleJump(task.title_id)" :key="index">
 							<view class="history-item" v-if="writingCompleted.length > 0">
