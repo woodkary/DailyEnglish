@@ -1042,41 +1042,14 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 				"msg":  "服务器内部错误"})
 			return
 		}
-		type User struct {
-			UserID   int    `json:"user_id"`
-			UserName string `json:"user_name"`
-			UserSex  int    `json:"user_sex"`
-		}
-		type TeamInfo struct {
-			TeamID      int    `json:"team_id"`
-			TeamName    string `json:"team_name"`
-			ManagerID   int    `json:"manager_id"`
-			ManagerName string `json:"manager_name"`
-			TeamSize    int    `json:"member_num"`
-			MemberList  []User `json:"member_list"`
-		}
 		type Response struct {
-			Code     int      `json:"code"`
-			Msg      string   `json:"msg"`
-			TeamInfo TeamInfo `json:"team"`
+			Code     int             `json:"code"`
+			Msg      string          `json:"msg"`
+			TeamInfo controlsql.Team `json:"team"`
 		}
 
 		var response Response
-		var teamInfo TeamInfo
-		teamInfo.TeamID = Item.Teamid
-		teamInfo.TeamName = Item.Teamname
-		teamInfo.ManagerID = Item.Managerid
-		teamInfo.ManagerName = Item.Managername
-		teamInfo.TeamSize = Item.Teamsize
-		teamInfo.MemberList = make([]User, 0)
-
-		for _, member := range Item.Memberlist {
-			var user User
-			user.UserID = member.Userid
-			user.UserName = member.Username
-			user.UserSex = member.Usersex
-			teamInfo.MemberList = append(teamInfo.MemberList, user)
-		}
+		response.TeamInfo = Item
 		response.Code = 200
 		response.Msg = "成功"
 		c.JSON(http.StatusOK, response)

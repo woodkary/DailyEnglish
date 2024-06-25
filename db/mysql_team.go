@@ -154,65 +154,65 @@ func IsTeamFull(db *sql.DB, teamid int) (bool, error) {
 // 查询团队信息
 
 type Team struct {
-	Teamid      int
-	Managerid   int
-	Teamname    string
-	Managername string
-	Teamsize    int
-	Memberlist  []Member
+	Teamid      int      `json:"team_id"`
+	Managerid   int      `json:"manager_id"`
+	Teamname    string   `json:"team_name"`
+	Managername string   `json:"manager_name"`
+	Teamsize    int      `json:"member_num"`
+	Memberlist  []Member `json:"member_list"`
 }
 type Member struct {
-	Userid   int
-	Username string
-	Usersex  int
+	Userid   int    `json:"user_id"`
+	Username string `json:"user_name"`
+	Usersex  int    `json:"user_sex"`
 }
 
 func SearchTeamInfo(db *sql.DB, teamid int) (Team, error) {
 	var team Team
-	fmt.Println("teamId是", teamid)
-	err := db.QueryRow("SELECT manager_id,team_name FROM team_info WHERE team_id = ?").Scan(&team.Managerid, &team.Teamname)
-	// 查询数据库以获取信息
 	team.Teamid = teamid
+
+	// 合并查询获取 team 信息和 manager 信息
+	query := `
+		SELECT t.manager_id, t.team_name, m.manager_name
+		FROM team_info t
+		JOIN manager_info m ON t.manager_id = m.manager_id
+		WHERE t.team_id = ?`
+	err := db.QueryRow(query, teamid).Scan(&team.Managerid, &team.Teamname, &team.Managername)
 	if err != nil {
-		log.Panic(err)
-		return Team{}, err
+		return Team{}, fmt.Errorf("failed to get team and manager info: %v", err)
 	}
-	err = db.QueryRow("SELECT manager_name FROM manager_info WHERE manager_id = ?", team.Managerid).Scan(&team.Managername)
-	if err != nil {
-		log.Panic(err)
-		return Team{}, err
-	}
+
+	// 获取团队大小
 	err = db.QueryRow("SELECT COUNT(*) FROM `user-team` WHERE team_id = ?", teamid).Scan(&team.Teamsize)
 	if err != nil {
-		log.Panic(err)
-		return Team{}, err
+		return Team{}, fmt.Errorf("failed to get team size: %v", err)
 	}
 
-	var users []Member
-	// 查询数据库以获取用户名称
-	rows, err := db.Query("SELECT user_id  FROM `user-team` WHERE team_id = ?", teamid)
+	// 获取团队成员信息
+	query = `
+		SELECT ui.user_id, ui.username, ui.sex
+		FROM user_info ui
+		JOIN ` + "`user-team`" + ` ut ON ui.user_id = ut.user_id
+		WHERE ut.team_id = ?`
+	rows, err := db.Query(query, teamid)
 	if err != nil {
-		log.Panic(err)
-		return Team{}, err
+		return Team{}, fmt.Errorf("failed to get team members: %v", err)
 	}
 	defer rows.Close()
-	var user Member
-	// 遍历结果集并收集
+
+	var users []Member
 	for rows.Next() {
-		var userID int
-
-		if err := rows.Scan(&userID); err != nil {
-			return Team{}, err
+		var user Member
+		if err := rows.Scan(&user.Userid, &user.Username, &user.Usersex); err != nil {
+			return Team{}, fmt.Errorf("failed to scan user info: %v", err)
 		}
-		err = db.QueryRow("SELECT user_id,username,sex FROM user_info WHERE user_id = ?", userID).Scan(&user.Userid, &user.Username, &user.Usersex)
-		if err != nil {
-			log.Panic(err)
-			return Team{}, err
-		}
-
 		users = append(users, user)
 	}
-	team.Memberlist = users
-	return team, nil
+	if err = rows.Err(); err != nil {
+		return Team{}, fmt.Errorf("rows iteration error: %v", err)
+	}
 
+	team.Memberlist = users
+
+	return team, nil
 }
