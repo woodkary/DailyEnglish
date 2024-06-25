@@ -733,9 +733,18 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			return
 		}
 		fmt.Println(response.TeamAverageScores)
-		//查最近的五次考试名称 todo 先返回空数据
-		response.ExamNames = []string{}
-		response.StudentRankScores = []controlsql.RankScore{}
+		//查最近的五次考试名称和所有学生排名变化
+		teamIds := make([]int, 0, len(TeamManagerClaims.Team))
+		for teamId, _ := range TeamManagerClaims.Team {
+			teamIds = append(teamIds, teamId)
+		}
+		response.ExamNames, response.StudentRankScores, err = controlsql.SearchRecentExamNamesAndRankChanges(db, teamIds, studentIds)
+		if err != nil {
+			c.JSON(500, "服务器错误")
+			return
+		}
+		fmt.Println(response.ExamNames)
+		fmt.Println(response.StudentRankScores)
 		fmt.Println(response)
 		fmt.Println(response.TeamAndStudents)
 		response.Code = 200

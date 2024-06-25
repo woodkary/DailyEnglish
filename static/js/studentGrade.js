@@ -79,7 +79,7 @@ function teamAndStudentsInit(){
            studentAverageScores=data.student_average_scores;
            teamAverageScores=data.team_average_scores;
            examNames=data.exam_names;
-           studentRankChanges=data.student_rank_changes;
+           studentRankChanges=data.student_rank_scores;
            loadTeamAndStudents();
        }
    }).catch(err => console.log(err));

@@ -952,6 +952,141 @@ func SearchTeamAverageScoresByTeamMap(rdb *redis.Client, teamMap map[int]string)
 	return averageScores, nil
 }
 
+// //最近几次考试的名称
+// let examNames=["2021年秋季期末考试","2021年春季期末考试","2021年夏季期末考试","2021年秋季期中考试","2021年春季期中考试","2021年夏季期中考试","2021年秋季期末考试"]
+// //最近几次考试的排名数据
+// let studentRankChanges=[
+//
+//	{name: 'student1', data: [120, 132, 101, 134, 90, 230, 210]},
+//	{name: 'student2', data: [100, 120, 110, 130, 120, 200, 220]},
+//	{name: 'student3', data: [110, 125, 105, 120, 115, 210, 200]},
+//	{name: 'student4', data: [100, 120, 110, 130, 120, 200, 220]},
+//	{name: 'student5', data: [110, 125, 105, 120, 115, 210, 200]},
+//	{name: 'student6', data: [100, 120, 110, 130, 120, 200, 220]},
+//	{name: 'student7', data: [110, 125, 105, 120, 115, 210, 200]},
+//	{name: 'student8', data: [100, 120, 110, 130, 120, 200, 220]},
+//	{name: 'student9', data: [110, 125, 105, 120, 115, 210, 200]}
+//
+// ]
+
+func SearchRecentExamNamesAndRankChanges(db *sql.DB, teamIds []int, studentIds []int) ([]string, []RankScore, error) {
+	var examNames []string
+	var rankScores []RankScore
+	var examIds []int
+
+	// 开始事务
+	tx, err := db.Begin()
+	if err != nil {
+		return nil, nil, err
+	}
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+			panic(p)
+		} else if err != nil {
+			tx.Rollback()
+		} else {
+			err = tx.Commit()
+		}
+	}()
+
+	// 查询所有学生的名字
+	studentIdList := strings.Join(intSliceToStringSlice(studentIds), ",")
+	query := fmt.Sprintf("SELECT user_id, username FROM user_info WHERE user_id IN (%s)", studentIdList)
+	rows, err := tx.Query(query)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer rows.Close()
+
+	studentIdAndNames := make(map[int]string)
+	for rows.Next() {
+		var userId int
+		var username string
+		if err := rows.Scan(&userId, &username); err != nil {
+			return nil, nil, err
+		}
+		studentIdAndNames[userId] = username
+	}
+
+	// 查询最近在teamIds中的团队的五次考试名称
+	teamIdList := strings.Join(intSliceToStringSlice(teamIds), ",")
+	query = fmt.Sprintf("SELECT exam_name, exam_id FROM exam_info WHERE team_id IN (%s) ORDER BY exam_id DESC LIMIT 5", teamIdList)
+	rows, err = tx.Query(query)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var examName string
+		var examId int
+		if err := rows.Scan(&examName, &examId); err != nil {
+			return nil, nil, err
+		}
+		examNames = append(examNames, examName)
+		examIds = append(examIds, examId)
+	}
+
+	// 查询所有学生的排名数据
+	examIdList := strings.Join(intSliceToStringSlice(examIds), ",")
+	query = fmt.Sprintf("SELECT user_id, exam_id, exam_rank FROM `user-exam_score` WHERE exam_id IN (%s) AND user_id IN (%s)", examIdList, studentIdList)
+	rows, err = tx.Query(query)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer rows.Close()
+
+	rankMap := make(map[int]map[int]int)
+	for rows.Next() {
+		var userId, examId, rank int
+		if err := rows.Scan(&userId, &examId, &rank); err != nil {
+			return nil, nil, err
+		}
+		if _, ok := rankMap[userId]; !ok {
+			rankMap[userId] = make(map[int]int)
+		}
+		rankMap[userId][examId] = rank
+	}
+
+	// 使用并发处理每个学生的排名数据
+	rankScoreChan := make(chan RankScore, len(studentIds))
+	var wg sync.WaitGroup
+
+	for _, studentId := range studentIds {
+		wg.Add(1)
+		go func(studentId int) {
+			defer wg.Done()
+			var rankScore RankScore
+			rankScore.Name = studentIdAndNames[studentId]
+			for _, examId := range examIds {
+				if rank, ok := rankMap[studentId][examId]; ok {
+					rankScore.Data = append(rankScore.Data, rank)
+				} else {
+					rankScore.Data = append(rankScore.Data, 0) // No rank available
+				}
+			}
+			rankScoreChan <- rankScore
+		}(studentId)
+	}
+
+	wg.Wait()
+	close(rankScoreChan)
+
+	for rankScore := range rankScoreChan {
+		rankScores = append(rankScores, rankScore)
+	}
+
+	return examNames, rankScores, nil
+}
+
+func intSliceToStringSlice(ints []int) []string {
+	strs := make([]string, len(ints))
+	for i, v := range ints {
+		strs[i] = fmt.Sprintf("%d", v)
+	}
+	return strs
+}
 func getTeamAverageScores(rdb *redis.Client, teamKeyPrefix string) ([]float64, error) {
 	var teamAverageScores []float64
 	ctx := context.Background()
