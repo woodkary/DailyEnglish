@@ -1,20 +1,13 @@
 package utils
 
-import (
-	"strconv"
-	"strings"
-)
-
-func CalculateUserLevel(ScoresInExam string) []int {
+func CalculateUserLevel(ScoresInExam []int) []int {
 	var AlevelNum int = 0
 	var BlevelNum int = 0
 	var ClevelNum int = 0
 	var DlevelNum int = 0
 	var ElevelNum int = 0
 	var FlevelNum int = 0
-	datas := strings.Split(ScoresInExam, "-")
-	for _, data := range datas {
-		score, _ := strconv.Atoi(data)
+	for _, score := range ScoresInExam {
 		if score >= 93 {
 			AlevelNum++
 		} else if score >= 85 {

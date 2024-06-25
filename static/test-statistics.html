@@ -200,10 +200,10 @@ style="font-size: 25px; font-weight: 600; color: #3a7afe;">题目分析</span>
     window.onload = function() {
         let localeDateString = new URLSearchParams(window.location.search).get("date");
         selectedDate = localeDateString ? new Date(localeDateString) : new Date();
-        team_id = sessionStorage.getItem("team_id");
-        exam_id = sessionStorage.getItem("exam_id");
+        team_id = new URLSearchParams(window.location.search).get("team_id");
+        exam_id = new URLSearchParams(window.location.search).get("exam_id");
         let team_info=localStorage.getItem("team_info");
-        let team_name=JSON.parse(team_info).team_name;
+        let team_name=JSON.parse(team_info)[team_id];
         if(exam_id){
             fetchExamDetails();
         }
@@ -283,8 +283,8 @@ function fetchExamDetails(){
             "Authorization": "Bearer " + localStorage.getItem("token")
         },
         body: JSON.stringify({
-            team_id: parseInt(team_id),
-            exam_id: parseInt(exam_id)
+            team_id: team_id,
+            exam_id: exam_id
         })
     }).then(response => response.json())
    .then(data => {
@@ -299,10 +299,10 @@ function fetchExamDetails(){
    }).catch(error => console.log(error));
 }
 
-getLevelBarChart(user_details);
+/*getLevelBarChart(user_details);
 setTotalQuestionNum(question_details);
 rankData=getRandDataFromUserResults(user_result);
-createTable(rankData);
+createTable(rankData);*/
 
 
 function getRandDataFromUserResults(user_result){

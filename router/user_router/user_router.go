@@ -1009,6 +1009,14 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 		}
 
 		// 更新该场考试的 question_statistics 表
+		err = controlsql.InsertQuestionStatistics(db, request.Exam_result, exam_id)
+		if err != nil {
+			log.Panic(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": 500,
+				"msg":  "服务器内部错误"})
+			return
+		}
 
 		//向redis插入学生各题型总分信息
 		averageScores, err := controlsql.UpdateStudentRDB(db, rdb, UserClaims.UserID, UserClaims.TeamID, request.Exam_result)

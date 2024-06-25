@@ -779,6 +779,84 @@ func InsertUserScore(db *sql.DB, user_id int, exam_id int, user_answer string, s
 	}
 	return nil
 }
+func InsertQuestionStatistics(db *sql.DB, examResult map[int]Exam_score, examId int) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+			panic(p)
+		} else if err != nil {
+			tx.Rollback()
+		} else {
+			err = tx.Commit()
+		}
+	}()
+
+	for questionID, examScore := range examResult {
+		if len(examScore.UserAnswer) == 1 {
+			var (
+				column string
+				cnt    int
+			)
+
+			switch examScore.UserAnswer {
+			case "A":
+				column = "A_num"
+				cnt = 1
+			case "B":
+				column = "B_num"
+				cnt = 1
+			case "C":
+				column = "C_num"
+				cnt = 1
+			case "D":
+				column = "D_num"
+				cnt = 1
+			default:
+				continue
+			}
+
+			stmt, err := tx.Prepare(fmt.Sprintf("UPDATE question_statistics SET %s = %s + 1 WHERE question_id = ? AND exam_id = ?", column, column))
+			if err != nil {
+				return err
+			}
+			defer stmt.Close()
+
+			res, err := stmt.Exec(questionID, examId)
+			if err != nil {
+				log.Printf("更新%s失败:%s", column, err)
+				return err
+			}
+
+			rowNum, err := res.RowsAffected()
+			if err != nil {
+				return err
+			}
+
+			if rowNum == 0 {
+				insertStmt, err := tx.Prepare("INSERT INTO question_statistics(question_id, exam_id, A_num, B_num, C_num, D_num) VALUES(?, ?, ?, ?, ?, ?)")
+				if err != nil {
+					return err
+				}
+				defer insertStmt.Close()
+
+				_, err = insertStmt.Exec(questionID, examId,
+					map[bool]int{column == "A_num": cnt}[true],
+					map[bool]int{column == "B_num": cnt}[true],
+					map[bool]int{column == "C_num": cnt}[true],
+					map[bool]int{column == "D_num": cnt}[true],
+				)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
 
 type Word struct {
 	WordID       int               `json:"word_id"`

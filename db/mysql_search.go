@@ -330,57 +330,89 @@ func SearchExaminfoByTeamIDAndDate222(db *sql.DB, teamID int, userID int, date s
 }
 
 // 3 根据exam_id查询exam_score数据表里的exam_score字段
-func SearchExamScoreByExamID(db *sql.DB, examID int) (string, error) {
-	var examScore string
+func SearchExamScoreByExamID(db *sql.DB, examID int) ([]int, error) {
+	var examScore []int
+	fmt.Println("examId:::", examID)
 
 	// 查询数据库以获取考试成绩
-	err := db.QueryRow("SELECT exam_score FROM exam_score WHERE exam_id = ?", examID).Scan(&examScore)
+	rows, err := db.Query("SELECT exam_score FROM `user-exam_score` WHERE exam_id = ?", examID)
 	if err != nil {
-		return "", err
+		return nil, err
+	}
+	defer rows.Close()
+	// 遍历结果集并收集考试成绩
+	for rows.Next() {
+		var score int
+		if err := rows.Scan(&score); err != nil {
+			return nil, err
+		}
+		examScore = append(examScore, score)
+	}
+	// 检查遍历过程中是否出错
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 
 	return examScore, nil
 }
 
-// 4 根据exam_id查询exam_info数据表里的quetion_num
-func SearchQuestionNumByExamID(db *sql.DB, examID int) (int, error) {
-	var questionNum int
-
-	// 查询数据库以获取题目数量
-	err := db.QueryRow("SELECT question_num FROM exam_info WHERE exam_id = ?", examID).Scan(&questionNum)
-	if err != nil {
-		return 0, err
-	}
-
-	return questionNum, nil
-}
-
 // 5 根据exam_id和quetion_id查询quetion_statistics表里的A_num,B_num,C_num,D_num,以及使用quetion_id查询quetion_info里的quetion_answer
-func SearchQuestionStatistics(db *sql.DB, examID int, questionID int) ([]int, error) {
-	var A_num, B_num, C_num, D_num int = 0, 0, 0, 0
-	var correctAnswer string
-	fmt.Println("question_id: ", questionID)
-	fmt.Println("exam_id: ", examID)
-	// 查询题目统计信息
-	err := db.QueryRow("SELECT A_num, B_num, C_num, D_num FROM question_statistics WHERE exam_id = ? AND question_id = ?", examID, questionID).Scan(&A_num, &B_num, &C_num, &D_num)
+func SearchQuestionStatistics(db *sql.DB, examID int, questionIDs []int) ([][]int, error) {
+	var results [][]int
+
+	// 将 questionIDs 转换为字符串并拼接成逗号分隔的列表
+	questionIDStrs := make([]string, len(questionIDs))
+	for i, id := range questionIDs {
+		questionIDStrs[i] = fmt.Sprintf("%d", id)
+	}
+	questionIDsList := strings.Join(questionIDStrs, ",")
+	fmt.Println("questionIDsList: ", questionIDsList)
+
+	// 构建查询语句
+	query := fmt.Sprintf(`
+		SELECT 
+			qs.question_id, qs.A_num, qs.B_num, qs.C_num, qs.D_num, qi.question_answer
+		FROM 
+			question_statistics qs
+		JOIN 
+			question_info qi ON qs.question_id = qi.question_id
+		WHERE 
+			qs.exam_id = ? AND qs.question_id IN (%s)
+	`, questionIDsList)
+
+	// 执行查询
+	rows, err := db.Query(query, examID)
 	if err != nil {
 		log.Panic(err)
 		return nil, err
 	}
+	defer rows.Close()
 
-	// 查询题目答案
-	err = db.QueryRow("SELECT question_answer FROM question_info WHERE question_id = ?", questionID).Scan(&correctAnswer)
-	if err != nil {
+	// 处理查询结果
+	for rows.Next() {
+		var questionID, A_num, B_num, C_num, D_num int
+		var correctAnswer string
+
+		err := rows.Scan(&questionID, &A_num, &B_num, &C_num, &D_num, &correctAnswer)
+		if err != nil {
+			log.Panic(err)
+			return nil, err
+		}
+
+		// 将答案字符转换为数字
+		ans := int(correctAnswer[0] - 'A' + 1)
+
+		// 填充字段
+		questionStats := []int{ans, A_num, B_num, C_num, D_num}
+		results = append(results, questionStats)
+	}
+
+	if err = rows.Err(); err != nil {
+		log.Panic(err)
 		return nil, err
 	}
-	ans, err := strconv.Atoi(correctAnswer)
-	if err != nil {
-		return nil, err
-	}
 
-	// 填充字段
-	questionStats := []int{ans, A_num, B_num, C_num, D_num}
-	return questionStats, nil
+	return results, nil
 }
 
 // 6.1 根据team_id查team_name
@@ -410,15 +442,15 @@ func SearchExamNameByExamID(db *sql.DB, examID int) (string, error) {
 }
 
 // 7 根据exam_id查询exam_info里的quetion_id字段
-func SearchQuestionIDsByExamID(db *sql.DB, examID int) ([]int, error) {
+func SearchExamNameAnduestionIDsByExamID(db *sql.DB, examID int) (string, []int, error) {
+	var examName string
 	var questionIDStr string
 
-	// 查询数据库以获取题目ID字符串
-	err := db.QueryRow("SELECT question_id FROM exam_info WHERE exam_id = ?", examID).Scan(&questionIDStr)
+	// 查询数据库以获取题目数量和题目ID字符串
+	err := db.QueryRow("SELECT exam_name, question_id FROM exam_info WHERE exam_id = ?", examID).Scan(&examName, &questionIDStr)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
-
 	// 切割字符串以获取各个题目ID
 	questionIDStrs := strings.Split(questionIDStr, "-")
 
@@ -429,12 +461,12 @@ func SearchQuestionIDsByExamID(db *sql.DB, examID int) ([]int, error) {
 	for i, str := range questionIDStrs {
 		id, err := strconv.Atoi(str)
 		if err != nil {
-			return nil, err
+			return "", nil, err
 		}
 		questionIDs[i] = id
 	}
 
-	return questionIDs, nil
+	return examName, questionIDs, nil
 }
 
 // 8 根据team_id查询user_id
@@ -489,48 +521,90 @@ func DeleteUserTeamByUserIDAndTeamID(db *sql.DB, userID int, teamID int) error {
 }
 
 // 9 根据考试ID和团队ID和userID查询用户名，得分，进步
+func SearchClosestExamByTeamIDAndExamID(db *sql.DB, teamID, examID int, userIDs []int) ([]map[string]interface{}, error) {
+	var results []map[string]interface{}
 
-func SearchClosestExamByTeamIDAndExamID(db *sql.DB, teamID, userID, examID int) (string, int, int, error) {
-	var username string
-	var score int
-	var examRank1 int
-	var examRank2 int
-	var delta int
-	var flag int
-	// 查询数据库以获取考试排名
-	err := db.QueryRow("SELECT exam_rank FROM user-exam_score WHERE exam_id = ? AND user_id = ?", examID, userID).Scan(&examRank1)
-	if err != nil {
-		flag = 0
-	}
-	if err != nil {
-		flag = 0
-	}
-
+	// 查询最近的另一场考试的ID
 	var closestExamID int
-
-	// 查询数据库以获取最近的另一场考试的ID
-	err = db.QueryRow("SELECT exam_id FROM exam_info WHERE team_id = ? AND exam_id != ? AND exam_date < (SELECT exam_date FROM exam_info WHERE exam_id = ?) ORDER BY exam_date DESC LIMIT 1", teamID, examID, examID).Scan(&closestExamID)
+	err := db.QueryRow(`
+		SELECT exam_id 
+		FROM exam_info 
+		WHERE team_id = ? AND exam_id != ? AND exam_date < 
+			(SELECT exam_date FROM exam_info WHERE exam_id = ?) 
+		ORDER BY exam_date DESC LIMIT 1
+	`, teamID, examID, examID).Scan(&closestExamID)
 	if err != nil {
-		flag = 0
+		return nil, err
 	}
+	fmt.Println("examID: ", examID)
+	fmt.Println("closestExamID: ", closestExamID)
 
-	// 查询数据库以获取考试排名
-	err = db.QueryRow("SELECT exam_rank FROM user-exam_score WHERE exam_id = ? AND user_id = ?", closestExamID, userID).Scan(&examRank2)
+	// 将 userIDs 转换为字符串并拼接成逗号分隔的列表
+	userIDStrs := make([]string, len(userIDs))
+	for i, id := range userIDs {
+		userIDStrs[i] = fmt.Sprintf("%d", id)
+	}
+	userIDsList := strings.Join(userIDStrs, ",")
+	fmt.Println("userIDsList: ", userIDsList)
+
+	// 创建查询语句
+	query := fmt.Sprintf(`
+		SELECT u.user_id, u.username, s1.exam_score, s1.exam_rank, s2.exam_rank
+		FROM user_info u
+		LEFT JOIN `+"`user-exam_score`"+` s1 ON u.user_id = s1.user_id AND s1.exam_id = ?
+		LEFT JOIN `+"`user-exam_score`"+` s2 ON u.user_id = s2.user_id AND s2.exam_id = ?
+		WHERE u.user_id IN (%s)
+	`, userIDsList)
+
+	// 执行查询
+	rows, err := db.Query(query, examID, closestExamID)
 	if err != nil {
-		flag = 0
+		log.Panic(err)
+		return nil, err
+	}
+	defer rows.Close()
+	fmt.Println(rows)
+	index := 0
+	// 处理查询结果
+	for rows.Next() {
+		var userID int
+		var username string
+		var score sql.NullInt64
+		var examRank1 sql.NullInt64
+		var examRank2 sql.NullInt64
+
+		err := rows.Scan(&userID, &username, &score, &examRank1, &examRank2)
+		if err != nil {
+			log.Panic(err)
+			return nil, err
+		}
+		fmt.Printf("第%d行: userID: %d, username: %s, score: %v, examRank1: %v, examRank2: %v\n", index, userID, username, score, examRank1, examRank2)
+		index++
+		if score.Valid {
+			continue
+		}
+
+		delta := 0
+		if examRank1.Valid && examRank2.Valid {
+			delta = int(examRank1.Int64 - examRank2.Int64)
+		}
+
+		scoreValue := 0
+		if score.Valid {
+			scoreValue = int(score.Int64)
+		}
+
+		result := map[string]interface{}{
+			"user_id":  userID,
+			"username": username,
+			"score":    scoreValue,
+			"delta":    delta,
+		}
+
+		results = append(results, result)
 	}
 
-	flag = 1
-	if flag == 1 {
-		delta = examRank1 - examRank2
-	} else {
-		delta = 0
-	}
-
-	db.QueryRow("SELECT username FROM user_info WHERE user_id = ? ", userID).Scan(&username)
-	db.QueryRow("SELECT user_score FROM user-exam_score WHERE exam_id = ? AND user_id = ?", examID, userID).Scan(&score)
-
-	return username, score, delta, nil
+	return results, nil
 }
 
 type ManagerInfo struct {
