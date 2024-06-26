@@ -113,7 +113,9 @@
 		},
 		methods: {
       handleBack() {
-        uni.navigateBack();
+        uni.navigateBack({
+          delta: 1
+        });
       },
 			goToJoin(){
 				uni.navigateTo({
