@@ -289,7 +289,7 @@ function fetchExamDetails(){
     }).then(response => response.json())
    .then(data => {
        console.log(data);
-       let user_details = data.exam_detail.user_details;
+       let user_details = data.exam_detail.user_levels;
        let question_details = data.exam_detail.question_details;
        let user_result = data.exam_detail.user_result;
        getLevelBarChart(user_details);

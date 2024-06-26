@@ -333,6 +333,13 @@ func SearchExaminfoByTeamIDAndDate222(db *sql.DB, teamID int, userID int, date s
 func SearchExamScoreByExamID(db *sql.DB, examID int) ([]int, error) {
 	var examScore []int
 	fmt.Println("examId:::", examID)
+	//查询本次考试的满分，为总题目数*5，每题5分
+	var questionNum int
+	err := db.QueryRow("SELECT question_num FROM exam_info WHERE exam_id = ?", examID).Scan(&questionNum)
+	if err != nil {
+		return nil, err
+	}
+	examFullScore := questionNum * 5
 
 	// 查询数据库以获取考试成绩
 	rows, err := db.Query("SELECT exam_score FROM `user-exam_score` WHERE exam_id = ?", examID)
@@ -346,7 +353,9 @@ func SearchExamScoreByExamID(db *sql.DB, examID int) ([]int, error) {
 		if err := rows.Scan(&score); err != nil {
 			return nil, err
 		}
-		examScore = append(examScore, score)
+		// 将 score 和 examFullScore 转换为 float64 并计算百分比
+		percentage := float64(score) / float64(examFullScore) * 100
+		examScore = append(examScore, int(percentage))
 	}
 	// 检查遍历过程中是否出错
 	if err := rows.Err(); err != nil {
@@ -366,7 +375,6 @@ func SearchQuestionStatistics(db *sql.DB, examID int, questionIDs []int) ([][]in
 		questionIDStrs[i] = fmt.Sprintf("%d", id)
 	}
 	questionIDsList := strings.Join(questionIDStrs, ",")
-	fmt.Println("questionIDsList: ", questionIDsList)
 
 	// 构建查询语句
 	query := fmt.Sprintf(`
@@ -536,8 +544,6 @@ func SearchClosestExamByTeamIDAndExamID(db *sql.DB, teamID, examID int, userIDs 
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("examID: ", examID)
-	fmt.Println("closestExamID: ", closestExamID)
 
 	// 将 userIDs 转换为字符串并拼接成逗号分隔的列表
 	userIDStrs := make([]string, len(userIDs))
@@ -545,7 +551,6 @@ func SearchClosestExamByTeamIDAndExamID(db *sql.DB, teamID, examID int, userIDs 
 		userIDStrs[i] = fmt.Sprintf("%d", id)
 	}
 	userIDsList := strings.Join(userIDStrs, ",")
-	fmt.Println("userIDsList: ", userIDsList)
 
 	// 创建查询语句
 	query := fmt.Sprintf(`
@@ -563,35 +568,30 @@ func SearchClosestExamByTeamIDAndExamID(db *sql.DB, teamID, examID int, userIDs 
 		return nil, err
 	}
 	defer rows.Close()
-	fmt.Println(rows)
 	index := 0
 	// 处理查询结果
 	for rows.Next() {
 		var userID int
 		var username string
-		var score sql.NullInt64
-		var examRank1 sql.NullInt64
-		var examRank2 sql.NullInt64
+		var score sql.NullInt32
+		var examRank1 sql.NullInt32
+		var examRank2 sql.NullInt32
 
 		err := rows.Scan(&userID, &username, &score, &examRank1, &examRank2)
 		if err != nil {
 			log.Panic(err)
 			return nil, err
 		}
-		fmt.Printf("第%d行: userID: %d, username: %s, score: %v, examRank1: %v, examRank2: %v\n", index, userID, username, score, examRank1, examRank2)
 		index++
-		if score.Valid {
-			continue
-		}
 
 		delta := 0
 		if examRank1.Valid && examRank2.Valid {
-			delta = int(examRank1.Int64 - examRank2.Int64)
+			delta = int(examRank1.Int32 - examRank2.Int32)
 		}
 
 		scoreValue := 0
 		if score.Valid {
-			scoreValue = int(score.Int64)
+			scoreValue = int(score.Int32)
 		}
 
 		result := map[string]interface{}{

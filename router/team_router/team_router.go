@@ -175,6 +175,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			log.Panic(err)
 			return
 		}
+		fmt.Println(ScoresInExam)
 		levelNums := utils.CalculateUserLevel(ScoresInExam)
 		fmt.Println(levelNums)
 		type UserResult struct {
@@ -197,6 +198,7 @@ func InitTeamRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 
 		userres := make([]UserResult, 0)
 		userResultMaps, err := controlsql.SearchClosestExamByTeamIDAndExamID(db, teamId, examId, userIDs)
+
 		if err != nil {
 			c.JSON(500, "服务器错误3")
 			log.Panic(err)
