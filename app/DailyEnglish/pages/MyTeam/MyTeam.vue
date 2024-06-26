@@ -112,6 +112,9 @@
 			// });
 		},
 		methods: {
+      handleBack() {
+        uni.navigateBack();
+      },
 			goToJoin(){
 				uni.navigateTo({
 					url: '../Join/Join'
