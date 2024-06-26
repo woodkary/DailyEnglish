@@ -533,7 +533,7 @@ func SearchClosestExamByTeamIDAndExamID(db *sql.DB, teamID, examID int, userIDs 
 	var results []map[string]interface{}
 
 	// 查询最近的另一场考试的ID
-	var closestExamID int
+	var closestExamID int = 0
 	err := db.QueryRow(`
 		SELECT exam_id 
 		FROM exam_info 
@@ -541,8 +541,11 @@ func SearchClosestExamByTeamIDAndExamID(db *sql.DB, teamID, examID int, userIDs 
 			(SELECT exam_date FROM exam_info WHERE exam_id = ?) 
 		ORDER BY exam_date DESC LIMIT 1
 	`, teamID, examID, examID).Scan(&closestExamID)
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		return nil, err
+	}
+	if closestExamID == 0 {
+		closestExamID = examID
 	}
 
 	// 将 userIDs 转换为字符串并拼接成逗号分隔的列表

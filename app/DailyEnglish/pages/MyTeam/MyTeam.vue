@@ -47,17 +47,17 @@
 	export default {
 		data() {
 			return {
-				teamName: "春田花花幼稚园",
-				managerName: "佐藤太郎",
-				memberNum: 50,
-				members: [{
+				teamName: "",
+				managerName: "",
+				memberNum: 0,
+				members: [/*{
 						userName: "张三",
 						userSex: 1, //1:男 0:女
 					},
 					{
 						userName: "李四",
 						userSex: 0, //1:男 0:女
-					}
+					}*/
 				]
 
 			}

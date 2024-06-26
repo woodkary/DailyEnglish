@@ -1041,6 +1041,13 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			return
 		}
 		fmt.Println("now searching teamid ", UserClaims.TeamID)
+		if UserClaims.TeamID == 0 {
+			c.JSON(http.StatusOK, gin.H{
+				"code": 404,
+				"msg":  "您还不是团队成员",
+			})
+			return
+		}
 		//查询用户所属团队
 		Item, err := controlsql.SearchTeamInfo(db, UserClaims.TeamID)
 		if err != nil {
