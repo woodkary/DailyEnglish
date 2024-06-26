@@ -60,6 +60,9 @@
                 icon: 'success',
                 duration: 2000
               });
+              let token = res.data.token;
+              console.log(token);
+              uni.setStorageSync('token', token);
               uni.navigateBack({
                 delta: 1
               });

@@ -1107,7 +1107,7 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 			return
 		}
 		// 插入该成员
-		insertOK, err := controlsql.JoinTeam(db, UserClaims.UserID, TargetTeamID)
+		insertOK, teamName, err := controlsql.JoinTeam(db, UserClaims.UserID, TargetTeamID)
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -1121,9 +1121,17 @@ func InitUserRouter(r *gin.Engine, db *sql.DB, rdb *redis.Client, es *elasticsea
 				"msg":  "服务器内部错误"})
 			return
 		}
+		token, err := utils.GenerateToken_User(UserClaims.UserID, TargetTeamID, teamName)
+		if err != nil {
+			log.Panic(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"code": 500,
+				"msg":  "服务器内部错误"})
+		}
 		c.JSON(200, gin.H{
-			"code": 200,
-			"msg":  "成功加入团队",
+			"code":  200,
+			"msg":   "成功加入团队",
+			"token": token,
 		})
 	})
 

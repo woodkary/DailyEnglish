@@ -92,8 +92,8 @@ func CheckTeammember(db *sql.DB, username string, teamid int) (bool, error) {
 	return count > 0, nil
 }
 
-// 用户加入团队
-func JoinTeam(db *sql.DB, userid int, teamid int) (bool, error) {
+// 用户加入团队，并返回团队名
+func JoinTeam(db *sql.DB, userid int, teamid int) (bool, string, error) {
 
 	// 获取当前日期
 	now := time.Now()
@@ -101,16 +101,22 @@ func JoinTeam(db *sql.DB, userid int, teamid int) (bool, error) {
 	today := now.Format("2006-01-02")
 	stmt, err := db.Prepare("INSERT INTO `user-team` (user_id,team_id,join_date) values (?,?,?)")
 	if err != nil {
-		return false, err
+		return false, "", err
 	}
 	defer stmt.Close()
 	// 执行插入语句
 	_, err = stmt.Exec(userid, teamid, today)
 	if err != nil {
-		return false, err
+		return false, "", err
 	}
-
-	return true, nil
+	// 查询团队名
+	query := "SELECT team_name FROM team_info WHERE team_id = ?"
+	var teamname string
+	err = db.QueryRow(query, teamid).Scan(&teamname)
+	if err != nil {
+		return false, "", err
+	}
+	return true, teamname, nil
 }
 
 // 根据团队id查询团队是否存在
