@@ -649,6 +649,7 @@ func SearchTeamInfoByTeamID(db *sql.DB, teamID int) (string, int, error) {
 	// 查询数据库以获取团队信息
 	err := db.QueryRow("SELECT team_name, member_num FROM team_info WHERE team_id = ?", teamID).Scan(&teamName, &memberNum)
 	if err != nil {
+		log.Panic(err)
 		return "", 0, err
 	}
 

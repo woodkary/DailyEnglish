@@ -117,11 +117,13 @@ function getPersonalInfo(){
             departmentH6.textContent = data.partment;
             document.getElementById('department2').textContent = data.partment;
             let teamInfo={}
-            data.team.forEach(t => {
-                //假设每个团队10人，这里可以根据实际情况调整
-                allTeams.push({teamName:t.team_name,memberNum:t.member_num,teamId:t.team_id});
-                teamInfo[t.team_id]=t.team_name;
-            });
+            if(data.team!=null&&data.team.length!=0) {
+                data.team.forEach(t => {
+                    //假设每个团队10人，这里可以根据实际情况调整
+                    allTeams.push({teamName: t.team_name, memberNum: t.member_num, teamId: t.team_id});
+                    teamInfo[t.team_id] = t.team_name;
+                });
+            }
             localStorage.setItem('team_info',JSON.stringify(teamInfo));
             renderTeamInfo();
         }).catch(error => {
